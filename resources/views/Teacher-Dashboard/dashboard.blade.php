@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="UTF-8" />
+    <!-- View Point scale to 1.0 -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Animate css -->
+    <link rel="stylesheet" href="assets/teacher/libs/animate/css/animate.css" />
+    <!-- AOS Animation css-->
+    <link rel="stylesheet" href="assets/teacher/libs/aos/css/aos.css" />
+    <!-- Datatable css  -->
+    <link rel="stylesheet" href="assets/teacher/libs/datatable/css/datatable.css" />
+     {{-- Fav Icon --}}
+     @php  $home = \App\Models\HomeDynamic::first(); @endphp
+     @if ($home)
+         <link rel="shortcut icon" href="assets/public-site/asset/img/{{$home->fav_icon}}" type="image/x-icon">
+     @endif
+     <!-- Select2 css -->
+    <link href="assets/teacher/libs/select2/css/select2.min.css" rel="stylesheet" />
+    <!-- Owl carousel css -->
+    <link href="assets/teacher/libs/owl-carousel/css/owl.carousel.css" rel="stylesheet" />
+    <link href="assets/teacher/libs/owl-carousel/css/owl.theme.green.css" rel="stylesheet" />
+    <!-- Bootstrap css -->
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="assets/teacher/asset/css/bootstrap.min.css"
+    />
+    <link
+      href="https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css"
+    />
+    <!-- Fontawesome CDN -->
+    <script
+      src="https://kit.fontawesome.com/be69b59144.js"
+      crossorigin="anonymous"
+    ></script>
+    <!-- Defualt css -->
+    <link rel="stylesheet" type="text/css" href="assets/teacher/asset/css/sidebar.css" />
+    <link rel="stylesheet" href="assets/teacher/asset/css/style.css" />
+    <link rel="stylesheet" href="assets/teacher/asset/css/Dashboard.css" />
+    <title>User Dashboard |</title>
+  </head>
+  <body>
+    {{-- ===========Teacher Sidebar Start==================== --}}
+  <x-teacher-sidebar/>
+  {{-- ===========Teacher Sidebar End==================== --}}
+  <section class="home-section">
+     {{-- ===========Teacher NavBar Start==================== --}}
+     <x-teacher-nav/>
+     {{-- ===========Teacher NavBar End==================== --}}
+      <!-- =============================== MAIN CONTENT START HERE =========================== -->
+      <div class="container-fluid">
+        <div class="row dash-notification">
+          <div class="col-md-12">
+            <div class="dash">
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="dash-top">
+                    <h1 class="dash-title">Dashboard</h1>
+                  </div>
+                </div>
+              </div>
+              <!-- Blue MASSEGES section -->
+              <div class="user-notification">
+                <div class="row">
+                  <div class="col-md-12">
+                    <div class="notify">
+                      <i class="bx bx-grid-alt" title="Dashboard"></i>
+
+                      <h2>Dashboard</h2>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-xl 3 col-lg-4 col-md-12">
+                  <div class="main-profil-page">
+                    <!-- Profile Image -->
+                    <div class="col-md-2">
+                      <div class="avatar-upload">
+                        <div class="avatar-edit">
+                          <input
+                            type="file"
+                            id="imageUpload"
+                            accept=".png, .jpg, .jpeg"
+                          />
+                          <label for="imageUpload"></label>
+                        </div>
+                        <div class="avatar-preview">
+                          <div
+                            id="imagePreview"
+                            style="
+                              background-image: url(http://i.pravatar.cc/500?img=7);
+                              width: 100%;
+                            "
+                          ></div>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- /.box-body -->
+                    <div class="name">
+                      <p>Petey Cruiser</p>
+                      <h5>Web Designer</h5>
+                    </div>
+                    <!-- <div class="form-group"> -->
+                    <h2 class="About-text">About Me</h2>
+                    <div id="profile-description">
+                      <div class="text show-more-height">
+                        <h4 class="About-para">
+                          Pleasure rationally encounter but<br />
+                          because pursue consequences that are <br />extremely
+                          painful. Occur in which toil<br />
+                          and pain can procure him some great<br />
+                          pleasure.
+                        </h4>
+                      </div>
+                      <div class="show-more">More</div>
+                    </div>
+                    <!-- [End] #profile-description -->
+
+                    <h2 class="Service-text">Service Overview</h2>
+                    <div id="profile-description">
+                      <div class="text show-more-height">
+                        <h4 class="About-para">
+                          pleasure rationally encounter but<br />
+                          because pursue consequences that are <br />
+                          extremely painful.occur in which toil and<br />
+                          pain can procure him some great<br />
+                          pleasure.pleasure rationally encounter<br />
+                          but because pursue consequences that<br />
+                          are extremely painful.occur in which<br />
+                          toil and pain can procure him some great<br />
+                          pleasure.occur in which toil and pain<br />
+                          can procure him some great pleasure<br />
+                          rationally encounter but because pursue<br />
+                          consequences that are extremely<br />
+                          painful....
+                        </h4>
+                      </div>
+                      <div class="show-more">More</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-xl 9 col-lg-8 col-md-12">
+                  <div class="row">
+                    <div class="col-xl-4 col-lg-6 col-md-6">
+                      <div class="prof-card">
+                        <div class="prof-mg">
+                          <img
+                            src="assets/teacher/asset/img/card-order-image.png"
+                            alt=""
+                            width="28px"
+                            height="28px"
+                          />
+                        </div>
+                        <div class="prof-body">
+                          <p class="title">All Booking</p>
+                          <h5>22</h5>
+                          <p class="increes">
+                            <span
+                              ><img src="assets/teacher/asset/img/increes.svg" alt="" /></span
+                            >Increase
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-xl-4 col-lg-6 col-md-6">
+                      <div class="prof-card">
+                        <div class="prof-mg">
+                          <img
+                            src="assets/teacher/asset/img/Freelance-order-image.png"
+                            alt=""
+                            width="28px"
+                            height="28px"
+                          />
+                        </div>
+                        <div class="prof-body">
+                          <p class="title">Freelance Bookings</p>
+                          <h5>10</h5>
+                          <p class="increes">
+                            <span
+                              ><img src="assets/teacher/asset/img/increes.svg" alt="" /></span
+                            >Increase
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-xl-4 col-lg-6 col-md-6">
+                      <div class="prof-card">
+                        <div class="prof-mg">
+                          <img
+                            src="assets/teacher/asset/img/booking-order-image.png"
+                            alt=""
+                            width="28px"
+                            height="28px"
+                          />
+                        </div>
+                        <div class="prof-body">
+                          <p class="title">Class Bookings</p>
+                          <h5>12</h5>
+                          <p class="increes">
+                            <span
+                              ><img src="assets/teacher/asset/img/increes.svg" alt="" /></span
+                            >Increase
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="col-xl-4 col-lg-6 col-md-6">
+                      <div class="prof-card">
+                        <div class="prof-mg">
+                          <img
+                            src="assets/teacher/asset/img/Cancelled-order-image.png"
+                            alt=""
+                            width="28px"
+                            height="28px"
+                          />
+                        </div>
+                        <div class="prof-body">
+                          <p class="title">Cancelled Bookings</p>
+                          <h5>12</h5>
+                          <p class="increes">
+                            <span
+                              ><img src="assets/teacher/asset/img/increes.svg" alt="" /></span
+                            >Increase
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-xl-4 col-lg-6 col-md-6">
+                      <div class="prof-card">
+                        <div class="prof-mg">
+                          <img
+                            src="assets/teacher/asset/img/delivered-order-image.png"
+                            alt=""
+                            width="28px"
+                            height="28px"
+                          />
+                        </div>
+                        <div class="prof-body">
+                          <p class="title">Delivered Bookings</p>
+                          <h5>34</h5>
+                          <p class="increes">
+                            <span
+                              ><img
+                                src="assets/teacher/asset/img/redincrees.svg"
+                                alt="" /></span
+                            >Increase
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-xl-4 col-lg-6 col-md-6">
+                      <div class="prof-card">
+                        <div class="prof-mg">
+                          <img
+                            src="assets/teacher/asset/img/pending-order-image.png"
+                            alt=""
+                            width="28px"
+                            height="28px"
+                          />
+                        </div>
+                        <div class="prof-body">
+                          <p class="title">Pending Bookings</p>
+                          <h5>30</h5>
+                          <p class="increes">
+                            <span
+                              ><img src="assets/teacher/asset/img/increes.svg" alt="" /></span
+                            >Increase
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-xl-4 col-lg-6 col-md-6">
+                      <div class="prof-card">
+                        <div class="prof-mg">
+                          <img
+                            src="assets/teacher/asset/img/total-order-image.png"
+                            alt=""
+                            width="28px"
+                            height="28px"
+                          />
+                        </div>
+                        <div class="prof-body">
+                          <p class="title">Total Earnings</p>
+                          <h5>3000</h5>
+                          <p class="increes">
+                            <span
+                              ><img src="assets/teacher/asset/img/increes.svg" alt="" /></span
+                            >Increase
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-xl-4 col-lg-6 col-md-6">
+                      <div class="prof-card">
+                        <div class="prof-mg">
+                          <img
+                            src="assets/teacher/asset/img/Freelance-order-image.png"
+                            alt=""
+                            width="28px"
+                            height="28px"
+                          />
+                        </div>
+                        <div class="prof-body">
+                          <p class="title">Freelance Earnings</p>
+                          <h5>5000</h5>
+                          <p class="increes">
+                            <span
+                              ><img src="assets/teacher/asset/img/increes.svg" alt="" /></span
+                            >Increase
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-xl-4 col-lg-6 col-md-6">
+                      <div class="prof-card">
+                        <div class="prof-mg">
+                          <img
+                            src="assets/teacher/asset/img/card-order-image.png"
+                            alt=""
+                            width="28px"
+                            height="28px"
+                          />
+                        </div>
+                        <div class="prof-body">
+                          <p class="title">Class Earnings</p>
+                          <h5>2000</h5>
+                          <p class="increes">
+                            <span
+                              ><img src="assets/teacher/asset/img/increes.svg" alt="" /></span
+                            >Increase
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-xl-4 col-lg-6 col-md-6">
+                      <div class="prof-card">
+                        <div class="prof-mg">
+                          <i class="fa-solid fa-globe"></i>
+                        </div>
+                        <div class="prof-body">
+                          <p class="title">Online Earnings</p>
+                          <h5>5000</h5>
+                          <p class="increes">
+                            <span
+                              ><img src="assets/teacher/asset/img/increes.svg" alt="" /></span
+                            >Increase
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-xl-4 col-lg-6 col-md-6">
+                      <div class="prof-card">
+                        <div class="prof-mg">
+                          <i class="fa-solid fa-house"></i>
+                        </div>
+                        <div class="prof-body">
+                          <p class="title">In-Person Earnings</p>
+                          <h5>2000</h5>
+                          <p class="increes">
+                            <span
+                              ><img src="assets/teacher/asset/img/increes.svg" alt="" /></span
+                            >Increase
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <h1 class="top-heading">Recent Activity</h1>
+
+                    <!-- notification1 -->
+                    <div class="manu-notification">
+                      <div class="row">
+                        <div class="col-md-12">
+                          <div class="notify-1 notify-first">
+                            <div class="bel-icon">
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="40"
+                                height="40"
+                                viewBox="0 0 40 40"
+                                fill="none"
+                              >
+                                <circle
+                                  cx="20"
+                                  cy="20"
+                                  r="19.5"
+                                  fill="#E5F5FF"
+                                  stroke="#0072B1"
+                                />
+                                <mask
+                                  id="path-2-inside-1_3103_46958"
+                                  fill="white"
+                                >
+                                  <path
+                                    d="M18.4541 27.9141C18.5056 28.3018 18.6901 28.657 18.9734 28.9141C19.2567 29.1712 19.6198 29.3128 19.9956 29.3128C20.3714 29.3128 20.7345 29.1712 21.0179 28.9141C21.3012 28.657 21.4857 28.3018 21.5372 27.9141H18.4541Z"
+                                  />
+                                </mask>
+                                <path
+                                  d="M18.4541 27.9141V26.3141H16.6275L16.868 28.1247L18.4541 27.9141ZM19.9956 29.3128L19.9956 30.9128L19.9956 29.3128ZM21.5372 27.9141L23.1232 28.1247L23.3637 26.3141H21.5372V27.9141ZM16.868 28.1247C16.9681 28.8782 17.328 29.5816 17.8982 30.099L20.0486 27.7292C20.0506 27.731 20.0492 27.7304 20.0468 27.7257C20.0443 27.721 20.0415 27.7134 20.0402 27.7034L16.868 28.1247ZM17.8982 30.099C18.47 30.6179 19.2144 30.9128 19.9956 30.9128L19.9956 27.7128C20.0253 27.7128 20.0434 27.7245 20.0486 27.7292L17.8982 30.099ZM19.9956 30.9128C20.7768 30.9128 21.5212 30.6179 22.093 30.099L19.9427 27.7292C19.9478 27.7245 19.966 27.7128 19.9956 27.7128L19.9956 30.9128ZM22.093 30.099C22.6632 29.5816 23.0231 28.8782 23.1232 28.1247L19.9511 27.7034C19.9498 27.7134 19.947 27.721 19.9445 27.7257C19.942 27.7304 19.9407 27.731 19.9427 27.7292L22.093 30.099ZM21.5372 26.3141H18.4541V29.5141H21.5372V26.3141Z"
+                                  fill="#0072B1"
+                                  mask="url(#path-2-inside-1_3103_46958)"
+                                />
+                                <path
+                                  d="M28.25 25.7694V26.7747H11.75V25.7694L11.788 25.7345L11.788 25.7346L11.7931 25.7297C12.3836 25.1716 12.8993 24.5343 13.3268 23.835L13.3388 23.8153L13.349 23.7946C13.8273 22.8204 14.1136 21.7574 14.1917 20.6679L14.193 20.6501V20.6322L14.193 17.6106L14.193 17.6096C14.1901 16.1258 14.7038 14.694 15.6345 13.5791C16.5648 12.4648 17.8476 11.7433 19.2432 11.5424L19.672 11.4807V11.0475V10.2462C19.672 10.1559 19.7066 10.0731 19.7623 10.0151C19.8173 9.95788 19.8874 9.92969 19.956 9.92969C20.0245 9.92969 20.0947 9.95788 20.1496 10.0151C20.2053 10.0731 20.2399 10.1559 20.2399 10.2462V11.0353V11.4732L20.674 11.5309C22.0821 11.7183 23.3806 12.4353 24.3232 13.5534C25.2663 14.672 25.7872 16.1141 25.7836 17.6094V17.6106V20.6322V20.6501L25.7848 20.6679C25.863 21.7574 26.1492 22.8204 26.6275 23.7946L26.6384 23.8168L26.6515 23.8378C27.0865 24.539 27.6107 25.1765 28.2102 25.7329L28.212 25.7345L28.25 25.7694Z"
+                                  stroke="#0072B1"
+                                />
+                              </svg>
+                            </div>
+                            <p>
+                              Learn all the Dos and Don’ts of Dream Crowd at our
+                              May 16th <br />
+                              Community Standards webinar.
+                              <a href="#">Register Now</a>
+                            </p>
+                            <div class="last-week">
+                              <span>Last Week</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="manu-notification">
+                      <div class="row">
+                        <div class="col-md-12">
+                          <div class="notify-1 notify-first">
+                            <div class="bel-icon">
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="40"
+                                height="40"
+                                viewBox="0 0 40 40"
+                                fill="none"
+                              >
+                                <circle
+                                  cx="20"
+                                  cy="20"
+                                  r="19.5"
+                                  fill="#E5F5FF"
+                                  stroke="#0072B1"
+                                />
+                                <mask
+                                  id="path-2-inside-1_3103_46958"
+                                  fill="white"
+                                >
+                                  <path
+                                    d="M18.4541 27.9141C18.5056 28.3018 18.6901 28.657 18.9734 28.9141C19.2567 29.1712 19.6198 29.3128 19.9956 29.3128C20.3714 29.3128 20.7345 29.1712 21.0179 28.9141C21.3012 28.657 21.4857 28.3018 21.5372 27.9141H18.4541Z"
+                                  />
+                                </mask>
+                                <path
+                                  d="M18.4541 27.9141V26.3141H16.6275L16.868 28.1247L18.4541 27.9141ZM19.9956 29.3128L19.9956 30.9128L19.9956 29.3128ZM21.5372 27.9141L23.1232 28.1247L23.3637 26.3141H21.5372V27.9141ZM16.868 28.1247C16.9681 28.8782 17.328 29.5816 17.8982 30.099L20.0486 27.7292C20.0506 27.731 20.0492 27.7304 20.0468 27.7257C20.0443 27.721 20.0415 27.7134 20.0402 27.7034L16.868 28.1247ZM17.8982 30.099C18.47 30.6179 19.2144 30.9128 19.9956 30.9128L19.9956 27.7128C20.0253 27.7128 20.0434 27.7245 20.0486 27.7292L17.8982 30.099ZM19.9956 30.9128C20.7768 30.9128 21.5212 30.6179 22.093 30.099L19.9427 27.7292C19.9478 27.7245 19.966 27.7128 19.9956 27.7128L19.9956 30.9128ZM22.093 30.099C22.6632 29.5816 23.0231 28.8782 23.1232 28.1247L19.9511 27.7034C19.9498 27.7134 19.947 27.721 19.9445 27.7257C19.942 27.7304 19.9407 27.731 19.9427 27.7292L22.093 30.099ZM21.5372 26.3141H18.4541V29.5141H21.5372V26.3141Z"
+                                  fill="#0072B1"
+                                  mask="url(#path-2-inside-1_3103_46958)"
+                                />
+                                <path
+                                  d="M28.25 25.7694V26.7747H11.75V25.7694L11.788 25.7345L11.788 25.7346L11.7931 25.7297C12.3836 25.1716 12.8993 24.5343 13.3268 23.835L13.3388 23.8153L13.349 23.7946C13.8273 22.8204 14.1136 21.7574 14.1917 20.6679L14.193 20.6501V20.6322L14.193 17.6106L14.193 17.6096C14.1901 16.1258 14.7038 14.694 15.6345 13.5791C16.5648 12.4648 17.8476 11.7433 19.2432 11.5424L19.672 11.4807V11.0475V10.2462C19.672 10.1559 19.7066 10.0731 19.7623 10.0151C19.8173 9.95788 19.8874 9.92969 19.956 9.92969C20.0245 9.92969 20.0947 9.95788 20.1496 10.0151C20.2053 10.0731 20.2399 10.1559 20.2399 10.2462V11.0353V11.4732L20.674 11.5309C22.0821 11.7183 23.3806 12.4353 24.3232 13.5534C25.2663 14.672 25.7872 16.1141 25.7836 17.6094V17.6106V20.6322V20.6501L25.7848 20.6679C25.863 21.7574 26.1492 22.8204 26.6275 23.7946L26.6384 23.8168L26.6515 23.8378C27.0865 24.539 27.6107 25.1765 28.2102 25.7329L28.212 25.7345L28.25 25.7694Z"
+                                  stroke="#0072B1"
+                                />
+                              </svg>
+                            </div>
+                            <p>
+                              Learn all the Dos and Don’ts of Dream Crowd at our
+                              May 16th <br />
+                              Community Standards webinar.
+                              <a href="#">Register Now</a>
+                            </p>
+                            <div class="last-week">
+                              <span>Last Week</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="manu-notification">
+                      <div class="row">
+                        <div class="col-md-12">
+                          <div class="notify-1 notify-first">
+                            <div class="bel-icon">
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="40"
+                                height="40"
+                                viewBox="0 0 40 40"
+                                fill="none"
+                              >
+                                <circle
+                                  cx="20"
+                                  cy="20"
+                                  r="19.5"
+                                  fill="#E5F5FF"
+                                  stroke="#0072B1"
+                                />
+                                <mask
+                                  id="path-2-inside-1_3103_46958"
+                                  fill="white"
+                                >
+                                  <path
+                                    d="M18.4541 27.9141C18.5056 28.3018 18.6901 28.657 18.9734 28.9141C19.2567 29.1712 19.6198 29.3128 19.9956 29.3128C20.3714 29.3128 20.7345 29.1712 21.0179 28.9141C21.3012 28.657 21.4857 28.3018 21.5372 27.9141H18.4541Z"
+                                  />
+                                </mask>
+                                <path
+                                  d="M18.4541 27.9141V26.3141H16.6275L16.868 28.1247L18.4541 27.9141ZM19.9956 29.3128L19.9956 30.9128L19.9956 29.3128ZM21.5372 27.9141L23.1232 28.1247L23.3637 26.3141H21.5372V27.9141ZM16.868 28.1247C16.9681 28.8782 17.328 29.5816 17.8982 30.099L20.0486 27.7292C20.0506 27.731 20.0492 27.7304 20.0468 27.7257C20.0443 27.721 20.0415 27.7134 20.0402 27.7034L16.868 28.1247ZM17.8982 30.099C18.47 30.6179 19.2144 30.9128 19.9956 30.9128L19.9956 27.7128C20.0253 27.7128 20.0434 27.7245 20.0486 27.7292L17.8982 30.099ZM19.9956 30.9128C20.7768 30.9128 21.5212 30.6179 22.093 30.099L19.9427 27.7292C19.9478 27.7245 19.966 27.7128 19.9956 27.7128L19.9956 30.9128ZM22.093 30.099C22.6632 29.5816 23.0231 28.8782 23.1232 28.1247L19.9511 27.7034C19.9498 27.7134 19.947 27.721 19.9445 27.7257C19.942 27.7304 19.9407 27.731 19.9427 27.7292L22.093 30.099ZM21.5372 26.3141H18.4541V29.5141H21.5372V26.3141Z"
+                                  fill="#0072B1"
+                                  mask="url(#path-2-inside-1_3103_46958)"
+                                />
+                                <path
+                                  d="M28.25 25.7694V26.7747H11.75V25.7694L11.788 25.7345L11.788 25.7346L11.7931 25.7297C12.3836 25.1716 12.8993 24.5343 13.3268 23.835L13.3388 23.8153L13.349 23.7946C13.8273 22.8204 14.1136 21.7574 14.1917 20.6679L14.193 20.6501V20.6322L14.193 17.6106L14.193 17.6096C14.1901 16.1258 14.7038 14.694 15.6345 13.5791C16.5648 12.4648 17.8476 11.7433 19.2432 11.5424L19.672 11.4807V11.0475V10.2462C19.672 10.1559 19.7066 10.0731 19.7623 10.0151C19.8173 9.95788 19.8874 9.92969 19.956 9.92969C20.0245 9.92969 20.0947 9.95788 20.1496 10.0151C20.2053 10.0731 20.2399 10.1559 20.2399 10.2462V11.0353V11.4732L20.674 11.5309C22.0821 11.7183 23.3806 12.4353 24.3232 13.5534C25.2663 14.672 25.7872 16.1141 25.7836 17.6094V17.6106V20.6322V20.6501L25.7848 20.6679C25.863 21.7574 26.1492 22.8204 26.6275 23.7946L26.6384 23.8168L26.6515 23.8378C27.0865 24.539 27.6107 25.1765 28.2102 25.7329L28.212 25.7345L28.25 25.7694Z"
+                                  stroke="#0072B1"
+                                />
+                              </svg>
+                            </div>
+                            <p>
+                              Learn all the Dos and Don’ts of Dream Crowd at our
+                              May 16th <br />
+                              Community Standards webinar.
+                              <a href="#">Register Now</a>
+                            </p>
+                            <div class="last-week">
+                              <span>Last Week</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="user-footer text-center">
+                <p class="mb-0">
+                  Copyright Dreamcrowd © 2021. All Rights Reserved.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- =============================== MAIN CONTENT END HERE =========================== -->
+    </section>
+
+    <script src="assets/teacher/libs/jquery/jquery.js"></script>
+    <script src="assets/teacher/libs/datatable/js/datatable.js"></script>
+    <script src="assets/teacher/libs/datatable/js/datatablebootstrap.js"></script>
+    <script src="assets/teacher/libs/select2/js/select2.min.js"></script>
+    <script src="assets/teacher/libs/owl-carousel/js/owl.carousel.min.js"></script>
+    <script src="assets/teacher/libs/aos/js/aos.js"></script>
+    <script src="assets/teacher/asset/js/bootstrap.min.js"></script>
+    <script src="assets/teacher/asset/js/script.js"></script>
+    <!-- jQuery -->
+    <script
+      src="https://code.jquery.com/jquery-3.7.1.min.js"
+      integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
+      crossorigin="anonymous"
+    ></script>
+  </body>
+</html>
+<!-- profile-upload -->
+<script>
+  // File Upload
+  //
+  function readURL(input) {
+    if (input.files && input.files[0]) {
+      var reader = new FileReader();
+      reader.onload = function (e) {
+        $("#imagePreview").css(
+          "background-image",
+          "url(" + e.target.result + ")"
+        );
+        $("#imagePreview").hide();
+        $("#imagePreview").fadeIn(650);
+      };
+      reader.readAsDataURL(input.files[0]);
+    }
+  }
+  $("#imageUpload").change(function () {
+    readURL(this);
+  });
+</script>
+<!-- ============ -->
+<!-- ================ side js start here=============== -->
+<script>
+  // Sidebar script
+  document.addEventListener("DOMContentLoaded", function () {
+    let arrow = document.querySelectorAll(".arrow");
+    for (let i = 0; i < arrow.length; i++) {
+      arrow[i].addEventListener("click", function (e) {
+        let arrowParent = e.target.parentElement.parentElement; // Selecting main parent of arrow
+        arrowParent.classList.toggle("showMenu");
+      });
+    }
+
+    let sidebar = document.querySelector(".sidebar");
+    let sidebarBtn = document.querySelector(".bx-menu");
+
+    sidebarBtn.addEventListener("click", function () {
+      sidebar.classList.toggle("close");
+    });
+
+    // Function to toggle sidebar based on screen size
+    function toggleSidebar() {
+      let screenWidth = window.innerWidth;
+      if (screenWidth < 992) {
+        sidebar.classList.add("close");
+      } else {
+        sidebar.classList.remove("close");
+      }
+    }
+
+    // Call the function initially
+    toggleSidebar();
+
+    // Listen for resize events to adjust sidebar
+    window.addEventListener("resize", function () {
+      toggleSidebar();
+    });
+  });
+</script>
+<!-- ================ side js start End=============== -->
+
+<!-- modal hide show jquery here -->
+<script>
+  $(document).ready(function () {
+    $(document).on("click", "#delete-account", function (e) {
+      e.preventDefault();
+      $("#exampleModal7").modal("show");
+      $("#delete-teacher-account").modal("hide");
+    });
+
+    $(document).on("click", "#delete-account", function (e) {
+      e.preventDefault();
+      $("#delete-teacher-account").modal("show");
+      $("#exampleModal7").modal("hide");
+    });
+  });
+</script>
+<!-- radio js here -->
+<script>
+  function showAdditionalOptions1() {
+    hideAllAdditionalOptions();
+  }
+
+  function showAdditionalOptions2() {
+    hideAllAdditionalOptions();
+    document.getElementById("additionalOptions2").style.display = "block";
+  }
+
+  function showAdditionalOptions3() {
+    hideAllAdditionalOptions();
+  }
+
+  function showAdditionalOptions4() {
+    hideAllAdditionalOptions();
+    document.getElementById("additionalOptions4").style.display = "block";
+  }
+
+  function hideAllAdditionalOptions() {
+    var elements = document.getElementsByClassName("additional-options");
+    for (var i = 0; i < elements.length; i++) {
+      elements[i].style.display = "none";
+    }
+  }
+
+  // Call the function to show the additional options for the default checked radio button on page load
+  window.onload = function () {
+    showAdditionalOptions1();
+  };
+</script>
+<!-- JavaScript to close the modal when Cancel button is clicked -->
+<script>
+  // Wait for the document to load
+  document.addEventListener("DOMContentLoaded", function () {
+    // Get the Cancel button by its ID
+    var cancelButton = document.getElementById("cancelButton");
+
+    // Add a click event listener to the Cancel button
+    cancelButton.addEventListener("click", function () {
+      // Find the modal by its ID
+      var modal = document.getElementById("exampleModal6");
+
+      // Use Bootstrap's modal method to hide the modal
+      $(modal).modal("hide");
+    });
+  });
+</script>

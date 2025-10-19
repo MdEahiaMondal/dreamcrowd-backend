@@ -1,0 +1,980 @@
+@font-face {
+  font-family: Roboto;
+  src: url(../../fonts/Roboto.ttf);
+}
+@font-face {
+  font-family: Inter;
+  src: url(../../fonts/Inter.ttf);
+}
+@font-face {
+  font-family: Outfit;
+  src: url(../../fonts/Outfit.ttf);
+}
+* {
+  font-family: Roboto;
+  font-size: 16px;
+}
+body {
+  background-color: aqua;
+}
+.class-management-section {
+  padding: 32px 40px 147px 40px;
+  background: #f4fbff;
+  margin-top: 100px;
+}
+.class-management-section nav ol li a {
+  text-decoration: none;
+  color: #181818;
+  font-family: Roboto;
+  font-size: 12px;
+  font-weight: 400;
+}
+.class-management-section nav ol li {
+  color: #ababab;
+  font-family: Roboto;
+  font-size: 12px;
+  font-weight: 400;
+}
+.class-management-section .class-management {
+  width: 100%;
+  background: #0072b1;
+  padding: 12px 24px;
+  display: flex;
+}
+.class-management h5 {
+  color: #fff;
+  font-family: Roboto;
+  font-size: 16px;
+  font-weight: 500;
+  padding-left: 12px;
+  margin-bottom: 0px;
+}
+/* tabs css start */
+.page-content {
+  margin-top: 20px;
+  padding: 28px 38px;
+  background: #ffffff;
+}
+
+[data-tab-content] {
+  display: none;
+}
+
+.active[data-tab-content] {
+  display: block;
+}
+
+.tabs {
+  display: flex;
+  justify-content: space-around;
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  border-bottom: 1px solid rgba(24, 24, 24, 0.2);
+  background: #fff;
+}
+
+.tab {
+  flex: 1;
+  font-weight: 600;
+  text-align: center;
+  text-transform: uppercase;
+  cursor: pointer;
+  padding: 10px;
+  color: #cdcdcd;
+  border-bottom: 1px solid #cdcdcd;
+}
+
+.tab.active {
+  color: #1babf9;
+  border-bottom: 2px solid #1babf9;
+}
+
+.tab-li {
+  margin-bottom: 0;
+}
+.text-nowrap {
+  border-bottom: 1px solid var(--Colors-Logo-Color, #0072b1);
+  background: var(--Colors-White, #fff);
+}
+.table > tbody {
+  border-bottom: 1px solid rgba(24, 24, 24, 0.2);
+  background: var(--Colors-White, #fff);
+}
+.tab-li a {
+  color: #181818;
+  font-family: Roboto;
+  font-size: 16px;
+  font-weight: 500;
+  margin-bottom: 0.4rem;
+  width: 100%;
+  display: block;
+}
+
+.tab-li a.active {
+  color: #0072b1;
+  font-family: Roboto;
+  font-size: 16px;
+  font-weight: 500;
+  border-bottom: 4px solid #0072b1;
+}
+
+.tab-li a {
+  text-decoration: none;
+  padding: 10px;
+  -webkit-user-drag: none;
+  user-select: none;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  display: block;
+  margin-bottom: 0px;
+}
+/* tabs css ended  */
+.Invoices-Tab {
+  width: 100%;
+  margin-top: 20px;
+  padding: 12px 24px;
+  display: flex;
+  border-radius: 8px;
+  background: var(--Colors-White, #fff);
+
+  /* Drop Shadow */
+  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.04);
+}
+.Invoices-Tab h5 {
+  color: var(--Colors-Logo-Color, #0072b1);
+  font-family: Roboto;
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 0px;
+}
+/* table css start from here */
+.invoice-detail {
+  color: var(--Colors-Logo-Color, #0072b1);
+  font-family: Roboto;
+  font-size: 16px;
+  font-style: italic;
+  font-weight: 400;
+  line-height: normal;
+  text-decoration-line: underline;
+}
+
+/* BEGIN: TABLE */
+
+.installment-table .hack1 {
+  display: table;
+  table-layout: fixed;
+  width: 100%;
+}
+.table-img {
+  width: 36px;
+  height: 36px;
+  border-radius: 36px;
+  margin-top: 15px;
+}
+.installment-table .hack2 {
+  display: table-cell;
+  overflow-x: auto;
+  width: 100%;
+}
+
+.installment-table .table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.para-1 {
+  margin-left: 10px;
+  margin-top: 0px;
+}
+.para-2 {
+  color: var(--Colors-Light-Text, #7d7d7d);
+  font-family: Roboto;
+  font-size: 12px;
+  font-weight: 400;
+  margin-left: 47px;
+  margin-top: -20px;
+}
+.dropdown-item:focus,
+.dropdown-item:hover {
+  color: #fff;
+  background-color: #0072b1;
+}
+
+/* thead area */
+.installment-table .table thead tr th {
+  color: var(--Colors-Logo-Color, #0072b1);
+  font-family: Outfit;
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: normal;
+}
+
+.installment-table .table thead tr th:first-child {
+  padding: 20px 95px 20px 40px;
+}
+
+.installment-table .table thead tr th:nth-child(2) {
+  padding: 16px 65px 20px 0px;
+}
+
+.installment-table .table thead tr th:nth-child(3),
+.installment-table .table thead tr th:nth-child(8),
+.installment-table .table thead tr th:nth-child(9),
+.installment-table .table thead tr th:nth-child(10) {
+  padding: 16px 60px 20px 0px;
+}
+.installment-table .table thead tr th:nth-child(4) {
+  padding: 16px 60px 20px 45px;
+}
+
+.installment-table .table thead tr th:nth-child(5) {
+  padding: 16px 80px 20px 35px;
+}
+
+.installment-table .table thead tr th:nth-child(7) {
+  padding: 20px 35px 20px 0px;
+}
+
+.installment-table .table thead tr th:nth-child(6) {
+  padding: 16px 80px 20px 0px;
+}
+
+.installment-table .table thead tr th:last-child {
+  padding: 20px 25px 18px 45px;
+}
+
+/* tbody area */
+.installment-table .table tbody tr td {
+  color: var(--Colors-Light-Text, #7d7d7d);
+  font-family: Roboto;
+  font-size: 16px;
+  font-weight: 400;
+}
+
+.installment-table .table tbody tr td:first-child {
+  padding: 20px 51px 20px 40px;
+}
+.service-class-badge {
+  border-radius: 4px;
+  background: #0072b1;
+  color: #fff;
+  font-family: Roboto;
+  font-size: 16px !important;
+  font-weight: 400;
+  line-height: normal;
+  padding: 8px 35px;
+  margin-top: 5px;
+}
+.review-text {
+  color: var(--Colors-Light-Text, #7d7d7d);
+  font-family: Roboto;
+  font-size: 16px;
+  font-weight: 400;
+  margin-top: -8px;
+}
+
+.installment-table .table tbody tr td:nth-child(2),
+.installment-table .table tbody tr td:nth-child(3),
+.installment-table .table tbody tr td:nth-child(4),
+.installment-table .table tbody tr td:nth-child(5),
+.installment-table .table tbody tr td:nth-child(9),
+.installment-table .table tbody tr td:nth-child(10) {
+  padding: 20px 20px 11px 0px;
+}
+.installment-table .table tbody tr td:nth-child(6) {
+  padding: 20px 52px 14px 20px;
+}
+.installment-table .table tbody tr td:nth-child(7) {
+  padding: 20px 205px 14px 31px;
+}
+.installment-table .table tbody tr td:nth-child(8) {
+  padding: 10px 50px 15px 0px !important;
+}
+
+.installment-table .table tbody tr td:last-child {
+  padding: 8px 35px 9px 0px;
+  text-align: center;
+}
+
+.installment-table .table tbody tr td i {
+  margin-left: 15px;
+}
+
+.installment-table .table tbody tr td i:first-child {
+  color: #0a4279;
+  margin: 0px;
+}
+
+.installment-table .table tbody tr td i:last-child {
+  color: #ff0707;
+}
+
+/* END: TABLE */
+
+/* ============= */
+.class-management-section .filter-btn {
+  border-radius: 24px;
+  border: 1px solid #0072b1;
+  background: #fff;
+  padding: 12px 20px;
+  /* width: 100%; */
+  margin-top: 20px;
+  box-shadow: none;
+}
+.form-check {
+  color: #7d7d7d;
+  font-family: Roboto;
+  font-size: 16px;
+  font-weight: 400;
+  padding-top: 8px;
+  margin-bottom: 0px;
+}
+.form-check-input:checked {
+  background-color: #0072b1;
+  border-color: #0072b1;
+}
+.confirm-delete .select-reason {
+  padding-top: 12px;
+}
+/* filter dropdown end */
+.table-row__policy {
+  color: #7d7d7d;
+  font-family: Roboto;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: normal;
+  margin-bottom: 0px;
+}
+/* sevices modal start */
+.service-modal {
+  width: 560px;
+  padding: 20px;
+  border-radius: 8px;
+  background: #fff;
+  border: none;
+}
+.services-form {
+  padding-bottom: 16px;
+  margin-top: 0px;
+}
+.services-form label {
+  color: #0072b1;
+  font-family: Outfit;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: normal;
+}
+.services-form input {
+  border-radius: 4px;
+  background: #f4fbff;
+  padding: 12px 20px;
+  color: #ababab;
+  font-family: Roboto;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: normal;
+  border: none;
+}
+.service-desc {
+  padding-bottom: 16px;
+  margin-top: 0px;
+}
+.service-desc label {
+  color: #0072b1;
+  font-family: Outfit;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: normal;
+}
+.service-desc textarea {
+  border-radius: 4px;
+  background: #f4fbff;
+  padding: 12px 20px;
+  color: #ababab;
+  font-family: Roboto;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: normal;
+  border: none;
+  width: 100%;
+}
+/* services modal ended */
+/* What would you like to do? modal css start here */
+.like-to-do-modal {
+  border-radius: 8px;
+  background: #fff;
+  padding: 40px;
+  border: none;
+  align-items: center;
+}
+.like-to-do-modal h5 {
+  color: #0072b1;
+  font-family: Outfit;
+  font-size: 20px;
+  font-weight: 500;
+  line-height: normal;
+  padding-bottom: 20px;
+}
+.like-to-do-modal .services-buttons button {
+  width: 100%;
+  border-radius: 4px;
+  border: 1px solid #ababab;
+  background: #fff;
+  padding: 8px 12px;
+  color: #ababab;
+  font-family: Roboto;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: normal;
+  margin-bottom: 12px;
+}
+/* What would you like to do? modal css ended here */
+/* Extended deadline modal start from here */
+.extended-deadline-modal {
+  border-radius: 8px;
+  background: #fff;
+  padding: 40px;
+}
+.extended-deadline-modal h5 {
+  color: #0072b1;
+  font-family: Outfit;
+  font-size: 20px;
+  font-weight: 500;
+  line-height: normal;
+  padding-bottom: 20px;
+}
+.extended-deadline-modal input {
+  line-height: normal;
+}
+/* Extended deadline modal ended here */
+/* Cancel service only modal start here */
+.cancel-service-only-modal {
+  border-radius: 8px;
+  background: #fff;
+  padding: 40px;
+  border: none;
+}
+.cancel-service-only-modal h5 {
+  color: #0072b1;
+  text-align: center;
+  font-family: Outfit;
+  font-size: 20px;
+  font-weight: 500;
+  line-height: normal;
+  padding-bottom: 8px;
+}
+.cancel-service-only-modal p {
+  color: #ababab;
+  text-align: center;
+  font-family: Roboto;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: normal;
+  padding-bottom: 20px;
+}
+.cancel-service-only-modal .cancel-service-only-buttons .yes-btn {
+  border-radius: 4px;
+  border: 1px solid #ababab;
+  color: #ababab;
+  font-family: Roboto;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: normal;
+  padding: 8px 35px;
+}
+.cancel-service-only-modal .cancel-service-only-buttons .no-btn {
+  border-radius: 4px;
+  background: #0072b1;
+  color: #fff;
+  font-family: Roboto;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: normal;
+  padding: 8px 37px;
+  margin-left: 12px;
+}
+/* Cancel service only modal ended here */
+/* Yes Successfully Cancelled modal start from here */
+.yes-successfully-cancelled-modal {
+  padding: 40px;
+  border-radius: 8px;
+  background: #fff;
+  border: none;
+}
+.yes-successfully-cancelled-modal h5 {
+  color: #0072b1;
+  text-align: center;
+  font-family: Outfit;
+  font-size: 20px;
+  font-weight: 500;
+  line-height: normal;
+  padding-bottom: 8px;
+}
+.yes-successfully-cancelled-modal p {
+  color: #ababab;
+  text-align: center;
+  font-family: Roboto;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: normal;
+  padding-bottom: 20px;
+}
+.yes-successfully-cancelled-modal .add-review-btn {
+  border-radius: 4px;
+  border: 1px solid #ababab;
+  color: #ababab;
+  font-family: Roboto;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: normal;
+  padding: 8px 60px;
+}
+/* Yes Successfully Cancelled modal ended here */
+/* Add Review Rating modal start from here */
+.add-review-rating-modal {
+  border-radius: 8px;
+  background: #fff;
+  padding: 40px;
+}
+.add-review-rating-modal h5 {
+  color: #0072b1;
+  font-family: Outfit;
+  font-size: 20px;
+  font-weight: 500;
+  line-height: normal;
+  padding-bottom: 20px;
+}
+.add-review-rating-modal .review-rating {
+  display: flex;
+  flex-direction: row;
+}
+.add-review-rating-modal .review-rating i {
+  color: #ffaf06;
+  padding-bottom: 28px;
+}
+.add-review-rating-modal h5 span {
+  color: #0072b1;
+  font-family: Outfit;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: normal;
+}
+.add-review-rating-modal .add-review {
+  border-radius: 4px;
+  border: 1px solid #ababab;
+  background: #fff;
+  color: #ababab;
+  font-family: Roboto;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: normal;
+  padding: 8px 145px 100px 12px;
+  margin-bottom: 20px;
+}
+.add-review-rating-modal .submit-review-btn {
+  border-radius: 4px;
+  background: #0072b1;
+  padding: 8px 43px;
+  color: #fff;
+  font-family: Roboto;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: normal;
+}
+/* Add Review Rating modal ended here */
+/* Cancel and refund start here */
+.cancel-refund-modal {
+  border-radius: 8px;
+  background: #fff;
+  padding: 40px;
+}
+.cancel-refund-modal h5 {
+  color: #0072b1;
+  font-family: Outfit;
+  font-size: 20px;
+  font-weight: 500;
+  line-height: normal;
+  padding-bottom: 8px;
+  margin-bottom: 0px;
+}
+.cancel-refund-modal .refund {
+  padding-top: 28px;
+  padding-bottom: 20px;
+}
+.cancel-refund-modal p {
+  color: #ababab;
+  font-family: Roboto;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: normal;
+  padding-bottom: 20px;
+}
+.cancel-refund-modal .cancel-refund-buttons {
+  padding-bottom: 28px;
+}
+.cancel-refund-modal .yes-button {
+  border-radius: 4px;
+  border: 1px solid #ababab;
+  padding: 8px 43px;
+  color: #ababab;
+  font-family: Roboto;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: normal;
+}
+.cancel-refund-modal .refund-reason {
+  padding-top: 28px;
+  padding-bottom: 20px;
+}
+.cancel-refund-modal .no-button {
+  border-radius: 4px;
+  background: #0072b1;
+  padding: 8px 43px;
+  color: #fff;
+  font-family: Roboto;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: normal;
+  margin-left: 12px;
+}
+.wc-deposits-wrapper .wc-deposits-option li {
+  padding: 10px 0px 10px 20px;
+  border-radius: 4px;
+  background: #0072b1;
+  box-sizing: border-box;
+  width: 100%;
+  margin: 0;
+  float: left;
+  color: #ffffff;
+}
+
+.wc-deposits-wrapper .wc-deposits-option {
+  list-style: none outside;
+  margin: 0;
+  padding: 0 0 2px;
+  overflow: hidden;
+  font-size: 1em;
+  line-height: 2em;
+}
+
+.wc-deposits-option li.active {
+  background: #ffffff;
+  color: #7d7d7d;
+  font-family: Roboto;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: normal;
+}
+.cancel-refund-modal input {
+  border-radius: 4px;
+  border: 1px solid #ababab;
+  background: #fff;
+  padding: 8px 12px;
+  color: #ababab;
+  font-family: Roboto;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: normal;
+}
+.cancel-refund-modal textarea {
+  border-radius: 4px;
+  border: 1px solid #ababab;
+  background: #fff;
+  padding: 8px 145px 100px 12px;
+  color: #ababab;
+  font-family: Roboto;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: normal;
+  margin-bottom: 20px;
+  resize: none;
+  box-shadow: none;
+}
+.cancel-refund-modal .submit-button {
+  border-radius: 4px;
+  background: #0072b1;
+  padding: 8px 43px;
+  color: #fff;
+  font-family: Roboto;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: normal;
+}
+/* Cancel and refund ended here */
+/* table css end from here */
+/* pagination css */
+.pagination-outer {
+  text-align: center;
+}
+.pagination {
+  font-family: "Poppins", sans-serif;
+  display: inline-flex;
+  position: relative;
+  padding-top: 40px;
+}
+.pagination li a.page-link {
+  color: #ababab;
+  font-family: Roboto;
+  font-size: 12px;
+  font-weight: 400;
+  border-radius: 4px;
+  border: 1px solid #ababab;
+  text-align: center;
+  background: none;
+  line-height: 31px;
+  height: 33px;
+  width: 33px;
+  padding: 0;
+  margin: 0 4px;
+  display: block;
+  position: relative;
+  z-index: 0;
+  transition: all 0.1s ease 0s;
+}
+.pagination li:first-child a.page-link,
+.pagination li:last-child a.page-link {
+  font-size: 30px;
+  line-height: 18px;
+}
+.pagination li a.page-link:hover,
+.pagination li a.page-link:focus,
+.pagination li.active a.page-link:hover,
+.pagination li.active a.page-link {
+  border-radius: 4px;
+  border: 1.5px solid #0072b1;
+  background: #0072b1;
+  color: #fff;
+}
+.pagination li a.page-link:before {
+  content: "";
+  background-color: #870079;
+  height: 30%;
+  width: 50%;
+  opacity: 0;
+  transform: translateX(-50%);
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  z-index: -1;
+  transition: all 0.3s ease 0s;
+  clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+}
+.pagination li:first-child a.page-link:before,
+.pagination li:last-child a.page-link:before {
+  display: none;
+}
+/* pagination css ended */
+@media only screen and (max-width: 320px) {
+  .class-management-section .filter-btn {
+    padding: 9px 13px !important;
+    right: -6px;
+    position: relative;
+  }
+  .search input {
+    width: 93%;
+  }
+  .search .fa-search {
+    top: 33px !important;
+    right: 59px !important;
+  }
+  .installment-table .table tbody tr td:nth-child(4),
+  .installment-table .table tbody tr td:nth-child(5),
+  .installment-table .table tbody tr td:nth-child(6),
+  .installment-table .table tbody tr td:nth-child(8),
+  .installment-table .table tbody tr td:nth-child(9),
+  .installment-table .table tbody tr td:nth-child(10) {
+    padding: 20px 55px 0px 0px;
+  }
+  .installment-table .table tbody tr td:nth-child(7) {
+    padding: 20px 55px -1px 0px;
+  }
+}
+/* Extra small devices (phones, 600px and down) */
+@media only screen and (max-width: 600px) {
+  body {
+    background-color: red;
+  }
+  .page-content {
+    padding: 20px 0px;
+  }
+  .tab-li a {
+    font-size: 12px;
+  }
+  .tab-li a.active {
+    font-size: 12px;
+  }
+  .class-management-section {
+    padding: 32px 25px 147px 5px;
+  }
+  .search input {
+    width: 80%;
+    font-size: 12px;
+    margin-left: 11px;
+  }
+  .search .fa-search {
+    top: 33px;
+    right: 91px;
+  }
+  .class-management-section .filter-btn {
+    margin-right: 7px;
+    margin-top: -45px;
+    padding: 10px 15px;
+    float: right;
+  }
+  .tabs {
+    display: block;
+    justify-content: space-around;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    border-bottom: 1px solid rgba(24, 24, 24, 0.2);
+    background: #fff;
+  }
+  .class-management-sec th {
+    font-size: 12px;
+  }
+  .class-management-sec .profile-sec p {
+    font-size: 12px;
+    width: 100px;
+  }
+  .class-management-sec .service-title p {
+    font-size: 12px;
+    width: 159px;
+  }
+  .class-management-sec .service-badges .service-class-badge {
+    font-size: 12px;
+  }
+  .class-management-sec .service-badges .service-badge {
+    font-size: 12px;
+  }
+  .class-management-sec .service-date p {
+    width: 100px;
+    font-size: 12px;
+  }
+  .class-management-sec .service-badges .service-badge {
+    font-size: 12px;
+  }
+  .installment-table .table tbody tr td:nth-child(4),
+  .installment-table .table tbody tr td:nth-child(5),
+  .installment-table .table tbody tr td:nth-child(6),
+  .installment-table .table tbody tr td:nth-child(7),
+  .installment-table .table tbody tr td:nth-child(8),
+  .installment-table .table tbody tr td:nth-child(9),
+  .installment-table .table tbody tr td:nth-child(10) {
+    padding: 20px 20px 0px 0px;
+  }
+}
+/* Small devices (portrait tablets and large phones, 600px and up) */
+@media only screen and (min-width: 600px) {
+  body {
+    background-color: blueviolet;
+  }
+}
+/* Medium devices (landscape tablets, 768px and up) */
+@media only screen and (min-width: 768px) {
+  body {
+    background-color: chartreuse;
+  }
+  .tab-li a {
+    font-size: 12px;
+  }
+  .tab-li a.active {
+    font-size: 12px;
+  }
+  .class-management-sec th {
+    font-size: 12px;
+  }
+  .class-management-sec .profile-sec p {
+    font-size: 12px;
+    width: 100px;
+  }
+  .class-management-sec .service-title p {
+    font-size: 12px;
+    width: 160px;
+  }
+  .class-management-sec .service-badges .service-class-badge {
+    font-size: 12px;
+  }
+  .class-management-sec .service-badges .service-badge {
+    font-size: 12px;
+  }
+  .class-management-sec .service-date p {
+    font-size: 12px;
+    width: 100px;
+  }
+  .installment-table .table tbody tr td:nth-child(4),
+  .installment-table .table tbody tr td:nth-child(5),
+  .installment-table .table tbody tr td:nth-child(8),
+  .installment-table .table tbody tr td:nth-child(9),
+  .installment-table .table tbody tr td:nth-child(10) {
+    padding: 20px 19px 11px 0px;
+  }
+  .installment-table .table tbody tr td:nth-child(6) {
+    padding: 20px 52px 14px 20px;
+  }
+  .installment-table .table tbody tr td:nth-child(7) {
+    padding: 20px 45px 14px 0px;
+  }
+}
+/* Large devices (laptops/desktops, 992px and up) */
+@media only screen and (min-width: 992px) {
+  body {
+    background-color: chocolate;
+  }
+  .class-management-sec th {
+    font-size: 16px;
+  }
+  .class-management-sec .profile-sec p {
+    font-size: 12px;
+  }
+  .class-management-sec .service-title p {
+    font-size: 12px;
+  }
+  .class-management-sec .service-badges .service-class-badge {
+    font-size: 12px;
+  }
+  .class-management-sec .service-date p {
+    font-size: 12px;
+  }
+  .class-management-sec .service-badges .service-badge {
+    font-size: 12px;
+  }
+}
+/* Extra large devices (large laptops and desktops, 1200px and up) */
+@media only screen and (min-width: 1200px) {
+  body {
+    background-color: dodgerblue;
+  }
+  .class-management-sec th {
+    font-size: 20px;
+  }
+  .class-management-sec .profile-sec p {
+    font-size: 16px;
+  }
+  .class-management-sec .service-title p {
+    font-size: 16px;
+    width: 203px;
+  }
+  .class-management-sec .service-badges .service-class-badge {
+    font-size: 16px;
+  }
+  .class-management-sec .service-date p {
+    font-size: 16px;
+  }
+  .class-management-sec .service-badges .service-badge {
+    font-size: 16px;
+  }
+  .tab-li a {
+    font-size: 16px;
+  }
+  .tab-li a.active {
+    font-size: 16px;
+  }
+  .installment-table .table tbody tr td:nth-child(7) {
+    padding: 20px 45px 14px 43px;
+  }
+}

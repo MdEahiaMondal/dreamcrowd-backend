@@ -1,0 +1,482 @@
+@font-face {
+  font-family: Roboto;
+  src: url(../../fonts/Roboto.ttf);
+}
+@font-face {
+  font-family: Inter;
+  src: url(../../fonts/Inter.ttf);
+}
+@font-face {
+  font-family: Outfit;
+  src: url(../../fonts/Outfit.ttf);
+}
+* {
+  font-family: Roboto;
+  font-size: 16px;
+}
+body {
+  background-color: aqua;
+}
+.class-management-section {
+  padding: 32px 40px 147px 20px;
+  background: #f4fbff;
+}
+
+/* tabs css start */
+.page-content {
+  margin-top: 20px;
+  padding: 28px 38px;
+  background: #ffffff;
+}
+
+.tabs {
+  display: flex;
+  justify-content: space-around;
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  border-bottom: 1px solid rgba(24, 24, 24, 0.2);
+  background: #fff;
+}
+
+.tab {
+  flex: 1;
+  font-weight: 600;
+  text-align: center;
+  text-transform: uppercase;
+  cursor: pointer;
+  padding: 10px;
+  color: #cdcdcd;
+  border-bottom: 1px solid #cdcdcd;
+}
+
+.tab-li {
+  margin-bottom: 0;
+}
+.text-nowrap {
+  border-bottom: 1px solid var(--Colors-Logo-Color, #0072b1);
+  background: var(--Colors-White, #fff);
+}
+.table > tbody {
+  border-bottom: 1px solid rgba(24, 24, 24, 0.2);
+  background: var(--Colors-White, #fff);
+}
+.tab-li a {
+  color: #181818;
+  font-family: Roboto;
+  font-size: 16px;
+  font-weight: 500;
+  margin-bottom: 0.4rem;
+  width: 100%;
+  display: block;
+}
+
+/* tabs css ended  */
+.Invoices-Tab {
+  width: 100%;
+  margin-top: 20px;
+  padding: 12px 24px;
+  display: flex;
+  border-radius: 8px;
+  background: var(--Colors-White, #fff);
+
+  /* Drop Shadow */
+  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.04);
+}
+.Invoices-Tab h5 {
+  color: var(--Colors-Logo-Color, #0072b1);
+  font-family: Roboto;
+  font-size: 16px;
+  font-weight: 600;
+}
+/* table css start from here */
+.invoice-detail {
+  color: var(--Colors-Logo-Color, #0072b1);
+  font-family: Roboto;
+  font-size: 16px;
+  font-style: italic;
+  font-weight: 400;
+  line-height: normal;
+  text-decoration-line: underline;
+}
+
+/* BEGIN: TABLE */
+
+.installment-table .hack1 {
+  display: table;
+  table-layout: fixed;
+  width: 100%;
+  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.04);
+}
+.table-img {
+  width: 36px;
+  height: 36px;
+  border-radius: 36px;
+  margin-top: 15px;
+}
+.installment-table .hack2 {
+  display: table-cell;
+  overflow-x: auto;
+  width: 100%;
+}
+
+.installment-table .table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.para-1 {
+  margin-left: 10px;
+  margin-top: 0px;
+}
+.para-2 {
+  color: var(--Colors-Light-Text, #7d7d7d);
+  font-family: Roboto;
+  font-size: 12px;
+  font-weight: 400;
+  margin-left: 47px;
+  margin-top: -20px;
+}
+.dropdown-item:focus,
+.dropdown-item:hover {
+  color: #fff;
+  background-color: #0072b1;
+}
+.dropdown-item:focus,
+.dropdown-item:hover li {
+  color: #fff !important;
+}
+/* thead area */
+.installment-table .table thead tr th {
+  color: var(--Colors-Logo-Color, #0072b1);
+  font-family: Outfit;
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: normal;
+}
+
+.installment-table .table thead tr th:first-child {
+  padding: 20px 95px 20px 40px;
+}
+
+.installment-table .table thead tr th:nth-child(2) {
+  padding: 16px 65px 20px 0px;
+}
+
+.installment-table .table thead tr th:nth-child(3),
+.installment-table .table thead tr th:nth-child(8),
+.installment-table .table thead tr th:nth-child(9),
+.installment-table .table thead tr th:nth-child(10) {
+  padding: 16px 60px 20px 55px;
+}
+.installment-table .table thead tr th:nth-child(4) {
+  padding: 16px 60px 20px 0px;
+}
+
+.installment-table .table thead tr th:nth-child(5) {
+  padding: 16px 80px 20px 0px;
+}
+
+.installment-table .table thead tr th:nth-child(7) {
+  padding: 20px 35px 20px 0px;
+}
+
+.installment-table .table thead tr th:nth-child(6) {
+  padding: 16px 80px 20px 0px;
+}
+
+.installment-table .table thead tr th:last-child {
+  padding: 20px 25px 18px 45px;
+}
+
+/* tbody area */
+.installment-table .table tbody tr td {
+  color: var(--Colors-Light-Text, #7d7d7d);
+  font-family: Roboto;
+  font-size: 16px;
+  font-weight: 400;
+}
+
+.installment-table .table tbody tr td:first-child {
+  padding: 20px 51px 20px 40px;
+}
+.service-class-badge {
+  border-radius: 4px;
+  background: rgba(100, 244, 114, 0.3);
+  color: #64f472;
+  font-family: Roboto;
+  font-size: 16px !important;
+  font-weight: 400;
+  line-height: normal;
+  padding: 8px 35px;
+  margin-top: 5px;
+}
+.service-class-badg {
+  border-radius: 4px;
+  background: rgba(252, 87, 87, 0.3);
+  color: #fc5757;
+  font-family: Roboto;
+  font-size: 16px !important;
+  font-weight: 400;
+  line-height: normal;
+  padding: 8px 30px;
+  margin-top: 5px;
+}
+.review-text {
+  color: var(--Colors-Light-Text, #7d7d7d);
+  font-family: Roboto;
+  font-size: 16px;
+  font-weight: 400;
+  margin-top: -8px;
+}
+
+.installment-table .table tbody tr td:nth-child(2),
+.installment-table .table tbody tr td:nth-child(4),
+.installment-table .table tbody tr td:nth-child(5),
+.installment-table .table tbody tr td:nth-child(9),
+.installment-table .table tbody tr td:nth-child(10) {
+  padding: 20px 20px 11px 5px;
+}
+.installment-table .table tbody tr td:nth-child(3) {
+  padding: 20px 20px 11px 80px;
+}
+.installment-table .table tbody tr td:nth-child(6) {
+  padding: 20px 52px 14px 20px;
+}
+.installment-table .table tbody tr td:nth-child(7) {
+  padding: 20px 0px 14px 31px;
+}
+.installment-table .table tbody tr td:nth-child(8) {
+  padding: 10px 50px 15px 25px !important;
+}
+
+.installment-table .table tbody tr td:last-child {
+  padding: 8px 35px 9px 0px;
+  text-align: center;
+}
+
+.installment-table .table tbody tr td i {
+  margin-left: 15px;
+}
+
+.installment-table .table tbody tr td i:first-child {
+  color: #0a4279;
+  margin: 0px;
+}
+
+.installment-table .table tbody tr td i:last-child {
+  color: #ff0707;
+}
+
+/* END: TABLE */
+
+/* pagination css ended */
+@media only screen and (max-width: 320px) {
+  .class-management-section .filter-btn {
+    padding: 9px 13px !important;
+    right: -6px;
+    position: relative;
+  }
+  .search input {
+    width: 93%;
+  }
+  .search .fa-search {
+    top: 33px !important;
+    right: 59px !important;
+  }
+  .installment-table .table tbody tr td:nth-child(4),
+  .installment-table .table tbody tr td:nth-child(5),
+  .installment-table .table tbody tr td:nth-child(6),
+  .installment-table .table tbody tr td:nth-child(8),
+  .installment-table .table tbody tr td:nth-child(9),
+  .installment-table .table tbody tr td:nth-child(10) {
+    padding: 20px 55px 0px 0px;
+  }
+  .installment-table .table tbody tr td:nth-child(7) {
+    padding: 20px 55px -1px 0px;
+  }
+}
+/* Extra small devices (phones, 600px and down) */
+@media only screen and (max-width: 600px) {
+  body {
+    background-color: red;
+  }
+  .page-content {
+    padding: 20px 0px;
+  }
+  .tab-li a {
+    font-size: 12px;
+  }
+  .tab-li a.active {
+    font-size: 12px;
+  }
+  .class-management-section {
+    padding: 32px 25px 147px 5px;
+  }
+  .search input {
+    width: 80%;
+    font-size: 12px;
+    margin-left: 11px;
+  }
+  .search .fa-search {
+    top: 33px;
+    right: 91px;
+  }
+  .class-management-section .filter-btn {
+    margin-right: 7px;
+    margin-top: -45px;
+    padding: 10px 15px;
+    float: right;
+  }
+  .tabs {
+    display: block;
+    justify-content: space-around;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    border-bottom: 1px solid rgba(24, 24, 24, 0.2);
+    background: #fff;
+  }
+  .class-management-sec th {
+    font-size: 12px;
+  }
+  .class-management-sec .profile-sec p {
+    font-size: 12px;
+    width: 100px;
+  }
+  .class-management-sec .service-title p {
+    font-size: 12px;
+    width: 159px;
+  }
+  .class-management-sec .service-badges .service-class-badge {
+    font-size: 12px;
+  }
+  .class-management-sec .service-badges .service-badge {
+    font-size: 12px;
+  }
+  .class-management-sec .service-date p {
+    width: 100px;
+    font-size: 12px;
+  }
+  .class-management-sec .service-badges .service-badge {
+    font-size: 12px;
+  }
+  .installment-table .table tbody tr td:nth-child(4),
+  .installment-table .table tbody tr td:nth-child(5),
+  .installment-table .table tbody tr td:nth-child(6),
+  .installment-table .table tbody tr td:nth-child(7),
+  .installment-table .table tbody tr td:nth-child(8),
+  .installment-table .table tbody tr td:nth-child(9),
+  .installment-table .table tbody tr td:nth-child(10) {
+    padding: 20px 20px 0px 0px;
+  }
+}
+/* Small devices (portrait tablets and large phones, 600px and up) */
+@media only screen and (min-width: 600px) {
+  body {
+    background-color: blueviolet;
+  }
+}
+/* Medium devices (landscape tablets, 768px and up) */
+@media only screen and (min-width: 768px) {
+  body {
+    background-color: chartreuse;
+  }
+  .tab-li a {
+    font-size: 12px;
+  }
+  .tab-li a.active {
+    font-size: 12px;
+  }
+  .class-management-sec th {
+    font-size: 12px;
+  }
+  .class-management-sec .profile-sec p {
+    font-size: 12px;
+    width: 100px;
+  }
+  .class-management-sec .service-title p {
+    font-size: 12px;
+    width: 160px;
+  }
+  .class-management-sec .service-badges .service-class-badge {
+    font-size: 12px;
+  }
+  .class-management-sec .service-badges .service-badge {
+    font-size: 12px;
+  }
+  .class-management-sec .service-date p {
+    font-size: 12px;
+    width: 100px;
+  }
+  .installment-table .table tbody tr td:nth-child(4),
+  .installment-table .table tbody tr td:nth-child(5),
+  .installment-table .table tbody tr td:nth-child(8),
+  .installment-table .table tbody tr td:nth-child(9),
+  .installment-table .table tbody tr td:nth-child(10) {
+    padding: 20px 19px 11px 25px;
+  }
+  .installment-table .table tbody tr td:nth-child(6) {
+    padding: 20px 52px 14px 5px;
+  }
+  .installment-table .table tbody tr td:nth-child(7) {
+    padding: 20px 35px 14px 0px;
+  }
+}
+/* Large devices (laptops/desktops, 992px and up) */
+@media only screen and (min-width: 992px) {
+  body {
+    background-color: chocolate;
+  }
+  .class-management-sec th {
+    font-size: 16px;
+  }
+  .class-management-sec .profile-sec p {
+    font-size: 12px;
+  }
+  .class-management-sec .service-title p {
+    font-size: 12px;
+  }
+  .class-management-sec .service-badges .service-class-badge {
+    font-size: 12px;
+  }
+  .class-management-sec .service-date p {
+    font-size: 12px;
+  }
+  .class-management-sec .service-badges .service-badge {
+    font-size: 12px;
+  }
+}
+/* Extra large devices (large laptops and desktops, 1200px and up) */
+@media only screen and (min-width: 1200px) {
+  body {
+    background-color: dodgerblue;
+  }
+  .class-management-sec th {
+    font-size: 20px;
+  }
+  .class-management-sec .profile-sec p {
+    font-size: 16px;
+  }
+  .class-management-sec .service-title p {
+    font-size: 16px;
+    width: 203px;
+  }
+  .class-management-sec .service-badges .service-class-badge {
+    font-size: 16px;
+  }
+  .class-management-sec .service-date p {
+    font-size: 16px;
+  }
+  .class-management-sec .service-badges .service-badge {
+    font-size: 16px;
+  }
+  .tab-li a {
+    font-size: 16px;
+  }
+  .tab-li a.active {
+    font-size: 16px;
+  }
+}

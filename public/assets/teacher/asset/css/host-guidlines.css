@@ -1,0 +1,170 @@
+@font-face {
+  font-family: Roboto;
+  src: url(../../fonts/Roboto.ttf);
+}
+@font-face {
+  font-family: Inter;
+  src: url(../../fonts/Inter.ttf);
+}
+@font-face {
+  font-family: Outfit;
+  src: url(../../fonts/Outfit.ttf);
+}
+@import url('https://fonts.googleapis.com/css?family=Roboto:100,100i,300,300i,400,400i,500,500i,700,700i,900,900i');
+
+/*----------------------------------------------------------
+GENERAL
+----------------------------------------------------------*/
+.control{
+    background-color: #F4FBFF;
+    padding: 12px; 
+    margin-top: 100px;
+}
+.user-footer p {
+  color: #7D7D7D;
+  font-family: Roboto;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 300;
+  line-height: normal;
+  text-align: center;
+  justify-content: center;
+  margin-top: 96px;
+  margin-bottom: 16px;
+}
+.Host_Guidelines{
+ margin: 32px 0px 24px 0px;
+display: inline-block;
+font-family: Roboto;
+font-size: 12px;
+font-style: normal;
+font-weight: 400;
+line-height: normal;
+}
+.Host_Guidelines .heading{
+    color: #181818;
+}
+.Host_Guidelines .paragraph{
+    color: #7D7D7D;
+}
+.Host_Guidelines i{
+    color: #181818;
+}
+.Guidelines{
+    display: inline-block;
+    background:  #0072B1;
+    padding: 12px 24px;
+    width: 100%;
+    align-items: center;
+   
+}
+.heading .fa-solid{
+    color: #FFFFFF;
+}
+
+.Guidelines .row__title{
+    color: #FFF;
+    font-family: Roboto;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    margin-left: 12px;
+   
+}
+.Page-Account {
+  width: 100%;
+  background-color:white;
+  margin-top: 20px;
+  padding-bottom: 40px;
+
+  
+}
+
+.Page-Account h2{
+  padding: 30px 0px;
+  color: #0072B1;
+text-align: center;
+font-family: Outfit;
+font-size: 24px;
+font-style: normal;
+font-weight: 700;
+line-height: normal;
+}
+.main{
+  display: flex;
+}
+.main a{
+  text-decoration: none;
+}
+.main .card{
+margin: 10px 10px;
+ border-radius: 8px;
+background:  #FFF;
+border: 1px solid  #0072B1;
+
+
+}
+
+.main .card:hover {
+  border: 1px solid #FFF;
+  border-radius: 8px;
+  background: #FFF;
+  
+  /* card Shadow */
+  box-shadow: 0px 4px 16px 0px rgba(0, 0, 0, 0.08);
+
+}
+.main .card-title{
+  color: #0072B1;
+text-align: center;
+font-family: Outfit;
+font-size: 20px;
+font-style: normal;
+font-weight: 500;
+line-height: normal;
+}
+.main .card-text{
+  color:#7D7D7D;
+text-align: center;
+font-family: Roboto;
+font-size: 12px;
+font-style: normal;
+font-weight: 400;
+line-height: 18px;
+}
+.para{
+  padding: 365px 0px 16px 222px;
+}
+.para p{
+  color: #7D7D7D;
+font-family: Roboto;
+font-size: 16px;
+font-style: normal;
+font-weight: 300;
+line-height: normal;
+}
+
+
+
+
+
+/* Extra small devices (phones, 600px and down) */
+@media only screen and (max-width: 600px) {
+   
+    }
+/* Small devices (portrait tablets and large phones, 600px and up) */
+@media only screen and (min-width: 600px) {
+    
+}
+/* Medium devices (landscape tablets, 768px and up) */
+@media only screen and (min-width: 768px) {
+   
+      
+}
+/* Large devices (laptops/desktops, 992px and up) */
+@media only screen and (min-width: 992px) {
+}
+
+/* Extra large devices (large laptops and desktops, 1200px and up) */
+

@@ -1,0 +1,39 @@
+.Card-Inner{
+text-align: center;
+background-color: #FFF;
+/* Drop Shadow */
+box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.04);
+}
+.result-img {
+    vertical-align: middle;
+    margin-top: 60px;
+}
+.Card-Inner h2{
+color: #0072B1;
+text-align: center;
+font-family: Outfit;
+font-size: 24px;
+margin-top: 40px;
+font-weight: 700;
+}
+.Card-Inner p{
+color: var(--Colors-Light-Text, #7D7D7D);
+text-align: center;
+font-family: Outfit;
+font-size: 16px;
+margin-top: 12px;
+font-weight: 400;
+}
+.No-btn{
+border-radius: 4px;
+background: var(--Colors-Logo-Color, #0072B1);
+color: var(--Colors-White, #FFF);
+text-align: center;
+font-family: Roboto;
+font-size: 20px;
+margin-top: 40px;
+font-weight: 500;
+border: none;
+padding: 12px 63px;
+margin-bottom: 146px;
+}

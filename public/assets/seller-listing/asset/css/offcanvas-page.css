@@ -1,0 +1,522 @@
+@font-face {
+  font-family: Roboto;
+  src: url(../../fonts/Roboto.ttf);
+}
+@font-face {
+  font-family: Inter;
+  src: url(../../fonts/Inter.ttf);
+}
+@font-face {
+  font-family: Outfit;
+  src: url(../../fonts/Outfit.ttf);
+}
+* {
+  font-family: Roboto;
+  font-size: 16px;
+}
+body {
+  background-color: aqua;
+}
+.services-offcanvas {
+  width: 1160px;
+}
+.offcanvas-heading {
+  padding: 20px 40px;
+  border-bottom: 2px solid #0072b1;
+  background: #fff;
+}
+.offcanvas-heading h5 {
+  color: #181818;
+  font-family: Outfit;
+  font-size: 28px;
+  font-weight: 600;
+  margin-bottom: 0px;
+}
+.services-details {
+  padding: 48px 40px 0px 40px;
+}
+.profile img {
+  width: 104px;
+  height: 104px;
+  border-radius: 104px;
+  border: 4px solid #fff;
+}
+.profile-det {
+  display: flex;
+  flex-direction: column;
+}
+.profile-det h5 {
+  color: #181818;
+  font-family: Outfit;
+  font-size: 28px;
+  font-weight: 500;
+  margin-bottom: 0px;
+  padding-left: 12px;
+  padding-bottom: 12px;
+}
+.profile-det .graphic {
+  color: #7d7d7d;
+  font-family: Roboto;
+  font-size: 20px;
+  font-weight: 400;
+  margin-bottom: 0px;
+  padding-left: 12px;
+  padding-bottom: 8px;
+}
+.profile-det .location {
+  color: #7d7d7d;
+  font-family: Roboto;
+  font-size: 16px;
+  font-weight: 400;
+  margin-bottom: 0px;
+  padding-left: 12px;
+  padding-bottom: 28px;
+}
+.booking-det {
+  padding-top: 48px;
+}
+.booking-det h5 {
+  color: #181818;
+  font-family: Outfit;
+  font-size: 20px;
+  font-weight: 600;
+}
+.booking-det span {
+  color: #7d7d7d;
+  font-family: Roboto;
+  font-size: 20px;
+  font-weight: 400;
+}
+.booking-det .in-person {
+  color: #7d7d7d;
+  font-family: Roboto;
+  font-size: 20px;
+  font-weight: 400;
+}
+.booking-det p {
+  color: #7d7d7d;
+  font-family: Roboto;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 30px; /* 187.5% */
+}
+.portfolio-sec h5 {
+  color: #181818;
+  font-family: Outfit;
+  font-size: 20px;
+  font-weight: 600;
+}
+.portfolio-sec img {
+  border-radius: 8px;
+  width: 100%;
+  padding-top: 16px;
+  padding-bottom: 48px;
+}
+.portfolio-form select {
+  width: 100%;
+  padding: 12px 20px;
+  margin-top: 12px;
+  border-radius: 4px;
+  background: #f4fbff;
+  border: none;
+  color: #ababab;
+  font-family: Roboto;
+  font-size: 16px;
+  font-weight: 400;
+}
+.portfolio-form .guest input[type="text"] {
+  border-radius: 4px;
+  font-size: 16px;
+  padding: 12px 20px 12px 50px;
+  background-image: url(../img/form-icon\\(4\).svg);
+  background-repeat: no-repeat;
+  background-position: 20px 14px;
+}
+.portfolio-form .frequency input[type="text"] {
+  border-radius: 4px;
+  font-size: 16px;
+  padding: 12px 20px 12px 50px;
+  background-image: url(../img/form-icon\\(3\).svg);
+  background-repeat: no-repeat;
+  background-position: 20px 14px;
+}
+.portfolio-form .date-time input[type="text"] {
+  border-radius: 4px;
+  font-size: 16px;
+  padding: 12px 20px 12px 50px;
+  background-image: url(../img/calendarsearch.svg);
+  background-repeat: no-repeat;
+  background-position: 20px 14px;
+}
+.portfolio-form .multiemail .emails {
+  border: none;
+  border-radius: 4px;
+  background: #f4fbff;
+}
+.multiple-val-input {
+  height: auto;
+  min-height: 34px;
+  cursor: text;
+}
+.multiple-val-input ul {
+  float: left;
+  padding: 0;
+  margin: 0;
+}
+.multiple-val-input ul li {
+  list-style: none;
+  float: left;
+  padding: 3px 5px 3px 5px;
+  margin-bottom: 3px;
+  margin-right: 3px;
+  position: relative;
+  line-height: 13px;
+  cursor: default;
+  border: 1px solid #aaaaaa;
+  border-radius: 3px;
+  -webkit-box-shadow: 0 0 2px #fff inset, 0 1px 0 rgba(0, 0, 0, 0.05);
+  box-shadow: 0 0 2px #fff inset, 0 1px 0 rgba(0, 0, 0, 0.05);
+  background-clip: padding-box;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  background-color: #e4e4e4;
+  background-image: -webkit-gradient(
+    linear,
+    0% 0%,
+    0% 100%,
+    color-stop(20%, #f4f4f4),
+    color-stop(50%, #f0f0f0),
+    color-stop(52%, #e8e8e8),
+    color-stop(100%, #eee)
+  );
+  background-image: -webkit-linear-gradient(
+    top,
+    #f4f4f4 20%,
+    #f0f0f0 50%,
+    #e8e8e8 52%,
+    #eee 100%
+  );
+  background-image: -moz-linear-gradient(
+    top,
+    #f4f4f4 20%,
+    #f0f0f0 50%,
+    #e8e8e8 52%,
+    #eee 100%
+  );
+  background-image: linear-gradient(
+    to top,
+    #f4f4f4 20%,
+    #f0f0f0 50%,
+    #e8e8e8 52%,
+    #eee 100%
+  );
+}
+.multiple-val-input ul li a {
+  display: inline;
+  color: #333;
+  text-decoration: none;
+}
+.multiple-val-input ul li a,
+.multiple-val-input ul li div {
+  display: inline;
+  margin-left: 3px;
+}
+.multiemail .emails .multiple-val-input input[type="text"] {
+  float: left;
+  border: none;
+  outline: none;
+  padding: 12px 20px;
+  background-image: url(../img/form-icon(1).svg);
+}
+.multiple-val-input span.input_hidden {
+  font-size: 14px;
+  position: absolute;
+  clip: rect(0, 0, 0, 0);
+}
+.portfolio-form input {
+  border-radius: 4px;
+  background: #f4fbff;
+  border: none;
+}
+.portfolio-form .numberof-childs {
+  margin-top: 37px;
+  border-radius: 4px;
+  background: #f4fbff;
+}
+span.to-input {
+  display: block;
+  float: left;
+  padding-right: 11px;
+}
+.portfolio-form input {
+  width: 100%;
+  padding: 12px 20px;
+}
+.portfolio-form label {
+  color: #181818;
+  font-family: Outfit;
+  font-size: 20px;
+  font-weight: 400;
+}
+.portfolio-form input {
+  width: 95%;
+  margin-bottom: 12px;
+}
+.booking-notes h5 {
+  color: #181818;
+  font-family: Outfit;
+  font-size: 28px;
+  font-weight: 600;
+  margin-bottom: 0px;
+  padding-bottom: 16px;
+  margin-top: 36px;
+}
+.booking-notes ul {
+  margin-bottom: 35px;
+}
+.booking-notes ul li {
+  color: #7d7d7d;
+  font-family: Roboto;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 20px; /* 125% */
+}
+.amount-sec {
+  padding: 32px 40px;
+  border-top: 2px solid #0072b1;
+  background: #fff;
+}
+.amount-sec p {
+  color: #181818;
+  font-family: Outfit;
+  font-size: 24px;
+  font-weight: 500;
+}
+.amount-sec span {
+  color: #0072b1;
+  font-family: Roboto;
+  font-size: 24px;
+  font-weight: 400;
+}
+.amount-sec .contact-btn {
+  color: #0072b1;
+  text-align: right;
+  font-family: Roboto;
+  font-size: 20px;
+  font-weight: 400;
+  padding: 8px 24px;
+  border-radius: 4px;
+  border: 1px solid #0072b1;
+  margin-right: 12px;
+}
+.amount-sec .contact-modal {
+  border-radius: 8px;
+  background: #fff;
+  padding: 20px;
+  border: none;
+  display: flex;
+  padding: 20px;
+  flex-direction: column;
+  box-shadow: 0px 4px 16px 0px rgba(0, 0, 0, 0.08);
+}
+.amount-sec .name-label label {
+  color: #0072b1;
+  font-family: Outfit;
+  font-size: 16px;
+  font-weight: 500;
+  margin-bottom: 0px;
+  padding-bottom: 8px;
+}
+.amount-sec .name-label input {
+  padding: 12px 20px;
+  color: #ababab;
+  font-family: Roboto;
+  font-size: 16px;
+  font-weight: 400;
+  border-radius: 4px;
+  background: #f4fbff;
+  border: none;
+}
+.amount-sec .check-services h5 {
+  color: #0072b1;
+  font-family: Outfit;
+  font-size: 16px;
+  font-weight: 500;
+  margin-bottom: 0px;
+  padding-top: 16px;
+  padding-bottom: 8px;
+}
+.amount-sec .check-services .send-request {
+  border-radius: 4px;
+  background: #f4fbff;
+  padding: 12px 20px;
+}
+.amount-sec .check-services .send-request p {
+  color: #ababab;
+  font-family: Roboto;
+  font-size: 16px;
+  font-weight: 400;
+}
+.amount-sec .booking-buttons button {
+  float: right;
+}
+.booking-buttons {
+  padding-top: 16px;
+}
+.booking-buttons .booking-cancel {
+  color: #fc5757;
+  font-family: Roboto;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 8px 24px;
+  border-radius: 4px;
+  border: 1px solid #fc5757;
+  background: #fff;
+  margin-right: 10px;
+}
+.booking-buttons .request-booking {
+  color: #fff;
+  font-family: Roboto;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 8px 24px;
+  border-radius: 4px;
+  background: #0072b1;
+}
+.radio {
+  position: relative;
+}
+
+input[type="radio"] {
+  /* position: absolute; */
+  opacity: 0;
+}
+
+.checkmark {
+  position: absolute;
+  top: 2px;
+  left: 0;
+  height: 15px;
+  width: 15px;
+  border: 2px solid #0072b1;
+  border-radius: 50%;
+}
+
+.radio:hover input ~ .checkmark {
+  background-color: #ccc;
+}
+
+.radio input:checked ~ .checkmark {
+  border: 2px solid $main;
+}
+
+.checkmark:after {
+  content: "";
+  position: absolute;
+  display: none;
+}
+
+.radio input:checked ~ .checkmark:after {
+  display: block;
+}
+
+.radio .checkmark:after {
+  top: 1px;
+  left: 1px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #0072b1;
+}
+
+.service-radio-sec {
+  padding-bottom: 8px;
+  padding-left: 8px;
+}
+.service-radio {
+  padding-bottom: 0px;
+  padding-left: 8px;
+}
+.wrapper {
+  display: flex;
+  justify-content: center;
+  padding-top: 5em;
+}
+
+.heading {
+  margin-bottom: 2em;
+}
+
+body {
+  background-color: #ccffff;
+}
+.amount-sec .booking-btn {
+  color: #fff;
+  text-align: right;
+  font-family: Roboto;
+  font-size: 20px;
+  font-weight: 400;
+  padding: 8px 24px;
+  border-radius: 4px;
+  background: #0072b1;
+}
+/* Extra small devices (phones, 600px and down) */
+@media only screen and (max-width: 600px) {
+  body {
+    background-color: red;
+  }
+  .amount-sec .contact-btn {
+    width: 100%;
+    text-align: center;
+  }
+  .amount-sec .booking-btn {
+    width: 100%;
+    text-align: center;
+    margin-top: 11px;
+  }
+}
+/* Small devices (portrait tablets and large phones, 600px and up) */
+@media only screen and (min-width: 600px) {
+  body {
+    background-color: blueviolet;
+  }
+}
+/* Medium devices (landscape tablets, 768px and up) */
+@media only screen and (min-width: 768px) {
+  body {
+    background-color: chartreuse;
+  }
+  .profile-det h5 {
+    padding-left: 50px;
+  }
+  .profile-det .graphic {
+    padding-left: 50px;
+  }
+  .profile-det .location {
+    padding-left: 50px;
+  }
+}
+/* Large devices (laptops/desktops, 992px and up) */
+@media only screen and (min-width: 992px) {
+  body {
+    background-color: chocolate;
+  }
+  .profile-det h5 {
+    padding-left: 30px;
+  }
+  .profile-det .graphic {
+    padding-left: 30px;
+  }
+  .profile-det .location {
+    padding-left: 30px;
+  }
+}
+/* Extra large devices (large laptops and desktops, 1200px and up) */
+@media only screen and (min-width: 1200px) {
+  body {
+    background-color: dodgerblue;
+  }
+}

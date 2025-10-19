@@ -1,0 +1,2566 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="UTF-8" />
+    <!-- View Point scale to 1.0 -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Animate css -->
+    <link rel="stylesheet" href="assets/admin/libs/animate/css/animate.css" />
+    <!-- AOS Animation css-->
+    <link rel="stylesheet" href="assets/admin/libs/aos/css/aos.css" />
+    <!-- Datatable css  -->
+    <link rel="stylesheet" href="assets/admin/libs/datatable/css/datatable.css" />
+     {{-- Fav Icon --}}
+     @php  $home = \App\Models\HomeDynamic::first(); @endphp
+     @if ($home)
+         <link rel="shortcut icon" href="assets/public-site/asset/img/{{$home->fav_icon}}" type="image/x-icon">
+     @endif
+     <!-- Select2 css -->
+    <link href="assets/admin/libs/select2/css/select2.min.css" rel="stylesheet" />
+    <!-- Owl carousel css -->
+    <link href="assets/admin/libs/owl-carousel/css/owl.carousel.css" rel="stylesheet" />
+    <link href="assets/admin/libs/owl-carousel/css/owl.theme.green.css" rel="stylesheet" />
+    <!-- fontawsome -->
+    <link rel="stylesheet" href="path/to/bootstrap/css/bootstrap.min.css" />
+    <link
+      rel="stylesheet"
+      href="path/to/font-awesome/css/font-awesome.min.css"
+    />
+    <!-- Bootstrap css -->
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="assets/admin/asset/css/bootstrap.min.css"
+    />
+    <link
+      href="https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css"
+    />
+    <!-- Fontawesome CDN -->
+    <script
+      src="https://kit.fontawesome.com/55bd3bbc70.js"
+      crossorigin="anonymous"
+    ></script>
+    <!-- Defualt css -->
+    <link rel="stylesheet" type="text/css" href="assets/admin/asset/css/sidebar.css" />
+    <link rel="stylesheet" href="assets/admin/asset/css/style.css" />
+    <link rel="stylesheet" href="assets/user/asset/css/style.css" />
+    <link rel="stylesheet" href="assets/admin/asset/css/buyer.css" />
+    <title>Super Admin Dashboard | Dashboard</title>
+  </head>
+  <body>
+   {{-- ===========Admin Sidebar Start==================== --}}
+   <x-admin-sidebar/>
+   {{-- ===========Admin Sidebar End==================== --}}
+   <section class="home-section">
+      {{-- ===========Admin NavBar Start==================== --}}
+      <x-admin-nav/>
+      {{-- ===========Admin NavBar End==================== --}}
+      <!-- =============================== MAIN CONTENT START HERE =========================== -->
+      <div class="container-fluid">
+        <div class="row dash-notification">
+          <div class="col-md-12">
+            <div class="dash">
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="dash-top">
+                    <h1 class="dash-title">Dashboard</h1>
+                  </div>
+                </div>
+              </div>
+              <!-- Blue MASSEGES section -->
+              <div class="user-notification">
+                <div class="row">
+                  <div class="col-md-12">
+                    <div class="notify">
+                      <i class="bx bx-grid-alt" title="Dashboard"></i>
+
+                      <h2>Dashboard</h2>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- Filter Date Section -->
+              <div class="date-section">
+                <div class="row">
+                  <div class="col-md-12">
+                    <div class="user-all-seller-drop seller-drop">
+                      <!-- first drop dawon  -->
+                      <form>
+                        <div class="row align-items-center calendar-sec">
+                          <div class="col-auto date-selection">
+                            <div class="date-sec">
+                              <i class="fa-solid fa-calendar-days"></i>
+                              <select class="form-select" id="dateFilter">
+                                <option value="today">Today</option>
+                                <option value="yesterday">Yesterday</option>
+                                <option value="today">Last Week</option>
+                                <option value="today">Last 7 days</option>
+                                <option value="today">Lifetime</option>
+                                <option value="lastMonth">Last Month</option>
+                                <option value="custom">Any Date</option>
+                              </select>
+                            </div>
+                          </div>
+                          <div
+                            class="col-auto"
+                            id="fromDateFields"
+                            style="display: none"
+                          >
+                            <div class="row">
+                              <label
+                                for="inputEmail3"
+                                class="col-sm-3 col-form-label"
+                                >From:</label
+                              >
+                              <div class="col-sm-9">
+                                <input
+                                  type="date"
+                                  class="form-control"
+                                  id="fromDate"
+                                />
+                              </div>
+                            </div>
+                          </div>
+                          <div
+                            class="col-auto"
+                            id="toDateFields"
+                            style="display: none"
+                          >
+                            <div class="row">
+                              <label
+                                for="inputEmail3"
+                                class="col-sm-2 col-form-label"
+                                >To:</label
+                              >
+                              <div class="col-sm-10">
+                                <input
+                                  type="date"
+                                  class="form-control"
+                                  id="fromDate"
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- <div class="col-md-12"> -->
+              <div class="row">
+                <div class="col-xl-3 col-lg-4 col-md-6 col-12">
+                  <div class="card super-panel-card">
+                    <div class="title">
+                      <p class="mb-0">Total Seller</p>
+                      <h1 class="mb-0">19,500</h1>
+                    </div>
+                    <div class="d-flex">
+                      <div class="d-flex percentag">
+                        <p class="mb-0">
+                          - 22 %
+                          <span
+                            ><img
+                              src="assets/admin/asset/img/streamline_money-graph-arrow-increase-ascend-growth-up-arrow-stats-graph-right-grow.svg"
+                              alt=""
+                          /></span>
+                        </p>
+                      </div>
+                      <p class="mb-0 last">then last month</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-xl-3 col-lg-4 col-md-6 col-12">
+                  <div class="card super-panel-card">
+                    <div class="title">
+                      <p class="mb-0">Total Buyers</p>
+                      <h1 class="mb-0">19,500</h1>
+                    </div>
+                    <div class="d-flex">
+                      <div class="d-flex percentag-green">
+                        <p class="mb-0">
+                          - 22 %
+                          <span
+                            ><img
+                              src="assets/admin/asset/img/streamline_money-graph-arrow-increase-ascend-growth-up-arrow-stats-graph-right-grow (1).svg"
+                              alt=""
+                          /></span>
+                        </p>
+                      </div>
+                      <p class="mb-0 last">then last month</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-xl-3 col-lg-4 col-md-6 col-12">
+                  <div class="card super-panel-card">
+                    <div class="title">
+                      <p class="mb-0">Total Orders</p>
+                      <h1 class="mb-0">19,500</h1>
+                    </div>
+                    <div class="d-flex">
+                      <div class="d-flex percentag">
+                        <p class="mb-0">
+                          - 22 %
+                          <span
+                            ><img
+                              src="assets/admin/asset/img/streamline_money-graph-arrow-increase-ascend-growth-up-arrow-stats-graph-right-grow.svg"
+                              alt=""
+                          /></span>
+                        </p>
+                      </div>
+                      <p class="mb-0 last">then last month</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-xl-3 col-lg-4 col-md-6 col-12">
+                  <div class="card super-panel-card">
+                    <div class="title">
+                      <p class="mb-0">Total Applications</p>
+                      <h1 class="mb-0">19,500</h1>
+                    </div>
+                    <div class="d-flex">
+                      <div class="d-flex percentag-green">
+                        <p class="mb-0">
+                          - 22 %
+                          <span
+                            ><img
+                              src="assets/admin/asset/img/streamline_money-graph-arrow-increase-ascend-growth-up-arrow-stats-graph-right-grow (1).svg"
+                              alt=""
+                          /></span>
+                        </p>
+                      </div>
+                      <p class="mb-0 last">then last month</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-xl-3 col-lg-4 col-md-6 col-12">
+                  <div class="card super-panel-card">
+                    <div class="title">
+                      <p class="mb-0">Total Visitors</p>
+                      <h1 class="mb-0">19,500</h1>
+                    </div>
+                    <div class="d-flex">
+                      <div class="d-flex percentag">
+                        <p class="mb-0">
+                          - 22 %
+                          <span
+                            ><img
+                              src="assets/admin/asset/img/streamline_money-graph-arrow-increase-ascend-growth-up-arrow-stats-graph-right-grow.svg"
+                              alt=""
+                          /></span>
+                        </p>
+                      </div>
+                      <p class="mb-0 last">then last month</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-xl-3 col-lg-4 col-md-6 col-12">
+                  <div class="card super-panel-card">
+                    <div class="title">
+                      <p class="mb-0">Total Appointments</p>
+                      <h1 class="mb-0">19,500</h1>
+                    </div>
+                    <div class="d-flex">
+                      <div class="d-flex percentag-green">
+                        <p class="mb-0">
+                          - 22 %
+                          <span
+                            ><img
+                              src="assets/admin/asset/img/streamline_money-graph-arrow-increase-ascend-growth-up-arrow-stats-graph-right-grow (1).svg"
+                              alt=""
+                          /></span>
+                        </p>
+                      </div>
+                      <p class="mb-0 last">then last month</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-xl-3 col-lg-4 col-md-6 col-12">
+                  <div class="card super-panel-card">
+                    <div class="title">
+                      <p class="mb-0">Total Sellers online</p>
+                      <h1 class="mb-0">19,500</h1>
+                    </div>
+                    <div class="d-flex">
+                      <div class="d-flex percentag">
+                        <p class="mb-0">
+                          - 22 %
+                          <span
+                            ><img
+                              src="assets/admin/asset/img/streamline_money-graph-arrow-increase-ascend-growth-up-arrow-stats-graph-right-grow.svg"
+                              alt=""
+                          /></span>
+                        </p>
+                      </div>
+                      <p class="mb-0 last">then last month</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-xl-3 col-lg-4 col-md-6 col-12">
+                  <div class="card super-panel-card">
+                    <div class="title">
+                      <p class="mb-0">Total buyers online</p>
+                      <h1 class="mb-0">19,500</h1>
+                    </div>
+                    <div class="d-flex">
+                      <div class="d-flex percentag-green">
+                        <p class="mb-0">
+                          - 22 %
+                          <span
+                            ><img
+                              src="assets/admin/asset/img/streamline_money-graph-arrow-increase-ascend-growth-up-arrow-stats-graph-right-grow (1).svg"
+                              alt=""
+                          /></span>
+                        </p>
+                      </div>
+                      <p class="mb-0 last">then last month</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-xl-3 col-lg-4 col-md-6 col-12">
+                  <div class="card super-panel-card">
+                    <div class="title">
+                      <p class="mb-0">Pending Applications</p>
+                      <h1 class="mb-0">19,500</h1>
+                    </div>
+                    <div class="d-flex">
+                      <div class="d-flex percentag">
+                        <p class="mb-0">
+                          - 22 %
+                          <span
+                            ><img
+                              src="assets/admin/asset/img/streamline_money-graph-arrow-increase-ascend-growth-up-arrow-stats-graph-right-grow.svg"
+                              alt=""
+                          /></span>
+                        </p>
+                      </div>
+                      <p class="mb-0 last">then last month</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-xl-3 col-lg-4 col-md-6 col-12">
+                  <div class="card super-panel-card">
+                    <div class="title">
+                      <p class="mb-0">Approved Applications</p>
+                      <h1 class="mb-0">19,500</h1>
+                    </div>
+                    <div class="d-flex">
+                      <div class="d-flex percentag-green">
+                        <p class="mb-0">
+                          - 22 %
+                          <span
+                            ><img
+                              src="assets/admin/asset/img/streamline_money-graph-arrow-increase-ascend-growth-up-arrow-stats-graph-right-grow (1).svg"
+                              alt=""
+                          /></span>
+                        </p>
+                      </div>
+                      <p class="mb-0 last">then last month</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-xl-3 col-lg-4 col-md-6 col-12">
+                  <div class="card super-panel-card">
+                    <div class="title">
+                      <p class="mb-0">Rejected Applications</p>
+                      <h1 class="mb-0">19,500</h1>
+                    </div>
+                    <div class="d-flex">
+                      <div class="d-flex percentag">
+                        <p class="mb-0">
+                          - 22 %
+                          <span
+                            ><img
+                              src="assets/admin/asset/img/streamline_money-graph-arrow-increase-ascend-growth-up-arrow-stats-graph-right-grow.svg"
+                              alt=""
+                          /></span>
+                        </p>
+                      </div>
+                      <p class="mb-0 last">then last month</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-xl-3 col-lg-4 col-md-6 col-12">
+                  <div class="card super-panel-card">
+                    <div class="title">
+                      <p class="mb-0">Deleted Accounts</p>
+                      <h1 class="mb-0">19,500</h1>
+                    </div>
+                    <div class="d-flex">
+                      <div class="d-flex percentag-green">
+                        <p class="mb-0">
+                          - 22 %
+                          <span
+                            ><img
+                              src="assets/admin/asset/img/streamline_money-graph-arrow-increase-ascend-growth-up-arrow-stats-graph-right-grow (1).svg"
+                              alt=""
+                          /></span>
+                        </p>
+                      </div>
+                      <p class="mb-0 last">then last month</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-xl-3 col-lg-4 col-md-6 col-12">
+                  <div class="card super-panel-card">
+                    <div class="title">
+                      <p class="mb-0">New Sign ups</p>
+                      <h1 class="mb-0">19,500</h1>
+                    </div>
+                    <div class="d-flex">
+                      <div class="d-flex percentag">
+                        <p class="mb-0">
+                          - 22 %
+                          <span
+                            ><img
+                              src="assets/admin/asset/img/streamline_money-graph-arrow-increase-ascend-growth-up-arrow-stats-graph-right-grow.svg"
+                              alt=""
+                          /></span>
+                        </p>
+                      </div>
+                      <p class="mb-0 last">then last month</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-xl-3 col-lg-4 col-md-6 col-12">
+                  <div class="card super-panel-card">
+                    <div class="title">
+                      <p class="mb-0">Payout Requests</p>
+                      <h1 class="mb-0">19,500</h1>
+                    </div>
+                    <div class="d-flex">
+                      <div class="d-flex percentag-green">
+                        <p class="mb-0">
+                          - 22 %
+                          <span
+                            ><img
+                              src="assets/admin/asset/img/streamline_money-graph-arrow-increase-ascend-growth-up-arrow-stats-graph-right-grow (1).svg"
+                              alt=""
+                          /></span>
+                        </p>
+                      </div>
+                      <p class="mb-0 last">then last month</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-xl-3 col-lg-4 col-md-6 col-12">
+                  <div class="card super-panel-card">
+                    <div class="title">
+                      <p class="mb-0">Refund Requests</p>
+                      <h1 class="mb-0">19,500</h1>
+                    </div>
+                    <div class="d-flex">
+                      <div class="d-flex percentag">
+                        <p class="mb-0">
+                          - 22 %
+                          <span
+                            ><img
+                              src="assets/admin/asset/img/streamline_money-graph-arrow-increase-ascend-growth-up-arrow-stats-graph-right-grow.svg"
+                              alt=""
+                          /></span>
+                        </p>
+                      </div>
+                      <p class="mb-0 last">then last month</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-xl-3 col-lg-4 col-md-6 col-12">
+                  <div class="card super-panel-card">
+                    <div class="title">
+                      <p class="mb-0">Online Class Seller</p>
+                      <h1 class="mb-0">19,500</h1>
+                    </div>
+                    <div class="d-flex">
+                      <div class="d-flex percentag-green">
+                        <p class="mb-0">
+                          - 22 %
+                          <span
+                            ><img
+                              src="assets/admin/asset/img/streamline_money-graph-arrow-increase-ascend-growth-up-arrow-stats-graph-right-grow (1).svg"
+                              alt=""
+                          /></span>
+                        </p>
+                      </div>
+                      <p class="mb-0 last">then last month</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-xl-3 col-lg-4 col-md-6 col-12">
+                  <div class="card super-panel-card">
+                    <div class="title">
+                      <p class="mb-0">In-person Class Seller</p>
+                      <h1 class="mb-0">19,500</h1>
+                    </div>
+                    <div class="d-flex">
+                      <div class="d-flex percentag">
+                        <p class="mb-0">
+                          - 22 %
+                          <span
+                            ><img
+                              src="assets/admin/asset/img/streamline_money-graph-arrow-increase-ascend-growth-up-arrow-stats-graph-right-grow.svg"
+                              alt=""
+                          /></span>
+                        </p>
+                      </div>
+                      <p class="mb-0 last">then last month</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-xl-3 col-lg-4 col-md-6 col-12">
+                  <div class="card super-panel-card">
+                    <div class="title">
+                      <p class="mb-0">Freelance Service Seller</p>
+                      <h1 class="mb-0">19,500</h1>
+                    </div>
+                    <div class="d-flex">
+                      <div class="d-flex percentag-green">
+                        <p class="mb-0">
+                          - 22 %
+                          <span
+                            ><img
+                              src="assets/admin/asset/img/streamline_money-graph-arrow-increase-ascend-growth-up-arrow-stats-graph-right-grow (1).svg"
+                              alt=""
+                          /></span>
+                        </p>
+                      </div>
+                      <p class="mb-0 last">then last month</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-xl-3 col-lg-4 col-md-6 col-12">
+                  <div class="card super-panel-card">
+                    <div class="title">
+                      <p class="mb-0">In-person Freelance Seller</p>
+                      <h1 class="mb-0">19,500</h1>
+                    </div>
+                    <div class="d-flex">
+                      <div class="d-flex percentag">
+                        <p class="mb-0">
+                          - 22 %
+                          <span
+                            ><img
+                              src="assets/admin/asset/img/streamline_money-graph-arrow-increase-ascend-growth-up-arrow-stats-graph-right-grow.svg"
+                              alt=""
+                          /></span>
+                        </p>
+                      </div>
+                      <p class="mb-0 last">then last month</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-xl-3 col-lg-4 col-md-6 col-12">
+                  <div class="card super-panel-card">
+                    <div class="title">
+                      <p class="mb-0">New Sign ups</p>
+                      <h1 class="mb-0">19,500</h1>
+                    </div>
+                    <div class="d-flex">
+                      <div class="d-flex percentag-green">
+                        <p class="mb-0">
+                          - 22 %
+                          <span
+                            ><img
+                              src="assets/admin/asset/img/streamline_money-graph-arrow-increase-ascend-growth-up-arrow-stats-graph-right-grow (1).svg"
+                              alt=""
+                          /></span>
+                        </p>
+                      </div>
+                      <p class="mb-0 last">then last month</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-xl-3 col-lg-4 col-md-6 col-12">
+                  <div class="card super-panel-card">
+                    <div class="title">
+                      <p class="mb-0">Payout Requests</p>
+                      <h1 class="mb-0">19,500</h1>
+                    </div>
+                    <div class="d-flex">
+                      <div class="d-flex percentag-green">
+                        <p class="mb-0">
+                          - 22 %
+                          <span
+                            ><img
+                              src="assets/admin/asset/img/streamline_money-graph-arrow-increase-ascend-growth-up-arrow-stats-graph-right-grow (1).svg"
+                              alt=""
+                          /></span>
+                        </p>
+                      </div>
+                      <p class="mb-0 last">then last month</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-xl-3 col-lg-4 col-md-6 col-12">
+                  <div class="card super-panel-card">
+                    <div class="title">
+                      <p class="mb-0">Messages</p>
+                      <h1 class="mb-0">19,500</h1>
+                    </div>
+                    <div class="d-flex">
+                      <div class="d-flex percentag-green">
+                        <p class="mb-0">
+                          - 22 %
+                          <span
+                            ><img
+                              src="assets/admin/asset/img/streamline_money-graph-arrow-increase-ascend-growth-up-arrow-stats-graph-right-grow (1).svg"
+                              alt=""
+                          /></span>
+                        </p>
+                      </div>
+                      <p class="mb-0 last">then last month</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-xl-3 col-lg-4 col-md-6 col-12">
+                  <div class="card super-panel-card">
+                    <div class="title">
+                      <p class="mb-0">Refund Requests</p>
+                      <h1 class="mb-0">19,500</h1>
+                    </div>
+                    <div class="d-flex">
+                      <div class="d-flex percentag-green">
+                        <p class="mb-0">
+                          - 22 %
+                          <span
+                            ><img
+                              src="assets/admin/asset/img/streamline_money-graph-arrow-increase-ascend-growth-up-arrow-stats-graph-right-grow (1).svg"
+                              alt=""
+                          /></span>
+                        </p>
+                      </div>
+                      <p class="mb-0 last">then last month</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-xl-3 col-lg-4 col-md-6 col-12">
+                  <div class="card super-panel-card">
+                    <div class="title">
+                      <p class="mb-0">Refund Requests</p>
+                      <h1 class="mb-0">19,500</h1>
+                    </div>
+                    <div class="d-flex">
+                      <div class="d-flex percentag-green">
+                        <p class="mb-0">
+                          - 22 %
+                          <span
+                            ><img
+                              src="assets/admin/asset/img/streamline_money-graph-arrow-increase-ascend-growth-up-arrow-stats-graph-right-grow (1).svg"
+                              alt=""
+                          /></span>
+                        </p>
+                      </div>
+                      <p class="mb-0 last">then last month</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="date-section top-table-sec">
+                <div class="row">
+                  <div class="col-md-12">
+                    <div class="user-all-seller-drop seller-drop">
+                      <!-- sceond drop -->
+                      <form>
+                        <div class="row align-items-center calendar-sec">
+                          <div class="col-auto date-selection">
+                            <div class="date-sec filter-drop filter-top-drop">
+                              <select class="form-select" id="dateFilter">
+                                <option value="">Top Sellers</option>
+                                <option value="">Top Buyers</option>
+                                <option value="">Top Ratings $ Reviews</option>
+                                <option value="">
+                                  Top Categories &S ub Categories
+                                </option>
+                              </select>
+                            </div>
+                          </div>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- top sellers table -->
+              <div class="top-sellers-table">
+                <!-- top sellers tabele -->
+                <div class="row installment-table">
+                  <div class="col-md-12">
+                    <div class="table-responsive table-desc">
+                      <div class="hack1">
+                        <div class="hack2">
+                          <table class="table">
+                            <thead>
+                              <tr class="text-nowrap">
+                                <th>Seller</th>
+                                <th>Seller ID</th>
+                                <th>Reg. Date</th>
+                                <th>Service Type</th>
+                                <th>Category</th>
+                                <th>Location</th>
+                                <th>Rating</th>
+                                <th>Total Order</th>
+                                <th>Total Amount</th>
+                                <th>Refunds</th>
+                                <th>Action</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr>
+                                <td>
+                                  <img
+                                    class="Buyer-img"
+                                    src="assets/admin/asset/img/profile.png"
+                                  /><span class="para-1">Usama A.</span>
+                                </td>
+                                <td>#7906108</td>
+                                <td>October 23, 2023</td>
+                                <td>Freelance Service</td>
+                                <td>Graphic Design</td>
+                                <td>London, US</td>
+                                <td>4.5 (400+ reviews)</td>
+                                <td>400</td>
+                                <td>$ 14,840</td>
+                                <td>$ 14,840</td>
+                                <td>
+                                  <div class="expert-dropdown">
+                                    <button
+                                      class="btn action-btn"
+                                      type="button"
+                                      id="dropdownMenuButton1"
+                                      data-bs-toggle="dropdown"
+                                      aria-expanded="false"
+                                    >
+                                      ...
+                                    </button>
+                                    <ul
+                                      class="dropdown-menu"
+                                      aria-labelledby="dropdownMenuButton1"
+                                    >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>View dashboard</li></a
+                                      >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>view profile</li></a
+                                      >
+                                      <a
+                                        class="dropdown-item"
+                                        href="#"
+                                        type="button"
+                                        class="btn btn-primary"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#cancel-service-modal"
+                                        ><li>view page</li></a
+                                      >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>edit commission</li></a
+                                      >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>add to home page</li></a
+                                      >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>add to trending page</li></a
+                                      >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>hide seller</li></a
+                                      >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>pause account</li></a
+                                      >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>delete account</li></a
+                                      >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>ban account</li></a
+                                      >
+                                    </ul>
+                                  </div>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td>
+                                  <img
+                                    class="Buyer-img"
+                                    src="assets/admin/asset/img/profile.png"
+                                  /><span class="para-1">Usama A.</span>
+                                </td>
+                                <td>#7906108</td>
+                                <td>October 23, 2023</td>
+                                <td>Freelance Service</td>
+                                <td>Graphic Design</td>
+                                <td>London, US</td>
+                                <td>4.5 (400+ reviews)</td>
+                                <td>400</td>
+                                <td>$ 14,840</td>
+                                <td>$ 14,840</td>
+                                <td>
+                                  <div class="expert-dropdown">
+                                    <button
+                                      class="btn action-btn"
+                                      type="button"
+                                      id="dropdownMenuButton1"
+                                      data-bs-toggle="dropdown"
+                                      aria-expanded="false"
+                                    >
+                                      ...
+                                    </button>
+                                    <ul
+                                      class="dropdown-menu"
+                                      aria-labelledby="dropdownMenuButton1"
+                                    >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>View dashboard</li></a
+                                      >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>view profile</li></a
+                                      >
+                                      <a
+                                        class="dropdown-item"
+                                        href="#"
+                                        type="button"
+                                        class="btn btn-primary"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#cancel-service-modal"
+                                        ><li>view page</li></a
+                                      >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>edit commission</li></a
+                                      >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>add to home page</li></a
+                                      >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>add to trending page</li></a
+                                      >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>hide seller</li></a
+                                      >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>pause account</li></a
+                                      >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>delete account</li></a
+                                      >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>ban account</li></a
+                                      >
+                                    </ul>
+                                  </div>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td>
+                                  <img
+                                    class="Buyer-img"
+                                    src="assets/admin/asset/img/profile.png"
+                                  /><span class="para-1">Usama A.</span>
+                                </td>
+                                <td>#7906108</td>
+                                <td>October 23, 2023</td>
+                                <td>Freelance Service</td>
+                                <td>Graphic Design</td>
+                                <td>London, US</td>
+                                <td>4.5 (400+ reviews)</td>
+                                <td>400</td>
+                                <td>$ 14,840</td>
+                                <td>$ 14,840</td>
+                                <td>
+                                  <div class="expert-dropdown">
+                                    <button
+                                      class="btn action-btn"
+                                      type="button"
+                                      id="dropdownMenuButton1"
+                                      data-bs-toggle="dropdown"
+                                      aria-expanded="false"
+                                    >
+                                      ...
+                                    </button>
+                                    <ul
+                                      class="dropdown-menu"
+                                      aria-labelledby="dropdownMenuButton1"
+                                    >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>View dashboard</li></a
+                                      >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>view profile</li></a
+                                      >
+                                      <a
+                                        class="dropdown-item"
+                                        href="#"
+                                        type="button"
+                                        class="btn btn-primary"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#cancel-service-modal"
+                                        ><li>view page</li></a
+                                      >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>edit commission</li></a
+                                      >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>add to home page</li></a
+                                      >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>add to trending page</li></a
+                                      >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>hide seller</li></a
+                                      >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>pause account</li></a
+                                      >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>delete account</li></a
+                                      >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>ban account</li></a
+                                      >
+                                    </ul>
+                                  </div>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td>
+                                  <img
+                                    class="Buyer-img"
+                                    src="assets/admin/asset/img/profile.png"
+                                  /><span class="para-1">Usama A.</span>
+                                </td>
+                                <td>#7906108</td>
+                                <td>October 23, 2023</td>
+                                <td>Freelance Service</td>
+                                <td>Graphic Design</td>
+                                <td>London, US</td>
+                                <td>4.5 (400+ reviews)</td>
+                                <td>400</td>
+                                <td>$ 14,840</td>
+                                <td>$ 14,840</td>
+                                <td>
+                                  <div class="expert-dropdown">
+                                    <button
+                                      class="btn action-btn"
+                                      type="button"
+                                      id="dropdownMenuButton1"
+                                      data-bs-toggle="dropdown"
+                                      aria-expanded="false"
+                                    >
+                                      ...
+                                    </button>
+                                    <ul
+                                      class="dropdown-menu"
+                                      aria-labelledby="dropdownMenuButton1"
+                                    >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>View dashboard</li></a
+                                      >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>view profile</li></a
+                                      >
+                                      <a
+                                        class="dropdown-item"
+                                        href="#"
+                                        type="button"
+                                        class="btn btn-primary"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#cancel-service-modal"
+                                        ><li>view page</li></a
+                                      >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>edit commission</li></a
+                                      >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>add to home page</li></a
+                                      >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>add to trending page</li></a
+                                      >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>hide seller</li></a
+                                      >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>pause account</li></a
+                                      >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>delete account</li></a
+                                      >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>ban account</li></a
+                                      >
+                                    </ul>
+                                  </div>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td>
+                                  <img
+                                    class="Buyer-img"
+                                    src="assets/admin/asset/img/profile.png"
+                                  /><span class="para-1">Usama A.</span>
+                                </td>
+                                <td>#7906108</td>
+                                <td>October 23, 2023</td>
+                                <td>Freelance Service</td>
+                                <td>Graphic Design</td>
+                                <td>London, US</td>
+                                <td>4.5 (400+ reviews)</td>
+                                <td>400</td>
+                                <td>$ 14,840</td>
+                                <td>$ 14,840</td>
+                                <td>
+                                  <div class="expert-dropdown">
+                                    <button
+                                      class="btn action-btn"
+                                      type="button"
+                                      id="dropdownMenuButton1"
+                                      data-bs-toggle="dropdown"
+                                      aria-expanded="false"
+                                    >
+                                      ...
+                                    </button>
+                                    <ul
+                                      class="dropdown-menu"
+                                      aria-labelledby="dropdownMenuButton1"
+                                    >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>View dashboard</li></a
+                                      >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>view profile</li></a
+                                      >
+                                      <a
+                                        class="dropdown-item"
+                                        href="#"
+                                        type="button"
+                                        class="btn btn-primary"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#cancel-service-modal"
+                                        ><li>view page</li></a
+                                      >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>edit commission</li></a
+                                      >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>add to home page</li></a
+                                      >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>add to trending page</li></a
+                                      >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>hide seller</li></a
+                                      >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>pause account</li></a
+                                      >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>delete account</li></a
+                                      >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>ban account</li></a
+                                      >
+                                    </ul>
+                                  </div>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td>
+                                  <img
+                                    class="Buyer-img"
+                                    src="assets/admin/asset/img/profile.png"
+                                  /><span class="para-1">Usama A.</span>
+                                </td>
+                                <td>#7906108</td>
+                                <td>October 23, 2023</td>
+                                <td>Freelance Service</td>
+                                <td>Graphic Design</td>
+                                <td>London, US</td>
+                                <td>4.5 (400+ reviews)</td>
+                                <td>400</td>
+                                <td>$ 14,840</td>
+                                <td>$ 14,840</td>
+                                <td>
+                                  <div class="expert-dropdown">
+                                    <button
+                                      class="btn action-btn"
+                                      type="button"
+                                      id="dropdownMenuButton1"
+                                      data-bs-toggle="dropdown"
+                                      aria-expanded="false"
+                                    >
+                                      ...
+                                    </button>
+                                    <ul
+                                      class="dropdown-menu"
+                                      aria-labelledby="dropdownMenuButton1"
+                                    >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>View dashboard</li></a
+                                      >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>view profile</li></a
+                                      >
+                                      <a
+                                        class="dropdown-item"
+                                        href="#"
+                                        type="button"
+                                        class="btn btn-primary"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#cancel-service-modal"
+                                        ><li>view page</li></a
+                                      >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>edit commission</li></a
+                                      >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>add to home page</li></a
+                                      >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>add to trending page</li></a
+                                      >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>hide seller</li></a
+                                      >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>pause account</li></a
+                                      >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>delete account</li></a
+                                      >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>ban account</li></a
+                                      >
+                                    </ul>
+                                  </div>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td>
+                                  <img
+                                    class="Buyer-img"
+                                    src="assets/admin/asset/img/profile.png"
+                                  /><span class="para-1">Usama A.</span>
+                                </td>
+                                <td>#7906108</td>
+                                <td>October 23, 2023</td>
+                                <td>Freelance Service</td>
+                                <td>Graphic Design</td>
+                                <td>London, US</td>
+                                <td>4.5 (400+ reviews)</td>
+                                <td>400</td>
+                                <td>$ 14,840</td>
+                                <td>$ 14,840</td>
+                                <td>
+                                  <div class="expert-dropdown">
+                                    <button
+                                      class="btn action-btn"
+                                      type="button"
+                                      id="dropdownMenuButton1"
+                                      data-bs-toggle="dropdown"
+                                      aria-expanded="false"
+                                    >
+                                      ...
+                                    </button>
+                                    <ul
+                                      class="dropdown-menu"
+                                      aria-labelledby="dropdownMenuButton1"
+                                    >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>View dashboard</li></a
+                                      >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>view profile</li></a
+                                      >
+                                      <a
+                                        class="dropdown-item"
+                                        href="#"
+                                        type="button"
+                                        class="btn btn-primary"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#cancel-service-modal"
+                                        ><li>view page</li></a
+                                      >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>edit commission</li></a
+                                      >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>add to home page</li></a
+                                      >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>add to trending page</li></a
+                                      >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>hide seller</li></a
+                                      >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>pause account</li></a
+                                      >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>delete account</li></a
+                                      >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>ban account</li></a
+                                      >
+                                    </ul>
+                                  </div>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td>
+                                  <img
+                                    class="Buyer-img"
+                                    src="assets/admin/asset/img/profile.png"
+                                  /><span class="para-1">Usama A.</span>
+                                </td>
+                                <td>#7906108</td>
+                                <td>October 23, 2023</td>
+                                <td>Freelance Service</td>
+                                <td>Graphic Design</td>
+                                <td>London, US</td>
+                                <td>4.5 (400+ reviews)</td>
+                                <td>400</td>
+                                <td>$ 14,840</td>
+                                <td>$ 14,840</td>
+                                <td>
+                                  <div class="expert-dropdown">
+                                    <button
+                                      class="btn action-btn"
+                                      type="button"
+                                      id="dropdownMenuButton1"
+                                      data-bs-toggle="dropdown"
+                                      aria-expanded="false"
+                                    >
+                                      ...
+                                    </button>
+                                    <ul
+                                      class="dropdown-menu"
+                                      aria-labelledby="dropdownMenuButton1"
+                                    >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>View dashboard</li></a
+                                      >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>view profile</li></a
+                                      >
+                                      <a
+                                        class="dropdown-item"
+                                        href="#"
+                                        type="button"
+                                        class="btn btn-primary"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#cancel-service-modal"
+                                        ><li>view page</li></a
+                                      >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>edit commission</li></a
+                                      >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>add to home page</li></a
+                                      >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>add to trending page</li></a
+                                      >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>hide seller</li></a
+                                      >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>pause account</li></a
+                                      >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>delete account</li></a
+                                      >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>ban account</li></a
+                                      >
+                                    </ul>
+                                  </div>
+                                </td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- top buyers table -->
+              <div class="top-buyers-table">
+                <div class="row installment-table">
+                  <div class="col-md-12">
+                    <div class="table-responsive table-desc">
+                      <div class="hack1">
+                        <div class="hack2">
+                          <table class="table">
+                            <thead>
+                              <tr class="text-nowrap">
+                                <th>Applicant</th>
+                                <th>Email</th>
+                                <th>Registration Date</th>
+                                <th>Total Order</th>
+                                <th>Total Amount</th>
+                                <th>Status</th>
+                                <th>Last Active</th>
+                                <th>Action</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr>
+                                <td>
+                                  <img
+                                    class="Buyer-img"
+                                    src="assets/admin/asset/img/profile.png"
+                                  /><span class="para-1">Usama A.</span>
+                                </td>
+                                <td>example@company.com</td>
+                                <td>October 23, 2023</td>
+                                <td>400</td>
+                                <td>$ 14,840</td>
+                                <td>
+                                  <span class="badge servce-class-badge"
+                                    >Active</span
+                                  >
+                                </td>
+                                <td>Last month ago</td>
+                                <td>
+                                  <div class="expert-dropdown">
+                                    <button
+                                      class="btn action-btn"
+                                      type="button"
+                                      id="dropdownMenuButton1"
+                                      data-bs-toggle="dropdown"
+                                      aria-expanded="false"
+                                    >
+                                      ...
+                                    </button>
+                                    <ul
+                                      class="dropdown-menu"
+                                      aria-labelledby="dropdownMenuButton1"
+                                    >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>View dashboard</li></a
+                                      >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>delete account</li></a
+                                      >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>ban account</li></a
+                                      >
+                                    </ul>
+                                  </div>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td>
+                                  <img
+                                    class="Buyer-img"
+                                    src="assets/admin/asset/img/profile.png"
+                                  /><span class="para-1">Usama A.</span>
+                                </td>
+                                <td>example@company.com</td>
+                                <td>October 23, 2023</td>
+                                <td>400</td>
+                                <td>$ 14,840</td>
+                                <td>
+                                  <span class="badge servce-class-badge"
+                                    >Active</span
+                                  >
+                                </td>
+                                <td>Last month ago</td>
+                                <td>
+                                  <div class="expert-dropdown">
+                                    <button
+                                      class="btn action-btn"
+                                      type="button"
+                                      id="dropdownMenuButton1"
+                                      data-bs-toggle="dropdown"
+                                      aria-expanded="false"
+                                    >
+                                      ...
+                                    </button>
+                                    <ul
+                                      class="dropdown-menu"
+                                      aria-labelledby="dropdownMenuButton1"
+                                    >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>View dashboard</li></a
+                                      >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>delete account</li></a
+                                      >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>ban account</li></a
+                                      >
+                                    </ul>
+                                  </div>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td>
+                                  <img
+                                    class="Buyer-img"
+                                    src="assets/admin/asset/img/profile.png"
+                                  /><span class="para-1">Usama A.</span>
+                                </td>
+                                <td>example@company.com</td>
+                                <td>October 23, 2023</td>
+                                <td>400</td>
+                                <td>$ 14,840</td>
+                                <td>
+                                  <span class="badge servce-class-badge"
+                                    >Active</span
+                                  >
+                                </td>
+                                <td>Last month ago</td>
+                                <td>
+                                  <div class="expert-dropdown">
+                                    <button
+                                      class="btn action-btn"
+                                      type="button"
+                                      id="dropdownMenuButton1"
+                                      data-bs-toggle="dropdown"
+                                      aria-expanded="false"
+                                    >
+                                      ...
+                                    </button>
+                                    <ul
+                                      class="dropdown-menu"
+                                      aria-labelledby="dropdownMenuButton1"
+                                    >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>View dashboard</li></a
+                                      >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>delete account</li></a
+                                      >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>ban account</li></a
+                                      >
+                                    </ul>
+                                  </div>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td>
+                                  <img
+                                    class="Buyer-img"
+                                    src="assets/admin/asset/img/profile.png"
+                                  /><span class="para-1">Usama A.</span>
+                                </td>
+                                <td>example@company.com</td>
+                                <td>October 23, 2023</td>
+                                <td>400</td>
+                                <td>$ 14,840</td>
+                                <td>
+                                  <span class="badge servce-class-badge"
+                                    >Active</span
+                                  >
+                                </td>
+                                <td>Last month ago</td>
+                                <td>
+                                  <div class="expert-dropdown">
+                                    <button
+                                      class="btn action-btn"
+                                      type="button"
+                                      id="dropdownMenuButton1"
+                                      data-bs-toggle="dropdown"
+                                      aria-expanded="false"
+                                    >
+                                      ...
+                                    </button>
+                                    <ul
+                                      class="dropdown-menu"
+                                      aria-labelledby="dropdownMenuButton1"
+                                    >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>View dashboard</li></a
+                                      >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>delete account</li></a
+                                      >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>ban account</li></a
+                                      >
+                                    </ul>
+                                  </div>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td>
+                                  <img
+                                    class="Buyer-img"
+                                    src="assets/admin/asset/img/profile.png"
+                                  /><span class="para-1">Usama A.</span>
+                                </td>
+                                <td>example@company.com</td>
+                                <td>October 23, 2023</td>
+                                <td>400</td>
+                                <td>$ 14,840</td>
+                                <td>
+                                  <span class="badge servce-class-badge"
+                                    >Active</span
+                                  >
+                                </td>
+                                <td>Last month ago</td>
+                                <td>
+                                  <div class="expert-dropdown">
+                                    <button
+                                      class="btn action-btn"
+                                      type="button"
+                                      id="dropdownMenuButton1"
+                                      data-bs-toggle="dropdown"
+                                      aria-expanded="false"
+                                    >
+                                      ...
+                                    </button>
+                                    <ul
+                                      class="dropdown-menu"
+                                      aria-labelledby="dropdownMenuButton1"
+                                    >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>View dashboard</li></a
+                                      >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>delete account</li></a
+                                      >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>ban account</li></a
+                                      >
+                                    </ul>
+                                  </div>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td>
+                                  <img
+                                    class="Buyer-img"
+                                    src="assets/admin/asset/img/profile.png"
+                                  /><span class="para-1">Usama A.</span>
+                                </td>
+                                <td>example@company.com</td>
+                                <td>October 23, 2023</td>
+                                <td>400</td>
+                                <td>$ 14,840</td>
+                                <td>
+                                  <span class="badge servce-class-badge"
+                                    >Active</span
+                                  >
+                                </td>
+                                <td>Last month ago</td>
+                                <td>
+                                  <div class="expert-dropdown">
+                                    <button
+                                      class="btn action-btn"
+                                      type="button"
+                                      id="dropdownMenuButton1"
+                                      data-bs-toggle="dropdown"
+                                      aria-expanded="false"
+                                    >
+                                      ...
+                                    </button>
+                                    <ul
+                                      class="dropdown-menu"
+                                      aria-labelledby="dropdownMenuButton1"
+                                    >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>View dashboard</li></a
+                                      >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>delete account</li></a
+                                      >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>ban account</li></a
+                                      >
+                                    </ul>
+                                  </div>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td>
+                                  <img
+                                    class="Buyer-img"
+                                    src="assets/admin/asset/img/profile.png"
+                                  /><span class="para-1">Usama A.</span>
+                                </td>
+                                <td>example@company.com</td>
+                                <td>October 23, 2023</td>
+                                <td>400</td>
+                                <td>$ 14,840</td>
+                                <td>
+                                  <span class="badge servce-class-badge"
+                                    >Active</span
+                                  >
+                                </td>
+                                <td>Last month ago</td>
+                                <td>
+                                  <div class="expert-dropdown">
+                                    <button
+                                      class="btn action-btn"
+                                      type="button"
+                                      id="dropdownMenuButton1"
+                                      data-bs-toggle="dropdown"
+                                      aria-expanded="false"
+                                    >
+                                      ...
+                                    </button>
+                                    <ul
+                                      class="dropdown-menu"
+                                      aria-labelledby="dropdownMenuButton1"
+                                    >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>View dashboard</li></a
+                                      >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>delete account</li></a
+                                      >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>ban account</li></a
+                                      >
+                                    </ul>
+                                  </div>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td>
+                                  <img
+                                    class="Buyer-img"
+                                    src="assets/admin/asset/img/profile.png"
+                                  /><span class="para-1">Usama A.</span>
+                                </td>
+                                <td>example@company.com</td>
+                                <td>October 23, 2023</td>
+                                <td>400</td>
+                                <td>$ 14,840</td>
+                                <td>
+                                  <span class="badge servce-class-badge"
+                                    >Active</span
+                                  >
+                                </td>
+                                <td>Last month ago</td>
+                                <td>
+                                  <div class="expert-dropdown">
+                                    <button
+                                      class="btn action-btn"
+                                      type="button"
+                                      id="dropdownMenuButton1"
+                                      data-bs-toggle="dropdown"
+                                      aria-expanded="false"
+                                    >
+                                      ...
+                                    </button>
+                                    <ul
+                                      class="dropdown-menu"
+                                      aria-labelledby="dropdownMenuButton1"
+                                    >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>View dashboard</li></a
+                                      >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>delete account</li></a
+                                      >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>ban account</li></a
+                                      >
+                                    </ul>
+                                  </div>
+                                </td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- top reviews and ratings table -->
+              <div class="top-reviews-rating-table">
+                <div class="row" id="main-contant-AI">
+                  <div class="col-md-12 installment-table">
+                    <div class="table-responsive">
+                      <div class="hack1">
+                        <div class="hack2">
+                          <table class="table">
+                            <thead>
+                              <tr class="text-nowrap">
+                                <th>Seller</th>
+                                <th>Buyers</th>
+                                <th>Service Title</th>
+                                <th>Service Type</th>
+                                <th>Review</th>
+                                <th>Rating</th>
+                                <th>Date</th>
+                                <th>Action</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr>
+                                <td>Usama A.</td>
+                                <td>Orhan Khan</td>
+                                <td>
+                                  <img
+                                    class="table-img"
+                                    src="assets/admin/asset/img/table img.jpeg"
+                                  /><span class="para-1"
+                                    >Learn How to design</span
+                                  >
+                                  <p class="para-2">
+                                    attractive UI for clients....
+                                  </p>
+                                </td>
+                                <td>Freelance Service</td>
+                                <td>
+                                  <p class="review-text">
+                                    This Course is very helpful for Beginners I
+                                    learn ......
+                                  </p>
+                                </td>
+                                <td>
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="116"
+                                    height="20"
+                                    viewBox="0 0 116 20"
+                                    fill="none"
+                                  >
+                                    <path
+                                      d="M9.723 1.96796C9.82548 1.72157 10.1745 1.72157 10.277 1.96796L11.9957 6.10027C12.1829 6.55038 12.6062 6.85792 13.0922 6.89687L17.5533 7.25452C17.8193 7.27585 17.9272 7.6078 17.7245 7.7814L14.3256 10.693C13.9554 11.0101 13.7937 11.5077 13.9068 11.9819L14.9452 16.3352C15.0071 16.5948 14.7247 16.8 14.497 16.6609L10.6776 14.328C10.2616 14.0739 9.73839 14.0739 9.32237 14.328L5.50298 16.6609C5.27525 16.8 4.99287 16.5948 5.05479 16.3352L6.09322 11.9819C6.20633 11.5077 6.04465 11.0101 5.67443 10.693L2.27548 7.7814C2.07282 7.6078 2.18068 7.27585 2.44667 7.25452L6.90785 6.89687C7.39378 6.85792 7.81707 6.55038 8.00428 6.10027L9.723 1.96796Z"
+                                      fill="#FFAF06"
+                                      stroke="#FFAF06"
+                                    />
+                                    <path
+                                      d="M33.723 1.96796C33.8255 1.72157 34.1745 1.72157 34.277 1.96796L35.9957 6.10027C36.1829 6.55038 36.6062 6.85792 37.0922 6.89687L41.5533 7.25452C41.8193 7.27585 41.9272 7.6078 41.7245 7.7814L38.3256 10.693C37.9554 11.0101 37.7937 11.5077 37.9068 11.9819L38.9452 16.3352C39.0071 16.5948 38.7247 16.8 38.497 16.6609L34.6776 14.328C34.2616 14.0739 33.7384 14.0739 33.3224 14.328L29.503 16.6609C29.2752 16.8 28.9929 16.5948 29.0548 16.3352L30.0932 11.9819C30.2063 11.5077 30.0447 11.0101 29.6744 10.693L26.2755 7.7814C26.0728 7.6078 26.1807 7.27585 26.4467 7.25452L30.9078 6.89687C31.3938 6.85792 31.8171 6.55038 32.0043 6.10027L33.723 1.96796Z"
+                                      fill="#FFAF06"
+                                      stroke="#FFAF06"
+                                    />
+                                    <path
+                                      d="M57.723 1.96796C57.8255 1.72157 58.1745 1.72157 58.277 1.96796L59.9957 6.10027C60.1829 6.55038 60.6062 6.85792 61.0922 6.89687L65.5533 7.25452C65.8193 7.27585 65.9272 7.6078 65.7245 7.7814L62.3256 10.693C61.9554 11.0101 61.7937 11.5077 61.9068 11.9819L62.9452 16.3352C63.0071 16.5948 62.7247 16.8 62.497 16.6609L58.6776 14.328C58.2616 14.0739 57.7384 14.0739 57.3224 14.328L53.503 16.6609C53.2752 16.8 52.9929 16.5948 53.0548 16.3352L54.0932 11.9819C54.2063 11.5077 54.0447 11.0101 53.6744 10.693L50.2755 7.7814C50.0728 7.6078 50.1807 7.27585 50.4467 7.25452L54.9078 6.89687C55.3938 6.85792 55.8171 6.55038 56.0043 6.10027L57.723 1.96796Z"
+                                      fill="#FFAF06"
+                                      stroke="#FFAF06"
+                                    />
+                                    <path
+                                      d="M81.723 1.96796C81.8255 1.72157 82.1745 1.72157 82.277 1.96796L83.9957 6.10027C84.1829 6.55038 84.6062 6.85792 85.0922 6.89687L89.5533 7.25452C89.8193 7.27585 89.9272 7.6078 89.7245 7.7814L86.3256 10.693C85.9554 11.0101 85.7937 11.5077 85.9068 11.9819L86.9452 16.3352C87.0071 16.5948 86.7247 16.8 86.497 16.6609L82.6776 14.328C82.2616 14.0739 81.7384 14.0739 81.3224 14.328L77.503 16.6609C77.2752 16.8 76.9929 16.5948 77.0548 16.3352L78.0932 11.9819C78.2063 11.5077 78.0447 11.0101 77.6744 10.693L74.2755 7.7814C74.0728 7.6078 74.1807 7.27585 74.4467 7.25452L78.9078 6.89687C79.3938 6.85792 79.8171 6.55038 80.0043 6.10027L81.723 1.96796Z"
+                                      stroke="#FFAF06"
+                                    />
+                                    <path
+                                      d="M105.723 1.96796C105.825 1.72157 106.175 1.72157 106.277 1.96796L107.996 6.10027C108.183 6.55038 108.606 6.85792 109.092 6.89687L113.553 7.25452C113.819 7.27585 113.927 7.6078 113.725 7.7814L110.326 10.693C109.955 11.0101 109.794 11.5077 109.907 11.9819L110.945 16.3352C111.007 16.5948 110.725 16.8 110.497 16.6609L106.678 14.328C106.262 14.0739 105.738 14.0739 105.322 14.328L101.503 16.6609C101.275 16.8 100.993 16.5948 101.055 16.3352L102.093 11.9819C102.206 11.5077 102.045 11.0101 101.674 10.693L98.2755 7.7814C98.0728 7.6078 98.1807 7.27585 98.4467 7.25452L102.908 6.89687C103.394 6.85792 103.817 6.55038 104.004 6.10027L105.723 1.96796Z"
+                                      stroke="#FFAF06"
+                                    />
+                                  </svg>
+                                </td>
+                                <td>June 15, 2023</td>
+                                <td>
+                                  <div class="expert-dropdown">
+                                    <button
+                                      class="btn action-btn"
+                                      type="button"
+                                      id="dropdownMenuButton1"
+                                      data-bs-toggle="dropdown"
+                                      aria-expanded="false"
+                                    >
+                                      ...
+                                    </button>
+                                    <ul
+                                      class="dropdown-menu"
+                                      aria-labelledby="dropdownMenuButton1"
+                                    >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>View</li></a
+                                      >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>Delete</li></a
+                                      >
+                                    </ul>
+                                  </div>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td>Usama A.</td>
+                                <td>Orhan Khan</td>
+                                <td>
+                                  <img
+                                    class="table-img"
+                                    src="assets/admin/asset/img/table img.jpeg"
+                                  /><span class="para-1"
+                                    >Learn How to design</span
+                                  >
+                                  <p class="para-2">
+                                    attractive UI for clients....
+                                  </p>
+                                </td>
+                                <td>Freelance Service</td>
+                                <td>
+                                  This Course is very helpful for Beginners I
+                                  learn ......
+                                </td>
+                                <td>
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="116"
+                                    height="20"
+                                    viewBox="0 0 116 20"
+                                    fill="none"
+                                  >
+                                    <path
+                                      d="M9.723 1.96796C9.82548 1.72157 10.1745 1.72157 10.277 1.96796L11.9957 6.10027C12.1829 6.55038 12.6062 6.85792 13.0922 6.89687L17.5533 7.25452C17.8193 7.27585 17.9272 7.6078 17.7245 7.7814L14.3256 10.693C13.9554 11.0101 13.7937 11.5077 13.9068 11.9819L14.9452 16.3352C15.0071 16.5948 14.7247 16.8 14.497 16.6609L10.6776 14.328C10.2616 14.0739 9.73839 14.0739 9.32237 14.328L5.50298 16.6609C5.27525 16.8 4.99287 16.5948 5.05479 16.3352L6.09322 11.9819C6.20633 11.5077 6.04465 11.0101 5.67443 10.693L2.27548 7.7814C2.07282 7.6078 2.18068 7.27585 2.44667 7.25452L6.90785 6.89687C7.39378 6.85792 7.81707 6.55038 8.00428 6.10027L9.723 1.96796Z"
+                                      fill="#FFAF06"
+                                      stroke="#FFAF06"
+                                    />
+                                    <path
+                                      d="M33.723 1.96796C33.8255 1.72157 34.1745 1.72157 34.277 1.96796L35.9957 6.10027C36.1829 6.55038 36.6062 6.85792 37.0922 6.89687L41.5533 7.25452C41.8193 7.27585 41.9272 7.6078 41.7245 7.7814L38.3256 10.693C37.9554 11.0101 37.7937 11.5077 37.9068 11.9819L38.9452 16.3352C39.0071 16.5948 38.7247 16.8 38.497 16.6609L34.6776 14.328C34.2616 14.0739 33.7384 14.0739 33.3224 14.328L29.503 16.6609C29.2752 16.8 28.9929 16.5948 29.0548 16.3352L30.0932 11.9819C30.2063 11.5077 30.0447 11.0101 29.6744 10.693L26.2755 7.7814C26.0728 7.6078 26.1807 7.27585 26.4467 7.25452L30.9078 6.89687C31.3938 6.85792 31.8171 6.55038 32.0043 6.10027L33.723 1.96796Z"
+                                      fill="#FFAF06"
+                                      stroke="#FFAF06"
+                                    />
+                                    <path
+                                      d="M57.723 1.96796C57.8255 1.72157 58.1745 1.72157 58.277 1.96796L59.9957 6.10027C60.1829 6.55038 60.6062 6.85792 61.0922 6.89687L65.5533 7.25452C65.8193 7.27585 65.9272 7.6078 65.7245 7.7814L62.3256 10.693C61.9554 11.0101 61.7937 11.5077 61.9068 11.9819L62.9452 16.3352C63.0071 16.5948 62.7247 16.8 62.497 16.6609L58.6776 14.328C58.2616 14.0739 57.7384 14.0739 57.3224 14.328L53.503 16.6609C53.2752 16.8 52.9929 16.5948 53.0548 16.3352L54.0932 11.9819C54.2063 11.5077 54.0447 11.0101 53.6744 10.693L50.2755 7.7814C50.0728 7.6078 50.1807 7.27585 50.4467 7.25452L54.9078 6.89687C55.3938 6.85792 55.8171 6.55038 56.0043 6.10027L57.723 1.96796Z"
+                                      fill="#FFAF06"
+                                      stroke="#FFAF06"
+                                    />
+                                    <path
+                                      d="M81.723 1.96796C81.8255 1.72157 82.1745 1.72157 82.277 1.96796L83.9957 6.10027C84.1829 6.55038 84.6062 6.85792 85.0922 6.89687L89.5533 7.25452C89.8193 7.27585 89.9272 7.6078 89.7245 7.7814L86.3256 10.693C85.9554 11.0101 85.7937 11.5077 85.9068 11.9819L86.9452 16.3352C87.0071 16.5948 86.7247 16.8 86.497 16.6609L82.6776 14.328C82.2616 14.0739 81.7384 14.0739 81.3224 14.328L77.503 16.6609C77.2752 16.8 76.9929 16.5948 77.0548 16.3352L78.0932 11.9819C78.2063 11.5077 78.0447 11.0101 77.6744 10.693L74.2755 7.7814C74.0728 7.6078 74.1807 7.27585 74.4467 7.25452L78.9078 6.89687C79.3938 6.85792 79.8171 6.55038 80.0043 6.10027L81.723 1.96796Z"
+                                      stroke="#FFAF06"
+                                    />
+                                    <path
+                                      d="M105.723 1.96796C105.825 1.72157 106.175 1.72157 106.277 1.96796L107.996 6.10027C108.183 6.55038 108.606 6.85792 109.092 6.89687L113.553 7.25452C113.819 7.27585 113.927 7.6078 113.725 7.7814L110.326 10.693C109.955 11.0101 109.794 11.5077 109.907 11.9819L110.945 16.3352C111.007 16.5948 110.725 16.8 110.497 16.6609L106.678 14.328C106.262 14.0739 105.738 14.0739 105.322 14.328L101.503 16.6609C101.275 16.8 100.993 16.5948 101.055 16.3352L102.093 11.9819C102.206 11.5077 102.045 11.0101 101.674 10.693L98.2755 7.7814C98.0728 7.6078 98.1807 7.27585 98.4467 7.25452L102.908 6.89687C103.394 6.85792 103.817 6.55038 104.004 6.10027L105.723 1.96796Z"
+                                      stroke="#FFAF06"
+                                    />
+                                  </svg>
+                                </td>
+                                <td>June 15, 2023</td>
+                                <td>
+                                  <div class="expert-dropdown">
+                                    <button
+                                      class="btn action-btn"
+                                      type="button"
+                                      id="dropdownMenuButton1"
+                                      data-bs-toggle="dropdown"
+                                      aria-expanded="false"
+                                    >
+                                      ...
+                                    </button>
+                                    <ul
+                                      class="dropdown-menu"
+                                      aria-labelledby="dropdownMenuButton1"
+                                    >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>View</li></a
+                                      >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>Delete</li></a
+                                      >
+                                    </ul>
+                                  </div>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td>Usama A.</td>
+                                <td>Orhan Khan</td>
+                                <td>
+                                  <img
+                                    class="table-img"
+                                    src="assets/admin/asset/img/table img.jpeg"
+                                  /><span class="para-1"
+                                    >Learn How to design</span
+                                  >
+                                  <p class="para-2">
+                                    attractive UI for clients....
+                                  </p>
+                                </td>
+                                <td>Freelance Service</td>
+                                <td>
+                                  This Course is very helpful for Beginners I
+                                  learn ......
+                                </td>
+                                <td>
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="116"
+                                    height="20"
+                                    viewBox="0 0 116 20"
+                                    fill="none"
+                                  >
+                                    <path
+                                      d="M9.723 1.96796C9.82548 1.72157 10.1745 1.72157 10.277 1.96796L11.9957 6.10027C12.1829 6.55038 12.6062 6.85792 13.0922 6.89687L17.5533 7.25452C17.8193 7.27585 17.9272 7.6078 17.7245 7.7814L14.3256 10.693C13.9554 11.0101 13.7937 11.5077 13.9068 11.9819L14.9452 16.3352C15.0071 16.5948 14.7247 16.8 14.497 16.6609L10.6776 14.328C10.2616 14.0739 9.73839 14.0739 9.32237 14.328L5.50298 16.6609C5.27525 16.8 4.99287 16.5948 5.05479 16.3352L6.09322 11.9819C6.20633 11.5077 6.04465 11.0101 5.67443 10.693L2.27548 7.7814C2.07282 7.6078 2.18068 7.27585 2.44667 7.25452L6.90785 6.89687C7.39378 6.85792 7.81707 6.55038 8.00428 6.10027L9.723 1.96796Z"
+                                      fill="#FFAF06"
+                                      stroke="#FFAF06"
+                                    />
+                                    <path
+                                      d="M33.723 1.96796C33.8255 1.72157 34.1745 1.72157 34.277 1.96796L35.9957 6.10027C36.1829 6.55038 36.6062 6.85792 37.0922 6.89687L41.5533 7.25452C41.8193 7.27585 41.9272 7.6078 41.7245 7.7814L38.3256 10.693C37.9554 11.0101 37.7937 11.5077 37.9068 11.9819L38.9452 16.3352C39.0071 16.5948 38.7247 16.8 38.497 16.6609L34.6776 14.328C34.2616 14.0739 33.7384 14.0739 33.3224 14.328L29.503 16.6609C29.2752 16.8 28.9929 16.5948 29.0548 16.3352L30.0932 11.9819C30.2063 11.5077 30.0447 11.0101 29.6744 10.693L26.2755 7.7814C26.0728 7.6078 26.1807 7.27585 26.4467 7.25452L30.9078 6.89687C31.3938 6.85792 31.8171 6.55038 32.0043 6.10027L33.723 1.96796Z"
+                                      fill="#FFAF06"
+                                      stroke="#FFAF06"
+                                    />
+                                    <path
+                                      d="M57.723 1.96796C57.8255 1.72157 58.1745 1.72157 58.277 1.96796L59.9957 6.10027C60.1829 6.55038 60.6062 6.85792 61.0922 6.89687L65.5533 7.25452C65.8193 7.27585 65.9272 7.6078 65.7245 7.7814L62.3256 10.693C61.9554 11.0101 61.7937 11.5077 61.9068 11.9819L62.9452 16.3352C63.0071 16.5948 62.7247 16.8 62.497 16.6609L58.6776 14.328C58.2616 14.0739 57.7384 14.0739 57.3224 14.328L53.503 16.6609C53.2752 16.8 52.9929 16.5948 53.0548 16.3352L54.0932 11.9819C54.2063 11.5077 54.0447 11.0101 53.6744 10.693L50.2755 7.7814C50.0728 7.6078 50.1807 7.27585 50.4467 7.25452L54.9078 6.89687C55.3938 6.85792 55.8171 6.55038 56.0043 6.10027L57.723 1.96796Z"
+                                      fill="#FFAF06"
+                                      stroke="#FFAF06"
+                                    />
+                                    <path
+                                      d="M81.723 1.96796C81.8255 1.72157 82.1745 1.72157 82.277 1.96796L83.9957 6.10027C84.1829 6.55038 84.6062 6.85792 85.0922 6.89687L89.5533 7.25452C89.8193 7.27585 89.9272 7.6078 89.7245 7.7814L86.3256 10.693C85.9554 11.0101 85.7937 11.5077 85.9068 11.9819L86.9452 16.3352C87.0071 16.5948 86.7247 16.8 86.497 16.6609L82.6776 14.328C82.2616 14.0739 81.7384 14.0739 81.3224 14.328L77.503 16.6609C77.2752 16.8 76.9929 16.5948 77.0548 16.3352L78.0932 11.9819C78.2063 11.5077 78.0447 11.0101 77.6744 10.693L74.2755 7.7814C74.0728 7.6078 74.1807 7.27585 74.4467 7.25452L78.9078 6.89687C79.3938 6.85792 79.8171 6.55038 80.0043 6.10027L81.723 1.96796Z"
+                                      stroke="#FFAF06"
+                                    />
+                                    <path
+                                      d="M105.723 1.96796C105.825 1.72157 106.175 1.72157 106.277 1.96796L107.996 6.10027C108.183 6.55038 108.606 6.85792 109.092 6.89687L113.553 7.25452C113.819 7.27585 113.927 7.6078 113.725 7.7814L110.326 10.693C109.955 11.0101 109.794 11.5077 109.907 11.9819L110.945 16.3352C111.007 16.5948 110.725 16.8 110.497 16.6609L106.678 14.328C106.262 14.0739 105.738 14.0739 105.322 14.328L101.503 16.6609C101.275 16.8 100.993 16.5948 101.055 16.3352L102.093 11.9819C102.206 11.5077 102.045 11.0101 101.674 10.693L98.2755 7.7814C98.0728 7.6078 98.1807 7.27585 98.4467 7.25452L102.908 6.89687C103.394 6.85792 103.817 6.55038 104.004 6.10027L105.723 1.96796Z"
+                                      stroke="#FFAF06"
+                                    />
+                                  </svg>
+                                </td>
+                                <td>June 15, 2023</td>
+                                <td>
+                                  <div class="expert-dropdown">
+                                    <button
+                                      class="btn action-btn"
+                                      type="button"
+                                      id="dropdownMenuButton1"
+                                      data-bs-toggle="dropdown"
+                                      aria-expanded="false"
+                                    >
+                                      ...
+                                    </button>
+                                    <ul
+                                      class="dropdown-menu"
+                                      aria-labelledby="dropdownMenuButton1"
+                                    >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>View</li></a
+                                      >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>Delete</li></a
+                                      >
+                                    </ul>
+                                  </div>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td>Usama A.</td>
+                                <td>Orhan Khan</td>
+                                <td>
+                                  <img
+                                    class="table-img"
+                                    src="assets/admin/asset/img/table img.jpeg"
+                                  /><span class="para-1"
+                                    >Learn How to design</span
+                                  >
+                                  <p class="para-2">
+                                    attractive UI for clients....
+                                  </p>
+                                </td>
+                                <td>Freelance Service</td>
+                                <td>
+                                  This Course is very helpful for Beginners I
+                                  learn ......
+                                </td>
+                                <td>
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="116"
+                                    height="20"
+                                    viewBox="0 0 116 20"
+                                    fill="none"
+                                  >
+                                    <path
+                                      d="M9.723 1.96796C9.82548 1.72157 10.1745 1.72157 10.277 1.96796L11.9957 6.10027C12.1829 6.55038 12.6062 6.85792 13.0922 6.89687L17.5533 7.25452C17.8193 7.27585 17.9272 7.6078 17.7245 7.7814L14.3256 10.693C13.9554 11.0101 13.7937 11.5077 13.9068 11.9819L14.9452 16.3352C15.0071 16.5948 14.7247 16.8 14.497 16.6609L10.6776 14.328C10.2616 14.0739 9.73839 14.0739 9.32237 14.328L5.50298 16.6609C5.27525 16.8 4.99287 16.5948 5.05479 16.3352L6.09322 11.9819C6.20633 11.5077 6.04465 11.0101 5.67443 10.693L2.27548 7.7814C2.07282 7.6078 2.18068 7.27585 2.44667 7.25452L6.90785 6.89687C7.39378 6.85792 7.81707 6.55038 8.00428 6.10027L9.723 1.96796Z"
+                                      fill="#FFAF06"
+                                      stroke="#FFAF06"
+                                    />
+                                    <path
+                                      d="M33.723 1.96796C33.8255 1.72157 34.1745 1.72157 34.277 1.96796L35.9957 6.10027C36.1829 6.55038 36.6062 6.85792 37.0922 6.89687L41.5533 7.25452C41.8193 7.27585 41.9272 7.6078 41.7245 7.7814L38.3256 10.693C37.9554 11.0101 37.7937 11.5077 37.9068 11.9819L38.9452 16.3352C39.0071 16.5948 38.7247 16.8 38.497 16.6609L34.6776 14.328C34.2616 14.0739 33.7384 14.0739 33.3224 14.328L29.503 16.6609C29.2752 16.8 28.9929 16.5948 29.0548 16.3352L30.0932 11.9819C30.2063 11.5077 30.0447 11.0101 29.6744 10.693L26.2755 7.7814C26.0728 7.6078 26.1807 7.27585 26.4467 7.25452L30.9078 6.89687C31.3938 6.85792 31.8171 6.55038 32.0043 6.10027L33.723 1.96796Z"
+                                      fill="#FFAF06"
+                                      stroke="#FFAF06"
+                                    />
+                                    <path
+                                      d="M57.723 1.96796C57.8255 1.72157 58.1745 1.72157 58.277 1.96796L59.9957 6.10027C60.1829 6.55038 60.6062 6.85792 61.0922 6.89687L65.5533 7.25452C65.8193 7.27585 65.9272 7.6078 65.7245 7.7814L62.3256 10.693C61.9554 11.0101 61.7937 11.5077 61.9068 11.9819L62.9452 16.3352C63.0071 16.5948 62.7247 16.8 62.497 16.6609L58.6776 14.328C58.2616 14.0739 57.7384 14.0739 57.3224 14.328L53.503 16.6609C53.2752 16.8 52.9929 16.5948 53.0548 16.3352L54.0932 11.9819C54.2063 11.5077 54.0447 11.0101 53.6744 10.693L50.2755 7.7814C50.0728 7.6078 50.1807 7.27585 50.4467 7.25452L54.9078 6.89687C55.3938 6.85792 55.8171 6.55038 56.0043 6.10027L57.723 1.96796Z"
+                                      fill="#FFAF06"
+                                      stroke="#FFAF06"
+                                    />
+                                    <path
+                                      d="M81.723 1.96796C81.8255 1.72157 82.1745 1.72157 82.277 1.96796L83.9957 6.10027C84.1829 6.55038 84.6062 6.85792 85.0922 6.89687L89.5533 7.25452C89.8193 7.27585 89.9272 7.6078 89.7245 7.7814L86.3256 10.693C85.9554 11.0101 85.7937 11.5077 85.9068 11.9819L86.9452 16.3352C87.0071 16.5948 86.7247 16.8 86.497 16.6609L82.6776 14.328C82.2616 14.0739 81.7384 14.0739 81.3224 14.328L77.503 16.6609C77.2752 16.8 76.9929 16.5948 77.0548 16.3352L78.0932 11.9819C78.2063 11.5077 78.0447 11.0101 77.6744 10.693L74.2755 7.7814C74.0728 7.6078 74.1807 7.27585 74.4467 7.25452L78.9078 6.89687C79.3938 6.85792 79.8171 6.55038 80.0043 6.10027L81.723 1.96796Z"
+                                      stroke="#FFAF06"
+                                    />
+                                    <path
+                                      d="M105.723 1.96796C105.825 1.72157 106.175 1.72157 106.277 1.96796L107.996 6.10027C108.183 6.55038 108.606 6.85792 109.092 6.89687L113.553 7.25452C113.819 7.27585 113.927 7.6078 113.725 7.7814L110.326 10.693C109.955 11.0101 109.794 11.5077 109.907 11.9819L110.945 16.3352C111.007 16.5948 110.725 16.8 110.497 16.6609L106.678 14.328C106.262 14.0739 105.738 14.0739 105.322 14.328L101.503 16.6609C101.275 16.8 100.993 16.5948 101.055 16.3352L102.093 11.9819C102.206 11.5077 102.045 11.0101 101.674 10.693L98.2755 7.7814C98.0728 7.6078 98.1807 7.27585 98.4467 7.25452L102.908 6.89687C103.394 6.85792 103.817 6.55038 104.004 6.10027L105.723 1.96796Z"
+                                      stroke="#FFAF06"
+                                    />
+                                  </svg>
+                                </td>
+                                <td>June 15, 2023</td>
+
+                                <td>
+                                  <div class="expert-dropdown">
+                                    <button
+                                      class="btn action-btn"
+                                      type="button"
+                                      id="dropdownMenuButton1"
+                                      data-bs-toggle="dropdown"
+                                      aria-expanded="false"
+                                    >
+                                      ...
+                                    </button>
+                                    <ul
+                                      class="dropdown-menu"
+                                      aria-labelledby="dropdownMenuButton1"
+                                    >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>View</li></a
+                                      >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>Delete</li></a
+                                      >
+                                    </ul>
+                                  </div>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td>Usama A.</td>
+                                <td>Orhan Khan</td>
+                                <td>
+                                  <img
+                                    class="table-img"
+                                    src="assets/admin/asset/img/table img.jpeg"
+                                  /><span class="para-1"
+                                    >Learn How to design</span
+                                  >
+                                  <p class="para-2">
+                                    attractive UI for clients....
+                                  </p>
+                                </td>
+                                <td>Freelance Service</td>
+                                <td>
+                                  This Course is very helpful for Beginners I
+                                  learn ......
+                                </td>
+                                <td>
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="116"
+                                    height="20"
+                                    viewBox="0 0 116 20"
+                                    fill="none"
+                                  >
+                                    <path
+                                      d="M9.723 1.96796C9.82548 1.72157 10.1745 1.72157 10.277 1.96796L11.9957 6.10027C12.1829 6.55038 12.6062 6.85792 13.0922 6.89687L17.5533 7.25452C17.8193 7.27585 17.9272 7.6078 17.7245 7.7814L14.3256 10.693C13.9554 11.0101 13.7937 11.5077 13.9068 11.9819L14.9452 16.3352C15.0071 16.5948 14.7247 16.8 14.497 16.6609L10.6776 14.328C10.2616 14.0739 9.73839 14.0739 9.32237 14.328L5.50298 16.6609C5.27525 16.8 4.99287 16.5948 5.05479 16.3352L6.09322 11.9819C6.20633 11.5077 6.04465 11.0101 5.67443 10.693L2.27548 7.7814C2.07282 7.6078 2.18068 7.27585 2.44667 7.25452L6.90785 6.89687C7.39378 6.85792 7.81707 6.55038 8.00428 6.10027L9.723 1.96796Z"
+                                      fill="#FFAF06"
+                                      stroke="#FFAF06"
+                                    />
+                                    <path
+                                      d="M33.723 1.96796C33.8255 1.72157 34.1745 1.72157 34.277 1.96796L35.9957 6.10027C36.1829 6.55038 36.6062 6.85792 37.0922 6.89687L41.5533 7.25452C41.8193 7.27585 41.9272 7.6078 41.7245 7.7814L38.3256 10.693C37.9554 11.0101 37.7937 11.5077 37.9068 11.9819L38.9452 16.3352C39.0071 16.5948 38.7247 16.8 38.497 16.6609L34.6776 14.328C34.2616 14.0739 33.7384 14.0739 33.3224 14.328L29.503 16.6609C29.2752 16.8 28.9929 16.5948 29.0548 16.3352L30.0932 11.9819C30.2063 11.5077 30.0447 11.0101 29.6744 10.693L26.2755 7.7814C26.0728 7.6078 26.1807 7.27585 26.4467 7.25452L30.9078 6.89687C31.3938 6.85792 31.8171 6.55038 32.0043 6.10027L33.723 1.96796Z"
+                                      fill="#FFAF06"
+                                      stroke="#FFAF06"
+                                    />
+                                    <path
+                                      d="M57.723 1.96796C57.8255 1.72157 58.1745 1.72157 58.277 1.96796L59.9957 6.10027C60.1829 6.55038 60.6062 6.85792 61.0922 6.89687L65.5533 7.25452C65.8193 7.27585 65.9272 7.6078 65.7245 7.7814L62.3256 10.693C61.9554 11.0101 61.7937 11.5077 61.9068 11.9819L62.9452 16.3352C63.0071 16.5948 62.7247 16.8 62.497 16.6609L58.6776 14.328C58.2616 14.0739 57.7384 14.0739 57.3224 14.328L53.503 16.6609C53.2752 16.8 52.9929 16.5948 53.0548 16.3352L54.0932 11.9819C54.2063 11.5077 54.0447 11.0101 53.6744 10.693L50.2755 7.7814C50.0728 7.6078 50.1807 7.27585 50.4467 7.25452L54.9078 6.89687C55.3938 6.85792 55.8171 6.55038 56.0043 6.10027L57.723 1.96796Z"
+                                      fill="#FFAF06"
+                                      stroke="#FFAF06"
+                                    />
+                                    <path
+                                      d="M81.723 1.96796C81.8255 1.72157 82.1745 1.72157 82.277 1.96796L83.9957 6.10027C84.1829 6.55038 84.6062 6.85792 85.0922 6.89687L89.5533 7.25452C89.8193 7.27585 89.9272 7.6078 89.7245 7.7814L86.3256 10.693C85.9554 11.0101 85.7937 11.5077 85.9068 11.9819L86.9452 16.3352C87.0071 16.5948 86.7247 16.8 86.497 16.6609L82.6776 14.328C82.2616 14.0739 81.7384 14.0739 81.3224 14.328L77.503 16.6609C77.2752 16.8 76.9929 16.5948 77.0548 16.3352L78.0932 11.9819C78.2063 11.5077 78.0447 11.0101 77.6744 10.693L74.2755 7.7814C74.0728 7.6078 74.1807 7.27585 74.4467 7.25452L78.9078 6.89687C79.3938 6.85792 79.8171 6.55038 80.0043 6.10027L81.723 1.96796Z"
+                                      stroke="#FFAF06"
+                                    />
+                                    <path
+                                      d="M105.723 1.96796C105.825 1.72157 106.175 1.72157 106.277 1.96796L107.996 6.10027C108.183 6.55038 108.606 6.85792 109.092 6.89687L113.553 7.25452C113.819 7.27585 113.927 7.6078 113.725 7.7814L110.326 10.693C109.955 11.0101 109.794 11.5077 109.907 11.9819L110.945 16.3352C111.007 16.5948 110.725 16.8 110.497 16.6609L106.678 14.328C106.262 14.0739 105.738 14.0739 105.322 14.328L101.503 16.6609C101.275 16.8 100.993 16.5948 101.055 16.3352L102.093 11.9819C102.206 11.5077 102.045 11.0101 101.674 10.693L98.2755 7.7814C98.0728 7.6078 98.1807 7.27585 98.4467 7.25452L102.908 6.89687C103.394 6.85792 103.817 6.55038 104.004 6.10027L105.723 1.96796Z"
+                                      stroke="#FFAF06"
+                                    />
+                                  </svg>
+                                </td>
+                                <td>June 15, 2023</td>
+                                <td>
+                                  <div class="expert-dropdown">
+                                    <button
+                                      class="btn action-btn"
+                                      type="button"
+                                      id="dropdownMenuButton1"
+                                      data-bs-toggle="dropdown"
+                                      aria-expanded="false"
+                                    >
+                                      ...
+                                    </button>
+                                    <ul
+                                      class="dropdown-menu"
+                                      aria-labelledby="dropdownMenuButton1"
+                                    >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>View</li></a
+                                      >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>Delete</li></a
+                                      >
+                                    </ul>
+                                  </div>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td>Usama A.</td>
+                                <td>Orhan Khan</td>
+                                <td>
+                                  <img
+                                    class="table-img"
+                                    src="assets/admin/asset/img/table img.jpeg"
+                                  /><span class="para-1"
+                                    >Learn How to design</span
+                                  >
+                                  <p class="para-2">
+                                    attractive UI for clients....
+                                  </p>
+                                </td>
+                                <td>Freelance Service</td>
+                                <td>
+                                  This Course is very helpful for Beginners I
+                                  learn ......
+                                </td>
+                                <td>
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="116"
+                                    height="20"
+                                    viewBox="0 0 116 20"
+                                    fill="none"
+                                  >
+                                    <path
+                                      d="M9.723 1.96796C9.82548 1.72157 10.1745 1.72157 10.277 1.96796L11.9957 6.10027C12.1829 6.55038 12.6062 6.85792 13.0922 6.89687L17.5533 7.25452C17.8193 7.27585 17.9272 7.6078 17.7245 7.7814L14.3256 10.693C13.9554 11.0101 13.7937 11.5077 13.9068 11.9819L14.9452 16.3352C15.0071 16.5948 14.7247 16.8 14.497 16.6609L10.6776 14.328C10.2616 14.0739 9.73839 14.0739 9.32237 14.328L5.50298 16.6609C5.27525 16.8 4.99287 16.5948 5.05479 16.3352L6.09322 11.9819C6.20633 11.5077 6.04465 11.0101 5.67443 10.693L2.27548 7.7814C2.07282 7.6078 2.18068 7.27585 2.44667 7.25452L6.90785 6.89687C7.39378 6.85792 7.81707 6.55038 8.00428 6.10027L9.723 1.96796Z"
+                                      fill="#FFAF06"
+                                      stroke="#FFAF06"
+                                    />
+                                    <path
+                                      d="M33.723 1.96796C33.8255 1.72157 34.1745 1.72157 34.277 1.96796L35.9957 6.10027C36.1829 6.55038 36.6062 6.85792 37.0922 6.89687L41.5533 7.25452C41.8193 7.27585 41.9272 7.6078 41.7245 7.7814L38.3256 10.693C37.9554 11.0101 37.7937 11.5077 37.9068 11.9819L38.9452 16.3352C39.0071 16.5948 38.7247 16.8 38.497 16.6609L34.6776 14.328C34.2616 14.0739 33.7384 14.0739 33.3224 14.328L29.503 16.6609C29.2752 16.8 28.9929 16.5948 29.0548 16.3352L30.0932 11.9819C30.2063 11.5077 30.0447 11.0101 29.6744 10.693L26.2755 7.7814C26.0728 7.6078 26.1807 7.27585 26.4467 7.25452L30.9078 6.89687C31.3938 6.85792 31.8171 6.55038 32.0043 6.10027L33.723 1.96796Z"
+                                      fill="#FFAF06"
+                                      stroke="#FFAF06"
+                                    />
+                                    <path
+                                      d="M57.723 1.96796C57.8255 1.72157 58.1745 1.72157 58.277 1.96796L59.9957 6.10027C60.1829 6.55038 60.6062 6.85792 61.0922 6.89687L65.5533 7.25452C65.8193 7.27585 65.9272 7.6078 65.7245 7.7814L62.3256 10.693C61.9554 11.0101 61.7937 11.5077 61.9068 11.9819L62.9452 16.3352C63.0071 16.5948 62.7247 16.8 62.497 16.6609L58.6776 14.328C58.2616 14.0739 57.7384 14.0739 57.3224 14.328L53.503 16.6609C53.2752 16.8 52.9929 16.5948 53.0548 16.3352L54.0932 11.9819C54.2063 11.5077 54.0447 11.0101 53.6744 10.693L50.2755 7.7814C50.0728 7.6078 50.1807 7.27585 50.4467 7.25452L54.9078 6.89687C55.3938 6.85792 55.8171 6.55038 56.0043 6.10027L57.723 1.96796Z"
+                                      fill="#FFAF06"
+                                      stroke="#FFAF06"
+                                    />
+                                    <path
+                                      d="M81.723 1.96796C81.8255 1.72157 82.1745 1.72157 82.277 1.96796L83.9957 6.10027C84.1829 6.55038 84.6062 6.85792 85.0922 6.89687L89.5533 7.25452C89.8193 7.27585 89.9272 7.6078 89.7245 7.7814L86.3256 10.693C85.9554 11.0101 85.7937 11.5077 85.9068 11.9819L86.9452 16.3352C87.0071 16.5948 86.7247 16.8 86.497 16.6609L82.6776 14.328C82.2616 14.0739 81.7384 14.0739 81.3224 14.328L77.503 16.6609C77.2752 16.8 76.9929 16.5948 77.0548 16.3352L78.0932 11.9819C78.2063 11.5077 78.0447 11.0101 77.6744 10.693L74.2755 7.7814C74.0728 7.6078 74.1807 7.27585 74.4467 7.25452L78.9078 6.89687C79.3938 6.85792 79.8171 6.55038 80.0043 6.10027L81.723 1.96796Z"
+                                      stroke="#FFAF06"
+                                    />
+                                    <path
+                                      d="M105.723 1.96796C105.825 1.72157 106.175 1.72157 106.277 1.96796L107.996 6.10027C108.183 6.55038 108.606 6.85792 109.092 6.89687L113.553 7.25452C113.819 7.27585 113.927 7.6078 113.725 7.7814L110.326 10.693C109.955 11.0101 109.794 11.5077 109.907 11.9819L110.945 16.3352C111.007 16.5948 110.725 16.8 110.497 16.6609L106.678 14.328C106.262 14.0739 105.738 14.0739 105.322 14.328L101.503 16.6609C101.275 16.8 100.993 16.5948 101.055 16.3352L102.093 11.9819C102.206 11.5077 102.045 11.0101 101.674 10.693L98.2755 7.7814C98.0728 7.6078 98.1807 7.27585 98.4467 7.25452L102.908 6.89687C103.394 6.85792 103.817 6.55038 104.004 6.10027L105.723 1.96796Z"
+                                      stroke="#FFAF06"
+                                    />
+                                  </svg>
+                                </td>
+                                <td>June 15, 2023</td>
+                                <td>
+                                  <div class="expert-dropdown">
+                                    <button
+                                      class="btn action-btn"
+                                      type="button"
+                                      id="dropdownMenuButton1"
+                                      data-bs-toggle="dropdown"
+                                      aria-expanded="false"
+                                    >
+                                      ...
+                                    </button>
+                                    <ul
+                                      class="dropdown-menu"
+                                      aria-labelledby="dropdownMenuButton1"
+                                    >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>View</li></a
+                                      >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>Delete</li></a
+                                      >
+                                    </ul>
+                                  </div>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td>Usama A.</td>
+                                <td>Orhan Khan</td>
+                                <td>
+                                  <img
+                                    class="table-img"
+                                    src="assets/admin/asset/img/table img.jpeg"
+                                  /><span class="para-1"
+                                    >Learn How to design</span
+                                  >
+                                  <p class="para-2">
+                                    attractive UI for clients....
+                                  </p>
+                                </td>
+                                <td>Freelance Service</td>
+                                <td>
+                                  This Course is very helpful for Beginners I
+                                  learn ......
+                                </td>
+                                <td>
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="116"
+                                    height="20"
+                                    viewBox="0 0 116 20"
+                                    fill="none"
+                                  >
+                                    <path
+                                      d="M9.723 1.96796C9.82548 1.72157 10.1745 1.72157 10.277 1.96796L11.9957 6.10027C12.1829 6.55038 12.6062 6.85792 13.0922 6.89687L17.5533 7.25452C17.8193 7.27585 17.9272 7.6078 17.7245 7.7814L14.3256 10.693C13.9554 11.0101 13.7937 11.5077 13.9068 11.9819L14.9452 16.3352C15.0071 16.5948 14.7247 16.8 14.497 16.6609L10.6776 14.328C10.2616 14.0739 9.73839 14.0739 9.32237 14.328L5.50298 16.6609C5.27525 16.8 4.99287 16.5948 5.05479 16.3352L6.09322 11.9819C6.20633 11.5077 6.04465 11.0101 5.67443 10.693L2.27548 7.7814C2.07282 7.6078 2.18068 7.27585 2.44667 7.25452L6.90785 6.89687C7.39378 6.85792 7.81707 6.55038 8.00428 6.10027L9.723 1.96796Z"
+                                      fill="#FFAF06"
+                                      stroke="#FFAF06"
+                                    />
+                                    <path
+                                      d="M33.723 1.96796C33.8255 1.72157 34.1745 1.72157 34.277 1.96796L35.9957 6.10027C36.1829 6.55038 36.6062 6.85792 37.0922 6.89687L41.5533 7.25452C41.8193 7.27585 41.9272 7.6078 41.7245 7.7814L38.3256 10.693C37.9554 11.0101 37.7937 11.5077 37.9068 11.9819L38.9452 16.3352C39.0071 16.5948 38.7247 16.8 38.497 16.6609L34.6776 14.328C34.2616 14.0739 33.7384 14.0739 33.3224 14.328L29.503 16.6609C29.2752 16.8 28.9929 16.5948 29.0548 16.3352L30.0932 11.9819C30.2063 11.5077 30.0447 11.0101 29.6744 10.693L26.2755 7.7814C26.0728 7.6078 26.1807 7.27585 26.4467 7.25452L30.9078 6.89687C31.3938 6.85792 31.8171 6.55038 32.0043 6.10027L33.723 1.96796Z"
+                                      fill="#FFAF06"
+                                      stroke="#FFAF06"
+                                    />
+                                    <path
+                                      d="M57.723 1.96796C57.8255 1.72157 58.1745 1.72157 58.277 1.96796L59.9957 6.10027C60.1829 6.55038 60.6062 6.85792 61.0922 6.89687L65.5533 7.25452C65.8193 7.27585 65.9272 7.6078 65.7245 7.7814L62.3256 10.693C61.9554 11.0101 61.7937 11.5077 61.9068 11.9819L62.9452 16.3352C63.0071 16.5948 62.7247 16.8 62.497 16.6609L58.6776 14.328C58.2616 14.0739 57.7384 14.0739 57.3224 14.328L53.503 16.6609C53.2752 16.8 52.9929 16.5948 53.0548 16.3352L54.0932 11.9819C54.2063 11.5077 54.0447 11.0101 53.6744 10.693L50.2755 7.7814C50.0728 7.6078 50.1807 7.27585 50.4467 7.25452L54.9078 6.89687C55.3938 6.85792 55.8171 6.55038 56.0043 6.10027L57.723 1.96796Z"
+                                      fill="#FFAF06"
+                                      stroke="#FFAF06"
+                                    />
+                                    <path
+                                      d="M81.723 1.96796C81.8255 1.72157 82.1745 1.72157 82.277 1.96796L83.9957 6.10027C84.1829 6.55038 84.6062 6.85792 85.0922 6.89687L89.5533 7.25452C89.8193 7.27585 89.9272 7.6078 89.7245 7.7814L86.3256 10.693C85.9554 11.0101 85.7937 11.5077 85.9068 11.9819L86.9452 16.3352C87.0071 16.5948 86.7247 16.8 86.497 16.6609L82.6776 14.328C82.2616 14.0739 81.7384 14.0739 81.3224 14.328L77.503 16.6609C77.2752 16.8 76.9929 16.5948 77.0548 16.3352L78.0932 11.9819C78.2063 11.5077 78.0447 11.0101 77.6744 10.693L74.2755 7.7814C74.0728 7.6078 74.1807 7.27585 74.4467 7.25452L78.9078 6.89687C79.3938 6.85792 79.8171 6.55038 80.0043 6.10027L81.723 1.96796Z"
+                                      stroke="#FFAF06"
+                                    />
+                                    <path
+                                      d="M105.723 1.96796C105.825 1.72157 106.175 1.72157 106.277 1.96796L107.996 6.10027C108.183 6.55038 108.606 6.85792 109.092 6.89687L113.553 7.25452C113.819 7.27585 113.927 7.6078 113.725 7.7814L110.326 10.693C109.955 11.0101 109.794 11.5077 109.907 11.9819L110.945 16.3352C111.007 16.5948 110.725 16.8 110.497 16.6609L106.678 14.328C106.262 14.0739 105.738 14.0739 105.322 14.328L101.503 16.6609C101.275 16.8 100.993 16.5948 101.055 16.3352L102.093 11.9819C102.206 11.5077 102.045 11.0101 101.674 10.693L98.2755 7.7814C98.0728 7.6078 98.1807 7.27585 98.4467 7.25452L102.908 6.89687C103.394 6.85792 103.817 6.55038 104.004 6.10027L105.723 1.96796Z"
+                                      stroke="#FFAF06"
+                                    />
+                                  </svg>
+                                </td>
+                                <td>June 15, 2023</td>
+                                <td>
+                                  <div class="expert-dropdown">
+                                    <button
+                                      class="btn action-btn"
+                                      type="button"
+                                      id="dropdownMenuButton1"
+                                      data-bs-toggle="dropdown"
+                                      aria-expanded="false"
+                                    >
+                                      ...
+                                    </button>
+                                    <ul
+                                      class="dropdown-menu"
+                                      aria-labelledby="dropdownMenuButton1"
+                                    >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>View</li></a
+                                      >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>Delete</li></a
+                                      >
+                                    </ul>
+                                  </div>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td>Usama A.</td>
+                                <td>Orhan Khan</td>
+                                <td>
+                                  <img
+                                    class="table-img"
+                                    src="assets/admin/asset/img/table img.jpeg"
+                                  /><span class="para-1"
+                                    >Learn How to design</span
+                                  >
+                                  <p class="para-2">
+                                    attractive UI for clients....
+                                  </p>
+                                </td>
+                                <td>Freelance Service</td>
+                                <td>
+                                  This Course is very helpful for Beginners I
+                                  learn ......
+                                </td>
+                                <td>
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="116"
+                                    height="20"
+                                    viewBox="0 0 116 20"
+                                    fill="none"
+                                  >
+                                    <path
+                                      d="M9.723 1.96796C9.82548 1.72157 10.1745 1.72157 10.277 1.96796L11.9957 6.10027C12.1829 6.55038 12.6062 6.85792 13.0922 6.89687L17.5533 7.25452C17.8193 7.27585 17.9272 7.6078 17.7245 7.7814L14.3256 10.693C13.9554 11.0101 13.7937 11.5077 13.9068 11.9819L14.9452 16.3352C15.0071 16.5948 14.7247 16.8 14.497 16.6609L10.6776 14.328C10.2616 14.0739 9.73839 14.0739 9.32237 14.328L5.50298 16.6609C5.27525 16.8 4.99287 16.5948 5.05479 16.3352L6.09322 11.9819C6.20633 11.5077 6.04465 11.0101 5.67443 10.693L2.27548 7.7814C2.07282 7.6078 2.18068 7.27585 2.44667 7.25452L6.90785 6.89687C7.39378 6.85792 7.81707 6.55038 8.00428 6.10027L9.723 1.96796Z"
+                                      fill="#FFAF06"
+                                      stroke="#FFAF06"
+                                    />
+                                    <path
+                                      d="M33.723 1.96796C33.8255 1.72157 34.1745 1.72157 34.277 1.96796L35.9957 6.10027C36.1829 6.55038 36.6062 6.85792 37.0922 6.89687L41.5533 7.25452C41.8193 7.27585 41.9272 7.6078 41.7245 7.7814L38.3256 10.693C37.9554 11.0101 37.7937 11.5077 37.9068 11.9819L38.9452 16.3352C39.0071 16.5948 38.7247 16.8 38.497 16.6609L34.6776 14.328C34.2616 14.0739 33.7384 14.0739 33.3224 14.328L29.503 16.6609C29.2752 16.8 28.9929 16.5948 29.0548 16.3352L30.0932 11.9819C30.2063 11.5077 30.0447 11.0101 29.6744 10.693L26.2755 7.7814C26.0728 7.6078 26.1807 7.27585 26.4467 7.25452L30.9078 6.89687C31.3938 6.85792 31.8171 6.55038 32.0043 6.10027L33.723 1.96796Z"
+                                      fill="#FFAF06"
+                                      stroke="#FFAF06"
+                                    />
+                                    <path
+                                      d="M57.723 1.96796C57.8255 1.72157 58.1745 1.72157 58.277 1.96796L59.9957 6.10027C60.1829 6.55038 60.6062 6.85792 61.0922 6.89687L65.5533 7.25452C65.8193 7.27585 65.9272 7.6078 65.7245 7.7814L62.3256 10.693C61.9554 11.0101 61.7937 11.5077 61.9068 11.9819L62.9452 16.3352C63.0071 16.5948 62.7247 16.8 62.497 16.6609L58.6776 14.328C58.2616 14.0739 57.7384 14.0739 57.3224 14.328L53.503 16.6609C53.2752 16.8 52.9929 16.5948 53.0548 16.3352L54.0932 11.9819C54.2063 11.5077 54.0447 11.0101 53.6744 10.693L50.2755 7.7814C50.0728 7.6078 50.1807 7.27585 50.4467 7.25452L54.9078 6.89687C55.3938 6.85792 55.8171 6.55038 56.0043 6.10027L57.723 1.96796Z"
+                                      fill="#FFAF06"
+                                      stroke="#FFAF06"
+                                    />
+                                    <path
+                                      d="M81.723 1.96796C81.8255 1.72157 82.1745 1.72157 82.277 1.96796L83.9957 6.10027C84.1829 6.55038 84.6062 6.85792 85.0922 6.89687L89.5533 7.25452C89.8193 7.27585 89.9272 7.6078 89.7245 7.7814L86.3256 10.693C85.9554 11.0101 85.7937 11.5077 85.9068 11.9819L86.9452 16.3352C87.0071 16.5948 86.7247 16.8 86.497 16.6609L82.6776 14.328C82.2616 14.0739 81.7384 14.0739 81.3224 14.328L77.503 16.6609C77.2752 16.8 76.9929 16.5948 77.0548 16.3352L78.0932 11.9819C78.2063 11.5077 78.0447 11.0101 77.6744 10.693L74.2755 7.7814C74.0728 7.6078 74.1807 7.27585 74.4467 7.25452L78.9078 6.89687C79.3938 6.85792 79.8171 6.55038 80.0043 6.10027L81.723 1.96796Z"
+                                      stroke="#FFAF06"
+                                    />
+                                    <path
+                                      d="M105.723 1.96796C105.825 1.72157 106.175 1.72157 106.277 1.96796L107.996 6.10027C108.183 6.55038 108.606 6.85792 109.092 6.89687L113.553 7.25452C113.819 7.27585 113.927 7.6078 113.725 7.7814L110.326 10.693C109.955 11.0101 109.794 11.5077 109.907 11.9819L110.945 16.3352C111.007 16.5948 110.725 16.8 110.497 16.6609L106.678 14.328C106.262 14.0739 105.738 14.0739 105.322 14.328L101.503 16.6609C101.275 16.8 100.993 16.5948 101.055 16.3352L102.093 11.9819C102.206 11.5077 102.045 11.0101 101.674 10.693L98.2755 7.7814C98.0728 7.6078 98.1807 7.27585 98.4467 7.25452L102.908 6.89687C103.394 6.85792 103.817 6.55038 104.004 6.10027L105.723 1.96796Z"
+                                      stroke="#FFAF06"
+                                    />
+                                  </svg>
+                                </td>
+                                <td>June 15, 2023</td>
+                                <td>
+                                  <div class="expert-dropdown">
+                                    <button
+                                      class="btn action-btn"
+                                      type="button"
+                                      id="dropdownMenuButton1"
+                                      data-bs-toggle="dropdown"
+                                      aria-expanded="false"
+                                    >
+                                      ...
+                                    </button>
+                                    <ul
+                                      class="dropdown-menu"
+                                      aria-labelledby="dropdownMenuButton1"
+                                    >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>View</li></a
+                                      >
+                                      <a class="dropdown-item" href="#"
+                                        ><li>Delete</li></a
+                                      >
+                                    </ul>
+                                  </div>
+                                </td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- top categories and sub categories -->
+              <div class="top-categories-sub-categories">
+                <div class="row">
+                  <div class="col-lg-3 col-md-3 col-sm-12">
+                    <div class="top-cat">
+                      <h5>Graphic Designing</h5>
+                    </div>
+                    <div class="top-sub-cat">
+                      <p>Logo Design</p>
+                      <p>Poster Design</p>
+                      <p>Flyers</p>
+                      <p>UI Design</p>
+                      <p>UI / UX</p>
+                      <p>Packaging design</p>
+                      <p>Advertising design</p>
+                      <p>Illustration</p>
+                    </div>
+                  </div>
+                  <div class="col-lg-3 col-md-3 col-sm-12">
+                    <div class="top-cat">
+                      <h5>Graphic Designing</h5>
+                    </div>
+                    <div class="top-sub-cat">
+                      <p>Logo Design</p>
+                      <p>Poster Design</p>
+                      <p>Flyers</p>
+                      <p>UI Design</p>
+                      <p>UI / UX</p>
+                      <p>Packaging design</p>
+                      <p>Advertising design</p>
+                      <p>Illustration</p>
+                    </div>
+                  </div>
+                  <div class="col-lg-3 col-md-3 col-sm-12">
+                    <div class="top-cat">
+                      <h5>Graphic Designing</h5>
+                    </div>
+                    <div class="top-sub-cat">
+                      <p>Logo Design</p>
+                      <p>Poster Design</p>
+                      <p>Flyers</p>
+                      <p>UI Design</p>
+                      <p>UI / UX</p>
+                      <p>Packaging design</p>
+                      <p>Advertising design</p>
+                      <p>Illustration</p>
+                    </div>
+                  </div>
+                  <div class="col-lg-3 col-md-3 col-sm-12">
+                    <div class="top-cat">
+                      <h5>Graphic Designing</h5>
+                    </div>
+                    <div class="top-sub-cat">
+                      <p>Logo Design</p>
+                      <p>Poster Design</p>
+                      <p>Flyers</p>
+                      <p>UI Design</p>
+                      <p>UI / UX</p>
+                      <p>Packaging design</p>
+                      <p>Advertising design</p>
+                      <p>Illustration</p>
+                    </div>
+                  </div>
+                  <div class="col-lg-3 col-md-3 col-sm-12">
+                    <div class="top-cat">
+                      <h5>Graphic Designing</h5>
+                    </div>
+                    <div class="top-sub-cat">
+                      <p>Logo Design</p>
+                      <p>Poster Design</p>
+                      <p>Flyers</p>
+                      <p>UI Design</p>
+                      <p>UI / UX</p>
+                      <p>Packaging design</p>
+                      <p>Advertising design</p>
+                      <p>Illustration</p>
+                    </div>
+                  </div>
+                  <div class="col-lg-3 col-md-3 col-sm-12">
+                    <div class="top-cat">
+                      <h5>Graphic Designing</h5>
+                    </div>
+                    <div class="top-sub-cat">
+                      <p>Logo Design</p>
+                      <p>Poster Design</p>
+                      <p>Flyers</p>
+                      <p>UI Design</p>
+                      <p>UI / UX</p>
+                      <p>Packaging design</p>
+                      <p>Advertising design</p>
+                      <p>Illustration</p>
+                    </div>
+                  </div>
+                  <div class="col-lg-3 col-md-3 col-sm-12">
+                    <div class="top-cat">
+                      <h5>Graphic Designing</h5>
+                    </div>
+                    <div class="top-sub-cat">
+                      <p>Logo Design</p>
+                      <p>Poster Design</p>
+                      <p>Flyers</p>
+                      <p>UI Design</p>
+                      <p>UI / UX</p>
+                      <p>Packaging design</p>
+                      <p>Advertising design</p>
+                      <p>Illustration</p>
+                    </div>
+                  </div>
+                  <div class="col-lg-3 col-md-3 col-sm-12">
+                    <div class="top-cat">
+                      <h5>Graphic Designing</h5>
+                    </div>
+                    <div class="top-sub-cat">
+                      <p>Logo Design</p>
+                      <p>Poster Design</p>
+                      <p>Flyers</p>
+                      <p>UI Design</p>
+                      <p>UI / UX</p>
+                      <p>Packaging design</p>
+                      <p>Advertising design</p>
+                      <p>Illustration</p>
+                    </div>
+                  </div>
+                  <div class="col-lg-3 col-md-3 col-sm-12">
+                    <div class="top-cat">
+                      <h5>Graphic Designing</h5>
+                    </div>
+                    <div class="top-sub-cat">
+                      <p>Logo Design</p>
+                      <p>Poster Design</p>
+                      <p>Flyers</p>
+                      <p>UI Design</p>
+                      <p>UI / UX</p>
+                      <p>Packaging design</p>
+                      <p>Advertising design</p>
+                      <p>Illustration</p>
+                    </div>
+                  </div>
+                  <div class="col-lg-3 col-md-3 col-sm-12">
+                    <div class="top-cat">
+                      <h5>Graphic Designing</h5>
+                    </div>
+                    <div class="top-sub-cat">
+                      <p>Logo Design</p>
+                      <p>Poster Design</p>
+                      <p>Flyers</p>
+                      <p>UI Design</p>
+                      <p>UI / UX</p>
+                      <p>Packaging design</p>
+                      <p>Advertising design</p>
+                      <p>Illustration</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="copyright">
+        <p>Copyright Dreamcrowd © 2021. All Rights Reserved.</p>
+      </div>
+      <!-- =============================== MAIN CONTENT END HERE =========================== -->
+    </section>
+
+    <script src="assets/admin/libs/jquery/jquery.js"></script>
+    <script src="assets/admin/libs/datatable/js/datatable.js"></script>
+    <script src="assets/admin/libs/datatable/js/datatablebootstrap.js"></script>
+    <script src="assets/admin/libs/select2/js/select2.min.js"></script>
+    <script src="assets/admin/libs/owl-carousel/js/owl.carousel.min.js"></script>
+    <script src="assets/admin/libs/aos/js/aos.js"></script>
+    <script src="assets/admin/asset/js/bootstrap.min.js"></script>
+    <script src="assets/admin/asset/js/script.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>
+<!-- Date Picker JS -->
+<script>
+  const dateFilter = document.getElementById("dateFilter");
+  const fromDateFields = document.getElementById("fromDateFields");
+  const toDateFields = document.getElementById("toDateFields");
+
+  dateFilter.addEventListener("change", function () {
+    if (dateFilter.value === "custom") {
+      fromDateFields.style.display = "inline";
+      toDateFields.style.display = "inline";
+    } else {
+      fromDateFields.style.display = "none";
+      toDateFields.style.display = "none";
+    }
+  });
+</script>
+<!-- ================ side js start here=============== -->
+<script>
+  // Sidebar script
+  document.addEventListener("DOMContentLoaded", function () {
+    let arrow = document.querySelectorAll(".arrow");
+    for (let i = 0; i < arrow.length; i++) {
+      arrow[i].addEventListener("click", function (e) {
+        let arrowParent = e.target.parentElement.parentElement; // Selecting main parent of arrow
+        arrowParent.classList.toggle("showMenu");
+      });
+    }
+
+    let sidebar = document.querySelector(".sidebar");
+    let sidebarBtn = document.querySelector(".bx-menu");
+
+    sidebarBtn.addEventListener("click", function () {
+      sidebar.classList.toggle("close");
+    });
+
+    // Function to toggle sidebar based on screen size
+    function toggleSidebar() {
+      let screenWidth = window.innerWidth;
+      if (screenWidth < 992) {
+        sidebar.classList.add("close");
+      } else {
+        sidebar.classList.remove("close");
+      }
+    }
+
+    // Call the function initially
+    toggleSidebar();
+
+    // Listen for resize events to adjust sidebar
+    window.addEventListener("resize", function () {
+      toggleSidebar();
+    });
+  });
+</script>
+<!-- ================ side js start End=============== -->
+

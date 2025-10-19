@@ -1,0 +1,150 @@
+.navbar-inbox-dropdawon .dropDawon-head {
+  border-bottom: 1px solid #e8e8e8;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  padding: 10px 20px;
+}
+
+.navbar-inbox-dropdawon .dropDawon-head h4 {
+  margin: 0px 0px 0px 10px;
+  color: #181818;
+  font-family: Roboto;
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+}
+
+.navbar-inbox-dropdawon .dropDawon-head span {
+  color: #444;
+  font-family: Roboto;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+  margin-left: 5px;
+}
+
+.message-section:hover {
+  background: #e5f5ff;
+}
+
+.message-section {
+  padding: 10px 19px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  /* background: #E5F5FF; */
+  border-bottom: 1px solid #e8e8e8;
+}
+
+.dropDawon-profile-section {
+  display: flex;
+}
+
+.dropDawon-profile-section .inbox-profile-detail h5 {
+  color: rgba(24, 24, 24, 0.9);
+  font-family: Roboto;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  margin: 0px;
+}
+
+.dropDawon-profile-section .inbox-profile-detail span {
+  color: rgba(68, 68, 68, 0.9);
+  font-family: Roboto;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+}
+
+.dropDawon-profile-section .inbox-profile-detail {
+  margin-left: 13px;
+}
+
+.navbar-inbox-dropdawon span {
+  color: rgba(135, 133, 133, 0.9);
+  font-family: Roboto;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  width: 80px !important;
+}
+
+.inbox-profile-img {
+  position: relative;
+}
+
+.inbox-profile-img h1 {
+  position: absolute;
+  color: #14ff00;
+  margin: 0px;
+  font-size: 70px;
+  top: -53px;
+  left: 21px;
+}
+
+.inbox-drop-footer {
+  text-align: center;
+  padding: 20px 10px;
+}
+
+.inbox-drop-footer span {
+  color: #02a4ff;
+  font-family: Roboto;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+}
+
+/* .empty {
+  padding: 10px !important;
+  height: 20px;
+} */
+
+/* ======== */
+/*  */
+.logout-dropdawon {
+  width: 250px !important;
+  margin: auto !important;
+  background-color: #ffffff !important;
+  border: none !important;
+  border-radius: 0px !important;
+  box-shadow: 0px 8px 8px 0px rgba(0, 0, 0, 0.08) !important;
+}
+
+.logout-dropdawon li {
+  color: #181818 !important;
+  font-family: Roboto !important;
+  font-size: 16px !important;
+  font-style: normal !important;
+  font-weight: 400 !important;
+  line-height: normal !important;
+  border-bottom: 1px solid #e8e8e8;
+  padding: 10px 0px 10px 0px;
+}
+
+.logout-dropdawon li :hover {
+  background-color: #0072b1 !important;
+}
+
+.logout-dropdawon li :hover {
+  color: #fff !important;
+  font-size: 16px !important;
+  font-style: normal !important;
+  font-weight: 500 !important;
+  line-height: normal !important;
+}
+@media only screen and (min-width: 1441px) {
+  .logout-dropdawon.show {
+    right: 20px;
+    left: auto;
+    top: 63px;
+  }
+}

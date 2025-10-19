@@ -1,0 +1,105 @@
+.reject-modal {
+  border-radius: 8px;
+  background: var(--Colors-White, #fff);
+  display: inline-flex;
+  padding: 40px;
+  flex-direction: column;
+}
+.reject-modal h3 {
+  color: var(--Colors-Logo-Color, #0072b1);
+  text-align: center;
+  font-family: Outfit;
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+  margin-bottom: 0px;
+}
+.reject-modal p {
+  color: var(--Colors-Place-Holder, #ababab);
+  text-align: center;
+  font-family: Roboto;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  margin-bottom: 0px;
+  padding-top: 8px;
+}
+.buttuns-sec {
+  display: flex;
+  padding-top: 20px;
+}
+.yes-btns {
+  border-radius: 4px;
+  border: 1px solid var(--Colors-Place-Holder, #ababab);
+  display: flex;
+  padding: 8px 43px;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  flex: 1 0 0;
+  color: var(--Colors-Place-Holder, #ababab);
+  font-family: Roboto;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+}
+.yes-btns:hover {
+  background: #0072b1;
+  color: #fff;
+}
+.no-btns {
+  border-radius: 4px;
+  background: var(--Colors-Logo-Color, #0072b1);
+  display: flex;
+  padding: 8px 43px;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  flex: 1 0 0;
+  color: #fff;
+  font-family: Roboto;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  margin-left: 12px;
+}
+.no-btns:hover {
+  color: #fff;
+}
+.type-reason {
+  color: var(--Colors-Place-Holder, #ababab);
+  font-family: Roboto;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  width: 100%;
+  margin-top: 20px;
+  padding: 8px 12px 100px 12px;
+  border-radius: 4px;
+  border: 1px solid var(--Colors-Place-Holder, #ababab);
+  background: var(--Colors-White, #fff);
+}
+.reject-head {
+  display: flex;
+  align-items: start;
+}
+.submit {
+  margin-left: 0px;
+  flex: 0;
+}
+.submit-sec {
+  float: inline-end;
+}
+.success-btn {
+  align-items: center;
+  justify-content: center;
+}
+.success {
+  margin-left: 0px;
+  flex: none;
+}

@@ -1,0 +1,834 @@
+@font-face {
+  font-family: Roboto;
+  src: url(../../fonts/Roboto.ttf);
+}
+
+@font-face {
+  font-family: Inter;
+  src: url(../../fonts/Inter.ttf);
+}
+
+@font-face {
+  font-family: Outfit;
+  src: url(../../fonts/Outfit.ttf);
+}
+/* ========================================================== PROFILE PAGE ================================================================================ */
+.dash-notification {
+  background: #f4fbff;
+  padding: 32px 40px 0px 20px;
+  margin-top: 100px;
+}
+
+.dash-top {
+  padding: 0px 0px 24px 0px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.dash-top .dash-title {
+  color: #181818;
+  font-family: Roboto;
+  font-size: 12px;
+  font-weight: 400;
+  margin: 0;
+}
+
+.dash-top i {
+  font-size: 10px;
+  stroke: #181818;
+  margin-top: 2px;
+}
+
+.dash-top .min-title {
+  color: #7d7d7d;
+  font-family: Roboto;
+  font-size: 12px;
+  font-weight: 400;
+}
+
+.user-notification {
+  align-items: center;
+  background: #0072b1;
+  margin-bottom: 20px;
+}
+
+.user-notification .notify {
+  display: flex;
+  padding: 12px 24px;
+  gap: 12px;
+}
+
+.user-notification .notify i {
+  background: #0072b1;
+  color: #ffffff;
+  font-size: 20px;
+}
+
+.user-notification .notify h2 {
+  color: #fff;
+  font-family: Roboto;
+  font-size: 16px;
+  font-weight: 500;
+  margin-bottom: 0px;
+}
+
+/* ============================================================================ MESSAGES PAGE START HERE ======================================================= */
+
+.chat-side-bar {
+  border-radius: 8px;
+  height: 770px;
+  overflow: hidden;
+  overflow-y: scroll;
+}
+
+.chat-side-bar .card-body {
+  padding: 0px;
+}
+
+.list-group-item {
+  padding: 0px;
+  border-top: none;
+  border-left: none;
+  border-bottom: 1px solid rgba(24, 24, 24, 0.2);
+  border-right: none;
+}
+
+.list-group-item .active {
+  background: #0072b1;
+}
+
+.list-group-item .active .act {
+  color: white;
+}
+
+#chat-box {
+  overflow-y: auto;
+}
+
+#chat-header {
+  display: flex;
+  align-items: center;
+  padding: 10px 0px 11px 10px;
+  gap: 8px;
+}
+
+#chat-header .name p {
+  color: #fff;
+  font-family: Roboto;
+  font-size: 16px;
+  font-weight: 500;
+  margin-bottom: 0px;
+}
+
+.rounded .right-msg {
+  width: 75%;
+  float: right;
+}
+
+.rounded .left-msg {
+  width: 75%;
+  float: left;
+}
+
+.chat-box-right {
+  border: none;
+  border-radius: 8px;
+}
+
+.chat-box-right .card-footer {
+  border-top: none;
+  background-color: white;
+  margin-top: 20px;
+  border-radius: 0 0 8px 8px;
+}
+
+.chat-box-right .card-footer .input-group .form-control {
+  padding: 16px 0px 82px 16px;
+  color: #ababab;
+  font-family: Roboto;
+  font-size: 12px;
+  font-weight: 400;
+  margin-bottom: 20px;
+}
+
+.card-footer .icon2 img {
+  margin-left: 16px;
+  width: 28px;
+  height: 28px;
+}
+
+.card-footer .icon2 .send-btn {
+  color: #fff;
+  font-family: Roboto;
+  font-size: 12px;
+  margin-left: auto;
+  float: right;
+  font-weight: 500;
+  border-radius: 4px;
+  background: #0072b1;
+}
+
+#user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+#chat-header {
+  border-radius: 8px 8px 0px 0px;
+  background: #0072b1;
+}
+
+.box-input {
+  border-bottom: 1px solid #0072b1;
+}
+
+.card-body .box-input .icon {
+  position: relative;
+  top: 5px;
+  right: 10%;
+  color: #ababab;
+}
+
+.box-notif {
+  display: flex;
+  padding: 12px;
+}
+
+.box-notif .form-control {
+  padding: 4px 20px;
+  border-radius: 4px;
+  background: #f4fbff;
+  color: #ababab;
+  font-family: Roboto;
+  font-size: 12px;
+  font-weight: 400;
+  border: none;
+}
+
+.box-notif img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-right: 8px;
+}
+
+.box-notif .name {
+  color: #7d7d7d;
+  font-family: Outfit;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.box-notif p {
+  margin-bottom: 0;
+  color: #ababab;
+  font-family: Roboto;
+  font-size: 12px;
+  font-weight: 400;
+}
+
+.box-notif .time {
+  margin-left: auto;
+  color: #ababab;
+  font-family: Roboto;
+  font-size: 12px;
+  font-weight: 400;
+}
+
+.box-notif .time p {
+  font-size: 12px;
+  margin-bottom: 0px;
+}
+
+.box-notif .blue {
+  color: #0072b1;
+}
+
+.time img {
+  width: 14px;
+  height: 14px;
+  margin-right: 4px;
+}
+.list-group-item a {
+  text-decoration: none;
+}
+.icon-group .blu-spn {
+  text-align: right;
+  font-family: Roboto;
+  font-size: 12px;
+  font-weight: 400;
+}
+
+.card-body .box .icon {
+  position: relative;
+  top: 5px;
+  right: 35px;
+  color: #ababab;
+  width: 16px;
+  height: 16px;
+}
+
+.chat-box-right .text-end,
+.text-start {
+  font-family: Roboto;
+  font-size: 12px;
+  font-weight: 400;
+  border-radius: 4px;
+  padding: 12px;
+  gap: 10px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.chat-box-right .text,
+.text-2 {
+  color: #7d7d7d;
+  font-family: Roboto;
+  font-size: 12px;
+  font-weight: 400;
+}
+
+.chat-box-right .text {
+  text-align: end;
+}
+
+.chat-box-right .text-2 {
+  text-align: left;
+}
+
+.chat-box-right .text-end {
+  color: #7d7d7d;
+  background-color: rgba(211, 239, 255, 0.5);
+}
+
+.chat-box-right .text-start {
+  color: #7d7d7d;
+  background-color: #f3f3f3;
+}
+
+.profile-data {
+  padding: 8px;
+  width: 100%;
+  border: none;
+}
+.profile-data .link .ofprofile {
+  padding-bottom: 307px;
+}
+
+.profile-data .image img {
+  margin: 40px 88px 4px 88px;
+}
+.profile-data .image .prof-mg {
+  margin: 20px 88px 4px 88px;
+}
+
+.profile-data .name {
+  color: #181818;
+  font-family: Outfit;
+  font-size: 16px;
+  font-weight: 500;
+  padding-bottom: 4px;
+}
+
+.profile-data .text-muted {
+  color: #ababab !important;
+  font-family: Roboto;
+  font-size: 12px;
+  font-weight: 400;
+}
+
+.prof-info .accordion-button::after {
+  width: 12px;
+  height: 12px;
+  background-size: 12px;
+}
+.icons .ic {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #e3e3e3;
+  margin-top: 16px;
+}
+.icons .ic i {
+  font-size: 12px;
+  position: relative;
+  top: -3px;
+  right: -4px;
+}
+.icons .ic img {
+  position: relative;
+  top: -3px;
+  right: -4px;
+  border-radius: 8px;
+}
+
+.profile-data .link p {
+  color: #7d7d7d;
+  font-family: Roboto;
+  font-size: 12px;
+  font-weight: 400;
+  margin-bottom: 0px;
+  padding-bottom: 40px;
+}
+
+.prof-info .accordion-item {
+  border: none;
+  box-shadow: none;
+}
+
+.prof-info .accordion-button {
+  padding: 8px 16px;
+  color: #7d7d7d;
+  font-family: Roboto;
+  font-size: 12px;
+  font-weight: 400;
+  box-shadow: none;
+}
+
+.prof-info .accordion-button:not(.collapsed) {
+  color: #7d7d7d;
+  background-color: #fff;
+  box-shadow: none;
+}
+
+.prof-info .accordion-body p,
+li {
+  color: #ababab;
+  font-family: Roboto;
+  font-size: 12px;
+  font-weight: 300;
+  padding-bottom: 8px;
+  margin-bottom: 0px;
+}
+.box-notif .onlion-icon {
+  width: 8px;
+  height: 8px;
+  position: relative;
+  top: 30px;
+  right: 15px;
+  border-radius: 13px;
+  background: #64f472;
+  box-shadow: 0px 0px 0px 0px #fff;
+}
+.onlion-blue {
+  width: 12px;
+  height: 12px;
+  position: relative;
+  top: 6px;
+  right: 15px;
+  border-radius: 13px;
+  background-color: #0072b1;
+  color: #fff;
+  text-align: center;
+  font-family: Roboto;
+  font-size: 6px;
+  font-weight: 400;
+  padding-top: 2px;
+}
+.card-footer .custom-btn {
+  padding: 8px 32px;
+  border-radius: 4px;
+  border: 1px solid #0072b1;
+  color: #0072b1;
+  font-family: Roboto;
+  font-size: 12px;
+  font-weight: 500;
+  background: #fff;
+  margin-left: 20px;
+}
+.card-footer .modal-body .head h1 {
+  padding: 18px 40px 14px 47px;
+  color: #fff;
+  font-family: Roboto;
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 24px; /* 120% */
+  border-radius: 8px 8px 0px 0px;
+  background: #0072b1;
+  margin-bottom: 0px;
+}
+.card-footer .modal-content {
+  background: none;
+  border: none;
+}
+.card-footer .model-heading {
+  background-color: #fff;
+  border-radius: 0 0 8px 8px;
+}
+.card-footer .model-heading .about {
+  padding: 28px 20px;
+  color: #7d7d7d;
+  text-align: center;
+  font-family: Roboto;
+  font-size: 12px;
+  font-weight: 400;
+  margin-bottom: 0px;
+}
+.option-btn .radio-toolbar input[type="radio"] {
+  opacity: 0;
+  position: fixed;
+  width: 0;
+}
+.option-btn .radio-toolbar {
+  margin: 28px 20px;
+}
+.option-btn .radio-toolbar label {
+  display: inline-block;
+  background-color: #fff;
+  padding: 16px 12px;
+  border: none;
+  border-radius: 4px;
+  box-shadow: 0px 4px 16px 0px rgba(0, 0, 0, 0.08);
+}
+.option-btn .radio-toolbar .label {
+  color: #181818;
+  text-align: center;
+  font-family: Roboto;
+  font-size: 12px;
+  font-weight: 500;
+  padding-bottom: 8px;
+}
+.option-btn .radio-toolbar .name-label {
+  color: #7d7d7d;
+  text-align: center;
+  font-family: Roboto;
+  font-size: 12px;
+  font-weight: 400;
+}
+.option-btn .radio-toolbar label:hover {
+  background-color: #fff;
+}
+
+.option-btn .radio-toolbar input[type="radio"]:focus + label {
+  color: #0072b1 !important;
+}
+
+.option-btn .radio-toolbar input[type="radio"]:checked + label {
+  border-radius: 4px;
+  border: 1px solid #0072b1;
+  background: #fff;
+  box-shadow: 0px 4px 16px 0px rgba(0, 0, 0, 0.08);
+}
+.option-btn .radio-toolbar input[type="radio"]:checked + label .label {
+  color: #0072b1;
+}
+.option-btn .radio-toolbar input[type="radio"]:checked + label .name-label {
+  color: #0072b1;
+}
+.card-footer .term-condition {
+  padding-right: 17px;
+}
+.card-footer .model-footer {
+  display: flex;
+  justify-content: space-between;
+  padding: 0px 20px 20px 20px;
+}
+.card-footer .model-footer .back-btn {
+  border-radius: 4px;
+  border: 1px solid #ababab;
+  padding: 8px 24px;
+  color: #ababab;
+  font-family: Roboto;
+  font-size: 12px;
+  font-weight: 500;
+  background: #fff;
+}
+.card-footer .model-footer .next-btn {
+  border-radius: 4px;
+  background: #0072b1;
+  color: #fff;
+  font-family: Roboto;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 8px 24px;
+  border: none;
+}
+.card-footer .modal-header {
+  border-radius: 8px 8px 0px 0px;
+  background: #0072b1;
+  color: #fff;
+  font-family: Roboto;
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 24px; /* 120% */
+  margin-bottom: 0px;
+}
+.card-footer .modal-body {
+  padding: 0px 12px;
+  border-radius: 0 0 8px 8px;
+}
+.card-footer .modal-body .service {
+  border-right: 2px solid #ababab;
+  border-bottom: 1px solid #ababab;
+  border-left: 2px solid #ababab;
+  background: #fff;
+  padding: 12px 20px;
+  align-items: center;
+}
+.card-footer .modal-body .service h2 {
+  color: #181818;
+  font-family: Outfit;
+  font-size: 16px;
+  font-weight: 400;
+  margin-bottom: 0px;
+}
+.card-footer .modal-body .service a {
+  color: #7d7d7d;
+  font-family: Roboto;
+  font-size: 12px;
+  font-weight: 400;
+  text-decoration: none;
+}
+.card-footer .last-service {
+  border-radius: 0 0 8px 8px;
+}
+.card-footer .error-msg {
+  border: 2px solid black;
+  font-display: flex;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #ababab;
+  background: #fff;
+  margin-bottom: 20px;
+}
+.card-footer .error-msg .text textarea {
+  border: none;
+  resize: none;
+  color: #ababab;
+  font-family: Roboto;
+  font-size: 12px;
+  font-weight: 400;
+  padding: 20px;
+}
+.card-footer .error-msg .eror {
+  border-radius: 4px;
+  border: 0.4px solid #ababab;
+  background: #fff;
+  padding: 8px;
+  gap: 10px;
+  align-items: center;
+}
+.card-footer .error-msg a {
+  text-decoration: none;
+  color: #ababab;
+  font-family: Roboto;
+  font-size: 8px;
+  font-weight: 300;
+}
+.model-heading .offer-title {
+  color: #ababab;
+  font-family: Roboto;
+  font-size: 12px;
+  font-weight: 400;
+}
+.eror img {
+  width: 32px;
+  height: 32px;
+}
+.model-heading .offer-title span {
+  color: #181818;
+  font-family: Roboto;
+  font-size: 12px;
+  font-weight: 500;
+}
+.model-heading .offer-title a {
+  color: #0072b1;
+  font-family: Roboto;
+  font-size: 12px;
+  font-style: italic;
+  font-weight: 400;
+  text-decoration: none;
+}
+.freelancing {
+  padding: 16px;
+}
+.model-heading .offer-area {
+  border-radius: 4px;
+  border: 1px solid #ababab;
+  background: #fff;
+  color: #ababab;
+  font-family: Roboto;
+  font-size: 12px;
+  font-weight: 400;
+  resize: none;
+  padding: 8px 330px 58px 8px;
+}
+.model-heading .small {
+  stroke-width: 1px;
+  stroke: #0072b1;
+}
+.model-heading .rectangle {
+  height: 40px;
+  background: #fff;
+  border-radius: 5px;
+  border: 2px solid #0072b1;
+  display: flex;
+  text-align: center;
+  justify-content: flex-start;
+  margin-top: 16px;
+  margin-bottom: 12px;
+}
+
+.rectangle-desc .rectangle p {
+  color: #ababab;
+  font-family: Roboto;
+  font-size: 12px;
+  font-weight: 400;
+  margin-top: 7px;
+  padding-left: 10px;
+}
+.model-heading .rectangle-desc .rectangle h3 {
+  position: absolute;
+  color: #0072b1;
+  text-align: center;
+  font-family: Outfit;
+  font-size: 12px;
+  font-weight: 500;
+  margin-top: -9px;
+  background: #fff;
+  margin-bottom: 0px;
+}
+
+.model-heading .offer-btn {
+  border-radius: 4px;
+  background: #0072b1;
+  color: #fff;
+  font-family: Roboto;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 8px 24px;
+  float: right;
+  border: none;
+}
+.rado .form-1 {
+  margin-top: 44px;
+  margin-bottom: 24px;
+}
+.rado .form-check-label {
+  color: #181818;
+  font-family: Roboto;
+  font-size: 12px;
+  font-weight: 400;
+}
+.rectangle .form-select {
+  border: none;
+  padding: 9px 14px 8px 14px;
+  color: #ababab;
+  font-family: Roboto;
+  font-size: 12px;
+  font-weight: 400;
+}
+.desc-1 .form-select {
+  margin-top: 44px;
+  margin-right: 16px;
+  padding: 8px 12px;
+  color: #ababab;
+  font-family: Roboto;
+  font-size: 12px;
+  font-weight: 400;
+}
+.rectangle-desc p {
+  color: #181818;
+  font-family: Roboto;
+  font-size: 12px;
+  font-weight: 400;
+}
+/* ================================================================= CONTACT US PAGE START HERE ======================================================================= */
+
+/* Extra small devices (phones, 600px and down) */
+@media only screen and (max-width: 600px) {
+  .dash-notification {
+    padding: 0px;
+  }
+  .card-footer .icon2 img {
+    margin-left: 0px;
+    width: 18px;
+    height: 18px;
+    margin-bottom: 10px;
+  }
+  #chat-header .name p {
+    font-size: 13px;
+  }
+  .box-notif .name {
+    font-size: 12px;
+  }
+  .box-notif p {
+    font-size: 10px;
+  }
+  .profile-data .link .ofprofile {
+    padding-bottom: 54px;
+  }
+  .card-footer .custom-btn {
+    padding: 6px;
+    margin-left: 10px;
+  }
+  .model-heading .offer-area {
+    padding: 8px 136px 58px 8px;
+  }
+  .desc-1 .drop {
+    margin-left: 55px;
+    margin-top: 16px;
+  }
+  /* .card-footer .error-msg {
+    padding: 0px;
+}
+.card-footer .error-msg .eror {
+    padding: 0px;
+    gap: 0px;
+}
+.eror img {
+    width: 16px;
+    height: 16px;
+} */
+}
+
+/* Small devices (portrait tablets and large phones, 600px and up) */
+@media only screen and (min-width: 600px) {
+  .manu-notification .notify-1 p {
+    font-size: 12px;
+  }
+
+  .manu-notification .notify-1 p > a {
+    font-size: 12px;
+  }
+}
+
+/* Medium devices (landscape tablets, 768px and up) */
+@media only screen and (min-width: 768px) {
+  .main-profile-page {
+    padding: 10px;
+  }
+
+  .manu-notification .notify-1 p {
+    font-size: 15px;
+  }
+
+  .manu-notification .notify-1 p > a {
+    font-size: 12px;
+  }
+}
+
+/* Large devices (laptops/desktops, 992px and up) */
+@media only screen and (min-width: 992px) {
+  .main-profile-page {
+    padding: 10px;
+  }
+
+  .manu-notification .notify-1 p {
+    font-size: 16px;
+  }
+
+  .manu-notification .notify-1 p > a {
+    font-size: 16px;
+  }
+}
+
+/* Extra large devices (large laptops and desktops, 1200px and up) */
+@media only screen and (min-width: 1200px) {
+  .main-profile-page {
+    padding: 32px;
+  }
+}
