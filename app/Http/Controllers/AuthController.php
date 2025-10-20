@@ -438,7 +438,6 @@ class AuthController extends Controller
             return redirect('/')->with('success', 'Your Email is Verified Successfuly!');
         } else {
             return redirect('/')->with('error', 'This Verification Link is Expiered!');
-
         }
     }
     // Email Verifiy Customly Account Create Function END========
@@ -607,8 +606,3 @@ class AuthController extends Controller
 
 
 }
-
-
-
-
-

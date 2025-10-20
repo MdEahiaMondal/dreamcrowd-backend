@@ -1298,7 +1298,7 @@ span.to-input {
                         <p class="float-start">Total Amount: <span id="total_price">${{$rate}}</span></p>
                         <div class="float-end">
 
-                          @if (Auth::user() && Auth::user()->role == 0)
+                          {{-- @if (Auth::user() && Auth::user()->role == 0) --}}
                           <a
                             href="#"
                             type="button"
@@ -1311,7 +1311,7 @@ span.to-input {
                
                               
                           <button onclick="ServicePayemnt();" class="btn booking-btn">Complete Booking</button>
-                          @endif
+                          {{-- @endif --}}
                         </div>
                       </div>
                     </div>
