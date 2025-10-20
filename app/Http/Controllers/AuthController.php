@@ -95,6 +95,8 @@ class AuthController extends Controller
             // echo $location->countryCode."<br>" ;
             // echo $location->cityName."<br>" ;
 
+            info($location);
+
             $random_hash = bin2hex(openssl_random_pseudo_bytes(60));
 
 
@@ -442,7 +444,7 @@ public function facebookRedirect(Request $request)
             $user->update();
             Auth::login($user);
          
-            return redirect('/')->with('success','Your Email is Verified Successfuly!');
+            return redirect('/')->with('success','Your email has been successfully!');
         }else{
             return redirect('/')->with('error','This Verification Link is Expiered!');
         
@@ -611,8 +613,3 @@ public function facebookRedirect(Request $request)
 
 
 }
-
-
-
-
-

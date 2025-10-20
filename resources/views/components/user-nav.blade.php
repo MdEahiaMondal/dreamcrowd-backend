@@ -8,9 +8,11 @@
     <div class="row">
       <div class="home-content fixed-top">
         <div class="col-md-8" style="padding: 0px 12px; display: flex">
-          <i class="nav-dash-logo">
+          <div class="nav-dash-logo">
+                  <a href="{{ url('/') }}">
             <img src="assets/user/asset/img/dash-logo.png" />
-          </i>
+           </a>
+                  </div>
           <i class="bx bx-menu"></i>
         </div>
         <div class="col-md-4" style="padding: 0px 12px">
