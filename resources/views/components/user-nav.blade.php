@@ -8,9 +8,11 @@
     <div class="row">
       <div class="home-content fixed-top">
         <div class="col-md-8" style="padding: 0px 12px; display: flex">
-          <i class="nav-dash-logo">
+          <div class="nav-dash-logo">
+                  <a href="{{ url('/') }}">
             <img src="assets/user/asset/img/dash-logo.png" />
-          </i>
+           </a>
+                  </div>
           <i class="bx bx-menu"></i>
         </div>
         <div class="col-md-4" style="padding: 0px 12px">
@@ -19,13 +21,13 @@
                      @if (Auth::user()->profile == null)
                     @php  $firstLetter = strtoupper(substr(Auth::user()->first_name, 0, 1));  @endphp
                     <div class="img_profile" style="width: 50px; height: 50px;">
-                      <img src="assets/profile/avatars/({{$firstLetter}}).jpg" style="width: 100%; height: 100%;"> 
-                    </div>   
+                      <img src="assets/profile/avatars/({{$firstLetter}}).jpg" style="width: 100%; height: 100%;">
+                    </div>
                     @else
                     <div class="img_profile" style="width: 50px; height: 50px;">
-                      <img src="assets/profile/img/{{Auth::user()->profile}}" style="width: 100%; height: 100%;"> 
-                    </div>  
-                        
+                      <img src="assets/profile/img/{{Auth::user()->profile}}" style="width: 100%; height: 100%;">
+                    </div>
+
                     @endif
                     @endif
             @if (Auth::user()) <h1>{{Auth::user()->first_name}}</h1> @endif
@@ -51,7 +53,7 @@
                 @endphp
 
                     @if ($expert)
-                    
+
                 @if (Auth::user()->role == 1)
                 <li>
                   <a class="dropdown-item" href="/switch-account">
@@ -67,10 +69,10 @@
                   </a>
                 </li>
                 @endif
-                @endif 
-                    
                 @endif
-               
+
+                @endif
+
                 <li>
                   <a class="dropdown-item" href="#">
                     <i class="fa-brands fa-dribbble"></i>&nbsp;&nbsp;Help &

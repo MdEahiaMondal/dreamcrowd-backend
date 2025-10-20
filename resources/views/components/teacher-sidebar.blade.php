@@ -3,10 +3,10 @@
         <i class="">
             @php
             $home = \App\Models\HomeDynamic::first();
-             
+
         @endphp
         @if ($home)
-            
+
         <img src="assets/public-site/asset/img/{{$home->site_logo}}"  width="100%">
         @endif
       </i>
@@ -99,7 +99,7 @@
                     <li><a href="/change-password">Change Password</a></li>
                     <li><a href="/change-email">Change Email</a></li>
                     <li><a href="/change-card-detail">Update Card Detail</a></li>
-                    <li><a href="#"  data-bs-target="#exampleModal7" 
+                    <li><a href="#"  data-bs-target="#exampleModal7"
                         data-bs-toggle="modal">Delete Account</a></li>
                 </ul>
             </li>
@@ -113,13 +113,11 @@
                 </ul>
             </li>
             <li>
-                <a href="reviews.html">
+                <a href="/teacher-reviews">
                     <i class='bx bx-message icon' title="Customer Reviews"></i>
                     <span class="link_name">Customer Reviews</span>
                 </a>
-                <ul class="sub-menu blank">
-                    <li><a class="link_name" href="reviews.html">Customer Reviews</a></li>
-                </ul>
+
             </li>
             <li>
                 <a href="/host-guidline">
@@ -254,12 +252,12 @@ aria-hidden="true"
               <input type="radio" id="option4" name="mainOptions" value="option4" onclick="showAdditionalOptions4()">
               <label for="option4">Other reasons</label>
           </div>
-          
+
           <div class="additional-options" id="additionalOptions2">
               <label for="additionalOption2" class="delete-label">Please tell us why you find it hard to use Dreamcrowd</label>
               <textarea class="form-control" cols="3" rows="3" id="additionalOption2" name="additionalOption2" placeholder="Type your reason..."></textarea>
           </div>
-      
+
           <div class="additional-options" id="additionalOptions4">
               <label for="additionalOption4" class="delete-label">Please tell us the reason as to why you’re leaving</label>
               <textarea class="form-control" cols="3" rows="3" id="additionalOption4" name="additionalOption4" placeholder="Type your reason..."></textarea>
