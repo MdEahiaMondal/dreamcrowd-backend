@@ -50,167 +50,161 @@
     <!-- =============================== MAIN CONTENT START HERE =========================== -->
     <div class="container-fluid">
       <div class="row Dash-notification">
-      
-              
-
-
-<div class="col-xl-12 col-lg-12 col-md-12">
-    <div class="row">
-        {{-- === ORDER STAT CARDS === --}}
-        <div class="col-xl-4 col-lg-6 col-md-6">
-            <div class="prof-card">
-                <div class="prof-mg">
-                    <img src="{{ asset('assets/user/asset/img/Cardorder-img.png') }}" alt="" width="28px" height="28px" />
+        <div class="col-md-12">
+          <div class="dash">
+            <div class="row">
+              <div class="col-md-12">
+                <div class="dash-top">
+                  <h1 class="dash-title">Dashboard</h1>
+                  <i class="fa-solid fa-chevron-right"></i>
+                  <span class="min-title">My Profile</span>
                 </div>
-                <div class="prof-body">
-                    <p class="title">All Orders</p>
-                    <h5>{{ $stats['all_orders'] ?? 0 }}</h5>
-                    <p class="increes">
-                        <span><img src="{{ asset('assets/user/asset/img/increes.svg') }}" alt="" /></span>Increase
-                    </p>
-                </div>
+              </div>
             </div>
+            <!-- Blue MASSEGES section -->
+            <div class="user-notification">
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="notify">
+                    <i class="bx bx-user icon" title="My Profile"></i>
+                    <h2>My Profile</h2>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {{-- <div class="row">
+              <div class="col-xl 3 col-lg-4 col-md-12"> 
+                <div class="main-profile-page">
+                  <!-- Profile Image -->
+                  <div class="col-md-2">
+                    <div class="avatar-upload">
+                      <div class="avatar-edit">
+                          <input type='file' id="imageUpload" accept=".png, .jpg, .jpeg" />
+                          <label for="imageUpload"></label>
+                      </div>
+                      <div class="avatar-preview">
+                          <div id="imagePreview" style="background-image: url(http://i.pravatar.cc/500?img=7);width: 100%;">
+                          </div>
+                      </div>
+                  </div>
+                  </div>
+                  <!-- /.box-body -->
+                  <div class="name">
+                    <p>Petey Cruiser</p>
+                    <h5>United Kingdom</h5>
+                  </div>
+                  <!-- <div class="form-group"> -->
+                  <input type="email" class="form-control info" id="exampleInputEmail1" aria-describedby="emailHelp"
+                    placeholder="Petey" />
+                  <input type="email" class="form-control" id="exampleInputPassword1" placeholder="Cruiser" />
+                  
+                  <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp"
+                    placeholder="United Kingdom" />
+                  <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp"
+                    placeholder="Product Manager" />
+                  <textarea class="form-control goals" id="exampleFormControlTextarea1" rows="3"
+                    placeholder="My Goals"></textarea>
+
+                  <button class="btn update-btn">Update</button>
+                </div>
+              </div>
+            </div>  --}}
+
+            <form action="{{ route('profile.update') }}" method="POST" enctype="multipart/form-data">
+  @csrf
+  <div class="row">
+    <div class="col-xl-3 col-lg-4 col-md-12">
+           @if (session('success'))
+        <div class="alert alert-success my-2">{{ session('success') }}</div>
+        @endif
+      <div class="main-profile-page">
+
+        <!-- Profile Image -->
+        <div class="col-md-2">
+          <div class="avatar-upload">
+            <div class="avatar-edit">
+              <input type='file' id="imageUpload" name="profile" accept=".png, .jpg, .jpeg" />
+              <label for="imageUpload"></label>
+            </div>
+            <div class="avatar-preview">
+              <div id="imagePreview"
+                style="background-image: url('{{ $user->profile ? asset($user->profile) : 'http://i.pravatar.cc/500?img=7' }}'); width: 100%;">
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div class="col-xl-4 col-lg-6 col-md-6">
-            <div class="prof-card">
-                <div class="prof-mg">
-                    <img src="{{ asset('assets/user/asset/img/class-order-img.png') }}" alt="" width="28px" height="28px" />
-                </div>
-                <div class="prof-body">
-                    <p class="title">Class Orders</p>
-                    <h5>{{ $stats['class_orders'] ?? 0 }}</h5>
-                    <p class="increes">
-                        <span><img src="{{ asset('assets/user/asset/img/increes.svg') }}" alt="" /></span>Increase
-                    </p>
-                </div>
-            </div>
+        <!-- Name Section -->
+        <div class="name">
+          <p>{{ $user->first_name ?? 'Petey Cruiser' }}</p>
+          <h5>{{ $user->country ?? 'United Kingdom' }}</h5>
         </div>
 
-        <div class="col-xl-4 col-lg-6 col-md-6">
-            <div class="prof-card">
-                <div class="prof-mg">
-                    <img src="{{ asset('assets/user/asset/img/Freelance-Card-image.png') }}" alt="" width="28px" height="28px" />
-                </div>
-                <div class="prof-body">
-                    <p class="title">Freelance Orders</p>
-                    <h5>{{ $stats['freelancer_orders'] ?? 0 }}</h5>
-                    <p class="increes">
-                        <span><img src="{{ asset('assets/user/asset/img/increes.svg') }}" alt="" /></span>Increase
-                    </p>
-                </div>
-            </div>
-        </div>
+        <!-- Form Fields -->
+        <input type="text" class="form-control info" name="first_name"
+          placeholder="First Name" value="{{ old('first_name', $user->first_name) }}" />
+        <input type="text" class="form-control" name="last_name"
+          placeholder="Last Name" value="{{ old('last_name', $user->last_name) }}" />
+        <input type="text" class="form-control" name="country"
+          placeholder="Country" value="{{ old('country', $user->country) }}" />
+        {{-- <input type="text" class="form-control" name="designation"
+          placeholder="Designation" value="{{ old('designation', $user->designation) }}" />
+        <textarea class="form-control goals" name="goals" rows="3"
+          placeholder="My Goals">{{ old('goals', $user->goals) }}</textarea> --}}
 
-        <div class="col-xl-4 col-lg-6 col-md-6">
-            <div class="prof-card">
-                <div class="prof-mg">
-                    <img src="{{ asset('assets/user/asset/img/completed-Order-image.png') }}" alt="" width="28px" height="28px" />
-                </div>
-                <div class="prof-body">
-                    <p class="title">Completed Orders</p>
-                    <h5>{{ $stats['completed_orders'] ?? 0 }}</h5>
-                    <p class="increes">
-                        <span><img src="{{ asset('assets/user/asset/img/increes.svg') }}" alt="" /></span>Increase
-                    </p>
-                </div>
-            </div>
-        </div>
+        <button type="submit" class="btn update-btn">Update</button>
 
-        <div class="col-xl-4 col-lg-6 col-md-6">
-            <div class="prof-card">
-                <div class="prof-mg">
-                    <img src="{{ asset('assets/user/asset/img/Cancelled-Order-Image.png') }}" alt="" width="28px" height="28px" />
-                </div>
-                <div class="prof-body">
-                    <p class="title">Cancelled Orders</p>
-                    <h5>{{ $stats['cancelled_orders'] ?? 0 }}</h5>
-                    <p class="increes">
-                        <span><img src="{{ asset('assets/user/asset/img/redincrees.svg') }}" alt="" /></span>Decrease
-                    </p>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-xl-4 col-lg-6 col-md-6">
-            <div class="prof-card">
-                <div class="prof-mg">
-                    <img src="{{ asset('assets/user/asset/img/Cardorder-img.png') }}" alt="" width="28px" height="28px" />
-                </div>
-                <div class="prof-body">
-                    <p class="title">Active Orders</p>
-                    <h5>{{ $stats['active_orders'] ?? 0 }}</h5>
-                    <p class="increes">
-                        <span><img src="{{ asset('assets/user/asset/img/increes.svg') }}" alt="" /></span>Increase
-                    </p>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-xl-4 col-lg-6 col-md-6">
-            <div class="prof-card">
-                <div class="prof-mg">
-                    <i class="fa-solid fa-globe" aria-hidden="true"></i>
-                </div>
-                <div class="prof-body">
-                    <p class="title">Online Orders</p>
-                    <h5>{{ $stats['online_orders'] ?? 0 }}</h5>
-                    <p class="increes">
-                        <span><img src="{{ asset('assets/user/asset/img/increes.svg') }}" alt="" /></span>Increase
-                    </p>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-xl-4 col-lg-6 col-md-6">
-            <div class="prof-card">
-                <div class="prof-mg">
-                    <i class="fa-solid fa-house" aria-hidden="true"></i>
-                </div>
-                <div class="prof-body">
-                    <p class="title">In-Person Orders</p>
-                    <h5>{{ $stats['inperson_orders'] ?? 0 }}</h5>
-                    <p class="increes">
-                        <span><img src="{{ asset('assets/user/asset/img/increes.svg') }}" alt="" /></span>Increase
-                    </p>
-                </div>
-            </div>
-        </div>
+     
+      </div>
     </div>
+  </div>
+</form>
 
-    {{-- === RECENT BOOKINGS === --}}
-    <div class="row mt-4">
-        <h1 class="top-heading">Recent Bookings</h1>
-      
-        @forelse($recentBookings as $booking)
-            <div class="col-xl-4 col-lg-6 col-md-6">
-                <div class="recent">
-                    <div class="booking">
-                        <img class="jenny-profile" 
-                             src="{{ $booking->booker->profile ?? asset('assets/user/asset/img/default-user.png') }}" 
-                             alt="Profile" width="28" height="28" />
-                        <div class="recent-body">
-                            <p class="title">
-                              {{ trim( ($booking->booker?->first_name ?? '') . ' ' . ($booking->booker?->last_name ?? '') ) ?: 'Unknown User' }}
-                            </p>
-                            <p class="text">{{ $booking->gig->category_name ?? 'No Category' }}</p>
+            {{-- <div class="row justify-content-center">
+                <div class="col-lg-6 col-md-8">
+                <div class="main-profile-page bg-white  rounded shadow">
+                    <form action="{{ route('profile.update') }}" method="POST" enctype="multipart/form-data">
+                    @csrf
+                    <!-- Profile Image -->
+                    <div class="avatar-upload text-center mb-3">
+                        <div class="avatar-edit">
+                        <input type='file' id="imageUpload" name="profile" accept=".png, .jpg, .jpeg" />
+                        <label for="imageUpload"></label>
+                        </div>
+                        <div class="avatar-preview mx-auto" style="width: 120px; height: 120px; border-radius: 50%; overflow: hidden;">
+                        <div id="imagePreview" style="background-image: url('{{ $user->profile ? asset($user->profile) : 'http://i.pravatar.cc/150?img=7' }}'); width: 100%; height: 100%; background-size: cover; background-position: center;">
+                        </div>
                         </div>
                     </div>
-                    <div class="para">
-                        <p>{{ $booking->title ?? 'No gig title available' }}</p>
+
+                    <div class="mb-3">
+                        <input type="text" name="first_name" value="{{ $user->first_name }}" class="form-control" placeholder="First Name" />
                     </div>
+
+                    <div class="mb-3">
+                        <input type="text" name="last_name" value="{{ $user->last_name }}" class="form-control" placeholder="Last Name" />
+                    </div>
+
+                    <div class="mb-3">
+                        <input type="text" name="country" value="{{ $user->country }}" class="form-control" placeholder="Country" />
+                    </div>
+
+                    <div class="mb-3">
+                        <textarea name="goals" class="form-control" placeholder="My Goals">{{ $user->goals ?? '' }}</textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100">Update</button>
+
+                    @if (session('success'))
+                    <div class="alert alert-success mt-3">{{ session('success') }}</div>
+                    @endif
+                    </form>
                 </div>
-            </div>
-        @empty
-            <p class="text-muted ps-3">No recent bookings found.</p>
-        @endforelse
-    </div>
-</div>
+                </div>
+            </div> --}}
 
 
-
-
-            </div> 
             <div class="row">
               <div class="col-md-12 p-0">
                 <div class="copyright">
@@ -283,23 +277,20 @@
 </script>
 <!-- ================ side js start End=============== -->
 <!-- profile-upload -->
+
 <script>
-  // File Upload
-  //
   function readURL(input) {
     if (input.files && input.files[0]) {
-        var reader = new FileReader();
-        reader.onload = function(e) {
-            $('#imagePreview').css('background-image', 'url('+e.target.result +')');
-            $('#imagePreview').hide();
-            $('#imagePreview').fadeIn(650);
-        }
-        reader.readAsDataURL(input.files[0]);
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        $('#imagePreview').css('background-image', 'url(' + e.target.result + ')').hide().fadeIn(650);
+      }
+      reader.readAsDataURL(input.files[0]);
     }
-}
-$("#imageUpload").change(function() {
+  }
+  $("#imageUpload").change(function() {
     readURL(this);
-});
+  });
 </script>
 <!-- ============ -->
 <!-- =====================NEW JS END HERE====================== -->

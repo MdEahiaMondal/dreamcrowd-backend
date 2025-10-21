@@ -373,6 +373,8 @@ Route::controller(UserController::class)->group(function () {
     Route::get('/user-dashboard', 'UserDashboard');
     Route::get('/user-faqs', 'UserFaqs');
     Route::get('/change-password', 'ChangePassword');
+    Route::get('/profile', 'profile');
+    Route::post('/profile/update', 'update')->name('profile.update');
     Route::get('/change-email', 'ChangeEmail');
     Route::get('/change-card-detail', 'ChangeCardDetail');
     Route::post('/delete-account', 'DeleteAccount');
@@ -422,6 +424,3 @@ Route::controller(MessagesController::class)->group(function () {
     Route::post('/get-services-for-custom', 'GetServicesForCustom'); 
 
 });
-
-
-

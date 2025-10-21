@@ -37,479 +37,479 @@ class OrderManagementController extends Controller
     public function OrderManagement()  {
 
 
-        if (!Auth::user()) {
-            return redirect()->to('/')->with('error','Please LoginIn to Your Account!');
-         } else {
-             if (Auth::user()->role == 1) {
-                 return redirect()->to('/teacher-dashboard');
-             }elseif(Auth::user()->role == 2){
-                 return redirect()->to('/admin-dashboard');
-             }
-         }
-         $admin_duration = BookingDuration::first();
-       $reschedule_hours = (int) ($admin_duration?->reschedule ?? 12);
+                        if (!Auth::user()) {
+                            return redirect()->to('/')->with('error','Please LoginIn to Your Account!');
+                        } else {
+                            if (Auth::user()->role == 1) {
+                                return redirect()->to('/teacher-dashboard');
+                            }elseif(Auth::user()->role == 2){
+                                return redirect()->to('/admin-dashboard');
+                            }
+                        }
+                        $admin_duration = BookingDuration::first();
+                    $reschedule_hours = (int) ($admin_duration?->reschedule ?? 12);
 
-        $perPage = 20;
+                        $perPage = 20;
 
-$pendingOrders = DB::table('book_orders')
-    ->join('expert_profiles', 'book_orders.teacher_id', '=', 'expert_profiles.user_id')
-    ->join('teacher_gigs', 'book_orders.gig_id', '=', 'teacher_gigs.id')
-    ->join('teacher_gig_data', 'book_orders.gig_id', '=', 'teacher_gig_data.gig_id')
-    ->join('class_dates', 'book_orders.id', '=', 'class_dates.order_id')
-    ->leftJoin('class_reschedules', function ($join) {
-        $join->on('book_orders.id', '=', 'class_reschedules.order_id')
-             ->where('book_orders.teacher_reschedule', 1);
-    })
-    ->select(
-        'book_orders.id as order_id',
-        'expert_profiles.user_id',
-        'expert_profiles.first_name',
-        'expert_profiles.last_name',
-        'expert_profiles.profession',
-        'expert_profiles.profile_image',
-        'book_orders.title',
-        'teacher_gig_data.description',
-        'teacher_gig_data.freelance_service',
-        'teacher_gig_data.lesson_type',
-        'teacher_gig_data.payment_type',
-        'teacher_gigs.service_type',
-        'teacher_gigs.service_role',
-        'book_orders.finel_price',
-        'book_orders.teacher_reschedule',
-        'book_orders.user_reschedule',
-        'book_orders.created_at',
-        'book_orders.status',
-        DB::raw('MIN(class_dates.user_date) as start_date'),
-        DB::raw('MAX(class_dates.user_date) as end_date'),
-        DB::raw("
-            CASE 
-                WHEN book_orders.teacher_reschedule = 1 THEN 
-                    MIN(class_reschedules.user_date) 
-                ELSE 
-                    NULL 
-            END as new_start_date
-        "),
-        DB::raw("
-            CASE 
-                WHEN book_orders.teacher_reschedule = 1 THEN 
-                    MAX(class_reschedules.user_date) 
-                ELSE 
-                    NULL 
-            END as new_end_date
-        ")
-    )
-    ->where('book_orders.status', 0)
-    ->where('book_orders.user_id', Auth::user()->id)
-    ->groupBy(
-        'book_orders.id',
-        'expert_profiles.user_id',
-        'expert_profiles.first_name',
-        'expert_profiles.last_name',
-        'expert_profiles.profession',
-        'expert_profiles.profile_image',
-        'book_orders.title',
-        'teacher_gig_data.description',
-        'teacher_gig_data.freelance_service',
-        'teacher_gig_data.lesson_type',
-        'teacher_gig_data.payment_type',
-        'teacher_gigs.service_type',
-        'teacher_gigs.service_role',
-        'book_orders.finel_price',
-        'book_orders.teacher_reschedule',
-        'book_orders.user_reschedule',
-        'book_orders.created_at',
-        'book_orders.status',
-        
-    )->orderBy($this->sorting, 'desc')
-    ->paginate($perPage);
- 
-// Attach all_classes and new_all_classes
-foreach ($pendingOrders as $order) {
-    // Get all class_dates for this order
-    $order->all_classes = DB::table('class_dates')
-        ->where('order_id', $order->order_id)
-        ->select('user_date', 'user_attend','user_time_zone','duration')
-        ->get();
+                $pendingOrders = DB::table('book_orders')
+                    ->join('expert_profiles', 'book_orders.teacher_id', '=', 'expert_profiles.user_id')
+                    ->join('teacher_gigs', 'book_orders.gig_id', '=', 'teacher_gigs.id')
+                    ->join('teacher_gig_data', 'book_orders.gig_id', '=', 'teacher_gig_data.gig_id')
+                    ->join('class_dates', 'book_orders.id', '=', 'class_dates.order_id')
+                    ->leftJoin('class_reschedules', function ($join) {
+                        $join->on('book_orders.id', '=', 'class_reschedules.order_id')
+                            ->where('book_orders.teacher_reschedule', 1);
+                    })
+                    ->select(
+                        'book_orders.id as order_id',
+                        'expert_profiles.user_id',
+                        'expert_profiles.first_name',
+                        'expert_profiles.last_name',
+                        'expert_profiles.profession',
+                        'expert_profiles.profile_image',
+                        'book_orders.title',
+                        'teacher_gig_data.description',
+                        'teacher_gig_data.freelance_service',
+                        'teacher_gig_data.lesson_type',
+                        'teacher_gig_data.payment_type',
+                        'teacher_gigs.service_type',
+                        'teacher_gigs.service_role',
+                        'book_orders.finel_price',
+                        'book_orders.teacher_reschedule',
+                        'book_orders.user_reschedule',
+                        'book_orders.created_at',
+                        'book_orders.status',
+                        DB::raw('MIN(class_dates.user_date) as start_date'),
+                        DB::raw('MAX(class_dates.user_date) as end_date'),
+                        DB::raw("
+                            CASE 
+                                WHEN book_orders.teacher_reschedule = 1 THEN 
+                                    MIN(class_reschedules.user_date) 
+                                ELSE 
+                                    NULL 
+                            END as new_start_date
+                        "),
+                        DB::raw("
+                            CASE 
+                                WHEN book_orders.teacher_reschedule = 1 THEN 
+                                    MAX(class_reschedules.user_date) 
+                                ELSE 
+                                    NULL 
+                            END as new_end_date
+                        ")
+                    )
+                    ->where('book_orders.status', 0)
+                    ->where('book_orders.user_id', Auth::user()->id)
+                    ->groupBy(
+                        'book_orders.id',
+                        'expert_profiles.user_id',
+                        'expert_profiles.first_name',
+                        'expert_profiles.last_name',
+                        'expert_profiles.profession',
+                        'expert_profiles.profile_image',
+                        'book_orders.title',
+                        'teacher_gig_data.description',
+                        'teacher_gig_data.freelance_service',
+                        'teacher_gig_data.lesson_type',
+                        'teacher_gig_data.payment_type',
+                        'teacher_gigs.service_type',
+                        'teacher_gigs.service_role',
+                        'book_orders.finel_price',
+                        'book_orders.teacher_reschedule',
+                        'book_orders.user_reschedule',
+                        'book_orders.created_at',
+                        'book_orders.status',
+                        
+                    )->orderBy($this->sorting, 'desc')
+                    ->paginate($perPage);
+                
+                // Attach all_classes and new_all_classes
+                foreach ($pendingOrders as $order) {
+                    // Get all class_dates for this order
+                    $order->all_classes = DB::table('class_dates')
+                        ->where('order_id', $order->order_id)
+                        ->select('user_date', 'user_attend','user_time_zone','duration')
+                        ->get();
 
-    // Get all class_reschedules if teacher_reschedule is 1
-    if ($order->teacher_reschedule == 1) {
-        $order->new_all_classes = DB::table('class_reschedules')
-            ->where('order_id', $order->order_id)->where('status','=',0)
-            ->select('user_date')
-            ->get();
-    } else {
-        $order->new_all_classes = [];
-    }
-}
-
-
- 
+                    // Get all class_reschedules if teacher_reschedule is 1
+                    if ($order->teacher_reschedule == 1) {
+                        $order->new_all_classes = DB::table('class_reschedules')
+                            ->where('order_id', $order->order_id)->where('status','=',0)
+                            ->select('user_date')
+                            ->get();
+                    } else {
+                        $order->new_all_classes = [];
+                    }
+                }
 
 
-
-    
-
-
-     
-
- 
-
-$activeOrders = DB::table('book_orders')
-    ->join('expert_profiles', 'book_orders.teacher_id', '=', 'expert_profiles.user_id')
-    ->join('teacher_gigs', 'book_orders.gig_id', '=', 'teacher_gigs.id')
-    ->join('teacher_gig_data', 'book_orders.gig_id', '=', 'teacher_gig_data.gig_id')
-    ->join('class_dates', 'book_orders.id', '=', 'class_dates.order_id')
-       ->leftJoin('class_reschedules', function ($join) {
-        $join->on('book_orders.id', '=', 'class_reschedules.order_id')
-             ->where('book_orders.teacher_reschedule', 1);
-    })
-    ->select(
-        'book_orders.id as order_id',
-        'expert_profiles.user_id',
-        'expert_profiles.first_name',
-        'expert_profiles.last_name',
-        'expert_profiles.profession',
-        'expert_profiles.profile_image',
-        'book_orders.title',
-        'teacher_gig_data.description',
-        'teacher_gig_data.freelance_service',
-        'teacher_gig_data.lesson_type',
-        'teacher_gig_data.payment_type',
-        'teacher_gigs.service_type',
-        'teacher_gigs.service_role',
-        'book_orders.finel_price',
-        'book_orders.teacher_reschedule',
-        'book_orders.user_reschedule',
-        'book_orders.created_at',
-        'book_orders.status',
-        DB::raw('MIN(class_dates.user_date) as start_date'),
-        DB::raw('MAX(class_dates.user_date) as end_date'),
-             DB::raw("
-            CASE 
-                WHEN book_orders.teacher_reschedule = 1 THEN 
-                    MIN(class_reschedules.user_date) 
-                ELSE 
-                    NULL 
-            END as new_start_date
-        "),
-        DB::raw("
-            CASE 
-                WHEN book_orders.teacher_reschedule = 1 THEN 
-                    MAX(class_reschedules.user_date) 
-                ELSE 
-                    NULL 
-            END as new_end_date
-        ")
-    )
-    ->where('book_orders.status', 1)
-    ->where('book_orders.user_id', Auth::user()->id)
-    ->groupBy(
-        'book_orders.id',
-        'expert_profiles.user_id',
-        'expert_profiles.first_name',
-        'expert_profiles.last_name',
-        'expert_profiles.profession',
-        'expert_profiles.profile_image',
-        'book_orders.title',
-        'teacher_gig_data.description',
-        'teacher_gig_data.freelance_service',
-        'teacher_gig_data.lesson_type',
-        'teacher_gig_data.payment_type',
-        'teacher_gigs.service_type',
-        'teacher_gigs.service_role',
-        'book_orders.finel_price',
-        'book_orders.teacher_reschedule',
-        'book_orders.user_reschedule',
-        'book_orders.created_at',
-        'book_orders.status'
-    )->orderBy($this->sorting, 'desc')
-    ->paginate($perPage);
-
-    
-
-    // Attach all_classes and new_all_classes
-    foreach ($activeOrders as $order) {
-        // Get all class_dates for this order
-        $order->all_classes = DB::table('class_dates')
-        ->where('order_id', $order->order_id)
-        ->select('user_date', 'user_attend','user_time_zone','duration')
-        ->get();
-        
-        $order->current_class = DB::table('class_dates')
-        ->where('order_id', $order->order_id)
-        ->where('user_date', '>', now()) // current date-time check
-        ->orderBy('user_date', 'asc')    // nearest upcoming class first
-        ->select('user_date', 'user_attend','duration','user_time_zone')
-        ->first(); // only the first upcoming class
-        
-        
-         $order->past_classes = DB::table('class_dates')
-    ->where('order_id', $order->order_id)
-    ->where(function ($query) use ($reschedule_hours) {
-        $query->where('user_date', '<', now())
-              ->orWhereBetween('user_date', [now(), now()->addHours($reschedule_hours)]);
-    })
-    ->select('user_date', 'user_attend','user_time_zone')
-    ->get();
-
-    // Get all class_reschedules if teacher_reschedule is 1
-    if ($order->teacher_reschedule == 1) {
-        $order->new_all_classes = DB::table('class_reschedules')
-            ->where('order_id', $order->order_id)->where('status','=',0)
-            ->select('user_date')
-            ->get();
-    } else {
-        $order->new_all_classes = [];
-    }
-}
+                
 
 
- 
- 
-  
 
-$deliveredOrders = DB::table('book_orders')
-    ->join('expert_profiles', 'book_orders.teacher_id', '=', 'expert_profiles.user_id')
-    ->join('teacher_gigs', 'book_orders.gig_id', '=', 'teacher_gigs.id')
-    ->join('teacher_gig_data', 'book_orders.gig_id', '=', 'teacher_gig_data.gig_id')
-    ->join('class_dates', 'book_orders.id', '=', 'class_dates.order_id')
-    ->select(
-        'book_orders.id as order_id',
-        'expert_profiles.user_id',
-        'expert_profiles.first_name',
-        'expert_profiles.last_name',
-        'expert_profiles.profession',
-        'expert_profiles.profile_image',
-        'book_orders.title',
-        'teacher_gig_data.description',
-        'teacher_gig_data.freelance_service',
-        'teacher_gig_data.lesson_type',
-        'teacher_gig_data.payment_type',
-        'teacher_gigs.service_type',
-        'teacher_gigs.service_role',
-        'book_orders.finel_price',
-        'book_orders.action_date',
-        'book_orders.teacher_reschedule',
-        'book_orders.user_reschedule',
-        'book_orders.created_at',
-        'book_orders.status',
-        DB::raw('MIN(class_dates.user_date) as start_date'),
-        DB::raw('MAX(class_dates.user_date) as end_date')
-    )
-    ->where('book_orders.status', 2)
-    ->where('book_orders.user_id', Auth::user()->id)
-    ->groupBy(
-        'book_orders.id',
-        'expert_profiles.user_id',
-        'expert_profiles.first_name',
-        'expert_profiles.last_name',
-        'expert_profiles.profession',
-        'expert_profiles.profile_image',
-        'book_orders.title',
-        'teacher_gig_data.description',
-        'teacher_gig_data.freelance_service',
-        'teacher_gig_data.lesson_type',
-        'teacher_gig_data.payment_type',
-        'teacher_gigs.service_type',
-        'teacher_gigs.service_role',
-        'book_orders.finel_price',
-        'book_orders.action_date',
-        'book_orders.teacher_reschedule',
-        'book_orders.user_reschedule',
-        'book_orders.created_at',
-        'book_orders.status'
-    )->orderBy($this->sorting, 'desc')
-    ->paginate($perPage);
-
-     
-// Attach all_classes and new_all_classes
-foreach ($deliveredOrders as $order) {
-    // Get all class_dates for this order
-    $order->all_classes = DB::table('class_dates')
-        ->where('order_id', $order->order_id)
-        ->select('user_date', 'user_attend','user_time_zone','duration')
-        ->get();
-
-    // Get all class_reschedules if teacher_reschedule is 1
-    if ($order->teacher_reschedule == 1) {
-        $order->new_all_classes = DB::table('class_reschedules')
-            ->where('order_id', $order->order_id)->where('status','=',0)
-            ->select('user_date')
-            ->get();
-    } else {
-        $order->new_all_classes = [];
-    }
-}
-
-$completedOrders = DB::table('book_orders')
-    ->join('expert_profiles', 'book_orders.teacher_id', '=', 'expert_profiles.user_id')
-    ->join('teacher_gigs', 'book_orders.gig_id', '=', 'teacher_gigs.id')
-    ->join('teacher_gig_data', 'book_orders.gig_id', '=', 'teacher_gig_data.gig_id')
-    ->join('class_dates', 'book_orders.id', '=', 'class_dates.order_id')
-    ->select(
-        'book_orders.id as order_id',
-        'expert_profiles.user_id',
-        'expert_profiles.first_name',
-        'expert_profiles.last_name',
-        'expert_profiles.profession',
-        'expert_profiles.profile_image',
-        'book_orders.title',
-        'teacher_gig_data.description',
-        'teacher_gig_data.freelance_service',
-        'teacher_gig_data.lesson_type',
-        'teacher_gig_data.payment_type',
-        'teacher_gigs.service_type',
-        'teacher_gigs.service_role',
-        'book_orders.finel_price',
-        'book_orders.action_date',
-        'book_orders.teacher_reschedule',
-        'book_orders.user_reschedule',
-        'book_orders.created_at',
-        'book_orders.status',
-        DB::raw('MIN(class_dates.user_date) as start_date'),
-        DB::raw('MAX(class_dates.user_date) as end_date')
-    )
-    ->where('book_orders.status', 3)
-    ->where('book_orders.user_id', Auth::user()->id)
-    ->groupBy(
-        'book_orders.id',
-        'expert_profiles.user_id',
-        'expert_profiles.first_name',
-        'expert_profiles.last_name',
-        'expert_profiles.profession',
-        'expert_profiles.profile_image',
-        'book_orders.title',
-        'teacher_gig_data.description',
-        'teacher_gig_data.freelance_service',
-        'teacher_gig_data.lesson_type',
-        'teacher_gig_data.payment_type',
-        'teacher_gigs.service_type',
-        'teacher_gigs.service_role',
-        'book_orders.finel_price',
-        'book_orders.action_date',
-        'book_orders.teacher_reschedule',
-        'book_orders.user_reschedule',
-        'book_orders.created_at',
-        'book_orders.status'
-    )->orderBy($this->sorting, 'desc')
-    ->paginate($perPage);
-
-     
-// Attach all_classes and new_all_classes
-foreach ($completedOrders as $order) {
-
-    $order->review = DB::table('service_reviews')
-        ->where('order_id', $order->order_id)
-        ->where('user_id', Auth::user()->id)
-        ->select('*')
-        ->first();
-    // Get all class_dates for this order
-    $order->all_classes = DB::table('class_dates')
-        ->where('order_id', $order->order_id)
-        ->select('user_date', 'user_attend','user_time_zone','duration')
-        ->get();
-
-    // Get all class_reschedules if teacher_reschedule is 1
-    if ($order->teacher_reschedule == 1) {
-        $order->new_all_classes = DB::table('class_reschedules')
-            ->where('order_id', $order->order_id)
-            ->select('user_date')
-            ->get();
-    } else {
-        $order->new_all_classes = [];
-    }
-} 
+                    
 
 
- 
+                    
+
+                
+
+                $activeOrders = DB::table('book_orders')
+                    ->join('expert_profiles', 'book_orders.teacher_id', '=', 'expert_profiles.user_id')
+                    ->join('teacher_gigs', 'book_orders.gig_id', '=', 'teacher_gigs.id')
+                    ->join('teacher_gig_data', 'book_orders.gig_id', '=', 'teacher_gig_data.gig_id')
+                    ->join('class_dates', 'book_orders.id', '=', 'class_dates.order_id')
+                    ->leftJoin('class_reschedules', function ($join) {
+                        $join->on('book_orders.id', '=', 'class_reschedules.order_id')
+                            ->where('book_orders.teacher_reschedule', 1);
+                    })
+                    ->select(
+                        'book_orders.id as order_id',
+                        'expert_profiles.user_id',
+                        'expert_profiles.first_name',
+                        'expert_profiles.last_name',
+                        'expert_profiles.profession',
+                        'expert_profiles.profile_image',
+                        'book_orders.title',
+                        'teacher_gig_data.description',
+                        'teacher_gig_data.freelance_service',
+                        'teacher_gig_data.lesson_type',
+                        'teacher_gig_data.payment_type',
+                        'teacher_gigs.service_type',
+                        'teacher_gigs.service_role',
+                        'book_orders.finel_price',
+                        'book_orders.teacher_reschedule',
+                        'book_orders.user_reschedule',
+                        'book_orders.created_at',
+                        'book_orders.status',
+                        DB::raw('MIN(class_dates.user_date) as start_date'),
+                        DB::raw('MAX(class_dates.user_date) as end_date'),
+                            DB::raw("
+                            CASE 
+                                WHEN book_orders.teacher_reschedule = 1 THEN 
+                                    MIN(class_reschedules.user_date) 
+                                ELSE 
+                                    NULL 
+                            END as new_start_date
+                        "),
+                        DB::raw("
+                            CASE 
+                                WHEN book_orders.teacher_reschedule = 1 THEN 
+                                    MAX(class_reschedules.user_date) 
+                                ELSE 
+                                    NULL 
+                            END as new_end_date
+                        ")
+                    )
+                    ->where('book_orders.status', 1)
+                    ->where('book_orders.user_id', Auth::user()->id)
+                    ->groupBy(
+                        'book_orders.id',
+                        'expert_profiles.user_id',
+                        'expert_profiles.first_name',
+                        'expert_profiles.last_name',
+                        'expert_profiles.profession',
+                        'expert_profiles.profile_image',
+                        'book_orders.title',
+                        'teacher_gig_data.description',
+                        'teacher_gig_data.freelance_service',
+                        'teacher_gig_data.lesson_type',
+                        'teacher_gig_data.payment_type',
+                        'teacher_gigs.service_type',
+                        'teacher_gigs.service_role',
+                        'book_orders.finel_price',
+                        'book_orders.teacher_reschedule',
+                        'book_orders.user_reschedule',
+                        'book_orders.created_at',
+                        'book_orders.status'
+                    )->orderBy($this->sorting, 'desc')
+                    ->paginate($perPage);
+
+                    
+
+                    // Attach all_classes and new_all_classes
+                    foreach ($activeOrders as $order) {
+                        // Get all class_dates for this order
+                        $order->all_classes = DB::table('class_dates')
+                        ->where('order_id', $order->order_id)
+                        ->select('user_date', 'user_attend','user_time_zone','duration')
+                        ->get();
+                        
+                        $order->current_class = DB::table('class_dates')
+                        ->where('order_id', $order->order_id)
+                        ->where('user_date', '>', now()) // current date-time check
+                        ->orderBy('user_date', 'asc')    // nearest upcoming class first
+                        ->select('user_date', 'user_attend','duration','user_time_zone')
+                        ->first(); // only the first upcoming class
+                        
+                        
+                        $order->past_classes = DB::table('class_dates')
+                    ->where('order_id', $order->order_id)
+                    ->where(function ($query) use ($reschedule_hours) {
+                        $query->where('user_date', '<', now())
+                            ->orWhereBetween('user_date', [now(), now()->addHours($reschedule_hours)]);
+                    })
+                    ->select('user_date', 'user_attend','user_time_zone')
+                    ->get();
+
+                    // Get all class_reschedules if teacher_reschedule is 1
+                    if ($order->teacher_reschedule == 1) {
+                        $order->new_all_classes = DB::table('class_reschedules')
+                            ->where('order_id', $order->order_id)->where('status','=',0)
+                            ->select('user_date')
+                            ->get();
+                    } else {
+                        $order->new_all_classes = [];
+                    }
+                }
 
 
-$cancelledOrders = DB::table('book_orders')
-    ->join('expert_profiles', 'book_orders.teacher_id', '=', 'expert_profiles.user_id')
-    ->join('teacher_gigs', 'book_orders.gig_id', '=', 'teacher_gigs.id')
-    ->join('teacher_gig_data', 'book_orders.gig_id', '=', 'teacher_gig_data.gig_id')
-    ->join('class_dates', 'book_orders.id', '=', 'class_dates.order_id')
-    ->select(
-        'book_orders.id as order_id',
-        'expert_profiles.user_id',
-        'expert_profiles.first_name',
-        'expert_profiles.last_name',
-        'expert_profiles.profession',
-        'expert_profiles.profile_image',
-        'book_orders.title',
-        'teacher_gig_data.description',
-        'teacher_gig_data.freelance_service',
-        'teacher_gig_data.lesson_type',
-        'teacher_gig_data.payment_type',
-        'teacher_gigs.service_type',
-        'teacher_gigs.service_role',
-        'book_orders.finel_price',
-        'book_orders.action_date',
-        'book_orders.teacher_reschedule',
-        'book_orders.user_reschedule',
-        'book_orders.created_at',
-             'book_orders.refund',
-        'book_orders.user_dispute',
-        'book_orders.teacher_dispute',
-        'book_orders.status',
-        DB::raw('MIN(class_dates.user_date) as start_date'),
-        DB::raw('MAX(class_dates.user_date) as end_date')
-    )
-    ->where('book_orders.status', 4)
-    ->where('book_orders.user_id', Auth::user()->id)
-    ->groupBy(
-        'book_orders.id',
-        'expert_profiles.user_id',
-        'expert_profiles.first_name',
-        'expert_profiles.last_name',
-        'expert_profiles.profession',
-        'expert_profiles.profile_image',
-        'book_orders.title',
-        'teacher_gig_data.description',
-        'teacher_gig_data.freelance_service',
-        'teacher_gig_data.lesson_type',
-        'teacher_gig_data.payment_type',
-        'teacher_gigs.service_type',
-        'teacher_gigs.service_role',
-        'book_orders.finel_price',
-        'book_orders.action_date',
-        'book_orders.teacher_reschedule',
-        'book_orders.user_reschedule',
-        'book_orders.created_at',
-             'book_orders.refund',
-        'book_orders.user_dispute',
-        'book_orders.teacher_dispute',
-        'book_orders.status'
-    )->orderBy($this->sorting, 'desc')
-    ->paginate($perPage);
+                
+                
+                
 
-     
-// Attach all_classes and new_all_classes
-foreach ($cancelledOrders as $order) {
+                $deliveredOrders = DB::table('book_orders')
+                    ->join('expert_profiles', 'book_orders.teacher_id', '=', 'expert_profiles.user_id')
+                    ->join('teacher_gigs', 'book_orders.gig_id', '=', 'teacher_gigs.id')
+                    ->join('teacher_gig_data', 'book_orders.gig_id', '=', 'teacher_gig_data.gig_id')
+                    ->join('class_dates', 'book_orders.id', '=', 'class_dates.order_id')
+                    ->select(
+                        'book_orders.id as order_id',
+                        'expert_profiles.user_id',
+                        'expert_profiles.first_name',
+                        'expert_profiles.last_name',
+                        'expert_profiles.profession',
+                        'expert_profiles.profile_image',
+                        'book_orders.title',
+                        'teacher_gig_data.description',
+                        'teacher_gig_data.freelance_service',
+                        'teacher_gig_data.lesson_type',
+                        'teacher_gig_data.payment_type',
+                        'teacher_gigs.service_type',
+                        'teacher_gigs.service_role',
+                        'book_orders.finel_price',
+                        'book_orders.action_date',
+                        'book_orders.teacher_reschedule',
+                        'book_orders.user_reschedule',
+                        'book_orders.created_at',
+                        'book_orders.status',
+                        DB::raw('MIN(class_dates.user_date) as start_date'),
+                        DB::raw('MAX(class_dates.user_date) as end_date')
+                    )
+                    ->where('book_orders.status', 2)
+                    ->where('book_orders.user_id', Auth::user()->id)
+                    ->groupBy(
+                        'book_orders.id',
+                        'expert_profiles.user_id',
+                        'expert_profiles.first_name',
+                        'expert_profiles.last_name',
+                        'expert_profiles.profession',
+                        'expert_profiles.profile_image',
+                        'book_orders.title',
+                        'teacher_gig_data.description',
+                        'teacher_gig_data.freelance_service',
+                        'teacher_gig_data.lesson_type',
+                        'teacher_gig_data.payment_type',
+                        'teacher_gigs.service_type',
+                        'teacher_gigs.service_role',
+                        'book_orders.finel_price',
+                        'book_orders.action_date',
+                        'book_orders.teacher_reschedule',
+                        'book_orders.user_reschedule',
+                        'book_orders.created_at',
+                        'book_orders.status'
+                    )->orderBy($this->sorting, 'desc')
+                    ->paginate($perPage);
 
-        $order->review = DB::table('service_reviews')
-        ->where('order_id', $order->order_id)
-        ->where('user_id', Auth::user()->id)
-        ->select('*')
-        ->first();
+                    
+                // Attach all_classes and new_all_classes
+                foreach ($deliveredOrders as $order) {
+                    // Get all class_dates for this order
+                    $order->all_classes = DB::table('class_dates')
+                        ->where('order_id', $order->order_id)
+                        ->select('user_date', 'user_attend','user_time_zone','duration')
+                        ->get();
 
-    // Get all class_dates for this order
-    $order->all_classes = DB::table('class_dates')
-        ->where('order_id', $order->order_id)
-        ->select('user_date', 'user_attend','user_time_zone','duration')
-        ->get();
+                    // Get all class_reschedules if teacher_reschedule is 1
+                    if ($order->teacher_reschedule == 1) {
+                        $order->new_all_classes = DB::table('class_reschedules')
+                            ->where('order_id', $order->order_id)->where('status','=',0)
+                            ->select('user_date')
+                            ->get();
+                    } else {
+                        $order->new_all_classes = [];
+                    }
+                }
 
-    // Get all class_reschedules if teacher_reschedule is 1
-    if ($order->teacher_reschedule == 1) {
-        $order->new_all_classes = DB::table('class_reschedules')
-            ->where('order_id', $order->order_id)->where('status','=',0)
-            ->select('user_date')
-            ->get();
-    } else {
-        $order->new_all_classes = [];
-    }
-}
- 
+                $completedOrders = DB::table('book_orders')
+                    ->join('expert_profiles', 'book_orders.teacher_id', '=', 'expert_profiles.user_id')
+                    ->join('teacher_gigs', 'book_orders.gig_id', '=', 'teacher_gigs.id')
+                    ->join('teacher_gig_data', 'book_orders.gig_id', '=', 'teacher_gig_data.gig_id')
+                    ->join('class_dates', 'book_orders.id', '=', 'class_dates.order_id')
+                    ->select(
+                        'book_orders.id as order_id',
+                        'expert_profiles.user_id',
+                        'expert_profiles.first_name',
+                        'expert_profiles.last_name',
+                        'expert_profiles.profession',
+                        'expert_profiles.profile_image',
+                        'book_orders.title',
+                        'teacher_gig_data.description',
+                        'teacher_gig_data.freelance_service',
+                        'teacher_gig_data.lesson_type',
+                        'teacher_gig_data.payment_type',
+                        'teacher_gigs.service_type',
+                        'teacher_gigs.service_role',
+                        'book_orders.finel_price',
+                        'book_orders.action_date',
+                        'book_orders.teacher_reschedule',
+                        'book_orders.user_reschedule',
+                        'book_orders.created_at',
+                        'book_orders.status',
+                        DB::raw('MIN(class_dates.user_date) as start_date'),
+                        DB::raw('MAX(class_dates.user_date) as end_date')
+                    )
+                    ->where('book_orders.status', 3)
+                    ->where('book_orders.user_id', Auth::user()->id)
+                    ->groupBy(
+                        'book_orders.id',
+                        'expert_profiles.user_id',
+                        'expert_profiles.first_name',
+                        'expert_profiles.last_name',
+                        'expert_profiles.profession',
+                        'expert_profiles.profile_image',
+                        'book_orders.title',
+                        'teacher_gig_data.description',
+                        'teacher_gig_data.freelance_service',
+                        'teacher_gig_data.lesson_type',
+                        'teacher_gig_data.payment_type',
+                        'teacher_gigs.service_type',
+                        'teacher_gigs.service_role',
+                        'book_orders.finel_price',
+                        'book_orders.action_date',
+                        'book_orders.teacher_reschedule',
+                        'book_orders.user_reschedule',
+                        'book_orders.created_at',
+                        'book_orders.status'
+                    )->orderBy($this->sorting, 'desc')
+                    ->paginate($perPage);
+
+                    
+                // Attach all_classes and new_all_classes
+                foreach ($completedOrders as $order) {
+
+                    $order->review = DB::table('service_reviews')
+                        ->where('order_id', $order->order_id)
+                        ->where('user_id', Auth::user()->id)
+                        ->select('*')
+                        ->first();
+                    // Get all class_dates for this order
+                    $order->all_classes = DB::table('class_dates')
+                        ->where('order_id', $order->order_id)
+                        ->select('user_date', 'user_attend','user_time_zone','duration')
+                        ->get();
+
+                    // Get all class_reschedules if teacher_reschedule is 1
+                    if ($order->teacher_reschedule == 1) {
+                        $order->new_all_classes = DB::table('class_reschedules')
+                            ->where('order_id', $order->order_id)
+                            ->select('user_date')
+                            ->get();
+                    } else {
+                        $order->new_all_classes = [];
+                    }
+                } 
+
+
+                
+
+
+                $cancelledOrders = DB::table('book_orders')
+                    ->join('expert_profiles', 'book_orders.teacher_id', '=', 'expert_profiles.user_id')
+                    ->join('teacher_gigs', 'book_orders.gig_id', '=', 'teacher_gigs.id')
+                    ->join('teacher_gig_data', 'book_orders.gig_id', '=', 'teacher_gig_data.gig_id')
+                    ->join('class_dates', 'book_orders.id', '=', 'class_dates.order_id')
+                    ->select(
+                        'book_orders.id as order_id',
+                        'expert_profiles.user_id',
+                        'expert_profiles.first_name',
+                        'expert_profiles.last_name',
+                        'expert_profiles.profession',
+                        'expert_profiles.profile_image',
+                        'book_orders.title',
+                        'teacher_gig_data.description',
+                        'teacher_gig_data.freelance_service',
+                        'teacher_gig_data.lesson_type',
+                        'teacher_gig_data.payment_type',
+                        'teacher_gigs.service_type',
+                        'teacher_gigs.service_role',
+                        'book_orders.finel_price',
+                        'book_orders.action_date',
+                        'book_orders.teacher_reschedule',
+                        'book_orders.user_reschedule',
+                        'book_orders.created_at',
+                            'book_orders.refund',
+                        'book_orders.user_dispute',
+                        'book_orders.teacher_dispute',
+                        'book_orders.status',
+                        DB::raw('MIN(class_dates.user_date) as start_date'),
+                        DB::raw('MAX(class_dates.user_date) as end_date')
+                    )
+                    ->where('book_orders.status', 4)
+                    ->where('book_orders.user_id', Auth::user()->id)
+                    ->groupBy(
+                        'book_orders.id',
+                        'expert_profiles.user_id',
+                        'expert_profiles.first_name',
+                        'expert_profiles.last_name',
+                        'expert_profiles.profession',
+                        'expert_profiles.profile_image',
+                        'book_orders.title',
+                        'teacher_gig_data.description',
+                        'teacher_gig_data.freelance_service',
+                        'teacher_gig_data.lesson_type',
+                        'teacher_gig_data.payment_type',
+                        'teacher_gigs.service_type',
+                        'teacher_gigs.service_role',
+                        'book_orders.finel_price',
+                        'book_orders.action_date',
+                        'book_orders.teacher_reschedule',
+                        'book_orders.user_reschedule',
+                        'book_orders.created_at',
+                            'book_orders.refund',
+                        'book_orders.user_dispute',
+                        'book_orders.teacher_dispute',
+                        'book_orders.status'
+                    )->orderBy($this->sorting, 'desc')
+                    ->paginate($perPage);
+
+                    
+                // Attach all_classes and new_all_classes
+                foreach ($cancelledOrders as $order) {
+
+                        $order->review = DB::table('service_reviews')
+                        ->where('order_id', $order->order_id)
+                        ->where('user_id', Auth::user()->id)
+                        ->select('*')
+                        ->first();
+
+                    // Get all class_dates for this order
+                    $order->all_classes = DB::table('class_dates')
+                        ->where('order_id', $order->order_id)
+                        ->select('user_date', 'user_attend','user_time_zone','duration')
+                        ->get();
+
+                    // Get all class_reschedules if teacher_reschedule is 1
+                    if ($order->teacher_reschedule == 1) {
+                        $order->new_all_classes = DB::table('class_reschedules')
+                            ->where('order_id', $order->order_id)->where('status','=',0)
+                            ->select('user_date')
+                            ->get();
+                    } else {
+                        $order->new_all_classes = [];
+                    }
+                }
+                
    
 
  

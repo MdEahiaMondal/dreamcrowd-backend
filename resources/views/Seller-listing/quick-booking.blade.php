@@ -1306,12 +1306,14 @@ span.to-input {
                             data-bs-toggle="modal"
                             id="contact-us"
                             data-bs-target="#contact-me-modal"
-                            >Contact Me</a
-                          >
+                            >Contact Me
+                            </a>
                
-                              
-                          <button onclick="ServicePayemnt();" class="btn booking-btn">Complete Booking</button>
-                          {{-- @endif --}}
+                           @if (Auth::user())  
+                            <button onclick="ServicePayemnt();" class="btn booking-btn">Complete Booking</button>
+                          @else
+                             <button  data-bs-toggle="modal" data-bs-target="#exampleModal" class="btn booking-btn">Complete Booking</button>
+                          @endif
                         </div>
                       </div>
                     </div>

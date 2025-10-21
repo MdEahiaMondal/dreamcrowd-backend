@@ -11,54 +11,132 @@ use App\Models\Faqs;
 use App\Models\PannelFaqs;
 use App\Models\User;
 use App\Models\WishList;
+use App\Models\BookOrder;
+use App\Models\CancelOrder;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
-    
-    public function UsercheckAuth() {
+
+    public function UsercheckAuth()
+    {
 
         if (!Auth::user()) {
-           return redirect()->to('/')->with('error','Please LoginIn to Your Account!');
+            return redirect()->to('/')->with('error', 'Please LoginIn to Your Account!');
         } else {
             if (Auth::user()->role == 1) {
                 return redirect()->to('/teacher-dashboard');
-            }elseif(Auth::user()->role == 2){
+            } elseif (Auth::user()->role == 2) {
                 return redirect()->to('/admin-dashboard');
             }
         }
-        
-        
-    }
-    
-    public function UserDashboard()  {
-                
-        if ($redirect = $this->UsercheckAuth()) {
-            return $redirect;  
-        }
-        
-        return view("User-Dashboard.index");
     }
 
-    
-    public function UserFaqs()  {
-          
-        if ($redirect = $this->UsercheckAuth()) {
-            return $redirect;  
-        }
-        
-         
+    public function UserDashboard()
+    {
 
-        $faqs = PannelFaqs::where(['type'=>'buyer'])->get();
+        if ($redirect = $this->UsercheckAuth()) {
+            return $redirect;
+        }
+
+        // Base query
+        $orders = BookOrder::query();
+
+        // === COUNT STATISTICS ===
+        $stats = [
+            'all_orders'        => BookOrder::count(),
+
+            // Class orders (based on TeacherGig service_role)
+            'class_orders'      => BookOrder::whereHas('gig', function ($q) {
+                $q->where('service_role', 'Class');
+            })->count(),
+
+            // Freelancer orders (based on TeacherGig freelance_service)
+            'freelancer_orders' => BookOrder::whereHas('gig', function ($q) {
+                $q->where('service_role', 'Freelance');
+            })->count(),
+
+            // Status-based counts
+            'completed_orders'  =>  BookOrder::where('status', 3)->count(),
+
+            'cancelled_orders'  =>  BookOrder::where('status', 4)->count(),
+
+            'active_orders'     => BookOrder::where('status', 1)->count(),
+
+            // Work site-based counts
+            'online_orders' => BookOrder::whereHas('gig', function ($q) {
+                $q->where('service_type', 'Online');
+            })->count(),
+
+            'inperson_orders' => BookOrder::whereHas('gig', function ($q) {
+                $q->where('service_type', 'Inperson');
+            })->count(),
+
+        ];
+
+        // === RECENT BOOKINGS ===
+        $recentBookings = BookOrder::with(['gig', 'booker'])
+            ->latest()
+            ->take(9)
+            ->get();
+
+
+        return view("User-Dashboard.index", compact(['stats', 'recentBookings']));
+    }
+
+
+    public function UserFaqs()
+    {
+
+        if ($redirect = $this->UsercheckAuth()) {
+            return $redirect;
+        }
+
+
+
+        $faqs = PannelFaqs::where(['type' => 'buyer'])->get();
         return view("User-Dashboard.faq", compact('faqs'));
     }
 
-
     
-    public function ChangePassword()  {
-       
+    public function profile()
+    {
+        $user = Auth::user();
+        return view("common.profile", compact('user'));
+    }
+
+    public function update(Request $request)
+    {
+        $user = Auth::user();
+
+        $request->validate([
+            'first_name' => 'required|string|max:100',
+            'last_name'  => 'required|string|max:100',
+            'country'    => 'nullable|string|max:100',
+            'profile'    => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+        ]);
+
+        if ($request->hasFile('profile')) {
+            $filename = time() . '.' . $request->profile->extension();
+            $request->profile->move(public_path('uploads/profiles'), $filename);
+            $user->profile = 'uploads/profiles/' . $filename;
+        }
+
+        $user->first_name = $request->first_name;
+        $user->last_name  = $request->last_name;
+        $user->country    = $request->country;
+        $user->save();
+
+        return back()->with('success', 'Profile updated successfully!');
+    }
+
+
+
+    public function ChangePassword()
+    {
+
         if (Auth::user()->role == 2) {
             return redirect('/admin-dashboard');
         }
@@ -67,8 +145,9 @@ class UserController extends Controller
     }
 
 
-    
-    public function ChangeEmail()  {
+
+    public function ChangeEmail()
+    {
 
         if (Auth::user()->role == 2) {
             return redirect('/admin-dashboard');
@@ -77,21 +156,23 @@ class UserController extends Controller
     }
 
 
-    
-    public function ChangeCardDetail()  {
- 
+
+    public function ChangeCardDetail()
+    {
+
         if (Auth::user()->role == 2) {
             return redirect('/admin-dashboard');
         }
-        
-        $bank_details = BankDetails::where(['user_id'=>Auth::user()->id])->first();
+
+        $bank_details = BankDetails::where(['user_id' => Auth::user()->id])->first();
         return view("User-Dashboard.card-detail", compact('bank_details'));
     }
 
 
-    
-    public function DeleteAccount(Request $request)  {
- 
+
+    public function DeleteAccount(Request $request)
+    {
+
         if (!Auth::user()) {
             return redirect('/');
         }
@@ -103,86 +184,76 @@ class UserController extends Controller
         $user = User::find(Auth::user()->id);
 
         if ($request->mainOptions == 'option1') {
-             
+
             $delete_account = DeleteAccounts::create([
-                'user_id'=> $user->id,
-                'user_email'=> $user->email,
-                'reason'=> "I completed a job and don't need Dreamcrowd anymore",
+                'user_id' => $user->id,
+                'user_email' => $user->email,
+                'reason' => "I completed a job and don't need Dreamcrowd anymore",
             ]);
 
             if ($delete_account) {
-                 $user->delete();
-                 Auth::logout();
-                return redirect()->to('/')->with('success','Account Deleted!');
-                
+                $user->delete();
+                Auth::logout();
+                return redirect()->to('/')->with('success', 'Account Deleted!');
             } else {
-                return redirect()->back()->with('error','Something Went Rong,Tryagain Later!');
-    
+                return redirect()->back()->with('error', 'Something Went Rong,Tryagain Later!');
             }
         } elseif ($request->mainOptions == 'option2') {
 
             $delete_account = DeleteAccounts::create([
-                'user_id'=> $user->id,
-                'user_email'=> $user->email,
-                'reason'=> "I find it hard to use Dreamcrowd",
-                'additional_reason'=> $request->additionalOption2,
+                'user_id' => $user->id,
+                'user_email' => $user->email,
+                'reason' => "I find it hard to use Dreamcrowd",
+                'additional_reason' => $request->additionalOption2,
             ]);
 
             if ($delete_account) {
-                 $user->delete();
-                 Auth::logout();
-                return redirect()->to('/')->with('success','Account Deleted!');
-                
+                $user->delete();
+                Auth::logout();
+                return redirect()->to('/')->with('success', 'Account Deleted!');
             } else {
-                return redirect()->back()->with('error','Something Went Rong,Tryagain Later!');
-    
+                return redirect()->back()->with('error', 'Something Went Rong,Tryagain Later!');
             }
         } elseif ($request->mainOptions == 'option3') {
 
             $delete_account = DeleteAccounts::create([
-                'user_id'=> $user->id,
-                'user_email'=> $user->email,
-                'reason'=> "I am struggling to find jobs",
+                'user_id' => $user->id,
+                'user_email' => $user->email,
+                'reason' => "I am struggling to find jobs",
             ]);
 
             if ($delete_account) {
-                 $user->delete();
-                 Auth::logout();
-                return redirect()->to('/')->with('success','Account Deleted!');
-                
+                $user->delete();
+                Auth::logout();
+                return redirect()->to('/')->with('success', 'Account Deleted!');
             } else {
-                return redirect()->back()->with('error','Something Went Rong,Tryagain Later!');
-    
+                return redirect()->back()->with('error', 'Something Went Rong,Tryagain Later!');
             }
         } else {
 
             $delete_account = DeleteAccounts::create([
-                'user_id'=> $user->id,
-                'user_email'=> $user->email,
-                'reason'=> "Other reasons",
-                'additional_reason'=> $request->additionalOption4,
+                'user_id' => $user->id,
+                'user_email' => $user->email,
+                'reason' => "Other reasons",
+                'additional_reason' => $request->additionalOption4,
             ]);
 
             if ($delete_account) {
-                 $user->delete();
-                 Auth::logout();
-                return redirect()->to('/')->with('success','Account Deleted!');
-                
+                $user->delete();
+                Auth::logout();
+                return redirect()->to('/')->with('success', 'Account Deleted!');
             } else {
-                return redirect()->back()->with('error','Something Went Rong,Tryagain Later!');
-    
+                return redirect()->back()->with('error', 'Something Went Rong,Tryagain Later!');
             }
         }
-    
-
-
     }
 
 
     // Contact Us Functions Start================
-    public function UserContactUs()   {
-        
-                 
+    public function UserContactUs()
+    {
+
+
         if (!Auth::user()) {
             return redirect('/');
         }
@@ -192,69 +263,70 @@ class UserController extends Controller
         }
 
         return view("User-Dashboard.contact");
-
     }
 
-    public function ContactMail(Request $request)  {
-       
-        
+    public function ContactMail(Request $request)
+    {
+
+
         if ($request->msg == null) {
-            return redirect()->back()->with('error','Please Write a Text Message!');
+            return redirect()->back()->with('error', 'Please Write a Text Message!');
         }
 
         $mailData = [
             'first_name' => $request->first_name,
             'last_name' => $request->last_name,
-             'email' => $request->email,
+            'email' => $request->email,
             'subject' => $request->subject,
             'msg' => $request->msg,
         ];
-        $name = $request->first_name.' '.$request->last_name;
+        $name = $request->first_name . ' ' . $request->last_name;
         $subject = $request->subject;
         $mail = $request->email;
-       $mail_send =  Mail::to('ma2550645@gmail.com')->send(new ContactMail($mailData, $subject,$name, $mail));
-    //    $mail_send =  Mail::to('dreamcrowd@bravemindstudio.com')->send(new ContactMail($mailData, $subject,$name, $mail));
+        $mail_send =  Mail::to('ma2550645@gmail.com')->send(new ContactMail($mailData, $subject, $name, $mail));
+        //    $mail_send =  Mail::to('dreamcrowd@bravemindstudio.com')->send(new ContactMail($mailData, $subject,$name, $mail));
 
-       if ($mail_send) {
-        return redirect()->back()->with('success','Hi there, We will back to you soon!');
-    } else {
-           return redirect()->back()->with('error','Something Went Rong, Tryagain Later!');
-       }
-        
+        if ($mail_send) {
+            return redirect()->back()->with('success', 'Hi there, We will back to you soon!');
+        } else {
+            return redirect()->back()->with('error', 'Something Went Rong, Tryagain Later!');
+        }
     }
     // Contact Us Functions End================
 
 
     // Wish List Functions Start================
-       
-    public function WishList()  {
-                
+
+    public function WishList()
+    {
+
         if ($redirect = $this->UsercheckAuth()) {
-            return $redirect;  
+            return $redirect;
         }
 
-        $list = WishList::where(['user_id'=>Auth::user()->id])->get();
-        
+        $list = WishList::where(['user_id' => Auth::user()->id])->get();
+
         return view("User-Dashboard.wishlist", compact('list'));
     }
 
-       
-    public function RemoveWishList($id)  {
-                
+
+    public function RemoveWishList($id)
+    {
+
         if ($redirect = $this->UsercheckAuth()) {
-            return $redirect;  
+            return $redirect;
         }
 
-        $list = WishList::where(['id'=>$id])->first();
+        $list = WishList::where(['id' => $id])->first();
 
         $list->delete();
-        if ( $list) {
-             
-       
-        return redirect()->back()->with('info','Service Removed From List!');
-    } else {
-        return redirect()->back()->with('error','Something Went Rong,Tryagain Later!');
-    }
+        if ($list) {
+
+
+            return redirect()->back()->with('info', 'Service Removed From List!');
+        } else {
+            return redirect()->back()->with('error', 'Something Went Rong,Tryagain Later!');
+        }
     }
 
 
@@ -262,4 +334,3 @@ class UserController extends Controller
 
 
 }
-        

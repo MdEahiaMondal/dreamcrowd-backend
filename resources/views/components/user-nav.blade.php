@@ -47,6 +47,11 @@
                     <i class="bx bxs-grid-alt"></i> &nbsp;&nbsp;Full
                     Dashboard</a>
                 </li>
+                    <li>
+                  <a class="dropdown-item" href="/profile">
+                    <i class="bx bx-user icon"></i> &nbsp;&nbsp;Profile</a
+                  >
+                </li>
                 @if (Auth::user())
                 @php
                     $expert = \App\Models\ExpertProfile::where(['user_id'=>Auth::user()->id, 'status'=>1])->first();

@@ -15,11 +15,11 @@
     <ul class="nav-links">
       <li class="active">
         <a href="/user-dashboard">
-          <i class="bx bx-user icon" title="My Profile"></i>
-          <span class="link_name">My Profile</span>
+          <i class="bx bxs-grid-alt" title="Dashboard"></i>
+          <span class="link_name">Dashboard</span>
         </a>
         <ul class="sub-menu blank">
-          <li><a class="link_name" href="/user-dashboard">My Profile</a></li>
+          <li><a class="link_name" href="/user-dashboard">Dashboard</a></li>
         </ul>
       </li>
       <li>
@@ -104,6 +104,7 @@
         </div>
         <ul class="sub-menu">
           <li><a class="link_name" href="#">Account Settings</a></li>
+          <li><a href="/profile">Profile</a></li>
           <li><a href="/change-password">Change Password</a></li>
           <li><a href="/change-email">Change Email</a></li>
           <li><a href="/change-card-detail">Update Card Detail</a></li>

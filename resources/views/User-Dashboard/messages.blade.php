@@ -255,7 +255,8 @@
 
                  
                        
-                  <div class="card-footer"  id="sms_div" @if ($block != 0) style="display: none;" @endif>
+                  {{-- <div class="card-footer"  id="sms_div" @if ($block != 0) style="display: none;" @endif> --}}
+                   <div class="card-footer"  id="sms_div" @if ($block != 0) style="display: none;" @endif>
                     <div class="input-group emoji-picker-container">
                       
                       
@@ -303,8 +304,9 @@
                     </div>
                   </div>
 
+                  {{-- <div class="card-footer" id="block_div"  @if ($block != 0) style="display: block;" @endif> --}}
                   <div class="card-footer" id="block_div"  @if ($block != 0) style="display: block;" @endif>
-                    <h5  class="Safety-term text-center" >You can no longer send a message to this user</h5>
+                    <h5  class="Safety-term text-center" >You can no longer send a message to this user </h5>
                   </div>
 
 
