@@ -17,8 +17,6 @@ use App\Http\Controllers\UserController;
 // Route::get('/', function () {
 //     return view('welcome');
 // });
- 
-
 
 
 Route::controller(AuthController::class)->group(function () {
@@ -28,25 +26,21 @@ Route::controller(AuthController::class)->group(function () {
     Route::get('/google/redirect', 'redirectToGoogle')->name('google.redirect');
     Route::get('/google/callback', 'handleGoogleCallback')->name('google.callback');
     // Sign With Google ================
-     //Start ==== With Facebook account =====
-     Route::get('/facebook/redirect','facebookRedirect');
-     Route::get('/auth/facebook/callback','facebookCallback');
-       //End ==== With Facebook account =====
+    //Start ==== With Facebook account =====
+    Route::get('/facebook/redirect', 'facebookRedirect');
+    Route::get('/auth/facebook/callback', 'facebookCallback');
+    //End ==== With Facebook account =====
     Route::get('/logout', 'LogOut');
     Route::get('/switch-account', 'SwitchAccount');
     Route::get('/verify-email/{token}', 'VerifyEmail');
     Route::post('/forgot-password', 'ForgotPassword');
     Route::get('/forgot-password-verify/{token}', 'ForgotPasswordVerify');
     Route::post('/new-forgot-password', 'NewForgotPassword');
-    
+
     // Get Current Location =====
     Route::get('/get-current-location', 'GetCurrentLocation');
     // Get Current Location =====
 });
-
-
-
-
 
 
 Route::controller(PublicWebController::class)->group(function () {
@@ -62,7 +56,6 @@ Route::controller(PublicWebController::class)->group(function () {
 });
 
 
- 
 Route::controller(SellerListingController::class)->group(function () {
 // Keyword Suggessions get
     Route::get('/keywords', 'getKeywords');
@@ -73,7 +66,7 @@ Route::controller(SellerListingController::class)->group(function () {
     Route::get('/seller-listing/inperson-services/{category}', 'SellerListingInpersonServicesCategory');
     Route::get('/seller-listing-service-search', 'SellerListingServiceSearch')->name('SellerListingServiceSearch');
     Route::get('/seller-listing-search', 'SellerListingSearch')->name('SellerListingSearch');
-    
+
     Route::get('/course-service/{id}', 'CourseService');
     Route::post('/add-service-to-wishlist', 'AddServiceToWishlist');
     Route::get('/professional-profile/{id}/{name}', 'ProfessionalProfile');
@@ -84,12 +77,11 @@ Route::controller(SellerListingController::class)->group(function () {
 
 // Book Order Controller ===========
 Route::controller(BookingController::class)->group(function () {
-    Route::get('/quick-booking/{id}', 'QuickBooking'); 
-    Route::post('/get-available-times', 'GetAvailableTimes'); 
+    Route::get('/quick-booking/{id}', 'QuickBooking');
+    Route::post('/get-available-times', 'GetAvailableTimes');
     Route::post('/service-book', 'ServiceBook');
     Route::post('/service-payment', 'ServicePayment');
 });
-
 
 
 Route::controller(ExpertController::class)->group(function () {
@@ -102,8 +94,6 @@ Route::controller(ExpertController::class)->group(function () {
     Route::post('/expert-profile-upload', 'ExpertProfileUpload');
     Route::post('/fast-track-app-payment', 'FastTrackAppPayment');
 });
-
-
 
 
 Route::controller(AdminController::class)->group(function () {
@@ -144,16 +134,15 @@ Route::controller(AdminController::class)->group(function () {
     Route::get('/delete-bank-details/{id}', 'DeleteBankDetails');
     Route::post('/update-web-setting', 'UpdateWebSetting');
     // Account Setting ==========
-     // Notes&Calender ===
-     Route::get('/admin-notes-calender', 'AdminNotesCalender');
-     Route::get('/admin-calendar', 'AdminCalenderindex');
-     Route::post('/admin-calendar', 'AdminCalenderstore');
-     Route::put('/admin-calendar/{id}', 'AdminCalenderupdate');
-     Route::delete('/admin-calendar/{id}', 'AdminCalenderdestroy');
-   // Notes&Calender ===
+    // Notes&Calender ===
+    Route::get('/admin-notes-calender', 'AdminNotesCalender');
+    Route::get('/admin-calendar', 'AdminCalenderindex');
+    Route::post('/admin-calendar', 'AdminCalenderstore');
+    Route::put('/admin-calendar/{id}', 'AdminCalenderupdate');
+    Route::delete('/admin-calendar/{id}', 'AdminCalenderdestroy');
+    // Notes&Calender ===
 
 });
-
 
 
 Route::controller(DynamicManagementController::class)->group(function () {
@@ -237,12 +226,12 @@ Route::controller(DynamicManagementController::class)->group(function () {
     Route::post('/add-keyword-suggessions-dynamic', 'AddKeywordDynamic');
     Route::post('/delete-keyword-suggessions-dynamic', 'DeleteKeywordDynamic');
     //  Keyword Suggessions Dynamic =======
-    
+
     //  Booking Duration Dynamic =======
     Route::get('/admin-booking-duration', 'BookingDuration');
     Route::post('/admin-booking-duration-update', 'BookingDurationUpdate');
     //  Booking Duration Dynamic =======
-    
+
     // Host Guidline ===========
     Route::get('/admin-host-guidline', 'AdminHostGuidline');
     Route::get('/add-host-guidline', 'AddHostGuidline');
@@ -262,8 +251,6 @@ Route::controller(DynamicManagementController::class)->group(function () {
     // Top Seller Set ===========
 
 });
-
-
 
 
 Route::controller(TeacherController::class)->group(function () {
@@ -288,23 +275,28 @@ Route::controller(TeacherController::class)->group(function () {
     Route::get('/teacher-contact-us', 'TeacherContactUs');
     // Notes&Calender ===
     Route::get('/teacher-notes-calender', 'TeacherNotesCalender');
-     Route::get('/teacher-calendar', 'TeacherCalenderindex'); 
+    Route::get('/teacher-calendar', 'TeacherCalenderindex');
     Route::post('/teacher-calendar', 'TeacherCalenderstore');
     Route::put('/teacher-calendar/{id}', 'TeacherCalenderupdate');
     Route::delete('/teacher-calendar/{id}', 'TeacherCalenderdestroy');
+
+    Route::get('/teacher-reviews', 'getAllReviews');
+    Route::get('/teacher-get-single-reviews/{review_id}', 'getSingleReview');
+    Route::post('/teacher-store-reply', 'storeReply');
+    Route::post('/teacher-update-reply/{id}', 'updateReply');
+    Route::get('/teacher-delete-reply/{id}', 'deleteReply');
+
+
     // Notes&Calender ===
 });
-
-
-
 
 
 Route::controller(ClassManagementController::class)->group(function () {
     Route::get('/class-management', 'ClassManagement');
     Route::get('/class-management-services', 'ClassManagementServices')->name('class-management-services');
     Route::get('/class-service-select', 'ClassServiceSelect');
-    Route::post('/select-service-type', 'SelectServiceType'); 
-    Route::post('/get-class-manage-sub-cates', 'GetClassManageSubCates'); 
+    Route::post('/select-service-type', 'SelectServiceType');
+    Route::post('/get-class-manage-sub-cates', 'GetClassManageSubCates');
     Route::get('/class-payment-set', 'ClassPaymentSet');
     Route::post('/class-gig-data-upload', 'ClassGigDataUpload');
     Route::post('/class-gig-payment-upload', 'ClassGigPaymentUpload');
@@ -324,7 +316,7 @@ Route::controller(ClassManagementController::class)->group(function () {
     Route::get('/class-payment-edit', 'ClassPaymentEdit');
     Route::post('/class-gig-payment-update', 'ClassGigPaymentUpdate');
     // Update =
-    
+
     // Services Faqs ============
     Route::post('/get-faqs-service', 'GetFaqsServices');
     Route::post('/upload-faqs-services', 'UploadFaqsServices');
@@ -333,7 +325,6 @@ Route::controller(ClassManagementController::class)->group(function () {
     // Services Faqs ============
     // Services Action Routes ====
 });
-
 
 
 Route::controller(OrderManagementController::class)->group(function () {
@@ -359,13 +350,12 @@ Route::controller(OrderManagementController::class)->group(function () {
     Route::post('/unsetissfied-delivery', 'UnSetisfiedDelivery');
     Route::get('/accept-disputed-order/{id}', 'AcceptDisputedOrder');
     Route::get('/start-job-active/{id}', 'StartJobActive');
+    Route::get('/reviews', 'getAllReviews');
     Route::post('/submit-review', 'SubmitReview');
-   
+    Route::get('/delete-review/{review_id}', 'deleteReview');
+    Route::get('/get-single-reviews/{review_id}', 'getSingleReview');
+    Route::put('/reviews/{review_id}', 'updateReview');
     // Order Actions Routes END =========
-   
-    
-    
-
 });
 
 
@@ -382,45 +372,44 @@ Route::controller(UserController::class)->group(function () {
     Route::post('/contact-mail', 'ContactMail');
     Route::get('/wish-list', 'WishList');
     Route::get('/remove-wish-list/{id}', 'RemoveWishList');
-    
-    
+
 
 });
 
 
 Route::controller(MessagesController::class)->group(function () {
     // User Chat
-    Route::get('/user-messages', 'UserMessagesHome'); 
-    Route::post('/user-fetch-message', 'FetchMessages'); 
-    Route::post('/user-send-sms', 'SendSMS'); 
-    Route::post('/send-sms-single', 'SendSMSSingle'); 
-    Route::post('/user-send-message', 'SendMessage'); 
-    Route::post('/user-open-chat', 'OpenChat'); 
-    
-    // Teacher Chat
-    Route::get('/teacher-messages', 'TeacherMessagesHome'); 
-    Route::post('/teacher-fetch-message', 'TeacherFetchMessages');  
-    Route::post('/teacher-send-message', 'TeacherSendMessage'); 
-    Route::post('/teacher-open-chat', 'TeacherOpenChat'); 
+    Route::get('/user-messages', 'UserMessagesHome');
+    Route::post('/user-fetch-message', 'FetchMessages');
+    Route::post('/user-send-sms', 'SendSMS');
+    Route::post('/send-sms-single', 'SendSMSSingle');
+    Route::post('/user-send-message', 'SendMessage');
+    Route::post('/user-open-chat', 'OpenChat');
 
-      
     // Teacher Chat
-    Route::get('/admin-messages', 'AdminMessagesHome'); 
-    Route::post('/admin-fetch-message', 'AdminFetchMessages');  
-    Route::post('/admin-send-message', 'AdminSendMessage'); 
-    Route::post('/admin-open-chat', 'AdminOpenChat'); 
-    
+    Route::get('/teacher-messages', 'TeacherMessagesHome');
+    Route::post('/teacher-fetch-message', 'TeacherFetchMessages');
+    Route::post('/teacher-send-message', 'TeacherSendMessage');
+    Route::post('/teacher-open-chat', 'TeacherOpenChat');
+
+
+    // Teacher Chat
+    Route::get('/admin-messages', 'AdminMessagesHome');
+    Route::post('/admin-fetch-message', 'AdminFetchMessages');
+    Route::post('/admin-send-message', 'AdminSendMessage');
+    Route::post('/admin-open-chat', 'AdminOpenChat');
+
     // Notes Routes ====
-    Route::post('/add-notes', 'AddNotes'); 
-    Route::post('/delete-notes', 'DeleteNotes'); 
-    Route::post('/update-notes', 'UpdateNotes'); 
+    Route::post('/add-notes', 'AddNotes');
+    Route::post('/delete-notes', 'DeleteNotes');
+    Route::post('/update-notes', 'UpdateNotes');
 
     // Block User Route
-    Route::post('/block-user', 'BlockUser'); 
+    Route::post('/block-user', 'BlockUser');
 
     // Search Message Route
-    Route::post('/search-message', 'SearchMessage'); 
+    Route::post('/search-message', 'SearchMessage');
     // Custom Offer Routes ======
-    Route::post('/get-services-for-custom', 'GetServicesForCustom'); 
+    Route::post('/get-services-for-custom', 'GetServicesForCustom');
 
 });

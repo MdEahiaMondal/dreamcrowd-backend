@@ -1,974 +1,626 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+<head>
     <!-- Required meta tags -->
-    <meta charset="UTF-8" />
-    <!-- View Point scale to 1.0 -->
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <!-- Animate css -->
-    <link rel="stylesheet" href="assets/teacher/libs/animate/css/animate.css" />
+    <link rel="stylesheet" href="assets/user/libs/animate/css/animate.css"/>
     <!-- AOS Animation css-->
-    <link rel="stylesheet" href="assets/teacher/libs/aos/css/aos.css" />
+    <link rel="stylesheet" href="assets/user/libs/aos/css/aos.css"/>
     <!-- Datatable css  -->
-    <link rel="stylesheet" href="assets/teacher/libs/datatable/css/datatable.css" />
-     {{-- Fav Icon --}}
-     @php  $home = \App\Models\HomeDynamic::first(); @endphp
-     @if ($home)
-         <link rel="shortcut icon" href="assets/public-site/asset/img/{{$home->fav_icon}}" type="image/x-icon">
-     @endif
-     <!-- Select2 css -->
-    <link href="assets/teacher/libs/select2/css/select2.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="assets/user/libs/datatable/css/datatable.css"/>
+    {{-- Fav Icon --}}
+    @php  $home = \App\Models\HomeDynamic::first(); @endphp
+    @if ($home)
+        <link rel="shortcut icon" href="assets/public-site/asset/img/{{$home->fav_icon}}" type="image/x-icon">
+    @endif
+    <!-- Select2 css -->
+    <link href="assets/user/libs/select2/css/select2.min.css" rel="stylesheet"/>
     <!-- Owl carousel css -->
-    <link href="assets/teacher/libs/owl-carousel/css/owl.carousel.css" rel="stylesheet" />
-    <link href="assets/teacher/libs/owl-carousel/css/owl.theme.green.css" rel="stylesheet" />
+    <link href="assets/user/libs/owl-carousel/css/owl.carousel.css" rel="stylesheet"/>
+    <link href="assets/user/libs/owl-carousel/css/owl.theme.green.css" rel="stylesheet"/>
     <!-- Bootstrap css -->
-    <link
-      rel="stylesheet"
-      type="text/css"
-      href="assets/teacher/asset/css/bootstrap.min.css"
-    />
-    <link
-      href="https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css"
-      rel="stylesheet"
-    />
-    <link
-      rel="stylesheet"
-      href="https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css"
-    />
+    <link rel="stylesheet" type="text/css" href="assets/user/asset/css/bootstrap.min.css"/>
+    <link href="https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css"/>
     <!-- Fontawesome CDN -->
     <script src="https://kit.fontawesome.com/be69b59144.js" crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" />
-    <!-- Defualt css -->
-    <link rel="stylesheet" type="text/css" href="assets/teacher/asset/css/sidebar.css" />
-    <link rel="stylesheet" href="assets/user/asset/css/style.css" />
-    <link rel="stylesheet" href="assets/teacher/asset/css/reviews-table.css" />
-    <title>User Dashboard | Reviews</title>
-  </head>
-  <body>
-   {{-- ===========Teacher Sidebar Start==================== --}}
-  <x-teacher-sidebar/>
-  {{-- ===========Teacher Sidebar End==================== --}}
-  <section class="home-section">
-     {{-- ===========Teacher NavBar Start==================== --}}
-     <x-teacher-nav/>
-     {{-- ===========Teacher NavBar End==================== --}}
-      <!-- =============================== MAIN CONTENT START HERE =========================== -->
-      <div class="container-fluid">
+    <!-- Default css -->
+    <link rel="stylesheet" type="text/css" href="assets/user/asset/css/sidebar.css"/>
+    <link rel="stylesheet" href="assets/user/asset/css/style.css"/>
+    <link rel="stylesheet" href="assets/user/asset/css/table.css"/>
+    <title>Teacher Dashboard | Reviews</title>
+
+    <style>
+        .star-rating i {
+            font-size: 18px;
+            margin-right: 2px;
+        }
+
+        .review-text {
+            max-width: 300px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .table-img {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-right: 10px;
+        }
+
+        .para-1 {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .para-2 {
+            font-size: 12px;
+            color: #666;
+            margin: 0;
+        }
+
+        #service-image {
+            border-radius: 8px;
+            object-fit: cover;
+        }
+
+        #replies-container {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .reply-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border-left: 3px solid #007bff;
+        }
+
+        .reply-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .reply-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .customer-review {
+            background: #fff3cd;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border-left: 3px solid #ffc107;
+        }
+
+        .reply-form {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .mb-2 {
+            margin-bottom: 0.5rem !important;
+            height: 25px !important;
+        }
+    </style>
+</head>
+<body>
+{{-- ===========User Sidebar Start==================== --}}
+<x-teacher-sidebar/>
+{{-- ===========User Sidebar End==================== --}}
+
+<section class="home-section">
+    {{-- ===========User NavBar Start==================== --}}
+    <x-teacher-nav/>
+    {{-- ===========User NavBar End==================== --}}
+
+    <div class="container-fluid">
         <div class="row dash-notification">
-          <div class="col-md-12">
-            <div class="dash">
-              <div class="row">
-                <div class="col-md-12">
-                  <div class="dash-top">
-                    <h1 class="dash-title">Dashboard</h1>
-                    <i class="fa-solid fa-chevron-right"></i>
-                    <span class="min-title">Reviews</span>
-                  </div>
-                </div>
-              </div>
-              <!-- Blue MASSEGES section -->
-              <div class="user-notification">
-                <div class="row">
-                  <div class="col-md-12">
-                    <div class="notify">
-                      <i class="bx bx-message icon" title="Customer Reviews"></i>
-
-                      <h2>Reviews</h2>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <!-- search filter section -->
-              <div class="row search-section">
-                <div class="col-md-11">
-                  <div class="search">
-                    <span class="fa fa-search"></span>
-                    <input placeholder="Search service title, experts etc....">
-                  </div>
-                </div>
-                <div class="col-md-1 filter-sec">
-                  <div class="dropdown">
-                    <button class="btn filter-btn" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-                      <span class="material-symbols-rounded">
-                        tune
-                        </span>
-                    </button>
-                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                      <h5 class="mt-0">Servise Type</h5></li>
-                      <a class="dropdown-item" href="#"><li>Class</li></a>
-                      <a class="dropdown-item" href="#"><li>Freelance</li></a>
-                      <h5>Sorting</h5>
-                      <a class="dropdown-item" href="#"><li>A-Z</li></a>
-                      <a class="dropdown-item" href="#"><li>Z-A</li></a>
-                    </ul>
-                  </div>
-                </div>
-               </div>
-              <!--  -->
-              <div class="rewiew-sec" id="installment-contant">
-                <!-- BEGIN: INSTALLMENT TABLE SECTION -->
-                <div class="row" id="main-contant-AI">
-                  <div class="col-md-12 installment-table">
-                    <div class="table-responsive">
-                      <div class="hack1">
-                        <div class="hack2">
-                          <table class="table">
-                            <thead>
-                              <tr class="text-nowrap">
-                                <th>Service Title</th>
-                                <th>Service Type</th>
-                                <th>Buyers</th>
-                                <th>Review</th>
-                                <th>Rating</th>
-                                <th>Date</th>
-                                <th>Action</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              <tr>
-                                <td>
-                                  <img
-                                    class="table-img"
-                                    src="assets/teacher/asset/img/table img.jpeg"
-                                  /><span class="para-1"
-                                    >Learn How to design</span
-                                  >
-                                  <p class="para-2">
-                                    attractive UI for clients....
-                                  </p>
-                                </td>
-                                <td>Freelance Service</td>
-                                <td>Usama A.</td>
-                                <td>
-                                  <p class="review-text">
-                                    This Course is very helpful
-                                    for Beginners I learn ......
-                                  </p>
-                                </td>
-                                <td>
-                                  <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    width="116"
-                                    height="20"
-                                    viewBox="0 0 116 20"
-                                    fill="none"
-                                  >
-                                    <path
-                                      d="M9.723 1.96796C9.82548 1.72157 10.1745 1.72157 10.277 1.96796L11.9957 6.10027C12.1829 6.55038 12.6062 6.85792 13.0922 6.89687L17.5533 7.25452C17.8193 7.27585 17.9272 7.6078 17.7245 7.7814L14.3256 10.693C13.9554 11.0101 13.7937 11.5077 13.9068 11.9819L14.9452 16.3352C15.0071 16.5948 14.7247 16.8 14.497 16.6609L10.6776 14.328C10.2616 14.0739 9.73839 14.0739 9.32237 14.328L5.50298 16.6609C5.27525 16.8 4.99287 16.5948 5.05479 16.3352L6.09322 11.9819C6.20633 11.5077 6.04465 11.0101 5.67443 10.693L2.27548 7.7814C2.07282 7.6078 2.18068 7.27585 2.44667 7.25452L6.90785 6.89687C7.39378 6.85792 7.81707 6.55038 8.00428 6.10027L9.723 1.96796Z"
-                                      fill="#FFAF06"
-                                      stroke="#FFAF06"
-                                    />
-                                    <path
-                                      d="M33.723 1.96796C33.8255 1.72157 34.1745 1.72157 34.277 1.96796L35.9957 6.10027C36.1829 6.55038 36.6062 6.85792 37.0922 6.89687L41.5533 7.25452C41.8193 7.27585 41.9272 7.6078 41.7245 7.7814L38.3256 10.693C37.9554 11.0101 37.7937 11.5077 37.9068 11.9819L38.9452 16.3352C39.0071 16.5948 38.7247 16.8 38.497 16.6609L34.6776 14.328C34.2616 14.0739 33.7384 14.0739 33.3224 14.328L29.503 16.6609C29.2752 16.8 28.9929 16.5948 29.0548 16.3352L30.0932 11.9819C30.2063 11.5077 30.0447 11.0101 29.6744 10.693L26.2755 7.7814C26.0728 7.6078 26.1807 7.27585 26.4467 7.25452L30.9078 6.89687C31.3938 6.85792 31.8171 6.55038 32.0043 6.10027L33.723 1.96796Z"
-                                      fill="#FFAF06"
-                                      stroke="#FFAF06"
-                                    />
-                                    <path
-                                      d="M57.723 1.96796C57.8255 1.72157 58.1745 1.72157 58.277 1.96796L59.9957 6.10027C60.1829 6.55038 60.6062 6.85792 61.0922 6.89687L65.5533 7.25452C65.8193 7.27585 65.9272 7.6078 65.7245 7.7814L62.3256 10.693C61.9554 11.0101 61.7937 11.5077 61.9068 11.9819L62.9452 16.3352C63.0071 16.5948 62.7247 16.8 62.497 16.6609L58.6776 14.328C58.2616 14.0739 57.7384 14.0739 57.3224 14.328L53.503 16.6609C53.2752 16.8 52.9929 16.5948 53.0548 16.3352L54.0932 11.9819C54.2063 11.5077 54.0447 11.0101 53.6744 10.693L50.2755 7.7814C50.0728 7.6078 50.1807 7.27585 50.4467 7.25452L54.9078 6.89687C55.3938 6.85792 55.8171 6.55038 56.0043 6.10027L57.723 1.96796Z"
-                                      fill="#FFAF06"
-                                      stroke="#FFAF06"
-                                    />
-                                    <path
-                                      d="M81.723 1.96796C81.8255 1.72157 82.1745 1.72157 82.277 1.96796L83.9957 6.10027C84.1829 6.55038 84.6062 6.85792 85.0922 6.89687L89.5533 7.25452C89.8193 7.27585 89.9272 7.6078 89.7245 7.7814L86.3256 10.693C85.9554 11.0101 85.7937 11.5077 85.9068 11.9819L86.9452 16.3352C87.0071 16.5948 86.7247 16.8 86.497 16.6609L82.6776 14.328C82.2616 14.0739 81.7384 14.0739 81.3224 14.328L77.503 16.6609C77.2752 16.8 76.9929 16.5948 77.0548 16.3352L78.0932 11.9819C78.2063 11.5077 78.0447 11.0101 77.6744 10.693L74.2755 7.7814C74.0728 7.6078 74.1807 7.27585 74.4467 7.25452L78.9078 6.89687C79.3938 6.85792 79.8171 6.55038 80.0043 6.10027L81.723 1.96796Z"
-                                      stroke="#FFAF06"
-                                    />
-                                    <path
-                                      d="M105.723 1.96796C105.825 1.72157 106.175 1.72157 106.277 1.96796L107.996 6.10027C108.183 6.55038 108.606 6.85792 109.092 6.89687L113.553 7.25452C113.819 7.27585 113.927 7.6078 113.725 7.7814L110.326 10.693C109.955 11.0101 109.794 11.5077 109.907 11.9819L110.945 16.3352C111.007 16.5948 110.725 16.8 110.497 16.6609L106.678 14.328C106.262 14.0739 105.738 14.0739 105.322 14.328L101.503 16.6609C101.275 16.8 100.993 16.5948 101.055 16.3352L102.093 11.9819C102.206 11.5077 102.045 11.0101 101.674 10.693L98.2755 7.7814C98.0728 7.6078 98.1807 7.27585 98.4467 7.25452L102.908 6.89687C103.394 6.85792 103.817 6.55038 104.004 6.10027L105.723 1.96796Z"
-                                      stroke="#FFAF06"
-                                    />
-                                  </svg>
-                                </td>
-                                <td>June 15, 2023</td>
-                                <td>
-                                  <div class="dropdown expert-dropdown">
-                                    <button
-                                      class="btn action-btn dropdown-toggle"
-                                      type="button"
-                                      id="dropdownMenuButton1"
-                                      data-bs-toggle="dropdown"
-                                      aria-expanded="false"
-                                    >
-                                      ...
-                                    </button>
-                                    <ul
-                                      class="dropdown-menu"
-                                      aria-labelledby="dropdownMenuButton1"
-                                    >
-                                      <li>
-                                        <a class="dropdown-item" href="#"
-                                          >View</a
-                                        >
-                                      </li>
-                                      <li
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#add-review-modal"
-                                        id="rating-review"
-                                      >
-                                        <a class="dropdown-item" href="#"
-                                          >Reply</a
-                                        >
-                                      </li>
-                                    </ul>
-                                  </div>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td>
-                                  <img
-                                    class="table-img"
-                                    src="assets/teacher/asset/img/table img.jpeg"
-                                  /><span class="para-1"
-                                    >Learn How to design</span
-                                  >
-                                  <p class="para-2">
-                                    attractive UI for clients....
-                                  </p>
-                                </td>
-                                <td>Freelance Service</td>
-                                <td>Usama A.</td>
-                                <td>
-                                  This Course is very helpful
-                                  for Beginners I learn ......
-                                </td>
-                                <td>
-                                  <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    width="116"
-                                    height="20"
-                                    viewBox="0 0 116 20"
-                                    fill="none"
-                                  >
-                                    <path
-                                      d="M9.723 1.96796C9.82548 1.72157 10.1745 1.72157 10.277 1.96796L11.9957 6.10027C12.1829 6.55038 12.6062 6.85792 13.0922 6.89687L17.5533 7.25452C17.8193 7.27585 17.9272 7.6078 17.7245 7.7814L14.3256 10.693C13.9554 11.0101 13.7937 11.5077 13.9068 11.9819L14.9452 16.3352C15.0071 16.5948 14.7247 16.8 14.497 16.6609L10.6776 14.328C10.2616 14.0739 9.73839 14.0739 9.32237 14.328L5.50298 16.6609C5.27525 16.8 4.99287 16.5948 5.05479 16.3352L6.09322 11.9819C6.20633 11.5077 6.04465 11.0101 5.67443 10.693L2.27548 7.7814C2.07282 7.6078 2.18068 7.27585 2.44667 7.25452L6.90785 6.89687C7.39378 6.85792 7.81707 6.55038 8.00428 6.10027L9.723 1.96796Z"
-                                      fill="#FFAF06"
-                                      stroke="#FFAF06"
-                                    />
-                                    <path
-                                      d="M33.723 1.96796C33.8255 1.72157 34.1745 1.72157 34.277 1.96796L35.9957 6.10027C36.1829 6.55038 36.6062 6.85792 37.0922 6.89687L41.5533 7.25452C41.8193 7.27585 41.9272 7.6078 41.7245 7.7814L38.3256 10.693C37.9554 11.0101 37.7937 11.5077 37.9068 11.9819L38.9452 16.3352C39.0071 16.5948 38.7247 16.8 38.497 16.6609L34.6776 14.328C34.2616 14.0739 33.7384 14.0739 33.3224 14.328L29.503 16.6609C29.2752 16.8 28.9929 16.5948 29.0548 16.3352L30.0932 11.9819C30.2063 11.5077 30.0447 11.0101 29.6744 10.693L26.2755 7.7814C26.0728 7.6078 26.1807 7.27585 26.4467 7.25452L30.9078 6.89687C31.3938 6.85792 31.8171 6.55038 32.0043 6.10027L33.723 1.96796Z"
-                                      fill="#FFAF06"
-                                      stroke="#FFAF06"
-                                    />
-                                    <path
-                                      d="M57.723 1.96796C57.8255 1.72157 58.1745 1.72157 58.277 1.96796L59.9957 6.10027C60.1829 6.55038 60.6062 6.85792 61.0922 6.89687L65.5533 7.25452C65.8193 7.27585 65.9272 7.6078 65.7245 7.7814L62.3256 10.693C61.9554 11.0101 61.7937 11.5077 61.9068 11.9819L62.9452 16.3352C63.0071 16.5948 62.7247 16.8 62.497 16.6609L58.6776 14.328C58.2616 14.0739 57.7384 14.0739 57.3224 14.328L53.503 16.6609C53.2752 16.8 52.9929 16.5948 53.0548 16.3352L54.0932 11.9819C54.2063 11.5077 54.0447 11.0101 53.6744 10.693L50.2755 7.7814C50.0728 7.6078 50.1807 7.27585 50.4467 7.25452L54.9078 6.89687C55.3938 6.85792 55.8171 6.55038 56.0043 6.10027L57.723 1.96796Z"
-                                      fill="#FFAF06"
-                                      stroke="#FFAF06"
-                                    />
-                                    <path
-                                      d="M81.723 1.96796C81.8255 1.72157 82.1745 1.72157 82.277 1.96796L83.9957 6.10027C84.1829 6.55038 84.6062 6.85792 85.0922 6.89687L89.5533 7.25452C89.8193 7.27585 89.9272 7.6078 89.7245 7.7814L86.3256 10.693C85.9554 11.0101 85.7937 11.5077 85.9068 11.9819L86.9452 16.3352C87.0071 16.5948 86.7247 16.8 86.497 16.6609L82.6776 14.328C82.2616 14.0739 81.7384 14.0739 81.3224 14.328L77.503 16.6609C77.2752 16.8 76.9929 16.5948 77.0548 16.3352L78.0932 11.9819C78.2063 11.5077 78.0447 11.0101 77.6744 10.693L74.2755 7.7814C74.0728 7.6078 74.1807 7.27585 74.4467 7.25452L78.9078 6.89687C79.3938 6.85792 79.8171 6.55038 80.0043 6.10027L81.723 1.96796Z"
-                                      stroke="#FFAF06"
-                                    />
-                                    <path
-                                      d="M105.723 1.96796C105.825 1.72157 106.175 1.72157 106.277 1.96796L107.996 6.10027C108.183 6.55038 108.606 6.85792 109.092 6.89687L113.553 7.25452C113.819 7.27585 113.927 7.6078 113.725 7.7814L110.326 10.693C109.955 11.0101 109.794 11.5077 109.907 11.9819L110.945 16.3352C111.007 16.5948 110.725 16.8 110.497 16.6609L106.678 14.328C106.262 14.0739 105.738 14.0739 105.322 14.328L101.503 16.6609C101.275 16.8 100.993 16.5948 101.055 16.3352L102.093 11.9819C102.206 11.5077 102.045 11.0101 101.674 10.693L98.2755 7.7814C98.0728 7.6078 98.1807 7.27585 98.4467 7.25452L102.908 6.89687C103.394 6.85792 103.817 6.55038 104.004 6.10027L105.723 1.96796Z"
-                                      stroke="#FFAF06"
-                                    />
-                                  </svg>
-                                </td>
-                                <td>June 15, 2023</td>
-                                <td>
-                                  <div class="dropdown expert-dropdown">
-                                    <button
-                                      class="btn action-btn dropdown-toggle"
-                                      type="button"
-                                      id="dropdownMenuButton1"
-                                      data-bs-toggle="dropdown"
-                                      aria-expanded="false"
-                                    >
-                                      ...
-                                    </button>
-                                    <ul
-                                      class="dropdown-menu"
-                                      aria-labelledby="dropdownMenuButton1"
-                                    >
-                                      <li>
-                                        <a class="dropdown-item" href="#"
-                                          >View</a
-                                        >
-                                      </li>
-                                      <li
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#add-review-modal"
-                                        id="rating-review"
-                                      >
-                                        <a class="dropdown-item" href="#"
-                                          >Reply</a
-                                        >
-                                      </li>
-                                    </ul>
-                                  </div>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td>
-                                  <img
-                                    class="table-img"
-                                    src="assets/teacher/asset/img/table img.jpeg"
-                                  /><span class="para-1"
-                                    >Learn How to design</span
-                                  >
-                                  <p class="para-2">
-                                    attractive UI for clients....
-                                  </p>
-                                </td>
-                                <td>Freelance Service</td>
-                                <td>Usama A.</td>
-                                <td>
-                                  This Course is very helpful
-                                  for Beginners I learn ......
-                                </td>
-                                <td>
-                                  <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    width="116"
-                                    height="20"
-                                    viewBox="0 0 116 20"
-                                    fill="none"
-                                  >
-                                    <path
-                                      d="M9.723 1.96796C9.82548 1.72157 10.1745 1.72157 10.277 1.96796L11.9957 6.10027C12.1829 6.55038 12.6062 6.85792 13.0922 6.89687L17.5533 7.25452C17.8193 7.27585 17.9272 7.6078 17.7245 7.7814L14.3256 10.693C13.9554 11.0101 13.7937 11.5077 13.9068 11.9819L14.9452 16.3352C15.0071 16.5948 14.7247 16.8 14.497 16.6609L10.6776 14.328C10.2616 14.0739 9.73839 14.0739 9.32237 14.328L5.50298 16.6609C5.27525 16.8 4.99287 16.5948 5.05479 16.3352L6.09322 11.9819C6.20633 11.5077 6.04465 11.0101 5.67443 10.693L2.27548 7.7814C2.07282 7.6078 2.18068 7.27585 2.44667 7.25452L6.90785 6.89687C7.39378 6.85792 7.81707 6.55038 8.00428 6.10027L9.723 1.96796Z"
-                                      fill="#FFAF06"
-                                      stroke="#FFAF06"
-                                    />
-                                    <path
-                                      d="M33.723 1.96796C33.8255 1.72157 34.1745 1.72157 34.277 1.96796L35.9957 6.10027C36.1829 6.55038 36.6062 6.85792 37.0922 6.89687L41.5533 7.25452C41.8193 7.27585 41.9272 7.6078 41.7245 7.7814L38.3256 10.693C37.9554 11.0101 37.7937 11.5077 37.9068 11.9819L38.9452 16.3352C39.0071 16.5948 38.7247 16.8 38.497 16.6609L34.6776 14.328C34.2616 14.0739 33.7384 14.0739 33.3224 14.328L29.503 16.6609C29.2752 16.8 28.9929 16.5948 29.0548 16.3352L30.0932 11.9819C30.2063 11.5077 30.0447 11.0101 29.6744 10.693L26.2755 7.7814C26.0728 7.6078 26.1807 7.27585 26.4467 7.25452L30.9078 6.89687C31.3938 6.85792 31.8171 6.55038 32.0043 6.10027L33.723 1.96796Z"
-                                      fill="#FFAF06"
-                                      stroke="#FFAF06"
-                                    />
-                                    <path
-                                      d="M57.723 1.96796C57.8255 1.72157 58.1745 1.72157 58.277 1.96796L59.9957 6.10027C60.1829 6.55038 60.6062 6.85792 61.0922 6.89687L65.5533 7.25452C65.8193 7.27585 65.9272 7.6078 65.7245 7.7814L62.3256 10.693C61.9554 11.0101 61.7937 11.5077 61.9068 11.9819L62.9452 16.3352C63.0071 16.5948 62.7247 16.8 62.497 16.6609L58.6776 14.328C58.2616 14.0739 57.7384 14.0739 57.3224 14.328L53.503 16.6609C53.2752 16.8 52.9929 16.5948 53.0548 16.3352L54.0932 11.9819C54.2063 11.5077 54.0447 11.0101 53.6744 10.693L50.2755 7.7814C50.0728 7.6078 50.1807 7.27585 50.4467 7.25452L54.9078 6.89687C55.3938 6.85792 55.8171 6.55038 56.0043 6.10027L57.723 1.96796Z"
-                                      fill="#FFAF06"
-                                      stroke="#FFAF06"
-                                    />
-                                    <path
-                                      d="M81.723 1.96796C81.8255 1.72157 82.1745 1.72157 82.277 1.96796L83.9957 6.10027C84.1829 6.55038 84.6062 6.85792 85.0922 6.89687L89.5533 7.25452C89.8193 7.27585 89.9272 7.6078 89.7245 7.7814L86.3256 10.693C85.9554 11.0101 85.7937 11.5077 85.9068 11.9819L86.9452 16.3352C87.0071 16.5948 86.7247 16.8 86.497 16.6609L82.6776 14.328C82.2616 14.0739 81.7384 14.0739 81.3224 14.328L77.503 16.6609C77.2752 16.8 76.9929 16.5948 77.0548 16.3352L78.0932 11.9819C78.2063 11.5077 78.0447 11.0101 77.6744 10.693L74.2755 7.7814C74.0728 7.6078 74.1807 7.27585 74.4467 7.25452L78.9078 6.89687C79.3938 6.85792 79.8171 6.55038 80.0043 6.10027L81.723 1.96796Z"
-                                      stroke="#FFAF06"
-                                    />
-                                    <path
-                                      d="M105.723 1.96796C105.825 1.72157 106.175 1.72157 106.277 1.96796L107.996 6.10027C108.183 6.55038 108.606 6.85792 109.092 6.89687L113.553 7.25452C113.819 7.27585 113.927 7.6078 113.725 7.7814L110.326 10.693C109.955 11.0101 109.794 11.5077 109.907 11.9819L110.945 16.3352C111.007 16.5948 110.725 16.8 110.497 16.6609L106.678 14.328C106.262 14.0739 105.738 14.0739 105.322 14.328L101.503 16.6609C101.275 16.8 100.993 16.5948 101.055 16.3352L102.093 11.9819C102.206 11.5077 102.045 11.0101 101.674 10.693L98.2755 7.7814C98.0728 7.6078 98.1807 7.27585 98.4467 7.25452L102.908 6.89687C103.394 6.85792 103.817 6.55038 104.004 6.10027L105.723 1.96796Z"
-                                      stroke="#FFAF06"
-                                    />
-                                  </svg>
-                                </td>
-                                <td>June 15, 2023</td>
-                                <td>
-                                  <div class="dropdown expert-dropdown">
-                                    <button
-                                      class="btn action-btn dropdown-toggle"
-                                      type="button"
-                                      id="dropdownMenuButton1"
-                                      data-bs-toggle="dropdown"
-                                      aria-expanded="false"
-                                    >
-                                      ...
-                                    </button>
-                                    <ul
-                                      class="dropdown-menu"
-                                      aria-labelledby="dropdownMenuButton1"
-                                    >
-                                      <li>
-                                        <a class="dropdown-item" href="#"
-                                          >View</a
-                                        >
-                                      </li>
-                                      <li
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#add-review-modal"
-                                        id="rating-review"
-                                      >
-                                        <a class="dropdown-item" href="#"
-                                          >Reply</a
-                                        >
-                                      </li>
-                                    </ul>
-                                  </div>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td>
-                                  <img
-                                    class="table-img"
-                                    src="assets/teacher/asset/img/table img.jpeg"
-                                  /><span class="para-1"
-                                    >Learn How to design</span
-                                  >
-                                  <p class="para-2">
-                                    attractive UI for clients....
-                                  </p>
-                                </td>
-                                <td>Freelance Service</td>
-                                <td>Usama A.</td>
-                                <td>
-                                  This Course is very helpful
-                                  for Beginners I learn ......
-                                </td>
-                                <td>
-                                  <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    width="116"
-                                    height="20"
-                                    viewBox="0 0 116 20"
-                                    fill="none"
-                                  >
-                                    <path
-                                      d="M9.723 1.96796C9.82548 1.72157 10.1745 1.72157 10.277 1.96796L11.9957 6.10027C12.1829 6.55038 12.6062 6.85792 13.0922 6.89687L17.5533 7.25452C17.8193 7.27585 17.9272 7.6078 17.7245 7.7814L14.3256 10.693C13.9554 11.0101 13.7937 11.5077 13.9068 11.9819L14.9452 16.3352C15.0071 16.5948 14.7247 16.8 14.497 16.6609L10.6776 14.328C10.2616 14.0739 9.73839 14.0739 9.32237 14.328L5.50298 16.6609C5.27525 16.8 4.99287 16.5948 5.05479 16.3352L6.09322 11.9819C6.20633 11.5077 6.04465 11.0101 5.67443 10.693L2.27548 7.7814C2.07282 7.6078 2.18068 7.27585 2.44667 7.25452L6.90785 6.89687C7.39378 6.85792 7.81707 6.55038 8.00428 6.10027L9.723 1.96796Z"
-                                      fill="#FFAF06"
-                                      stroke="#FFAF06"
-                                    />
-                                    <path
-                                      d="M33.723 1.96796C33.8255 1.72157 34.1745 1.72157 34.277 1.96796L35.9957 6.10027C36.1829 6.55038 36.6062 6.85792 37.0922 6.89687L41.5533 7.25452C41.8193 7.27585 41.9272 7.6078 41.7245 7.7814L38.3256 10.693C37.9554 11.0101 37.7937 11.5077 37.9068 11.9819L38.9452 16.3352C39.0071 16.5948 38.7247 16.8 38.497 16.6609L34.6776 14.328C34.2616 14.0739 33.7384 14.0739 33.3224 14.328L29.503 16.6609C29.2752 16.8 28.9929 16.5948 29.0548 16.3352L30.0932 11.9819C30.2063 11.5077 30.0447 11.0101 29.6744 10.693L26.2755 7.7814C26.0728 7.6078 26.1807 7.27585 26.4467 7.25452L30.9078 6.89687C31.3938 6.85792 31.8171 6.55038 32.0043 6.10027L33.723 1.96796Z"
-                                      fill="#FFAF06"
-                                      stroke="#FFAF06"
-                                    />
-                                    <path
-                                      d="M57.723 1.96796C57.8255 1.72157 58.1745 1.72157 58.277 1.96796L59.9957 6.10027C60.1829 6.55038 60.6062 6.85792 61.0922 6.89687L65.5533 7.25452C65.8193 7.27585 65.9272 7.6078 65.7245 7.7814L62.3256 10.693C61.9554 11.0101 61.7937 11.5077 61.9068 11.9819L62.9452 16.3352C63.0071 16.5948 62.7247 16.8 62.497 16.6609L58.6776 14.328C58.2616 14.0739 57.7384 14.0739 57.3224 14.328L53.503 16.6609C53.2752 16.8 52.9929 16.5948 53.0548 16.3352L54.0932 11.9819C54.2063 11.5077 54.0447 11.0101 53.6744 10.693L50.2755 7.7814C50.0728 7.6078 50.1807 7.27585 50.4467 7.25452L54.9078 6.89687C55.3938 6.85792 55.8171 6.55038 56.0043 6.10027L57.723 1.96796Z"
-                                      fill="#FFAF06"
-                                      stroke="#FFAF06"
-                                    />
-                                    <path
-                                      d="M81.723 1.96796C81.8255 1.72157 82.1745 1.72157 82.277 1.96796L83.9957 6.10027C84.1829 6.55038 84.6062 6.85792 85.0922 6.89687L89.5533 7.25452C89.8193 7.27585 89.9272 7.6078 89.7245 7.7814L86.3256 10.693C85.9554 11.0101 85.7937 11.5077 85.9068 11.9819L86.9452 16.3352C87.0071 16.5948 86.7247 16.8 86.497 16.6609L82.6776 14.328C82.2616 14.0739 81.7384 14.0739 81.3224 14.328L77.503 16.6609C77.2752 16.8 76.9929 16.5948 77.0548 16.3352L78.0932 11.9819C78.2063 11.5077 78.0447 11.0101 77.6744 10.693L74.2755 7.7814C74.0728 7.6078 74.1807 7.27585 74.4467 7.25452L78.9078 6.89687C79.3938 6.85792 79.8171 6.55038 80.0043 6.10027L81.723 1.96796Z"
-                                      stroke="#FFAF06"
-                                    />
-                                    <path
-                                      d="M105.723 1.96796C105.825 1.72157 106.175 1.72157 106.277 1.96796L107.996 6.10027C108.183 6.55038 108.606 6.85792 109.092 6.89687L113.553 7.25452C113.819 7.27585 113.927 7.6078 113.725 7.7814L110.326 10.693C109.955 11.0101 109.794 11.5077 109.907 11.9819L110.945 16.3352C111.007 16.5948 110.725 16.8 110.497 16.6609L106.678 14.328C106.262 14.0739 105.738 14.0739 105.322 14.328L101.503 16.6609C101.275 16.8 100.993 16.5948 101.055 16.3352L102.093 11.9819C102.206 11.5077 102.045 11.0101 101.674 10.693L98.2755 7.7814C98.0728 7.6078 98.1807 7.27585 98.4467 7.25452L102.908 6.89687C103.394 6.85792 103.817 6.55038 104.004 6.10027L105.723 1.96796Z"
-                                      stroke="#FFAF06"
-                                    />
-                                  </svg>
-                                </td>
-                                <td>June 15, 2023</td>
-
-                                <td>
-                                  <div class="dropdown expert-dropdown">
-                                    <button
-                                      class="btn action-btn dropdown-toggle"
-                                      type="button"
-                                      id="dropdownMenuButton1"
-                                      data-bs-toggle="dropdown"
-                                      aria-expanded="false"
-                                    >
-                                      ...
-                                    </button>
-                                    <ul
-                                      class="dropdown-menu"
-                                      aria-labelledby="dropdownMenuButton1"
-                                    >
-                                      <li>
-                                        <a class="dropdown-item" href="#"
-                                          >View</a
-                                        >
-                                      </li>
-                                      <li
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#add-review-modal"
-                                        id="rating-review"
-                                      >
-                                        <a class="dropdown-item" href="#"
-                                          >Reply</a
-                                        >
-                                      </li>
-                                    </ul>
-                                  </div>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td>
-                                  <img
-                                    class="table-img"
-                                    src="assets/teacher/asset/img/table img.jpeg"
-                                  /><span class="para-1"
-                                    >Learn How to design</span
-                                  >
-                                  <p class="para-2">
-                                    attractive UI for clients....
-                                  </p>
-                                </td>
-                                <td>Freelance Service</td>
-                                <td>Usama A.</td>
-                                <td>
-                                  This Course is very helpful
-                                  for Beginners I learn ......
-                                </td>
-                                <td>
-                                  <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    width="116"
-                                    height="20"
-                                    viewBox="0 0 116 20"
-                                    fill="none"
-                                  >
-                                    <path
-                                      d="M9.723 1.96796C9.82548 1.72157 10.1745 1.72157 10.277 1.96796L11.9957 6.10027C12.1829 6.55038 12.6062 6.85792 13.0922 6.89687L17.5533 7.25452C17.8193 7.27585 17.9272 7.6078 17.7245 7.7814L14.3256 10.693C13.9554 11.0101 13.7937 11.5077 13.9068 11.9819L14.9452 16.3352C15.0071 16.5948 14.7247 16.8 14.497 16.6609L10.6776 14.328C10.2616 14.0739 9.73839 14.0739 9.32237 14.328L5.50298 16.6609C5.27525 16.8 4.99287 16.5948 5.05479 16.3352L6.09322 11.9819C6.20633 11.5077 6.04465 11.0101 5.67443 10.693L2.27548 7.7814C2.07282 7.6078 2.18068 7.27585 2.44667 7.25452L6.90785 6.89687C7.39378 6.85792 7.81707 6.55038 8.00428 6.10027L9.723 1.96796Z"
-                                      fill="#FFAF06"
-                                      stroke="#FFAF06"
-                                    />
-                                    <path
-                                      d="M33.723 1.96796C33.8255 1.72157 34.1745 1.72157 34.277 1.96796L35.9957 6.10027C36.1829 6.55038 36.6062 6.85792 37.0922 6.89687L41.5533 7.25452C41.8193 7.27585 41.9272 7.6078 41.7245 7.7814L38.3256 10.693C37.9554 11.0101 37.7937 11.5077 37.9068 11.9819L38.9452 16.3352C39.0071 16.5948 38.7247 16.8 38.497 16.6609L34.6776 14.328C34.2616 14.0739 33.7384 14.0739 33.3224 14.328L29.503 16.6609C29.2752 16.8 28.9929 16.5948 29.0548 16.3352L30.0932 11.9819C30.2063 11.5077 30.0447 11.0101 29.6744 10.693L26.2755 7.7814C26.0728 7.6078 26.1807 7.27585 26.4467 7.25452L30.9078 6.89687C31.3938 6.85792 31.8171 6.55038 32.0043 6.10027L33.723 1.96796Z"
-                                      fill="#FFAF06"
-                                      stroke="#FFAF06"
-                                    />
-                                    <path
-                                      d="M57.723 1.96796C57.8255 1.72157 58.1745 1.72157 58.277 1.96796L59.9957 6.10027C60.1829 6.55038 60.6062 6.85792 61.0922 6.89687L65.5533 7.25452C65.8193 7.27585 65.9272 7.6078 65.7245 7.7814L62.3256 10.693C61.9554 11.0101 61.7937 11.5077 61.9068 11.9819L62.9452 16.3352C63.0071 16.5948 62.7247 16.8 62.497 16.6609L58.6776 14.328C58.2616 14.0739 57.7384 14.0739 57.3224 14.328L53.503 16.6609C53.2752 16.8 52.9929 16.5948 53.0548 16.3352L54.0932 11.9819C54.2063 11.5077 54.0447 11.0101 53.6744 10.693L50.2755 7.7814C50.0728 7.6078 50.1807 7.27585 50.4467 7.25452L54.9078 6.89687C55.3938 6.85792 55.8171 6.55038 56.0043 6.10027L57.723 1.96796Z"
-                                      fill="#FFAF06"
-                                      stroke="#FFAF06"
-                                    />
-                                    <path
-                                      d="M81.723 1.96796C81.8255 1.72157 82.1745 1.72157 82.277 1.96796L83.9957 6.10027C84.1829 6.55038 84.6062 6.85792 85.0922 6.89687L89.5533 7.25452C89.8193 7.27585 89.9272 7.6078 89.7245 7.7814L86.3256 10.693C85.9554 11.0101 85.7937 11.5077 85.9068 11.9819L86.9452 16.3352C87.0071 16.5948 86.7247 16.8 86.497 16.6609L82.6776 14.328C82.2616 14.0739 81.7384 14.0739 81.3224 14.328L77.503 16.6609C77.2752 16.8 76.9929 16.5948 77.0548 16.3352L78.0932 11.9819C78.2063 11.5077 78.0447 11.0101 77.6744 10.693L74.2755 7.7814C74.0728 7.6078 74.1807 7.27585 74.4467 7.25452L78.9078 6.89687C79.3938 6.85792 79.8171 6.55038 80.0043 6.10027L81.723 1.96796Z"
-                                      stroke="#FFAF06"
-                                    />
-                                    <path
-                                      d="M105.723 1.96796C105.825 1.72157 106.175 1.72157 106.277 1.96796L107.996 6.10027C108.183 6.55038 108.606 6.85792 109.092 6.89687L113.553 7.25452C113.819 7.27585 113.927 7.6078 113.725 7.7814L110.326 10.693C109.955 11.0101 109.794 11.5077 109.907 11.9819L110.945 16.3352C111.007 16.5948 110.725 16.8 110.497 16.6609L106.678 14.328C106.262 14.0739 105.738 14.0739 105.322 14.328L101.503 16.6609C101.275 16.8 100.993 16.5948 101.055 16.3352L102.093 11.9819C102.206 11.5077 102.045 11.0101 101.674 10.693L98.2755 7.7814C98.0728 7.6078 98.1807 7.27585 98.4467 7.25452L102.908 6.89687C103.394 6.85792 103.817 6.55038 104.004 6.10027L105.723 1.96796Z"
-                                      stroke="#FFAF06"
-                                    />
-                                  </svg>
-                                </td>
-                                <td>June 15, 2023</td>
-                                <td>
-                                  <div class="dropdown expert-dropdown">
-                                    <button
-                                      class="btn action-btn dropdown-toggle"
-                                      type="button"
-                                      id="dropdownMenuButton1"
-                                      data-bs-toggle="dropdown"
-                                      aria-expanded="false"
-                                    >
-                                      ...
-                                    </button>
-                                    <ul
-                                      class="dropdown-menu"
-                                      aria-labelledby="dropdownMenuButton1"
-                                    >
-                                      <li>
-                                        <a class="dropdown-item" href="#"
-                                          >View</a
-                                        >
-                                      </li>
-                                      <li
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#add-review-modal"
-                                        id="rating-review"
-                                      >
-                                        <a class="dropdown-item" href="#"
-                                          >Reply</a
-                                        >
-                                      </li>
-                                    </ul>
-                                  </div>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td>
-                                  <img
-                                    class="table-img"
-                                    src="assets/teacher/asset/img/table img.jpeg"
-                                  /><span class="para-1"
-                                    >Learn How to design</span
-                                  >
-                                  <p class="para-2">
-                                    attractive UI for clients....
-                                  </p>
-                                </td>
-                                <td>Freelance Service</td>
-                                <td>Usama A.</td>
-                                <td>
-                                  This Course is very helpful
-                                  for Beginners I learn ......
-                                </td>
-                                <td>
-                                  <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    width="116"
-                                    height="20"
-                                    viewBox="0 0 116 20"
-                                    fill="none"
-                                  >
-                                    <path
-                                      d="M9.723 1.96796C9.82548 1.72157 10.1745 1.72157 10.277 1.96796L11.9957 6.10027C12.1829 6.55038 12.6062 6.85792 13.0922 6.89687L17.5533 7.25452C17.8193 7.27585 17.9272 7.6078 17.7245 7.7814L14.3256 10.693C13.9554 11.0101 13.7937 11.5077 13.9068 11.9819L14.9452 16.3352C15.0071 16.5948 14.7247 16.8 14.497 16.6609L10.6776 14.328C10.2616 14.0739 9.73839 14.0739 9.32237 14.328L5.50298 16.6609C5.27525 16.8 4.99287 16.5948 5.05479 16.3352L6.09322 11.9819C6.20633 11.5077 6.04465 11.0101 5.67443 10.693L2.27548 7.7814C2.07282 7.6078 2.18068 7.27585 2.44667 7.25452L6.90785 6.89687C7.39378 6.85792 7.81707 6.55038 8.00428 6.10027L9.723 1.96796Z"
-                                      fill="#FFAF06"
-                                      stroke="#FFAF06"
-                                    />
-                                    <path
-                                      d="M33.723 1.96796C33.8255 1.72157 34.1745 1.72157 34.277 1.96796L35.9957 6.10027C36.1829 6.55038 36.6062 6.85792 37.0922 6.89687L41.5533 7.25452C41.8193 7.27585 41.9272 7.6078 41.7245 7.7814L38.3256 10.693C37.9554 11.0101 37.7937 11.5077 37.9068 11.9819L38.9452 16.3352C39.0071 16.5948 38.7247 16.8 38.497 16.6609L34.6776 14.328C34.2616 14.0739 33.7384 14.0739 33.3224 14.328L29.503 16.6609C29.2752 16.8 28.9929 16.5948 29.0548 16.3352L30.0932 11.9819C30.2063 11.5077 30.0447 11.0101 29.6744 10.693L26.2755 7.7814C26.0728 7.6078 26.1807 7.27585 26.4467 7.25452L30.9078 6.89687C31.3938 6.85792 31.8171 6.55038 32.0043 6.10027L33.723 1.96796Z"
-                                      fill="#FFAF06"
-                                      stroke="#FFAF06"
-                                    />
-                                    <path
-                                      d="M57.723 1.96796C57.8255 1.72157 58.1745 1.72157 58.277 1.96796L59.9957 6.10027C60.1829 6.55038 60.6062 6.85792 61.0922 6.89687L65.5533 7.25452C65.8193 7.27585 65.9272 7.6078 65.7245 7.7814L62.3256 10.693C61.9554 11.0101 61.7937 11.5077 61.9068 11.9819L62.9452 16.3352C63.0071 16.5948 62.7247 16.8 62.497 16.6609L58.6776 14.328C58.2616 14.0739 57.7384 14.0739 57.3224 14.328L53.503 16.6609C53.2752 16.8 52.9929 16.5948 53.0548 16.3352L54.0932 11.9819C54.2063 11.5077 54.0447 11.0101 53.6744 10.693L50.2755 7.7814C50.0728 7.6078 50.1807 7.27585 50.4467 7.25452L54.9078 6.89687C55.3938 6.85792 55.8171 6.55038 56.0043 6.10027L57.723 1.96796Z"
-                                      fill="#FFAF06"
-                                      stroke="#FFAF06"
-                                    />
-                                    <path
-                                      d="M81.723 1.96796C81.8255 1.72157 82.1745 1.72157 82.277 1.96796L83.9957 6.10027C84.1829 6.55038 84.6062 6.85792 85.0922 6.89687L89.5533 7.25452C89.8193 7.27585 89.9272 7.6078 89.7245 7.7814L86.3256 10.693C85.9554 11.0101 85.7937 11.5077 85.9068 11.9819L86.9452 16.3352C87.0071 16.5948 86.7247 16.8 86.497 16.6609L82.6776 14.328C82.2616 14.0739 81.7384 14.0739 81.3224 14.328L77.503 16.6609C77.2752 16.8 76.9929 16.5948 77.0548 16.3352L78.0932 11.9819C78.2063 11.5077 78.0447 11.0101 77.6744 10.693L74.2755 7.7814C74.0728 7.6078 74.1807 7.27585 74.4467 7.25452L78.9078 6.89687C79.3938 6.85792 79.8171 6.55038 80.0043 6.10027L81.723 1.96796Z"
-                                      stroke="#FFAF06"
-                                    />
-                                    <path
-                                      d="M105.723 1.96796C105.825 1.72157 106.175 1.72157 106.277 1.96796L107.996 6.10027C108.183 6.55038 108.606 6.85792 109.092 6.89687L113.553 7.25452C113.819 7.27585 113.927 7.6078 113.725 7.7814L110.326 10.693C109.955 11.0101 109.794 11.5077 109.907 11.9819L110.945 16.3352C111.007 16.5948 110.725 16.8 110.497 16.6609L106.678 14.328C106.262 14.0739 105.738 14.0739 105.322 14.328L101.503 16.6609C101.275 16.8 100.993 16.5948 101.055 16.3352L102.093 11.9819C102.206 11.5077 102.045 11.0101 101.674 10.693L98.2755 7.7814C98.0728 7.6078 98.1807 7.27585 98.4467 7.25452L102.908 6.89687C103.394 6.85792 103.817 6.55038 104.004 6.10027L105.723 1.96796Z"
-                                      stroke="#FFAF06"
-                                    />
-                                  </svg>
-                                </td>
-                                <td>June 15, 2023</td>
-                                <td>
-                                  <div class="dropdown expert-dropdown">
-                                    <button
-                                      class="btn action-btn dropdown-toggle"
-                                      type="button"
-                                      id="dropdownMenuButton1"
-                                      data-bs-toggle="dropdown"
-                                      aria-expanded="false"
-                                    >
-                                      ...
-                                    </button>
-                                    <ul
-                                      class="dropdown-menu"
-                                      aria-labelledby="dropdownMenuButton1"
-                                    >
-                                      <li>
-                                        <a class="dropdown-item" href="#"
-                                          >View</a
-                                        >
-                                      </li>
-                                      <li
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#add-review-modal"
-                                        id="rating-review"
-                                      >
-                                        <a class="dropdown-item" href="#"
-                                          >Reply</a
-                                        >
-                                      </li>
-                                    </ul>
-                                  </div>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td>
-                                  <img
-                                    class="table-img"
-                                    src="assets/teacher/asset/img/table img.jpeg"
-                                  /><span class="para-1"
-                                    >Learn How to design</span
-                                  >
-                                  <p class="para-2">
-                                    attractive UI for clients....
-                                  </p>
-                                </td>
-                                <td>Freelance Service</td>
-                                <td>Usama A.</td>
-                                <td>
-                                  This Course is very helpful
-                                  for Beginners I learn ......
-                                </td>
-                                <td>
-                                  <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    width="116"
-                                    height="20"
-                                    viewBox="0 0 116 20"
-                                    fill="none"
-                                  >
-                                    <path
-                                      d="M9.723 1.96796C9.82548 1.72157 10.1745 1.72157 10.277 1.96796L11.9957 6.10027C12.1829 6.55038 12.6062 6.85792 13.0922 6.89687L17.5533 7.25452C17.8193 7.27585 17.9272 7.6078 17.7245 7.7814L14.3256 10.693C13.9554 11.0101 13.7937 11.5077 13.9068 11.9819L14.9452 16.3352C15.0071 16.5948 14.7247 16.8 14.497 16.6609L10.6776 14.328C10.2616 14.0739 9.73839 14.0739 9.32237 14.328L5.50298 16.6609C5.27525 16.8 4.99287 16.5948 5.05479 16.3352L6.09322 11.9819C6.20633 11.5077 6.04465 11.0101 5.67443 10.693L2.27548 7.7814C2.07282 7.6078 2.18068 7.27585 2.44667 7.25452L6.90785 6.89687C7.39378 6.85792 7.81707 6.55038 8.00428 6.10027L9.723 1.96796Z"
-                                      fill="#FFAF06"
-                                      stroke="#FFAF06"
-                                    />
-                                    <path
-                                      d="M33.723 1.96796C33.8255 1.72157 34.1745 1.72157 34.277 1.96796L35.9957 6.10027C36.1829 6.55038 36.6062 6.85792 37.0922 6.89687L41.5533 7.25452C41.8193 7.27585 41.9272 7.6078 41.7245 7.7814L38.3256 10.693C37.9554 11.0101 37.7937 11.5077 37.9068 11.9819L38.9452 16.3352C39.0071 16.5948 38.7247 16.8 38.497 16.6609L34.6776 14.328C34.2616 14.0739 33.7384 14.0739 33.3224 14.328L29.503 16.6609C29.2752 16.8 28.9929 16.5948 29.0548 16.3352L30.0932 11.9819C30.2063 11.5077 30.0447 11.0101 29.6744 10.693L26.2755 7.7814C26.0728 7.6078 26.1807 7.27585 26.4467 7.25452L30.9078 6.89687C31.3938 6.85792 31.8171 6.55038 32.0043 6.10027L33.723 1.96796Z"
-                                      fill="#FFAF06"
-                                      stroke="#FFAF06"
-                                    />
-                                    <path
-                                      d="M57.723 1.96796C57.8255 1.72157 58.1745 1.72157 58.277 1.96796L59.9957 6.10027C60.1829 6.55038 60.6062 6.85792 61.0922 6.89687L65.5533 7.25452C65.8193 7.27585 65.9272 7.6078 65.7245 7.7814L62.3256 10.693C61.9554 11.0101 61.7937 11.5077 61.9068 11.9819L62.9452 16.3352C63.0071 16.5948 62.7247 16.8 62.497 16.6609L58.6776 14.328C58.2616 14.0739 57.7384 14.0739 57.3224 14.328L53.503 16.6609C53.2752 16.8 52.9929 16.5948 53.0548 16.3352L54.0932 11.9819C54.2063 11.5077 54.0447 11.0101 53.6744 10.693L50.2755 7.7814C50.0728 7.6078 50.1807 7.27585 50.4467 7.25452L54.9078 6.89687C55.3938 6.85792 55.8171 6.55038 56.0043 6.10027L57.723 1.96796Z"
-                                      fill="#FFAF06"
-                                      stroke="#FFAF06"
-                                    />
-                                    <path
-                                      d="M81.723 1.96796C81.8255 1.72157 82.1745 1.72157 82.277 1.96796L83.9957 6.10027C84.1829 6.55038 84.6062 6.85792 85.0922 6.89687L89.5533 7.25452C89.8193 7.27585 89.9272 7.6078 89.7245 7.7814L86.3256 10.693C85.9554 11.0101 85.7937 11.5077 85.9068 11.9819L86.9452 16.3352C87.0071 16.5948 86.7247 16.8 86.497 16.6609L82.6776 14.328C82.2616 14.0739 81.7384 14.0739 81.3224 14.328L77.503 16.6609C77.2752 16.8 76.9929 16.5948 77.0548 16.3352L78.0932 11.9819C78.2063 11.5077 78.0447 11.0101 77.6744 10.693L74.2755 7.7814C74.0728 7.6078 74.1807 7.27585 74.4467 7.25452L78.9078 6.89687C79.3938 6.85792 79.8171 6.55038 80.0043 6.10027L81.723 1.96796Z"
-                                      stroke="#FFAF06"
-                                    />
-                                    <path
-                                      d="M105.723 1.96796C105.825 1.72157 106.175 1.72157 106.277 1.96796L107.996 6.10027C108.183 6.55038 108.606 6.85792 109.092 6.89687L113.553 7.25452C113.819 7.27585 113.927 7.6078 113.725 7.7814L110.326 10.693C109.955 11.0101 109.794 11.5077 109.907 11.9819L110.945 16.3352C111.007 16.5948 110.725 16.8 110.497 16.6609L106.678 14.328C106.262 14.0739 105.738 14.0739 105.322 14.328L101.503 16.6609C101.275 16.8 100.993 16.5948 101.055 16.3352L102.093 11.9819C102.206 11.5077 102.045 11.0101 101.674 10.693L98.2755 7.7814C98.0728 7.6078 98.1807 7.27585 98.4467 7.25452L102.908 6.89687C103.394 6.85792 103.817 6.55038 104.004 6.10027L105.723 1.96796Z"
-                                      stroke="#FFAF06"
-                                    />
-                                  </svg>
-                                </td>
-                                <td>June 15, 2023</td>
-                                <td>
-                                  <div class="dropdown expert-dropdown">
-                                    <button
-                                      class="btn action-btn dropdown-toggle"
-                                      type="button"
-                                      id="dropdownMenuButton1"
-                                      data-bs-toggle="dropdown"
-                                      aria-expanded="false"
-                                    >
-                                      ...
-                                    </button>
-                                    <ul
-                                      class="dropdown-menu"
-                                      aria-labelledby="dropdownMenuButton1"
-                                    >
-                                      <li>
-                                        <a class="dropdown-item" href="#"
-                                          >View</a
-                                        >
-                                      </li>
-                                      <li
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#add-review-modal"
-                                        id="rating-review"
-                                      >
-                                        <a class="dropdown-item" href="#"
-                                          >Reply</a
-                                        >
-                                      </li>
-                                    </ul>
-                                  </div>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td>
-                                  <img
-                                    class="table-img"
-                                    src="assets/teacher/asset/img/table img.jpeg"
-                                  /><span class="para-1"
-                                    >Learn How to design</span
-                                  >
-                                  <p class="para-2">
-                                    attractive UI for clients....
-                                  </p>
-                                </td>
-                                <td>Freelance Service</td>
-                                <td>Usama A.</td>
-                                <td>
-                                  This Course is very helpful
-                                  for Beginners I learn ......
-                                </td>
-                                <td>
-                                  <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    width="116"
-                                    height="20"
-                                    viewBox="0 0 116 20"
-                                    fill="none"
-                                  >
-                                    <path
-                                      d="M9.723 1.96796C9.82548 1.72157 10.1745 1.72157 10.277 1.96796L11.9957 6.10027C12.1829 6.55038 12.6062 6.85792 13.0922 6.89687L17.5533 7.25452C17.8193 7.27585 17.9272 7.6078 17.7245 7.7814L14.3256 10.693C13.9554 11.0101 13.7937 11.5077 13.9068 11.9819L14.9452 16.3352C15.0071 16.5948 14.7247 16.8 14.497 16.6609L10.6776 14.328C10.2616 14.0739 9.73839 14.0739 9.32237 14.328L5.50298 16.6609C5.27525 16.8 4.99287 16.5948 5.05479 16.3352L6.09322 11.9819C6.20633 11.5077 6.04465 11.0101 5.67443 10.693L2.27548 7.7814C2.07282 7.6078 2.18068 7.27585 2.44667 7.25452L6.90785 6.89687C7.39378 6.85792 7.81707 6.55038 8.00428 6.10027L9.723 1.96796Z"
-                                      fill="#FFAF06"
-                                      stroke="#FFAF06"
-                                    />
-                                    <path
-                                      d="M33.723 1.96796C33.8255 1.72157 34.1745 1.72157 34.277 1.96796L35.9957 6.10027C36.1829 6.55038 36.6062 6.85792 37.0922 6.89687L41.5533 7.25452C41.8193 7.27585 41.9272 7.6078 41.7245 7.7814L38.3256 10.693C37.9554 11.0101 37.7937 11.5077 37.9068 11.9819L38.9452 16.3352C39.0071 16.5948 38.7247 16.8 38.497 16.6609L34.6776 14.328C34.2616 14.0739 33.7384 14.0739 33.3224 14.328L29.503 16.6609C29.2752 16.8 28.9929 16.5948 29.0548 16.3352L30.0932 11.9819C30.2063 11.5077 30.0447 11.0101 29.6744 10.693L26.2755 7.7814C26.0728 7.6078 26.1807 7.27585 26.4467 7.25452L30.9078 6.89687C31.3938 6.85792 31.8171 6.55038 32.0043 6.10027L33.723 1.96796Z"
-                                      fill="#FFAF06"
-                                      stroke="#FFAF06"
-                                    />
-                                    <path
-                                      d="M57.723 1.96796C57.8255 1.72157 58.1745 1.72157 58.277 1.96796L59.9957 6.10027C60.1829 6.55038 60.6062 6.85792 61.0922 6.89687L65.5533 7.25452C65.8193 7.27585 65.9272 7.6078 65.7245 7.7814L62.3256 10.693C61.9554 11.0101 61.7937 11.5077 61.9068 11.9819L62.9452 16.3352C63.0071 16.5948 62.7247 16.8 62.497 16.6609L58.6776 14.328C58.2616 14.0739 57.7384 14.0739 57.3224 14.328L53.503 16.6609C53.2752 16.8 52.9929 16.5948 53.0548 16.3352L54.0932 11.9819C54.2063 11.5077 54.0447 11.0101 53.6744 10.693L50.2755 7.7814C50.0728 7.6078 50.1807 7.27585 50.4467 7.25452L54.9078 6.89687C55.3938 6.85792 55.8171 6.55038 56.0043 6.10027L57.723 1.96796Z"
-                                      fill="#FFAF06"
-                                      stroke="#FFAF06"
-                                    />
-                                    <path
-                                      d="M81.723 1.96796C81.8255 1.72157 82.1745 1.72157 82.277 1.96796L83.9957 6.10027C84.1829 6.55038 84.6062 6.85792 85.0922 6.89687L89.5533 7.25452C89.8193 7.27585 89.9272 7.6078 89.7245 7.7814L86.3256 10.693C85.9554 11.0101 85.7937 11.5077 85.9068 11.9819L86.9452 16.3352C87.0071 16.5948 86.7247 16.8 86.497 16.6609L82.6776 14.328C82.2616 14.0739 81.7384 14.0739 81.3224 14.328L77.503 16.6609C77.2752 16.8 76.9929 16.5948 77.0548 16.3352L78.0932 11.9819C78.2063 11.5077 78.0447 11.0101 77.6744 10.693L74.2755 7.7814C74.0728 7.6078 74.1807 7.27585 74.4467 7.25452L78.9078 6.89687C79.3938 6.85792 79.8171 6.55038 80.0043 6.10027L81.723 1.96796Z"
-                                      stroke="#FFAF06"
-                                    />
-                                    <path
-                                      d="M105.723 1.96796C105.825 1.72157 106.175 1.72157 106.277 1.96796L107.996 6.10027C108.183 6.55038 108.606 6.85792 109.092 6.89687L113.553 7.25452C113.819 7.27585 113.927 7.6078 113.725 7.7814L110.326 10.693C109.955 11.0101 109.794 11.5077 109.907 11.9819L110.945 16.3352C111.007 16.5948 110.725 16.8 110.497 16.6609L106.678 14.328C106.262 14.0739 105.738 14.0739 105.322 14.328L101.503 16.6609C101.275 16.8 100.993 16.5948 101.055 16.3352L102.093 11.9819C102.206 11.5077 102.045 11.0101 101.674 10.693L98.2755 7.7814C98.0728 7.6078 98.1807 7.27585 98.4467 7.25452L102.908 6.89687C103.394 6.85792 103.817 6.55038 104.004 6.10027L105.723 1.96796Z"
-                                      stroke="#FFAF06"
-                                    />
-                                  </svg>
-                                </td>
-                                <td>June 15, 2023</td>
-                                <td>
-                                  <div class="dropdown expert-dropdown">
-                                    <button
-                                      class="btn action-btn dropdown-toggle"
-                                      type="button"
-                                      id="dropdownMenuButton1"
-                                      data-bs-toggle="dropdown"
-                                      aria-expanded="false"
-                                    >
-                                      ...
-                                    </button>
-                                    <ul
-                                      class="dropdown-menu"
-                                      aria-labelledby="dropdownMenuButton1"
-                                    >
-                                      <li>
-                                        <a class="dropdown-item" href="#"
-                                          >View</a
-                                        >
-                                      </li>
-                                      <li
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#add-review-modal"
-                                        id="rating-review"
-                                      >
-                                        <a class="dropdown-item" href="#"
-                                          >Reply</a
-                                        >
-                                      </li>
-                                    </ul>
-                                  </div>
-                                </td>
-                              </tr>
-                            </tbody>
-                          </table>
+            <div class="col-md-12">
+                <div class="dash">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="dash-top">
+                                <h1 class="dash-title">Dashboard</h1>
+                                <i class="fa-solid fa-chevron-right"></i>
+                                <span class="min-title">Reviews</span>
+                            </div>
                         </div>
-                      </div>
                     </div>
-                  </div>
+
+                    <!-- Blue MESSAGES section -->
+                    <div class="user-notification">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="notify">
+                                    <i class="bx bx-message-alt-minus icon" title="Reviews"></i>
+                                    <h2>Customer Reviews</h2>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Search and Filter Section -->
+                    <div class="row mb-4">
+                        <div class="col-md-12">
+                            <form method="GET" action="/teacher-reviews" id="filterForm">
+                                <div class="row g-3">
+                                    <div class="col-md-3">
+                                        <input type="text" name="search" class="form-control"
+                                               placeholder="Search reviews..."
+                                               value="{{ request('search') }}">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <select name="service_type" class="form-control">
+                                            <option value="">All Services</option>
+                                            <option value="gig" {{ request('service_type') == 'gig' ? 'selected' : '' }}>
+                                                Freelance Service
+                                            </option>
+                                            <option value="order" {{ request('service_type') == 'order' ? 'selected' : '' }}>
+                                                Order Service
+                                            </option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <select name="rating" class="form-control">
+                                            <option value="">All Ratings</option>
+                                            @for($i = 5; $i >= 1; $i--)
+                                                <option value="{{ $i }}" {{ request('rating') == $i ? 'selected' : '' }}>
+                                                    {{ $i }} Stars
+                                                </option>
+                                            @endfor
+                                        </select>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <input type="date" name="date_from" class="form-control"
+                                               placeholder="From Date" value="{{ request('date_from') }}">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <input type="date" name="date_to" class="form-control"
+                                               placeholder="To Date" value="{{ request('date_to') }}">
+                                    </div>
+                                    <div class="col-md-1">
+                                        <button type="submit" class="btn btn-primary w-100">
+                                            <i class="fa fa-search"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Review Table Section -->
+                    <div class="rewiew-sec" id="installment-contant">
+                        <div class="row" id="main-contant-AI">
+                            <div class="col-md-12 installment-table">
+                                <div class="table-responsive">
+                                    <div class="hack1">
+                                        <div class="hack2" style="min-height: 300px">
+                                            <table class="table" style="min-height: 300px">
+                                                <thead>
+                                                <tr class="text-nowrap">
+                                                    <th>Service Title</th>
+                                                    <th>Service Type</th>
+                                                    <th>Review</th>
+                                                    <th>Rating</th>
+                                                    <th>Date</th>
+                                                    <th>Status</th>
+                                                    <th>Action</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                @forelse($reviews as $review)
+                                                    <tr>
+                                                        <td>
+                                                            @php
+                                                                $image = $review->gig->image ?? ($review->order->image ?? 'table img.jpeg');
+                                                                $title = $review->gig->title ?? ($review->order->service_title ?? 'N/A');
+                                                                $description = Str::limit($review->gig->description ?? $review->order->description ?? '', 50);
+                                                            @endphp
+                                                            <img class="table-img"
+                                                                 src="{{ asset('assets/user/asset/img/' . $image) }}"
+                                                                 alt="Service"/>
+                                                            <span class="para-1">{{ Str::limit($title, 30) }}</span>
+                                                            <p class="para-2">{{ $description }}</p>
+                                                        </td>
+                                                        <td>
+                                                            @if($review->gig_id)
+                                                                Freelance Service
+                                                            @elseif($review->order_id)
+                                                                Order Service
+                                                            @else
+                                                                N/A
+                                                            @endif
+                                                        </td>
+                                                        <td>
+                                                            <p class="review-text">
+                                                                {{ Str::limit($review->cmnt ?? 'No comment', 50) }}
+                                                            </p>
+                                                        </td>
+                                                        <td>
+                                                            <div class="star-rating">
+                                                                @for($i = 1; $i <= 5; $i++)
+                                                                    <i class="fa{{ $i <= $review->rating ? '-solid' : '-regular' }} fa-star"
+                                                                       style="color: #FFAF06;"></i>
+                                                                @endfor
+                                                            </div>
+                                                        </td>
+                                                        <td>{{ $review->created_at->format('M d, Y') }}</td>
+                                                        <td>
+                                                            @if($review->replies->isNotEmpty())
+                                                                <span class="badge bg-success">
+                                                                    <i class="fa fa-check"></i> Replied
+                                                                </span>
+                                                            @else
+                                                                <span class="badge bg-warning">
+                                                                    <i class="fa fa-clock"></i> Pending
+                                                                </span>
+                                                            @endif
+                                                        </td>
+                                                        <td>
+                                                            <div class="dropdown mt-4">
+                                                                <button class="btn btn-sm btn-secondary dropdown-toggle"
+                                                                        type="button"
+                                                                        data-bs-toggle="dropdown">
+                                                                    <i class="fa fa-ellipsis-v"></i>
+                                                                </button>
+                                                                <ul class="dropdown-menu">
+                                                                    <li>
+                                                                        <a class="dropdown-item view-review"
+                                                                           href="#"
+                                                                           data-review-id="{{ $review->id }}">
+                                                                            <i class="fa fa-eye"></i> View Review
+                                                                        </a>
+                                                                    </li>
+                                                                    <li>
+                                                                        <a class="dropdown-item add-reply"
+                                                                           href="#"
+                                                                           data-review-id="{{ $review->id }}">
+                                                                            <i class="fa fa-comment"></i>
+                                                                            {{ $review->replies->isNotEmpty() ? 'View/Edit Reply' : 'Add Reply' }}
+                                                                        </a>
+                                                                    </li>
+                                                                </ul>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                @empty
+                                                    <tr>
+                                                        <td colspan="7" class="text-center py-4">
+                                                            <i class="fa fa-inbox fa-3x text-muted mb-3"></i>
+                                                            <p>No reviews found</p>
+                                                        </td>
+                                                    </tr>
+                                                @endforelse
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <!-- END: INSTALLMENT TABLE SECTION -->
-              </div>
-              <div class="user-footer text-center">
-                <p class="mb-0">
-                  Copyright Dreamcrowd © 2021. All Rights Reserved.
-                </p>
-              </div>
             </div>
-          </div>
         </div>
-      </div>
-      <!-- =============================== MAIN CONTENT END HERE =========================== -->
-    </section>
-
-    
-    
-    <script src="assets/teacher/libs/jquery/jquery.js"></script>
-    <script src="assets/teacher/libs/datatable/js/datatable.js"></script>
-    <script src="assets/teacher/libs/datatable/js/datatablebootstrap.js"></script>
-    <script src="assets/teacher/libs/select2/js/select2.min.js"></script>
-    <script src="assets/teacher/libs/owl-carousel/js/owl.carousel.min.js"></script>
-    <script src="assets/teacher/libs/aos/js/aos.js"></script>
-    <script src="assets/teacher/asset/js/bootstrap.min.js"></script>
-    <script src="assets/teacher/asset/js/script.js"></script>
-    <!-- jQuery -->
-    <script
-      src="https://code.jquery.com/jquery-3.7.1.min.js"
-      integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
-      crossorigin="anonymous"
-    ></script>
-  </body>
-</html>
-<!-- modal hide show jquery here -->
-<script>
-  $(document).ready(function () {
-    $(document).on("click", "#delete-account", function (e) {
-      e.preventDefault();
-      $("#exampleModal7").modal("show");
-      $("#delete-teacher-account").modal("hide");
-    });
-
-    $(document).on("click", "#delete-account", function (e) {
-      e.preventDefault();
-      $("#delete-teacher-account").modal("show");
-      $("#exampleModal7").modal("hide");
-    });
-  });
-</script>
-<!-- ================ side js start here=============== -->
-<script>
-  // Sidebar script
-  document.addEventListener("DOMContentLoaded", function () {
-    let arrow = document.querySelectorAll(".arrow");
-    for (let i = 0; i < arrow.length; i++) {
-      arrow[i].addEventListener("click", function (e) {
-        let arrowParent = e.target.parentElement.parentElement; // Selecting main parent of arrow
-        arrowParent.classList.toggle("showMenu");
-      });
-    }
-
-    let sidebar = document.querySelector(".sidebar");
-    let sidebarBtn = document.querySelector(".bx-menu");
-
-    sidebarBtn.addEventListener("click", function () {
-      sidebar.classList.toggle("close");
-    });
-
-    // Function to toggle sidebar based on screen size
-    function toggleSidebar() {
-      let screenWidth = window.innerWidth;
-      if (screenWidth < 992) {
-        sidebar.classList.add("close");
-      } else {
-        sidebar.classList.remove("close");
-      }
-    }
-
-    // Call the function initially
-    toggleSidebar();
-
-    // Listen for resize events to adjust sidebar
-    window.addEventListener("resize", function () {
-      toggleSidebar();
-    });
-  });
-</script>
-<!-- ================ side js start End=============== -->
-<!-- radio js here -->
-<script>
-  function showAdditionalOptions1() {
-      hideAllAdditionalOptions();
-  }
-
-  function showAdditionalOptions2() {
-      hideAllAdditionalOptions();
-      document.getElementById('additionalOptions2').style.display = 'block';
-  }
-
-  function showAdditionalOptions3() {
-      hideAllAdditionalOptions();
-  }
-
-  function showAdditionalOptions4() {
-      hideAllAdditionalOptions();
-      document.getElementById('additionalOptions4').style.display = 'block';
-  }
-
-  function hideAllAdditionalOptions() {
-      var elements = document.getElementsByClassName('additional-options');
-      for (var i = 0; i < elements.length; i++) {
-          elements[i].style.display = 'none';
-      }
-  }
-
-  // Call the function to show the additional options for the default checked radio button on page load
-  window.onload = function() {
-      showAdditionalOptions1();
-  };
-</script>
-<!-- Add Review Rating modal start from here -->
-<!-- Modal -->
-<div
-  class="modal fade"
-  id="add-review-modal"
-  tabindex="-1"
-  aria-labelledby="exampleModalLabel"
-  aria-hidden="true"
->
-<div class="modal-dialog modal-dialog-centered mt-5">
-  <div class="modal-content mt-2">
-    <div class="card-header text-center">Customer Review</div>
-    <div class="model_popup">
-      <label for="car" class="form-label">Rating</label>
-      <br>
-      <svg xmlns="http://www.w3.org/2000/svg" width="88" height="16" viewBox="0 0 88 16" fill="none">
-        <path d="M7.723 1.96796C7.82548 1.72157 8.17452 1.72157 8.277 1.96796L9.46671 4.82838C9.65392 5.27849 10.0772 5.58603 10.5631 5.62499L13.6512 5.87256C13.9172 5.89388 14.0251 6.22584 13.8224 6.39944L11.4696 8.41485C11.0994 8.73198 10.9377 9.22959 11.0508 9.70378L11.7696 12.7172C11.8316 12.9768 11.5492 13.1819 11.3215 13.0428L8.67763 11.428C8.26161 11.1739 7.73839 11.1739 7.32237 11.428L4.67855 13.0428C4.45082 13.1819 4.16844 12.9768 4.23036 12.7172L4.94917 9.70378C5.06228 9.2296 4.9006 8.73198 4.53038 8.41485L2.17759 6.39944C1.97493 6.22583 2.08279 5.89388 2.34878 5.87256L5.43685 5.62499C5.92278 5.58603 6.34608 5.27849 6.53329 4.82839L7.723 1.96796Z" fill="#FFAF06" stroke="#FFAF06"/>
-        <path d="M25.723 1.96796C25.8255 1.72157 26.1745 1.72157 26.277 1.96796L27.4667 4.82838C27.6539 5.27849 28.0772 5.58603 28.5631 5.62499L31.6512 5.87256C31.9172 5.89388 32.0251 6.22584 31.8224 6.39944L29.4696 8.41485C29.0994 8.73198 28.9377 9.22959 29.0508 9.70378L29.7696 12.7172C29.8316 12.9768 29.5492 13.1819 29.3215 13.0428L26.6776 11.428C26.2616 11.1739 25.7384 11.1739 25.3224 11.428L22.6786 13.0428C22.4508 13.1819 22.1684 12.9768 22.2304 12.7172L22.9492 9.70378C23.0623 9.2296 22.9006 8.73198 22.5304 8.41485L20.1776 6.39944C19.9749 6.22583 20.0828 5.89388 20.3488 5.87256L23.4369 5.62499C23.9228 5.58603 24.3461 5.27849 24.5333 4.82839L25.723 1.96796Z" fill="#FFAF06" stroke="#FFAF06"/>
-        <path d="M43.723 1.96796C43.8255 1.72157 44.1745 1.72157 44.277 1.96796L45.4667 4.82838C45.6539 5.27849 46.0772 5.58603 46.5631 5.62499L49.6512 5.87256C49.9172 5.89388 50.0251 6.22584 49.8224 6.39944L47.4696 8.41485C47.0994 8.73198 46.9377 9.22959 47.0508 9.70378L47.7696 12.7172C47.8316 12.9768 47.5492 13.1819 47.3215 13.0428L44.6776 11.428C44.2616 11.1739 43.7384 11.1739 43.3224 11.428L40.6786 13.0428C40.4508 13.1819 40.1684 12.9768 40.2304 12.7172L40.9492 9.70378C41.0623 9.2296 40.9006 8.73198 40.5304 8.41485L38.1776 6.39944C37.9749 6.22583 38.0828 5.89388 38.3488 5.87256L41.4369 5.62499C41.9228 5.58603 42.3461 5.27849 42.5333 4.82839L43.723 1.96796Z" fill="#FFAF06" stroke="#FFAF06"/>
-        <path d="M61.723 1.96796C61.8255 1.72157 62.1745 1.72157 62.277 1.96796L63.4667 4.82838C63.6539 5.27849 64.0772 5.58603 64.5631 5.62499L67.6512 5.87256C67.9172 5.89388 68.0251 6.22584 67.8224 6.39944L65.4696 8.41485C65.0994 8.73198 64.9377 9.22959 65.0508 9.70378L65.7696 12.7172C65.8316 12.9768 65.5492 13.1819 65.3215 13.0428L62.6776 11.428C62.2616 11.1739 61.7384 11.1739 61.3224 11.428L58.6786 13.0428C58.4508 13.1819 58.1684 12.9768 58.2304 12.7172L58.9492 9.70378C59.0623 9.2296 58.9006 8.73198 58.5304 8.41485L56.1776 6.39944C55.9749 6.22583 56.0828 5.89388 56.3488 5.87256L59.4369 5.62499C59.9228 5.58603 60.3461 5.27849 60.5333 4.82839L61.723 1.96796Z" stroke="#FFAF06"/>
-        <path d="M79.723 1.96796C79.8255 1.72157 80.1745 1.72157 80.277 1.96796L81.4667 4.82838C81.6539 5.27849 82.0772 5.58603 82.5631 5.62499L85.6512 5.87256C85.9172 5.89388 86.0251 6.22584 85.8224 6.39944L83.4696 8.41485C83.0994 8.73198 82.9377 9.22959 83.0508 9.70378L83.7696 12.7172C83.8316 12.9768 83.5492 13.1819 83.3215 13.0428L80.6776 11.428C80.2616 11.1739 79.7384 11.1739 79.3224 11.428L76.6786 13.0428C76.4508 13.1819 76.1684 12.9768 76.2304 12.7172L76.9492 9.70378C77.0623 9.2296 76.9006 8.73198 76.5304 8.41485L74.1776 6.39944C73.9749 6.22583 74.0828 5.89388 74.3488 5.87256L77.4369 5.62499C77.9228 5.58603 78.3461 5.27849 78.5333 4.82839L79.723 1.96796Z" stroke="#FFAF06"/>
-      </svg></br>
-  <label for="car" class="form-label">Review</label>
-  <textarea class="form-control" list="datalistOptions" id="car" 
-  placeholder="Lorem ipsum dolor sit amet, consectetur adipiscing elit.Vitae ut tellus quis a euismod ut nisl, quis.Tristiquebibendum morbi vel vitae ultrices donec accumsan" readonly></textarea>
-  <label for="car" class="form-label">Reply</label>
-  <textarea class="form-control" list="datalistOptions" id="car" 
-  placeholder="write something here....."></textarea>
-   <button type="button" class="btn1">Cancel</button>
-   <button type="button" class="btn2">Reply</button>
-
     </div>
-  </div>
-</div>
-</div>
-<!-- Add Review Rating modal ended here -->
 
+    <!-- Pagination -->
+    @if($reviews->hasPages())
+        <div class="demo">
+            <nav class="pagination-outer" aria-label="Page navigation">
+                {{ $reviews->appends(request()->query())->links('pagination::bootstrap-4') }}
+            </nav>
+        </div>
+    @endif
+
+    <!-- Copyright -->
+    <div class="copyright">
+        <p>Copyright Dreamcrowd © 2021. All Rights Reserved.</p>
+    </div>
+</section>
+
+<!-- View Review Modal -->
+<div class="modal fade" id="view-review-modal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Customer Review Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
+                <!-- Service Info -->
+                <div class="mb-3">
+                    <img id="service-image" src="" class="img-fluid mb-2" style="max-height: 150px;">
+                    <h6 id="service-title"></h6>
+                    <small class="text-muted" id="service-type"></small>
+                </div>
+
+                <!-- Customer Review -->
+                <div class="customer-review">
+                    <h6><i class="fa fa-user"></i> Customer Review</h6>
+                    <div class="mb-2">
+                        <strong>Rating:</strong>
+                        <div class="star-rating d-inline-block ms-2" id="customer-rating"></div>
+                    </div>
+                    <div>
+                        <strong>Comment:</strong>
+                        <p class="mb-1" id="customer-comment"></p>
+                    </div>
+                    <small class="text-muted" id="review-date"></small>
+                </div>
+
+                <!-- Seller Reply Section -->
+                <div id="reply-section">
+                    <h6 class="mb-3"><i class="fa fa-comments"></i> Your Reply</h6>
+                    <div id="existing-reply" style="display: none;">
+                        <div class="reply-item">
+                            <div class="reply-header">
+                                <strong><i class="fa fa-user-tie"></i> Your Reply:</strong>
+                                <div class="reply-actions">
+                                    <button class="btn btn-sm btn-primary" id="edit-reply-btn">
+                                        <i class="fa fa-edit"></i> Edit
+                                    </button>
+                                    <button class="btn btn-sm btn-danger" id="delete-reply-btn">
+                                        <i class="fa fa-trash"></i> Delete
+                                    </button>
+                                </div>
+                            </div>
+                            <p class="mb-1" id="reply-content"></p>
+                            <small class="text-muted" id="reply-date"></small>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add/Edit Reply Modal -->
+<div class="modal fade" id="reply-modal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="reply-modal-title">Add Reply</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
+                <form id="reply-form">
+                    @csrf
+                    <input type="hidden" id="parent_review_id" name="parent_id">
+                    <input type="hidden" id="reply_id" name="reply_id">
+                    <input type="hidden" id="is_edit_mode" value="0">
+
+                    <!-- Customer Review Summary -->
+                    <div class="mb-3 p-3" style="background: #f8f9fa; border-radius: 8px;">
+                        <h6>Customer's Review:</h6>
+                        <div class="star-rating mb-2" id="reply-customer-rating"></div>
+                        <p class="mb-0" id="reply-customer-comment"></p>
+                    </div>
+
+                    <h6 class="mb-2">Your Reply <span class="text-danger">*</span></h6>
+                    <textarea class="form-control mb-3"
+                              name="cmnt"
+                              id="reply_comment"
+                              placeholder="Write your reply to the customer..."
+                              rows="5"
+                              required></textarea>
+
+                    <div class="d-flex justify-content-end gap-2">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            Cancel
+                        </button>
+                        <button type="submit" class="btn btn-primary" id="submit-reply-btn">
+                            <i class="fa fa-paper-plane"></i> Submit Reply
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="assets/user/libs/jquery/jquery.js"></script>
+<script src="assets/user/libs/datatable/js/datatable.js"></script>
+<script src="assets/user/libs/datatable/js/datatablebootstrap.js"></script>
+<script src="assets/user/libs/select2/js/select2.min.js"></script>
+<script src="assets/user/libs/owl-carousel/js/owl.carousel.min.js"></script>
+<script src="assets/user/libs/aos/js/aos.js"></script>
+<script src="assets/user/asset/js/bootstrap.min.js"></script>
+<script src="assets/user/asset/js/script.js"></script>
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"
+        integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
+        crossorigin="anonymous"></script>
+
+<script>
+    $(document).ready(function () {
+        let currentReviewData = null;
+
+        // Generate star rating HTML
+        function generateStarRating(rating) {
+            let html = '';
+            for (let i = 1; i <= 5; i++) {
+                html += `<i class="fa${i <= rating ? '-solid' : '-regular'} fa-star" style="color: #FFAF06;"></i>`;
+            }
+            return html;
+        }
+
+        // View review
+        $('.view-review').click(function (e) {
+            e.preventDefault();
+            let reviewId = $(this).data('review-id');
+            loadReviewDetails(reviewId, 'view');
+        });
+
+        // Add/Edit reply
+        $('.add-reply').click(function (e) {
+            e.preventDefault();
+            let reviewId = $(this).data('review-id');
+            loadReviewDetails(reviewId, 'reply');
+        });
+
+        // Load review details
+        function loadReviewDetails(reviewId, mode) {
+            $.ajax({
+                url: `/teacher-get-single-reviews/${reviewId}`,
+                method: 'GET',
+                success: function (response) {
+                    if (response.success) {
+                        currentReviewData = response;
+
+                        // Populate service info
+                        $('#service-title').text(response.service_title);
+                        $('#service-type').text(response.service_type);
+                        $('#service-image').attr('src', response.service_image);
+
+                        // Populate customer review
+                        $('#customer-rating').html(generateStarRating(response.review.rating));
+                        $('#customer-comment').text(response.review.cmnt || 'No comment provided');
+                        $('#review-date').text(new Date(response.review.created_at).toLocaleDateString());
+
+                        // Handle replies
+                        if (response.review.replies && response.review.replies.length > 0) {
+                            let reply = response.review.replies[0]; // Get first reply
+                            $('#reply-content').text(reply.cmnt);
+                            $('#reply-date').text(new Date(reply.created_at).toLocaleDateString());
+                            $('#existing-reply').show();
+
+                            // Store reply ID for edit/delete
+                            $('#existing-reply').data('reply-id', reply.id);
+                        } else {
+                            $('#existing-reply').hide();
+                        }
+
+                        if (mode === 'view') {
+                            $('#view-review-modal').modal('show');
+                        } else if (mode === 'reply') {
+                            openReplyModal(response);
+                        }
+                    }
+                },
+                error: function (xhr) {
+                    alert('Error loading review details');
+                }
+            });
+        }
+
+        // Open reply modal
+        function openReplyModal(reviewData) {
+            $('#parent_review_id').val(reviewData.review.id);
+            $('#reply-customer-rating').html(generateStarRating(reviewData.review.rating));
+            $('#reply-customer-comment').text(reviewData.review.cmnt || 'No comment provided');
+
+            if (reviewData.review.replies && reviewData.review.replies.length > 0) {
+                // Edit mode
+                let reply = reviewData.review.replies[0];
+                $('#reply-modal-title').text('Edit Reply');
+                $('#reply_id').val(reply.id);
+                $('#reply_comment').val(reply.cmnt);
+                $('#is_edit_mode').val('1');
+                $('#submit-reply-btn').html('<i class="fa fa-save"></i> Update Reply');
+            } else {
+                // Add mode
+                $('#reply-modal-title').text('Add Reply');
+                $('#reply_id').val('');
+                $('#reply_comment').val('');
+                $('#is_edit_mode').val('0');
+                $('#submit-reply-btn').html('<i class="fa fa-paper-plane"></i> Submit Reply');
+            }
+
+            $('#view-review-modal').modal('hide');
+            $('#reply-modal').modal('show');
+        }
+
+        // Edit reply button
+        $(document).on('click', '#edit-reply-btn', function () {
+            if (currentReviewData) {
+                openReplyModal(currentReviewData);
+            }
+        });
+
+        // Delete reply button
+        $(document).on('click', '#delete-reply-btn', function () {
+            if (confirm('Are you sure you want to delete your reply?')) {
+                let replyId = $('#existing-reply').data('reply-id');
+
+                $.ajax({
+                    url: `/teacher-delete-reply/${replyId}`,
+                    method: 'GET',
+                    success: function (response) {
+                        if (response.success) {
+                            alert(response.message);
+                            $('#view-review-modal').modal('hide');
+                            location.reload();
+                        }
+                    },
+                    error: function (xhr) {
+                        alert('Error: ' + (xhr.responseJSON?.message || 'Failed to delete reply'));
+                    }
+                });
+            }
+        });
+
+        // Submit reply form
+        $('#reply-form').submit(function (e) {
+            e.preventDefault();
+
+            let isEditMode = $('#is_edit_mode').val() === '1';
+            let url = isEditMode ? `/teacher-update-reply/${$('#reply_id').val()}` : '/teacher-store-reply';
+
+            let formData = {
+                _token: '{{ csrf_token() }}',
+                parent_id: $('#parent_review_id').val(),
+                cmnt: $('#reply_comment').val()
+            };
+
+            $.ajax({
+                url: url,
+                method: 'POST',
+                data: formData,
+                success: function (response) {
+                    if (response.success) {
+                        alert(response.message);
+                        $('#reply-modal').modal('hide');
+                        location.reload();
+                    }
+                },
+                error: function (xhr) {
+                    if (xhr.status === 422) {
+                        let errors = xhr.responseJSON.errors;
+                        let errorMessage = Object.values(errors).join('\n');
+                        alert(errorMessage);
+                    } else {
+                        alert('Error: ' + (xhr.responseJSON?.message || 'Failed to submit reply'));
+                    }
+                }
+            });
+        });
+
+        // Clear modal on close
+        $('#reply-modal').on('hidden.bs.modal', function () {
+            $('#reply-form')[0].reset();
+            $('#parent_review_id').val('');
+            $('#reply_id').val('');
+            $('#is_edit_mode').val('0');
+        });
+    });
+</script>
+</body>
+</html>
