@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ZoomController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PublicWebController;
 use App\Http\Controllers\SellerListingController;
@@ -414,3 +415,6 @@ Route::controller(MessagesController::class)->group(function () {
 
 
 
+Route::get('/zoom/authorize', [ZoomController::class, 'redirectToZoom']);
+Route::get('/zoom/callback', [ZoomController::class, 'handleCallback']);
+Route::get('/zoom/create-meeting', [ZoomController::class, 'createMeeting']);

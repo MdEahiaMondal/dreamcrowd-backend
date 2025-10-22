@@ -8,63 +8,64 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Animate css -->
-    <link rel="stylesheet" href="assets/teacher/libs/animate/css/animate.css" />
+    <link rel="stylesheet" href="assets/teacher/libs/animate/css/animate.css"/>
     <!-- AOS Animation css-->
-    <link rel="stylesheet" href="assets/teacher/libs/aos/css/aos.css" />
+    <link rel="stylesheet" href="assets/teacher/libs/aos/css/aos.css"/>
     <!-- Axios Script  -->
     <!-- Add this in your Blade or HTML file -->
-<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
     <!-- Datatable css  -->
-    <link rel="stylesheet" href="assets/teacher/libs/datatable/css/datatable.css" />
-     {{-- Fav Icon --}}
-     @php  $home = \App\Models\HomeDynamic::first(); @endphp
-     @if ($home)
-         <link rel="shortcut icon" href="assets/public-site/asset/img/{{$home->fav_icon}}" type="image/x-icon">
-     @endif
-     <!-- Select2 css -->
-    <link href="assets/teacher/libs/select2/css/select2.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="assets/teacher/libs/datatable/css/datatable.css"/>
+    {{-- Fav Icon --}}
+    @php  $home = \App\Models\HomeDynamic::first(); @endphp
+    @if ($home)
+        <link rel="shortcut icon" href="assets/public-site/asset/img/{{$home->fav_icon}}" type="image/x-icon">
+    @endif
+    <!-- Select2 css -->
+    <link href="assets/teacher/libs/select2/css/select2.min.css" rel="stylesheet"/>
     <!-- Owl carousel css -->
-    <link href="assets/teacher/libs/owl-carousel/css/owl.carousel.css" rel="stylesheet" />
-    <link href="assets/teacher/libs/owl-carousel/css/owl.theme.green.css" rel="stylesheet" />
+    <link href="assets/teacher/libs/owl-carousel/css/owl.carousel.css" rel="stylesheet"/>
+    <link href="assets/teacher/libs/owl-carousel/css/owl.theme.green.css" rel="stylesheet"/>
     <!-- Bootstrap css -->
-    <link rel="stylesheet" type="text/css" href="assets/teacher/asset/css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="assets/teacher/asset/css/bootstrap.min.css"/>
     <link href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css' rel='stylesheet'>
     <link rel="stylesheet" href="https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css">
     <!-- Fontawesome CDN -->
     <script src="https://kit.fontawesome.com/be69b59144.js" crossorigin="anonymous"></script>
-   
-        <!-- file upload link -->
-        <link 
+
+    <!-- file upload link -->
+    <link
         rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.0.2/css/bootstrap.min.css"
-      />
-      <link
+    />
+    <link
         rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css"
-      />
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.1.10/vue.min.js"></script>
-   
-   
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.1.10/vue.min.js"></script>
+
+
     <!-- js -->
     <script
-      src="https://code.jquery.com/jquery-3.7.1.min.js"
-      integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
-      crossorigin="anonymous"
+        src="https://code.jquery.com/jquery-3.7.1.min.js"
+        integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
+        crossorigin="anonymous"
     ></script>
-   
+
     <!-- jQuery -->
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
-        
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+            integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+
 
     {{-- =======Toastr CDN ======== --}}
-    <link rel="stylesheet" type="text/css" 
-    href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+    <link rel="stylesheet" type="text/css"
+          href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
     {{-- =======Toastr CDN ======== --}}
     <!-- Defualt css -->
-    <link rel=" stylesheet " type=" text/css " href="assets/teacher/asset/css/class-management.css" />
+    <link rel=" stylesheet " type=" text/css " href="assets/teacher/asset/css/class-management.css"/>
     <link rel=" stylesheet " href=" assets/teacher/asset/css/Learn-How.css">
     <link rel="stylesheet" href="assets/teacher/asset/css/sidebar.css">
     <link rel="stylesheet" href="assets/teacher/asset/css/style.css">
@@ -73,176 +74,177 @@
 
 
 {{-- On Click Back Arrow Button then redirect to edit service Script start --}}
-  
+
 <script>
-  // Function to get a cookie value by name
-  function getCookie(name) {
-      const cookies = document.cookie.split(';');
-      for (let i = 0; i < cookies.length; i++) {
-          const cookie = cookies[i].trim();
-          if (cookie.startsWith(name + '=')) {
-              return cookie.substring(name.length + 1);
-          }
-      }
-      return null; // Return null if the cookie doesn't exist
-  }
+    // Function to get a cookie value by name
+    function getCookie(name) {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.startsWith(name + '=')) {
+                return cookie.substring(name.length + 1);
+            }
+        }
+        return null; // Return null if the cookie doesn't exist
+    }
 
-  // Function to clear a cookie
-  function clearCookie(name) {
-      document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/`;
-  }
+    // Function to clear a cookie
+    function clearCookie(name) {
+        document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/`;
+    }
 
-  // Get the gig_id cookie
-  const gigId = getCookie('gig_id');
+    // Get the gig_id cookie
+    const gigId = getCookie('gig_id');
 
-  // Check if gig_id has a value
-  if (gigId && gigId !== '') {
-      // Clear the gig_id cookie
-      clearCookie('gig_id');
+    // Check if gig_id has a value
+    if (gigId && gigId !== '') {
+        // Clear the gig_id cookie
+        clearCookie('gig_id');
 
-      // Redirect to the desired page with gigId
-      window.location.href = `/teacher-service-edit/${gigId}/edit`; // Replace with your desired redirect URL
-  }
+        // Redirect to the desired page with gigId
+        window.location.href = `/teacher-service-edit/${gigId}/edit`; // Replace with your desired redirect URL
+    }
 </script>
 {{-- On Click Back Arrow Button then redirect to edit service Script END --}}
 
 
 <style>
-    .d-block{
+    .d-block {
         padding-top: 20px;
     }
 
-   .selected-image {
-  position: relative;
-  display: inline-block;
-  margin: 10px;
-}
+    .selected-image {
+        position: relative;
+        display: inline-block;
+        margin: 10px;
+    }
 
-.remove-img-btn {
-  position: absolute;
-  top: 5px;
-  right: 5px;
-  background-color: red;
-  color: white;
-  padding: 5px;
-  cursor: pointer;
-}
+    .remove-img-btn {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        background-color: red;
+        color: white;
+        padding: 5px;
+        cursor: pointer;
+    }
 
-button#multiSelectDropdown3:hover {
-    color: black;
-}
+    button#multiSelectDropdown3:hover {
+        color: black;
+    }
 </style>
 
 <body>
 
-  @if (Session::has('error'))
-  <script>
+@if (Session::has('error'))
+    <script>
 
         toastr.options =
-          {
-              "closeButton" : true,
-               "progressBar": true,
-          "timeOut": "10000", // 10 seconds
-          "extendedTimeOut": "4410000" // 10 seconds
-          }
-                  toastr.error("{{ session('error') }}");
+            {
+                "closeButton": true,
+                "progressBar": true,
+                "timeOut": "10000", // 10 seconds
+                "extendedTimeOut": "4410000" // 10 seconds
+            }
+        toastr.error("{{ session('error') }}");
 
-                  
-  </script>
-  @endif
-  @if (Session::has('success'))
-  <script>
+
+    </script>
+@endif
+@if (Session::has('success'))
+    <script>
 
         toastr.options =
-          {
-              "closeButton" : true,
-               "progressBar": true,
-          "timeOut": "10000", // 10 seconds
-          "extendedTimeOut": "4410000" // 10 seconds
-          }
-                  toastr.success("{{ session('success') }}");
+            {
+                "closeButton": true,
+                "progressBar": true,
+                "timeOut": "10000", // 10 seconds
+                "extendedTimeOut": "4410000" // 10 seconds
+            }
+        toastr.success("{{ session('success') }}");
 
-                  
-  </script>
-  @endif
 
-   {{-- ===========Teacher Sidebar Start==================== --}}
-  <x-teacher-sidebar/>
-  {{-- ===========Teacher Sidebar End==================== --}}
-  <section class="home-section">
-     {{-- ===========Teacher NavBar Start==================== --}}
-     <x-teacher-nav/>
-     {{-- ===========Teacher NavBar End==================== --}}
-        <!-- =============================== MAIN CONTENT START HERE =========================== -->
-        <div class=" container-fluid ">
-            <div class=" row dash-notification ">
-                <div class=" col-md-12 ">
-                    <nav style=" --bs-breadcrumb-divider: '>' ; " aria-label=" breadcrumb ">
-                        <ol class=" breadcrumb mt-3 ">
-                            <li class=" breadcrumb-item active " aria-current=" page ">Dashboard</li>
-                            <li class=" breadcrumb-item ">Order Managements</li>
-                        </ol>
-                    </nav>
-                    <div class=" class-Menagent-Heading ">
-                        <i class="bx bxs-graduation icon" title="Class Management"></i>
-                        <span>Order Management</span>
+    </script>
+@endif
 
-                    </div>
-
-                    <!-- Blue MASSEGES section -->
-
+{{-- ===========Teacher Sidebar Start==================== --}}
+<x-teacher-sidebar/>
+{{-- ===========Teacher Sidebar End==================== --}}
+<section class="home-section">
+    {{-- ===========Teacher NavBar Start==================== --}}
+    <x-teacher-nav/>
+    {{-- ===========Teacher NavBar End==================== --}}
+    <!-- =============================== MAIN CONTENT START HERE =========================== -->
+    <div class=" container-fluid ">
+        <div class=" row dash-notification ">
+            <div class=" col-md-12 ">
+                <nav style=" --bs-breadcrumb-divider: '>' ; " aria-label=" breadcrumb ">
+                    <ol class=" breadcrumb mt-3 ">
+                        <li class=" breadcrumb-item active " aria-current=" page ">Dashboard</li>
+                        <li class=" breadcrumb-item ">Order Managements</li>
+                    </ol>
+                </nav>
+                <div class=" class-Menagent-Heading ">
+                    <i class="bx bxs-graduation icon" title="Class Management"></i>
+                    <span>Order Management</span>
 
                 </div>
+
+                <!-- Blue MASSEGES section -->
+
+
             </div>
-            <div class=" row ">
-                <!--===================== Slider Section Start================== -->
-                <div class=" col-md-12 ">
-                    <div class=" class-Manegment-slider ">
-                        <div class=" owl-slider ">
-                            <div id=" carousel " class=" owl-carousel ">
-                                @if ($banner)
+        </div>
+        <div class=" row ">
+            <!--===================== Slider Section Start================== -->
+            <div class=" col-md-12 ">
+                <div class=" class-Manegment-slider ">
+                    <div class=" owl-slider ">
+                        <div id=" carousel " class=" owl-carousel ">
+                            @if ($banner)
                                 @foreach ($banner as $item)
-                                <div class=" item " style=" background-color:#0072B1; border-radius: 8px !important; ">
-                                    <img src=" assets/teacher/asset/img/Cloud.png " alt=" ">
-                                    <div class=" card-img-overlay slider-Img-Overlaye ">
-                                        <h3>{{$item->heading}}</h3>
-                                        <p>{{$item->description}}</p>
+                                    <div class=" item "
+                                         style=" background-color:#0072B1; border-radius: 8px !important; ">
+                                        <img src=" assets/teacher/asset/img/Cloud.png " alt=" ">
+                                        <div class=" card-img-overlay slider-Img-Overlaye ">
+                                            <h3>{{$item->heading}}</h3>
+                                            <p>{{$item->description}}</p>
+                                        </div>
                                     </div>
-                                </div>
-                                    
+
                                 @endforeach
-                                    
-                                @endif
-                                
-                                {{-- <div class=" item " style=" background-color:#0072B1; border-radius: 8px !important; ">
-                                    <img src=" assets/teacher/asset/img/Cloud.png " alt=" ">
-                                    <div class=" card-img-overlay slider-Img-Overlaye ">
-                                        <h3>
-                                            Learn how to get started on DreamCrowd?
-                                        </h3>
-                                        <p>By joining now, you'll gain access to a plethora of additional benefits and privileges. Unlock a range of new features that can assist you in expanding your professional network and promoting your valuable skills.</p>
-                                    </div>
+
+                            @endif
+
+                            {{-- <div class=" item " style=" background-color:#0072B1; border-radius: 8px !important; ">
+                                <img src=" assets/teacher/asset/img/Cloud.png " alt=" ">
+                                <div class=" card-img-overlay slider-Img-Overlaye ">
+                                    <h3>
+                                        Learn how to get started on DreamCrowd?
+                                    </h3>
+                                    <p>By joining now, you'll gain access to a plethora of additional benefits and privileges. Unlock a range of new features that can assist you in expanding your professional network and promoting your valuable skills.</p>
                                 </div>
-                                <div class=" item " style=" background-color:#0072B1; border-radius: 8px !important; ">
-                                    <img src=" assets/teacher/asset/img/Cloud.png " alt=" ">
-                                    <div class=" card-img-overlay slider-Img-Overlaye ">
-                                        <h3>
-                                            Learn how to get started on DreamCrowd?
-                                        </h3>
-                                        <p>By joining now, you'll gain access to a plethora of additional benefits and privileges. Unlock a range of new features that can assist you in expanding your professional network and promoting your valuable skills.</p>
-                                    </div>
-                                </div> --}}
                             </div>
+                            <div class=" item " style=" background-color:#0072B1; border-radius: 8px !important; ">
+                                <img src=" assets/teacher/asset/img/Cloud.png " alt=" ">
+                                <div class=" card-img-overlay slider-Img-Overlaye ">
+                                    <h3>
+                                        Learn how to get started on DreamCrowd?
+                                    </h3>
+                                    <p>By joining now, you'll gain access to a plethora of additional benefits and privileges. Unlock a range of new features that can assist you in expanding your professional network and promoting your valuable skills.</p>
+                                </div>
+                            </div> --}}
                         </div>
                     </div>
                 </div>
-                <script src=" https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js ">
-                </script>
-                <script src=" https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js "></script>
-                <!--===================== Slider Section End================== -->
             </div>
-            <!-- Select Section Start Here  -->
-            <form id="myForm" action="/class-gig-data-upload" method="POST" enctype="multipart/form-data"> @csrf
+            <script src=" https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js ">
+            </script>
+            <script src=" https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js "></script>
+            <!--===================== Slider Section End================== -->
+        </div>
+        <!-- Select Section Start Here  -->
+        <form id="myForm" action="/class-gig-data-upload" method="POST" enctype="multipart/form-data"> @csrf
             <div class=" row mx-1 ">
                 <div class=" col-md-12 ">
                     <div class=" row mainSelect ">
@@ -254,238 +256,269 @@ button#multiSelectDropdown3:hover {
                                 <select name="category" id="category" class="fa">
                                     <option value="" class="fa">--Select Category--</option>
                                     @if ($categories)
-                                    @php $i = 0; @endphp
-                                    @foreach ($categories as $item)
-                                    <option value="{{$categoryIds[$i]}}" class="fa">{{$item}}</option>
-                                    @php $i++; @endphp
-                                    @endforeach
-                                        
+                                        @php $i = 0; @endphp
+                                        @foreach ($categories as $item)
+                                            <option value="{{$categoryIds[$i]}}" class="fa">{{$item}}</option>
+                                            @php $i++; @endphp
+                                        @endforeach
+
                                     @endif
-                                    
-                                 </select>
-                            </div>
-                            </div>
 
-                            <div class=" col-md-6 col-sm-12 ">
+                                </select>
+                            </div>
+                        </div>
 
-                              <h3 class=" Select-Heading ">Class sub-category </h3>
-                                <input type="hidden" name="sub_category" id="sub_category">
-                                <p class="text-danger" id="sub_freelance_error" style="display: none;"></p>
-                                  <div class="dropdown">
-                                  <button
+                        <div class=" col-md-6 col-sm-12 ">
+
+                            <h3 class=" Select-Heading ">Class sub-category </h3>
+                            <input type="hidden" name="sub_category" id="sub_category">
+                            <p class="text-danger" id="sub_freelance_error" style="display: none;"></p>
+                            <div class="dropdown">
+                                <button
                                     class="btn dropdown-toggle form-select"
                                     type="button"
                                     id="multiSelectDropdown3"
                                     data-bs-toggle="dropdown"
                                     aria-expanded="false" onclick="SelectFreelanceCategorySub()"
                                     style="text-align: left; overflow: hidden; background: #f4fbff;   height: 48px;"
-                                  >--select sub-category--</button>
-                                  <ul style="max-height: 200px; overflow-y: auto;"
+                                >--select sub-category--
+                                </button>
+                                <ul style="max-height: 200px; overflow-y: auto;"
                                     class="dropdown-menu multi-drop-select mt-2"
                                     aria-labelledby="multiSelectDropdown3"
-                                  >
-                                  <div class="row" id="SubCategories">
-                                      
+                                >
+                                    <div class="row" id="SubCategories">
+
                                         {{-- <div class="col-md-6">
                                           <li class="multi-text-li">
                                             <label> <input type="checkbox"  value="Website Development (Online)"  class="cat-input" />  Website Development </label>
                                           </li>
                                         </div> --}}
-                                    
-                                   
-    
-                                    {{-- <div class="col-md-3">
-                                      <li class="multi-text-li">
-                                        <label>
-                                          <input
-                                            type="checkbox"
-                                            value="Website Development"
-                                            class="subcat1-input"
-                                          />
-                                          Website Development
-                                        </label>
-                                      </li>
-                                    </div> --}}
-    
-                                  </div>
-                                  </ul>
-                                </div>
-                                </div>
 
 
 
+                                        {{-- <div class="col-md-3">
+                                          <li class="multi-text-li">
+                                            <label>
+                                              <input
+                                                type="checkbox"
+                                                value="Website Development"
+                                                class="subcat1-input"
+                                              />
+                                              Website Development
+                                            </label>
+                                          </li>
+                                        </div> --}}
+
+                                    </div>
+                                </ul>
+                            </div>
+                        </div>
 
 
-                            @if ($type == 'Online')
+                        @if ($type == 'Online')
                             <div class=" col-md-6 col-sm-12 ">
-                            <h3 class=" Select-Heading mt-2 ">Class type <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
-                              <path d="M8 1.5C6.71442 1.5 5.45772 1.88122 4.3888 2.59545C3.31988 3.30968 2.48676 4.32484 1.99479 5.51256C1.50282 6.70028 1.37409 8.00721 1.6249 9.26809C1.8757 10.529 2.49477 11.6872 3.40381 12.5962C4.31285 13.5052 5.47104 14.1243 6.73192 14.3751C7.99279 14.6259 9.29973 14.4972 10.4874 14.0052C11.6752 13.5132 12.6903 12.6801 13.4046 11.6112C14.1188 10.5423 14.5 9.28558 14.5 8C14.4982 6.27665 13.8128 4.62441 12.5942 3.40582C11.3756 2.18722 9.72335 1.50182 8 1.5ZM8 13.5C6.91221 13.5 5.84884 13.1774 4.94437 12.5731C4.0399 11.9687 3.33495 11.1098 2.91867 10.1048C2.50238 9.09977 2.39347 7.9939 2.60568 6.927C2.8179 5.86011 3.34173 4.8801 4.11092 4.11091C4.8801 3.34172 5.86011 2.8179 6.92701 2.60568C7.9939 2.39346 9.09977 2.50238 10.1048 2.91866C11.1098 3.33494 11.9687 4.03989 12.5731 4.94436C13.1774 5.84883 13.5 6.9122 13.5 8C13.4983 9.45818 12.9184 10.8562 11.8873 11.8873C10.8562 12.9184 9.45819 13.4983 8 13.5ZM9 11C9 11.1326 8.94732 11.2598 8.85356 11.3536C8.75979 11.4473 8.63261 11.5 8.5 11.5C8.23479 11.5 7.98043 11.3946 7.7929 11.2071C7.60536 11.0196 7.5 10.7652 7.5 10.5V8C7.36739 8 7.24022 7.94732 7.14645 7.85355C7.05268 7.75979 7 7.63261 7 7.5C7 7.36739 7.05268 7.24021 7.14645 7.14645C7.24022 7.05268 7.36739 7 7.5 7C7.76522 7 8.01957 7.10536 8.20711 7.29289C8.39465 7.48043 8.5 7.73478 8.5 8V10.5C8.63261 10.5 8.75979 10.5527 8.85356 10.6464C8.94732 10.7402 9 10.8674 9 11ZM7 5.25C7 5.10166 7.04399 4.95666 7.1264 4.83332C7.20881 4.70999 7.32595 4.61386 7.46299 4.55709C7.60003 4.50032 7.75083 4.48547 7.89632 4.51441C8.04181 4.54335 8.17544 4.61478 8.28033 4.71967C8.38522 4.82456 8.45665 4.9582 8.48559 5.10368C8.51453 5.24917 8.49968 5.39997 8.44291 5.53701C8.38615 5.67406 8.29002 5.79119 8.16668 5.8736C8.04334 5.95601 7.89834 6 7.75 6C7.55109 6 7.36032 5.92098 7.21967 5.78033C7.07902 5.63968 7 5.44891 7 5.25Z" fill="#0072B1"/>
-                            </svg></h3>
-                          <div class=" select-box ">
-                              <select name="class_type" id="class_type" class=" fa ">
-                                         
-                                     
-                                          <option value="Live" class=" fa ">Live</option>
-                                          <option value="Video" class=" fa ">Video Course</option>
-                                        </select>
-                          </div>
-                          </div>
-                            @endif
-                            
-
-                            <div class=" col-md-6 col-sm-12 " id="lesson_type_main_div">
-                              <h3 class=" Select-Heading mt-2 ">Class type lesson </h3>
-                              <div class=" select-box ">
-                                  <select name="lesson_type" id="lesson_type" class=" fa "> 
-                                              <option value="One" class=" fa ">1-to-1 Lesson</option>
-                                              <option value="Group" class=" fa ">Group Lesson</option> 
-                                          </select>
-                              </div>
-                          </div>
-
-                           
-                      
-                           
+                                <h3 class=" Select-Heading mt-2 ">Class type
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"
+                                         fill="none">
+                                        <path
+                                            d="M8 1.5C6.71442 1.5 5.45772 1.88122 4.3888 2.59545C3.31988 3.30968 2.48676 4.32484 1.99479 5.51256C1.50282 6.70028 1.37409 8.00721 1.6249 9.26809C1.8757 10.529 2.49477 11.6872 3.40381 12.5962C4.31285 13.5052 5.47104 14.1243 6.73192 14.3751C7.99279 14.6259 9.29973 14.4972 10.4874 14.0052C11.6752 13.5132 12.6903 12.6801 13.4046 11.6112C14.1188 10.5423 14.5 9.28558 14.5 8C14.4982 6.27665 13.8128 4.62441 12.5942 3.40582C11.3756 2.18722 9.72335 1.50182 8 1.5ZM8 13.5C6.91221 13.5 5.84884 13.1774 4.94437 12.5731C4.0399 11.9687 3.33495 11.1098 2.91867 10.1048C2.50238 9.09977 2.39347 7.9939 2.60568 6.927C2.8179 5.86011 3.34173 4.8801 4.11092 4.11091C4.8801 3.34172 5.86011 2.8179 6.92701 2.60568C7.9939 2.39346 9.09977 2.50238 10.1048 2.91866C11.1098 3.33494 11.9687 4.03989 12.5731 4.94436C13.1774 5.84883 13.5 6.9122 13.5 8C13.4983 9.45818 12.9184 10.8562 11.8873 11.8873C10.8562 12.9184 9.45819 13.4983 8 13.5ZM9 11C9 11.1326 8.94732 11.2598 8.85356 11.3536C8.75979 11.4473 8.63261 11.5 8.5 11.5C8.23479 11.5 7.98043 11.3946 7.7929 11.2071C7.60536 11.0196 7.5 10.7652 7.5 10.5V8C7.36739 8 7.24022 7.94732 7.14645 7.85355C7.05268 7.75979 7 7.63261 7 7.5C7 7.36739 7.05268 7.24021 7.14645 7.14645C7.24022 7.05268 7.36739 7 7.5 7C7.76522 7 8.01957 7.10536 8.20711 7.29289C8.39465 7.48043 8.5 7.73478 8.5 8V10.5C8.63261 10.5 8.75979 10.5527 8.85356 10.6464C8.94732 10.7402 9 10.8674 9 11ZM7 5.25C7 5.10166 7.04399 4.95666 7.1264 4.83332C7.20881 4.70999 7.32595 4.61386 7.46299 4.55709C7.60003 4.50032 7.75083 4.48547 7.89632 4.51441C8.04181 4.54335 8.17544 4.61478 8.28033 4.71967C8.38522 4.82456 8.45665 4.9582 8.48559 5.10368C8.51453 5.24917 8.49968 5.39997 8.44291 5.53701C8.38615 5.67406 8.29002 5.79119 8.16668 5.8736C8.04334 5.95601 7.89834 6 7.75 6C7.55109 6 7.36032 5.92098 7.21967 5.78033C7.07902 5.63968 7 5.44891 7 5.25Z"
+                                            fill="#0072B1"/>
+                                    </svg>
+                                </h3>
+                                <div class=" select-box ">
+                                    <select name="class_type" id="class_type" class=" fa ">
 
 
- 
+                                        <option value="Live" class=" fa ">Live</option>
+                                        <option value="Video" class=" fa ">Video Course</option>
+                                    </select>
+                                </div>
+                            </div>
+                        @endif
 
-                        
 
-                      <div class="col-md-6 col-sm-12">
-                        <h3 class=" Select-Heading mt-2 ">Payment Type</h3>
-                        <div class=" select-box ">
-                          <select name="payment_type" id="payment_type" class="fa">
-                            <option value="OneOff" class="fa">   One-Of Payment </option>
-                            <option value="Subscription" class="fa">Subscription</option>
-                          </select>
-                        </div>
-                      </div>
-
- 
-                      
-                      @if ($type == 'Online')
-                      <div class="col-md-6 col-sm-12 " id="recurring_type_main">
-                        <h3 class=" Select-Heading mt-2 ">One-Day Class or Recurring</h3>
-                        <div class=" select-box ">
-                          <select name="recurring_type" id="recurring_type" class="fa">
-                            <option value="OneDay" class="fa">One-Day Class</option>
-                            <option value="Recurring" class="fa">Recurring</option>
-                          </select>
-                        </div>
+                        <div class=" col-md-6 col-sm-12 " id="lesson_type_main_div">
+                            <h3 class=" Select-Heading mt-2 ">Class type lesson </h3>
+                            <div class=" select-box ">
+                                <select name="lesson_type" id="lesson_type" class=" fa ">
+                                    <option value="One" class=" fa ">1-to-1 Lesson</option>
+                                    <option value="Group" class=" fa ">Group Lesson</option>
+                                </select>
+                            </div>
                         </div>
 
-
-                      <div class="col-md-6 col-sm-12 " id="group_type_main" style="display: none">
-                        <h3 class=" Select-Heading mt-2 ">Group Type</h3>
-                        <div class=" select-box ">
-                          <select name="group_type" id="group_type" class="fa">
-                            <option value="Public" class="fa">Public Group</option>
-                            <option value="Private" class="fa">Private Group</option>
-                            <option value="Both" class="fa">Both</option>
-                          </select>
-                        </div>
-                        </div>
-                      @endif
-                      
-
-                      @if ($type == 'Inperson')
-                          
-                      <div class="col-md-6 col-sm-12 " id="service_delivery_main"  >
-                        <h3 class=" Select-Heading mt-2 ">Service Delivery Options</h3>
-                        <div class=" select-box ">
-                          <select name="service_delivery" id="service_delivery" class="fa">
-                            <option value="0" class="fa">I will visit clients sites to offer this service</option>
-                            <option value="1" class="fa">This service would be offered at my work site  </option>
-                            <option value="2" class="fa">Both Delivery Options </option>
-                          </select>
-                        </div>
+                        <div class="col-md-6 col-sm-12" id="meeting_platform_main" style="display: none;">
+                            <h3 class="Select-Heading mt-2">
+                                Meeting Platform
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"
+                                     fill="none">
+                                    <path
+                                        d="M8 1.5C6.71442 1.5 5.45772 1.88122 4.3888 2.59545C3.31988 3.30968 2.48676 4.32484 1.99479 5.51256C1.50282 6.70028 1.37409 8.00721 1.6249 9.26809C1.8757 10.529 2.49477 11.6872 3.40381 12.5962C4.31285 13.5052 5.47104 14.1243 6.73192 14.3751C7.99279 14.6259 9.29973 14.4972 10.4874 14.0052C11.6752 13.5132 12.6903 12.6801 13.4046 11.6112C14.1188 10.5423 14.5 9.28558 14.5 8C14.4982 6.27665 13.8128 4.62441 12.5942 3.40582C11.3756 2.18722 9.72335 1.50182 8 1.5ZM8 13.5C6.91221 13.5 5.84884 13.1774 4.94437 12.5731C4.0399 11.9687 3.33495 11.1098 2.91867 10.1048C2.50238 9.09977 2.39347 7.9939 2.60568 6.927C2.8179 5.86011 3.34173 4.8801 4.11092 4.11091C4.8801 3.34172 5.86011 2.8179 6.92701 2.60568C7.9939 2.39346 9.09977 2.50238 10.1048 2.91866C11.1098 3.33494 11.9687 4.03989 12.5731 4.94436C13.1774 5.84883 13.5 6.9122 13.5 8C13.4983 9.45818 12.9184 10.8562 11.8873 11.8873C10.8562 12.9184 9.45819 13.4983 8 13.5ZM9 11C9 11.1326 8.94732 11.2598 8.85356 11.3536C8.75979 11.4473 8.63261 11.5 8.5 11.5C8.23479 11.5 7.98043 11.3946 7.7929 11.2071C7.60536 11.0196 7.5 10.7652 7.5 10.5V8C7.36739 8 7.24022 7.94732 7.14645 7.85355C7.05268 7.75979 7 7.63261 7 7.5C7 7.36739 7.05268 7.24021 7.14645 7.14645C7.24022 7.05268 7.36739 7 7.5 7C7.76522 7 8.01957 7.10536 8.20711 7.29289C8.39465 7.48043 8.5 7.73478 8.5 8V10.5C8.63261 10.5 8.75979 10.5527 8.85356 10.6464C8.94732 10.7402 9 10.8674 9 11ZM7 5.25C7 5.10166 7.04399 4.95666 7.1264 4.83332C7.20881 4.70999 7.32595 4.61386 7.46299 4.55709C7.60003 4.50032 7.75083 4.48547 7.89632 4.51441C8.04181 4.54335 8.17544 4.61478 8.28033 4.71967C8.38522 4.82456 8.45665 4.9582 8.48559 5.10368C8.51453 5.24917 8.49968 5.39997 8.44291 5.53701C8.38615 5.67406 8.29002 5.79119 8.16668 5.8736C8.04334 5.95601 7.89834 6 7.75 6C7.55109 6 7.36032 5.92098 7.21967 5.78033C7.07902 5.63968 7 5.44891 7 5.25Z"
+                                        fill="#0072B1"/>
+                                </svg>
+                            </h3>
+                            <div class="select-box">
+                                <select name="meeting_platform" id="meeting_platform" class="fa">
+                                    <option value="" class="fa">--Select Platform--</option>
+                                    <option value="Zoom" class="fa">
+                                        <i class="fab fa-zoom"></i> Zoom
+                                    </option>
+                                    <option value="Google" class="fa">
+                                        <i class="fab fa-google"></i> Google Meet
+                                    </option>
+                                </select>
+                            </div>
                         </div>
 
-                        
-                        
-
-                        <div class=" col-md-6 col-sm-12 " id="max_distance_main">
-                          <h3 class=" Select-Heading mt-2 ">Max. Travel Distance<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
-                            <path d="M8 1.5C6.71442 1.5 5.45772 1.88122 4.3888 2.59545C3.31988 3.30968 2.48676 4.32484 1.99479 5.51256C1.50282 6.70028 1.37409 8.00721 1.6249 9.26809C1.8757 10.529 2.49477 11.6872 3.40381 12.5962C4.31285 13.5052 5.47104 14.1243 6.73192 14.3751C7.99279 14.6259 9.29973 14.4972 10.4874 14.0052C11.6752 13.5132 12.6903 12.6801 13.4046 11.6112C14.1188 10.5423 14.5 9.28558 14.5 8C14.4982 6.27665 13.8128 4.62441 12.5942 3.40582C11.3756 2.18722 9.72335 1.50182 8 1.5ZM8 13.5C6.91221 13.5 5.84884 13.1774 4.94437 12.5731C4.0399 11.9687 3.33495 11.1098 2.91867 10.1048C2.50238 9.09977 2.39347 7.9939 2.60568 6.927C2.8179 5.86011 3.34173 4.8801 4.11092 4.11091C4.8801 3.34172 5.86011 2.8179 6.92701 2.60568C7.9939 2.39346 9.09977 2.50238 10.1048 2.91866C11.1098 3.33494 11.9687 4.03989 12.5731 4.94436C13.1774 5.84883 13.5 6.9122 13.5 8C13.4983 9.45818 12.9184 10.8562 11.8873 11.8873C10.8562 12.9184 9.45819 13.4983 8 13.5ZM9 11C9 11.1326 8.94732 11.2598 8.85356 11.3536C8.75979 11.4473 8.63261 11.5 8.5 11.5C8.23479 11.5 7.98043 11.3946 7.7929 11.2071C7.60536 11.0196 7.5 10.7652 7.5 10.5V8C7.36739 8 7.24022 7.94732 7.14645 7.85355C7.05268 7.75979 7 7.63261 7 7.5C7 7.36739 7.05268 7.24021 7.14645 7.14645C7.24022 7.05268 7.36739 7 7.5 7C7.76522 7 8.01957 7.10536 8.20711 7.29289C8.39465 7.48043 8.5 7.73478 8.5 8V10.5C8.63261 10.5 8.75979 10.5527 8.85356 10.6464C8.94732 10.7402 9 10.8674 9 11ZM7 5.25C7 5.10166 7.04399 4.95666 7.1264 4.83332C7.20881 4.70999 7.32595 4.61386 7.46299 4.55709C7.60003 4.50032 7.75083 4.48547 7.89632 4.51441C8.04181 4.54335 8.17544 4.61478 8.28033 4.71967C8.38522 4.82456 8.45665 4.9582 8.48559 5.10368C8.51453 5.24917 8.49968 5.39997 8.44291 5.53701C8.38615 5.67406 8.29002 5.79119 8.16668 5.8736C8.04334 5.95601 7.89834 6 7.75 6C7.55109 6 7.36032 5.92098 7.21967 5.78033C7.07902 5.63968 7 5.44891 7 5.25Z" fill="#0072B1"/>
-                          </svg></h3> 
-                          {{-- <input class=" Class-Title " id="max_distance" name="max_distance" placeholder="10 Miles" type="number"   style="padding: 14px 20px;">  --}}
-                          <div class=" select-box ">
-                            <select name="max_distance" id="max_distance" class="fa   ">
-                              <option value="1" class="fa">1 Mile</option>
-                              <option value="3" class="fa">3 Miles </option> 
-                              <option value="5" class="fa">5 Miles </option> 
-                              <option value="10" class="fa">10 Miles </option> 
-                              <option value="20" class="fa">20 Miles </option> 
-                              <option value="30" class="fa">30+ Miles </option> 
-                            </select>
-                          </div>
+                        <div class="col-md-6 col-sm-12">
+                            <h3 class=" Select-Heading mt-2 ">Payment Type</h3>
+                            <div class=" select-box ">
+                                <select name="payment_type" id="payment_type" class="fa">
+                                    <option value="OneOff" class="fa"> One-Of Payment</option>
+                                    <option value="Subscription" class="fa">Subscription</option>
+                                </select>
+                            </div>
                         </div>
 
 
-                        <div class="col-md-6 col-sm-12" id="work_site_main" style="display: none;">
-                          <h3 class="Select-Heading mt-2">
-                              Work Site Location
-                              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
-                                  <path d="..." fill="#0072B1" />
-                              </svg>
-                          </h3>
-                          <div style="position: relative;">
-                              <input
-                                  class="Class-Title"
-                                  id="work_site"
-                                  name="work_site"
-                                  placeholder="Work Site Location"
-                                  type="text"   style="padding: 14px 20px;"
-                                  autocomplete="off"
-                              />
-                              <style>
-                                #nearme_dropdown li:hover {
-                                        background-color: var(--Colors-Dashboard-Background, #f4fbff);
-                                        color: var(--Colors-Logo-Color, #0072b1);
-                                        border: 1px solid rgb(210 229 240);
-                                        border-radius: 15px;
-                                        font-size: 15px;
-
-                                    }
-                              </style>
-                              <!-- Dropdown for Near Me -->
-                              <ul id="nearme_dropdown" style="border-radius: 15px;display: none; position: absolute; background: white; border: 1px solid #ccc; width: 80%; z-index: 1000; list-style: none; padding: 0; margin: 0;bottom: -14px;left: 7px;">
-                                  <li
-                                      style="padding: 8px; cursor: pointer; font-size: 14px;"
-                                      id="nearme_option"
-                                  >Near Me</li>
-                              </ul>
-                          </div>
-                      </div>
-                      
-
-                        <div class="col-md-6 col-sm-12 " id="group_type_main" style="display: none">
-                          <h3 class=" Select-Heading mt-2 ">Group Type</h3>
-                          <div class=" select-box ">
-                            <select name="group_type" id="group_type" class="fa">
-                               <option value="Private" class="fa">Private Group</option>
-                              </select>
-                          </div>
-                          </div>
-
-                      @endif
+                        @if ($type == 'Online')
+                            <div class="col-md-6 col-sm-12 " id="recurring_type_main">
+                                <h3 class=" Select-Heading mt-2 ">One-Day Class or Recurring</h3>
+                                <div class=" select-box ">
+                                    <select name="recurring_type" id="recurring_type" class="fa">
+                                        <option value="OneDay" class="fa">One-Day Class</option>
+                                        <option value="Recurring" class="fa">Recurring</option>
+                                        <option value="Trial" class="fa">Trial Class</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6 col-sm-12" id="trial_type_main" style="display: none;">
+                                <h3 class="Select-Heading mt-2">Trial Class Type</h3>
+                                <div class="select-box">
+                                    <select name="trial_type" id="trial_type" class="fa">
+                                        <option value="Free" class="fa">Free Trial (30 min)</option>
+                                        <option value="Paid" class="fa">Paid Trial (Flexible)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6 col-sm-12 " id="group_type_main" style="display: none">
+                                <h3 class=" Select-Heading mt-2 ">Group Type</h3>
+                                <div class=" select-box ">
+                                    <select name="group_type" id="group_type" class="fa">
+                                        <option value="Public" class="fa">Public Group</option>
+                                        <option value="Private" class="fa">Private Group</option>
+                                        <option value="Both" class="fa">Both</option>
+                                    </select>
+                                </div>
+                            </div>
+                        @endif
 
 
-                      
-                             <div class="col-md-6 col-sm-12 " id="experience_level_main"  >
-                        <h3 class=" Select-Heading mt-2 ">Experience Level </h3>
-                        <div class=" select-box ">
-                          <select name="experience_level" id="experience_level" class="fa">
-                            <option value="Beginner" class="fa">Beginner Level</option>
-                            <option value="Intermediate" class="fa">Intermediate Level </option>
-                            <option value="Expert" class="fa">Expert Level </option>
-                            <option value="All" class="fa">All Levels </option>
-                          </select>
+                        @if ($type == 'Inperson')
+
+                            <div class="col-md-6 col-sm-12 " id="service_delivery_main">
+                                <h3 class=" Select-Heading mt-2 ">Service Delivery Options</h3>
+                                <div class=" select-box ">
+                                    <select name="service_delivery" id="service_delivery" class="fa">
+                                        <option value="0" class="fa">I will visit clients sites to offer this service
+                                        </option>
+                                        <option value="1" class="fa">This service would be offered at my work site
+                                        </option>
+                                        <option value="2" class="fa">Both Delivery Options</option>
+                                    </select>
+                                </div>
+                            </div>
+
+
+
+
+                            <div class=" col-md-6 col-sm-12 " id="max_distance_main">
+                                <h3 class=" Select-Heading mt-2 ">Max. Travel Distance
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"
+                                         fill="none">
+                                        <path
+                                            d="M8 1.5C6.71442 1.5 5.45772 1.88122 4.3888 2.59545C3.31988 3.30968 2.48676 4.32484 1.99479 5.51256C1.50282 6.70028 1.37409 8.00721 1.6249 9.26809C1.8757 10.529 2.49477 11.6872 3.40381 12.5962C4.31285 13.5052 5.47104 14.1243 6.73192 14.3751C7.99279 14.6259 9.29973 14.4972 10.4874 14.0052C11.6752 13.5132 12.6903 12.6801 13.4046 11.6112C14.1188 10.5423 14.5 9.28558 14.5 8C14.4982 6.27665 13.8128 4.62441 12.5942 3.40582C11.3756 2.18722 9.72335 1.50182 8 1.5ZM8 13.5C6.91221 13.5 5.84884 13.1774 4.94437 12.5731C4.0399 11.9687 3.33495 11.1098 2.91867 10.1048C2.50238 9.09977 2.39347 7.9939 2.60568 6.927C2.8179 5.86011 3.34173 4.8801 4.11092 4.11091C4.8801 3.34172 5.86011 2.8179 6.92701 2.60568C7.9939 2.39346 9.09977 2.50238 10.1048 2.91866C11.1098 3.33494 11.9687 4.03989 12.5731 4.94436C13.1774 5.84883 13.5 6.9122 13.5 8C13.4983 9.45818 12.9184 10.8562 11.8873 11.8873C10.8562 12.9184 9.45819 13.4983 8 13.5ZM9 11C9 11.1326 8.94732 11.2598 8.85356 11.3536C8.75979 11.4473 8.63261 11.5 8.5 11.5C8.23479 11.5 7.98043 11.3946 7.7929 11.2071C7.60536 11.0196 7.5 10.7652 7.5 10.5V8C7.36739 8 7.24022 7.94732 7.14645 7.85355C7.05268 7.75979 7 7.63261 7 7.5C7 7.36739 7.05268 7.24021 7.14645 7.14645C7.24022 7.05268 7.36739 7 7.5 7C7.76522 7 8.01957 7.10536 8.20711 7.29289C8.39465 7.48043 8.5 7.73478 8.5 8V10.5C8.63261 10.5 8.75979 10.5527 8.85356 10.6464C8.94732 10.7402 9 10.8674 9 11ZM7 5.25C7 5.10166 7.04399 4.95666 7.1264 4.83332C7.20881 4.70999 7.32595 4.61386 7.46299 4.55709C7.60003 4.50032 7.75083 4.48547 7.89632 4.51441C8.04181 4.54335 8.17544 4.61478 8.28033 4.71967C8.38522 4.82456 8.45665 4.9582 8.48559 5.10368C8.51453 5.24917 8.49968 5.39997 8.44291 5.53701C8.38615 5.67406 8.29002 5.79119 8.16668 5.8736C8.04334 5.95601 7.89834 6 7.75 6C7.55109 6 7.36032 5.92098 7.21967 5.78033C7.07902 5.63968 7 5.44891 7 5.25Z"
+                                            fill="#0072B1"/>
+                                    </svg>
+                                </h3>
+                                {{-- <input class=" Class-Title " id="max_distance" name="max_distance" placeholder="10 Miles" type="number"   style="padding: 14px 20px;">  --}}
+                                <div class=" select-box ">
+                                    <select name="max_distance" id="max_distance" class="fa   ">
+                                        <option value="1" class="fa">1 Mile</option>
+                                        <option value="3" class="fa">3 Miles</option>
+                                        <option value="5" class="fa">5 Miles</option>
+                                        <option value="10" class="fa">10 Miles</option>
+                                        <option value="20" class="fa">20 Miles</option>
+                                        <option value="30" class="fa">30+ Miles</option>
+                                    </select>
+                                </div>
+                            </div>
+
+
+                            <div class="col-md-6 col-sm-12" id="work_site_main" style="display: none;">
+                                <h3 class="Select-Heading mt-2">
+                                    Work Site Location
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"
+                                         fill="none">
+                                        <path d="..." fill="#0072B1"/>
+                                    </svg>
+                                </h3>
+                                <div style="position: relative;">
+                                    <input
+                                        class="Class-Title"
+                                        id="work_site"
+                                        name="work_site"
+                                        placeholder="Work Site Location"
+                                        type="text" style="padding: 14px 20px;"
+                                        autocomplete="off"
+                                    />
+                                    <style>
+                                        #nearme_dropdown li:hover {
+                                            background-color: var(--Colors-Dashboard-Background, #f4fbff);
+                                            color: var(--Colors-Logo-Color, #0072b1);
+                                            border: 1px solid rgb(210 229 240);
+                                            border-radius: 15px;
+                                            font-size: 15px;
+
+                                        }
+                                    </style>
+                                    <!-- Dropdown for Near Me -->
+                                    <ul id="nearme_dropdown"
+                                        style="border-radius: 15px;display: none; position: absolute; background: white; border: 1px solid #ccc; width: 80%; z-index: 1000; list-style: none; padding: 0; margin: 0;bottom: -14px;left: 7px;">
+                                        <li
+                                            style="padding: 8px; cursor: pointer; font-size: 14px;"
+                                            id="nearme_option"
+                                        >Near Me
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+
+
+                            <div class="col-md-6 col-sm-12 " id="group_type_main" style="display: none">
+                                <h3 class=" Select-Heading mt-2 ">Group Type</h3>
+                                <div class=" select-box ">
+                                    <select name="group_type" id="group_type" class="fa">
+                                        <option value="Private" class="fa">Private Group</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                        @endif
+
+
+                        <div class="col-md-6 col-sm-12 " id="experience_level_main">
+                            <h3 class=" Select-Heading mt-2 ">Experience Level </h3>
+                            <div class=" select-box ">
+                                <select name="experience_level" id="experience_level" class="fa">
+                                    <option value="Beginner" class="fa">Beginner Level</option>
+                                    <option value="Intermediate" class="fa">Intermediate Level</option>
+                                    <option value="Expert" class="fa">Expert Level</option>
+                                    <option value="All" class="fa">All Levels</option>
+                                </select>
+                            </div>
                         </div>
-                        </div>
-
-
 
 
                     </div>
@@ -497,50 +530,53 @@ button#multiSelectDropdown3:hover {
                         <h3 class=" Select-Heading ">Title</h3>
                         <input class=" Class-Title " id="title" name="title" placeholder="Class Title " type=" text ">
                         <h3 class=" Select-Heading ">Description</h3>
-                        <textarea   id="description" name="description" rows=" 4 " cols=" 50 "></textarea>
+                        <textarea id="description" name="description" rows=" 4 " cols=" 50 "></textarea>
                         <h3 class=" Select-Heading ">Requirements</h3>
-                        <textarea   id="requirements" name="requirements" rows=" 4 " cols=" 50 "></textarea>
+                        <textarea id="requirements" name="requirements" rows=" 4 " cols=" 50 "></textarea>
                         <h3 class=" Select-Heading ">Upload a video or image to support the title/description</h3>
                         <!-- upload Section start -->
                         <div class="row">
                             <div class="col-md-12 identity" id="upload-image1" style="margin-bottom: 10px;">
                                 <div class="input-file-wrapper transition-linear-3 position-relative">
                                   <span
-                                    class="remove-img-btn position-absolute"
-                                    style="cursor: pointer;background: #ed5646;color: white !important;border-radius: 5px;z-index: 10;padding: 4px 8px !important;"
-                                    @click="reset('post-thumbnail1')"
-                                    v-if="preview!==null"
+                                      class="remove-img-btn position-absolute"
+                                      style="cursor: pointer;background: #ed5646;color: white !important;border-radius: 5px;z-index: 10;padding: 4px 8px !important;"
+                                      @click="reset('post-thumbnail1')"
+                                      v-if="preview!==null"
                                   >
                                     Remove
                                   </span>
-                                  <label
-                                    class="input-style input-label lh-1-7 p-4 text-center cursor-pointer"
-                                    for="post-thumbnail1" style="background: #f4fbff;border-radius: 4px;cursor: pointer; width: 100%;"
-                                  >
+                                    <label
+                                        class="input-style input-label lh-1-7 p-4 text-center cursor-pointer"
+                                        for="post-thumbnail1"
+                                        style="background: #f4fbff;border-radius: 4px;cursor: pointer; width: 100%;"
+                                    >
                                     <span v-show="preview===null">
-                                      <i class="fa-solid fa-cloud-arrow-up pt-3" style="color: #ababab; font-size: 40px; margin-bottom: 10px;"></i>
+                                      <i class="fa-solid fa-cloud-arrow-up pt-3"
+                                         style="color: #ababab; font-size: 40px; margin-bottom: 10px;"></i>
                                       <span class="d-block" style="color: #0072b1;margin-bottom: 10px;">Upload Main Image or Video</span>
                                       <p>Drag and drop files here</p>
                                     </span>
-                                    <template v-if="preview" style="height: 250px; width:100%">
-                                      <template v-if="isImage">
-                                        <img :src="preview" class="img-fluid mt-2" style="height: 180px;" />
-                                      </template>
-                                      <template v-if="!isImage">
-                                        <video :src="preview" class="img-fluid mt-2" style="height: 240px; width: 100%;" controls></video>
-                                      </template>
-                                    </template>
-                                  </label>
-                                  <input
-                                    type="file" name="main_file"
-                                    accept="image/*,video/*" value=""
-                                    @change="previewImage('post-thumbnail1')"
-                                    class="input-file"
-                                    id="post-thumbnail1"
-                                  />
+                                        <template v-if="preview" style="height: 250px; width:100%">
+                                            <template v-if="isImage">
+                                                <img :src="preview" class="img-fluid mt-2" style="height: 180px;"/>
+                                            </template>
+                                            <template v-if="!isImage">
+                                                <video :src="preview" class="img-fluid mt-2"
+                                                       style="height: 240px; width: 100%;" controls></video>
+                                            </template>
+                                        </template>
+                                    </label>
+                                    <input
+                                        type="file" name="main_file"
+                                        accept="image/*,video/*" value=""
+                                        @change="previewImage('post-thumbnail1')"
+                                        class="input-file"
+                                        id="post-thumbnail1"
+                                    />
                                 </div>
-                              </div>
-                              
+                            </div>
+
                         </div>
                         <!-- Upload Section End -->
                         <h3 class=" Select-Heading ">Add other photos (optional)</h3>
@@ -548,48 +584,53 @@ button#multiSelectDropdown3:hover {
                         <div class="row">
                             <div class="col-md-12 identity" id="upload-image3" style="margin-bottom: 10px;">
                                 <div class="input-file-wrapper transition-linear-3 position-relative">
-                                  <label
-                                    class="input-style input-label lh-1-7 p-4 text-center cursor-pointer"
-                                    for="post-thumbnail3" style="background: #f4fbff;border-radius: 4px;cursor: pointer; width: 100%;"
-                                  >
-                                    <span  >
-                                      <i class="fa-solid fa-cloud-arrow-up pt-3" style="color: #ababab; font-size: 40px; margin-bottom: 10px;"></i>
-                                      <span class="d-block" style="color: #0072b1;margin-bottom: 10px;">Upload Image</span>
+                                    <label
+                                        class="input-style input-label lh-1-7 p-4 text-center cursor-pointer"
+                                        for="post-thumbnail3"
+                                        style="background: #f4fbff;border-radius: 4px;cursor: pointer; width: 100%;"
+                                    >
+                                    <span>
+                                      <i class="fa-solid fa-cloud-arrow-up pt-3"
+                                         style="color: #ababab; font-size: 40px; margin-bottom: 10px;"></i>
+                                      <span class="d-block"
+                                            style="color: #0072b1;margin-bottom: 10px;">Upload Image</span>
                                       <p>Drag and drop files here</p>
                                     </span>
-                                  </label>
-                                  <input
-                                    type="file" name="other[]"
-                                    accept="image/*" value=""
-                                    @change="previewImages('post-thumbnail3')"
-                                    class="input-file"
-                                    id="post-thumbnail3" multiple 
-                                  />
+                                    </label>
+                                    <input
+                                        type="file" name="other[]"
+                                        accept="image/*" value=""
+                                        @change="previewImages('post-thumbnail3')"
+                                        class="input-file"
+                                        id="post-thumbnail3" multiple
+                                    />
                                 </div>
-                              
+
                                 <!-- Display the selected images or videos here -->
                                 <div id="selected_more_image_show_div" v-if="images.length > 0">
-                                  <div v-for="(image, index) in images" :key="index" class="selected-image">
-                                    <template v-if="image.type === 'image'">
-                                      <img :src="image.src" class="img-fluid" style="height: 180px;" />
-                                    </template>
-                                    <template v-if="image.type === 'video'">
-                                      <video :src="image.src" class="img-fluid" style="height: 180px;" controls></video>
-                                    </template>
-                                    <span
-                                      class="remove-img-btn position-absolute"
-                                      style="cursor: pointer;background: #ed5646;color: white !important;border-radius: 5px;z-index: 10;padding: 4px 8px !important;"
-                                      @click="removeImage(index)"
-                                    >
+                                    <div v-for="(image, index) in images" :key="index" class="selected-image">
+                                        <template v-if="image.type === 'image'">
+                                            <img :src="image.src" class="img-fluid" style="height: 180px;"/>
+                                        </template>
+                                        <template v-if="image.type === 'video'">
+                                            <video :src="image.src" class="img-fluid" style="height: 180px;"
+                                                   controls></video>
+                                        </template>
+                                        <span
+                                            class="remove-img-btn position-absolute"
+                                            style="cursor: pointer;background: #ed5646;color: white !important;border-radius: 5px;z-index: 10;padding: 4px 8px !important;"
+                                            @click="removeImage(index)"
+                                        >
                                       Remove
                                     </span>
-                                  </div>
+                                    </div>
                                 </div>
-                              
+
                                 <!-- Hidden input to store the selected images or videos -->
-                                <input type="hidden" name="other_input" id="selected_more_images" v-model="imageInputValue" />
-                              </div>
-                              
+                                <input type="hidden" name="other_input" id="selected_more_images"
+                                       v-model="imageInputValue"/>
+                            </div>
+
                         </div>
                         <!-- Upload Section End -->
                         <h3 class=" Select-Heading ">Add a video (optional)</h3>
@@ -598,156 +639,173 @@ button#multiSelectDropdown3:hover {
                             <div class="col-md-12 identity" id="upload-image2" style="margin-bottom: 10px;">
                                 <div class="input-file-wrapper transition-linear-3 position-relative">
                                   <span
-                                    class="remove-img-btn position-absolute"
-                                    style="cursor: pointer;background: #ed5646;color: white !important;border-radius: 5px;z-index: 10;padding: 4px 8px !important;"
-                                    @click="reset('post-thumbnail2')"
-                                    v-if="preview!==null"
+                                      class="remove-img-btn position-absolute"
+                                      style="cursor: pointer;background: #ed5646;color: white !important;border-radius: 5px;z-index: 10;padding: 4px 8px !important;"
+                                      @click="reset('post-thumbnail2')"
+                                      v-if="preview!==null"
                                   >
                                     Remove
                                   </span>
-                                  <label
-                                    class="input-style input-label lh-1-7 p-4 text-center cursor-pointer"
-                                    for="post-thumbnail2" style="background: #f4fbff;border-radius: 4px;cursor: pointer; width: 100%;"
-                                  >
+                                    <label
+                                        class="input-style input-label lh-1-7 p-4 text-center cursor-pointer"
+                                        for="post-thumbnail2"
+                                        style="background: #f4fbff;border-radius: 4px;cursor: pointer; width: 100%;"
+                                    >
                                     <span v-show="preview===null">
-                                      <i class="fa-solid fa-cloud-arrow-up pt-3" style="color: #ababab; font-size: 40px; margin-bottom: 10px;"></i>
-                                      <span class="d-block" style="color: #0072b1;margin-bottom: 10px;">Upload Video</span>
+                                      <i class="fa-solid fa-cloud-arrow-up pt-3"
+                                         style="color: #ababab; font-size: 40px; margin-bottom: 10px;"></i>
+                                      <span class="d-block"
+                                            style="color: #0072b1;margin-bottom: 10px;">Upload Video</span>
                                       <p>Drag and drop files here</p>
                                     </span>
-                                    <template v-if="preview" style="height: 250px; width:100%">
-                                      <template v-if="isImage">
-                                        <img :src="preview" class="img-fluid mt-2" style="height: 180px;" />
-                                      </template>
-                                      <template v-if="!isImage">
-                                        <video :src="preview" class="img-fluid mt-2" style="height: 240px; width: 100%;" controls></video>
-                                      </template>
-                                    </template>
-                                  </label>
-                                  <input
-                                    type="file" name="video"
-                                    accept="video/*" value=""
-                                    @change="previewImage('post-thumbnail2')"
-                                    class="input-file"
-                                    id="post-thumbnail2"
-                                  />
+                                        <template v-if="preview" style="height: 250px; width:100%">
+                                            <template v-if="isImage">
+                                                <img :src="preview" class="img-fluid mt-2" style="height: 180px;"/>
+                                            </template>
+                                            <template v-if="!isImage">
+                                                <video :src="preview" class="img-fluid mt-2"
+                                                       style="height: 240px; width: 100%;" controls></video>
+                                            </template>
+                                        </template>
+                                    </label>
+                                    <input
+                                        type="file" name="video"
+                                        accept="video/*" value=""
+                                        @change="previewImage('post-thumbnail2')"
+                                        class="input-file"
+                                        id="post-thumbnail2"
+                                    />
                                 </div>
-                              </div>
+                            </div>
                         </div>
                         <!-- Upload Section End -->
 
                         <div id="resources_course" style="display: none;">
 
-                           <!-- Upload Section End -->
-                        <h3 class=" Select-Heading ">Upload Course</h3>
-                        <!-- upload Section start -->
-                        <div class="row">
-                          <div class="col-md-12 identity" id="upload-image4" style="margin-bottom: 10px;">
-                            <div class="input-file-wrapper transition-linear-3 position-relative">
-                              <label class="input-style input-label lh-1-7 p-4 text-center cursor-pointer" for="post-thumbnail4"
-                                     style="background: #f4fbff; border-radius: 4px; cursor: pointer; width: 100%;">
+                            <!-- Upload Section End -->
+                            <h3 class=" Select-Heading ">Upload Course</h3>
+                            <!-- upload Section start -->
+                            <div class="row">
+                                <div class="col-md-12 identity" id="upload-image4" style="margin-bottom: 10px;">
+                                    <div class="input-file-wrapper transition-linear-3 position-relative">
+                                        <label class="input-style input-label lh-1-7 p-4 text-center cursor-pointer"
+                                               for="post-thumbnail4"
+                                               style="background: #f4fbff; border-radius: 4px; cursor: pointer; width: 100%;">
                                 <span>
-                                  <i class="fa-solid fa-cloud-arrow-up pt-3" style="color: #ababab; font-size: 40px; margin-bottom: 10px;"></i>
+                                  <i class="fa-solid fa-cloud-arrow-up pt-3"
+                                     style="color: #ababab; font-size: 40px; margin-bottom: 10px;"></i>
                                   <span class="d-block" style="color: #0072b1; margin-bottom: 10px;">Upload Video</span>
                                   <p>Drag and drop videos here</p>
                                 </span>
-                              </label>
-                              <input type="file" name="course[]" accept="video/*" @change="previewVideos('post-thumbnail4')"
-                                     class="input-file" id="post-thumbnail4" multiple />
-                            </div>
-                          
-                            <!-- Display the selected videos here -->
-                            <div id="selected_more_image_show_div " class="row" style="display: flex;" v-if="videos.length > 0">
-                              <div v-for="(video, index) in videos" :key="index" class="selected-video position-relative col-md-4" style="margin-bottom: 20px;">
-                                <!-- Show video preview if uploaded -->
-                                <video v-if="video.uploaded" :src="`/assets/teacher/listing/data_{{ Auth::user()->id }}/course/${video.serverName}`"
-                                       class="img-fluid mt-2" style="height: 180px; width: 300px;" controls></video>
-                           
-                                <!-- Show uploading status if not uploaded -->
-                                <div v-else>
-                                  <span>@{{ video.name }} (uploading... @{{ video.progress }}%)</span>
-                                </div>
-                          
-                                <!-- Remove button -->
-                                <span class="remove-img-btn position-absolute"
-                                      style="cursor: pointer; background: #ed5646; color: white; border-radius: 5px; z-index: 10; padding: 4px 8px; right: 10px; top: 10px;"
-                                      @click="removeVideo(index)">
+                                        </label>
+                                        <input type="file" name="course[]" accept="video/*"
+                                               @change="previewVideos('post-thumbnail4')"
+                                               class="input-file" id="post-thumbnail4" multiple/>
+                                    </div>
+
+                                    <!-- Display the selected videos here -->
+                                    <div id="selected_more_image_show_div " class="row" style="display: flex;"
+                                         v-if="videos.length > 0">
+                                        <div v-for="(video, index) in videos" :key="index"
+                                             class="selected-video position-relative col-md-4"
+                                             style="margin-bottom: 20px;">
+                                            <!-- Show video preview if uploaded -->
+                                            <video v-if="video.uploaded"
+                                                   :src="`/assets/teacher/listing/data_{{ Auth::user()->id }}/course/${video.serverName}`"
+                                                   class="img-fluid mt-2" style="height: 180px; width: 300px;"
+                                                   controls></video>
+
+                                            <!-- Show uploading status if not uploaded -->
+                                            <div v-else>
+                                                <span>@{{ video.name }} (uploading... @{{ video.progress }}%)</span>
+                                            </div>
+
+                                            <!-- Remove button -->
+                                            <span class="remove-img-btn position-absolute"
+                                                  style="cursor: pointer; background: #ed5646; color: white; border-radius: 5px; z-index: 10; padding: 4px 8px; right: 10px; top: 10px;"
+                                                  @click="removeVideo(index)">
                                   Remove
                                 </span>
-                              </div>
-                            </div>
-                          
-                            <!-- Hidden input to store the uploaded video file names -->
-                            <input type="hidden" name="course_input" id="selected_more_videos" v-model="videoInputValue" />
-                          
-                            <!-- Progress bar -->
-                            <div v-if="uploading" class="progress">
-                              <div class="progress-bar progress-bar-striped progress-bar-animated"
-                                   role="progressbar" :style="{ width: progress + '%' }" aria-valuenow="progress" aria-valuemin="0"
-                                   aria-valuemax="100"></div>
-                            </div>
-                          </div>
-                          
-                          
-                          
-                              
-                        </div>
-                        <!-- Upload Section End -->
+                                        </div>
+                                    </div>
 
-                         <!-- Upload Section End -->
-                         <h3 class=" Select-Heading ">Resources</h3>
-                         <!-- upload Section start -->
-                         <div class="row">
-                          <div class="col-md-12 identity" id="upload-zip" style="margin-bottom: 10px;">
-                            <div class="input-file-wrapper transition-linear-3 position-relative">
-                              <label class="input-style input-label lh-1-7 p-4 text-center cursor-pointer" for="post-zip"
-                                     style="background: #f4fbff; border-radius: 4px; cursor: pointer; width: 100%;">
+                                    <!-- Hidden input to store the uploaded video file names -->
+                                    <input type="hidden" name="course_input" id="selected_more_videos"
+                                           v-model="videoInputValue"/>
+
+                                    <!-- Progress bar -->
+                                    <div v-if="uploading" class="progress">
+                                        <div class="progress-bar progress-bar-striped progress-bar-animated"
+                                             role="progressbar" :style="{ width: progress + '%' }"
+                                             aria-valuenow="progress" aria-valuemin="0"
+                                             aria-valuemax="100"></div>
+                                    </div>
+                                </div>
+
+
+                            </div>
+                            <!-- Upload Section End -->
+
+                            <!-- Upload Section End -->
+                            <h3 class=" Select-Heading ">Resources</h3>
+                            <!-- upload Section start -->
+                            <div class="row">
+                                <div class="col-md-12 identity" id="upload-zip" style="margin-bottom: 10px;">
+                                    <div class="input-file-wrapper transition-linear-3 position-relative">
+                                        <label class="input-style input-label lh-1-7 p-4 text-center cursor-pointer"
+                                               for="post-zip"
+                                               style="background: #f4fbff; border-radius: 4px; cursor: pointer; width: 100%;">
                                 <span>
-                                  <i class="fa-solid fa-cloud-arrow-up pt-3" style="color: #ababab; font-size: 40px; margin-bottom: 10px;"></i>
+                                  <i class="fa-solid fa-cloud-arrow-up pt-3"
+                                     style="color: #ababab; font-size: 40px; margin-bottom: 10px;"></i>
                                   <span class="d-block" style="color: #0072b1; margin-bottom: 10px;">Upload Resource Files</span>
                                   <p>Drag and drop ZIP files here</p>
                                 </span>
-                              </label>
-                              <input type="file" name="zip[]" accept=".zip" @change="previewZips('post-zip')"
-                                     class="input-file" id="post-zip" multiple />
-                            </div>
-                          
-                            <!-- Display the selected zip files here -->
-                            <div id="selected_zip_show_div"   v-if="zips.length > 0">
-                              <div v-for="(zip, index) in zips" :key="index" class="selected-zip position-relative" 
-                                   style="margin-bottom: 20px; margin-left:25px; position: relative;">
-                                <!-- Show zip file name -->
-                                <div v-if="zip.uploaded" style="position: relative;top: 13px;left:72px;">
-                                  <span>@{{ zip.name }}</span> <span>(Uploaded)</span>
-                                </div>
-                          
-                                <!-- Show uploading status if not uploaded -->
-                                <div v-else>
-                                  <span>@{{ zip.name }} (uploading... @{{ zip.progress }}%)</span>
-                                </div>
-                                
-                                <!-- Remove button -->
-                                <span class="remove-img-btn position-absolute"
-                                      style="cursor: pointer; background: #ed5646; color: white; border-radius: 5px; z-index: 10; padding: 4px 8px; right: 10px; top: 10px;"
-                                      @click="removeZip(index)">
+                                        </label>
+                                        <input type="file" name="zip[]" accept=".zip" @change="previewZips('post-zip')"
+                                               class="input-file" id="post-zip" multiple/>
+                                    </div>
+
+                                    <!-- Display the selected zip files here -->
+                                    <div id="selected_zip_show_div" v-if="zips.length > 0">
+                                        <div v-for="(zip, index) in zips" :key="index"
+                                             class="selected-zip position-relative"
+                                             style="margin-bottom: 20px; margin-left:25px; position: relative;">
+                                            <!-- Show zip file name -->
+                                            <div v-if="zip.uploaded" style="position: relative;top: 13px;left:72px;">
+                                                <span>@{{ zip.name }}</span> <span>(Uploaded)</span>
+                                            </div>
+
+                                            <!-- Show uploading status if not uploaded -->
+                                            <div v-else>
+                                                <span>@{{ zip.name }} (uploading... @{{ zip.progress }}%)</span>
+                                            </div>
+
+                                            <!-- Remove button -->
+                                            <span class="remove-img-btn position-absolute"
+                                                  style="cursor: pointer; background: #ed5646; color: white; border-radius: 5px; z-index: 10; padding: 4px 8px; right: 10px; top: 10px;"
+                                                  @click="removeZip(index)">
                                   Remove
                                 </span>
-                              </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Hidden input to store the uploaded zip file names -->
+                                    <input type="hidden" name="resource_input" id="selected_zips"
+                                           v-model="zipInputValue"/>
+
+                                    <!-- Progress bar -->
+                                    <div v-if="uploading" class="progress">
+                                        <div class="progress-bar progress-bar-striped progress-bar-animated"
+                                             role="progressbar" :style="{ width: progress + '%' }"
+                                             aria-valuenow="progress" aria-valuemin="0"
+                                             aria-valuemax="100"></div>
+                                    </div>
+                                </div>
+
+
                             </div>
-                          
-                            <!-- Hidden input to store the uploaded zip file names -->
-                            <input type="hidden" name="resource_input" id="selected_zips" v-model="zipInputValue" />
-                          
-                            <!-- Progress bar -->
-                            <div v-if="uploading" class="progress">
-                              <div class="progress-bar progress-bar-striped progress-bar-animated"
-                                   role="progressbar" :style="{ width: progress + '%' }" aria-valuenow="progress" aria-valuemin="0"
-                                   aria-valuemax="100"></div>
-                            </div>
-                          </div>
-                          
-                               
-                         </div>
-                         <!-- Upload Section End -->
+                            <!-- Upload Section End -->
 
 
                         </div>
@@ -761,8 +819,8 @@ button#multiSelectDropdown3:hover {
                         <a href="/class-management" class="teacher-back-btn">Back</a>
 
 
-                     <button type="button" onclick="SubmitForm()" class="teacher-next-btn" >Next</button>
-                     {{-- <a class="teacher-next-btn" href="/class-payment-set">Next</a> --}}
+                        <button type="button" onclick="SubmitForm()" class="teacher-next-btn">Next</button>
+                        {{-- <a class="teacher-next-btn" href="/class-payment-set">Next</a> --}}
 
                     </div>
                 </div>
@@ -770,623 +828,620 @@ button#multiSelectDropdown3:hover {
 
         </form>
 
-        </div>
-        <!-- =============================== MAIN CONTENT END HERE =========================== -->
-    </section>
-
-    </section>
     </div>
-    </div>
+    <!-- =============================== MAIN CONTENT END HERE =========================== -->
+</section>
 
-    {{-- <script src=" assets/teacher/libs/jquery/jquery.js "></script> --}}
-    <script src=" assets/teacher/libs/datatable/js/datatable.js "></script>
-    <script src=" assets/teacher/libs/datatable/js/datatablebootstrap.js "></script>
-    <script src=" assets/teacher/libs/select2/js/select2.min.js "></script>
-    <!-- <script src=" assets/teacher/libs/owl-carousel/js/jquery.min.js "></script> -->
-    <script src=" assets/teacher/libs/owl-carousel/js/owl.carousel.min.js "></script>
-    <script src="assets/admin/libs/aos/js/aos.js"></script> 
-    <!-- jQuery -->
+</section>
+</div>
+</div>
 
-      <!-- Tinymcs js link -->
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/6.4.1/tinymce.min.js"></script>
-  
-      <!-- Tinymce js start -->
+{{-- <script src=" assets/teacher/libs/jquery/jquery.js "></script> --}}
+<script src=" assets/teacher/libs/datatable/js/datatable.js "></script>
+<script src=" assets/teacher/libs/datatable/js/datatablebootstrap.js "></script>
+<script src=" assets/teacher/libs/select2/js/select2.min.js "></script>
+<!-- <script src=" assets/teacher/libs/owl-carousel/js/jquery.min.js "></script> -->
+<script src=" assets/teacher/libs/owl-carousel/js/owl.carousel.min.js "></script>
+<script src="assets/admin/libs/aos/js/aos.js"></script>
+<!-- jQuery -->
+
+<!-- Tinymcs js link -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/6.4.1/tinymce.min.js"></script>
+
+<!-- Tinymce js start -->
 <script>
-  tinymce.init({
-  selector: '#description', // Replace with your textarea selector
-  menubar: false, // Hide the menu bar
-  toolbar: 'bold italic strikethrough backcolor numlist bullist', // Include only the allowed options
-  plugins: 'lists', // Ensure the 'lists' plugin is enabled for numbering and bullets
-  branding: false, // Remove "Powered by TinyMCE" branding
-  content_style: "body { font-family: Arial, sans-serif; font-size: 14px; }" // Optional styling
-});
-  tinymce.init({
-  selector: '#requirements', // Replace with your textarea selector
-  menubar: false, // Hide the menu bar
-  toolbar: 'bold italic strikethrough backcolor numlist bullist', // Include only the allowed options
-  plugins: 'lists', // Ensure the 'lists' plugin is enabled for numbering and bullets
-  branding: false, // Remove "Powered by TinyMCE" branding
-  content_style: "body { font-family: Arial, sans-serif; font-size: 14px; }" // Optional styling
-});
-  
+    tinymce.init({
+        selector: '#description', // Replace with your textarea selector
+        menubar: false, // Hide the menu bar
+        toolbar: 'bold italic strikethrough backcolor numlist bullist', // Include only the allowed options
+        plugins: 'lists', // Ensure the 'lists' plugin is enabled for numbering and bullets
+        branding: false, // Remove "Powered by TinyMCE" branding
+        content_style: "body { font-family: Arial, sans-serif; font-size: 14px; }" // Optional styling
+    });
+    tinymce.init({
+        selector: '#requirements', // Replace with your textarea selector
+        menubar: false, // Hide the menu bar
+        toolbar: 'bold italic strikethrough backcolor numlist bullist', // Include only the allowed options
+        plugins: 'lists', // Ensure the 'lists' plugin is enabled for numbering and bullets
+        branding: false, // Remove "Powered by TinyMCE" branding
+        content_style: "body { font-family: Arial, sans-serif; font-size: 14px; }" // Optional styling
+    });
+
 </script>
 
 
-    {{-- <script
-      src="https://code.jquery.com/jquery-3.7.1.min.js"
-      integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
-      crossorigin="anonymous"
-    ></script> --}}
+{{-- <script
+  src="https://code.jquery.com/jquery-3.7.1.min.js"
+  integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
+  crossorigin="anonymous"
+></script> --}}
 
-    {{-- Form Validation Script Start==== --}}
-    <script>
+{{-- Form Validation Script Start==== --}}
+<script>
 
-function SubmitForm() {
+    function SubmitForm() {
 
-   // Get form values
-   const category = document.getElementById('category').value ;
-   const sub_category = document.getElementById('sub_category').value ;
-   const title = document.getElementById('title').value ;
-   const description =  tinymce.get('description').getContent() ;
-   const requirements =  tinymce.get('requirements').getContent() ;
-   const main_file = document.getElementById('post-thumbnail1').value ;
-   const type = document.getElementById('type').value ;
-   
-   
-    let valid = true; // A flag to track if the form is valid
+        // Get form values
+        const category = document.getElementById('category').value;
+        const sub_category = document.getElementById('sub_category').value;
+        const title = document.getElementById('title').value;
+        const description = tinymce.get('description').getContent();
+        const requirements = tinymce.get('requirements').getContent();
+        const main_file = document.getElementById('post-thumbnail1').value;
+        const type = document.getElementById('type').value;
 
-    // Category validation
-    if (!category) {
-      toastr.options =
-          {
-              "closeButton" : true,
-               "progressBar": true,
-          "timeOut": "10000", // 10 seconds
-          "extendedTimeOut": "4410000" // 10 seconds
-          }
-                  toastr.error("Select Category!");
-        valid = false;
-        return false ;
+
+        let valid = true; // A flag to track if the form is valid
+
+        // Category validation
+        if (!category) {
+            toastr.options =
+                {
+                    "closeButton": true,
+                    "progressBar": true,
+                    "timeOut": "10000", // 10 seconds
+                    "extendedTimeOut": "4410000" // 10 seconds
+                }
+            toastr.error("Select Category!");
+            valid = false;
+            return false;
+        }
+
+        // Sub Category validation
+        if (!sub_category) {
+            toastr.options =
+                {
+                    "closeButton": true,
+                    "progressBar": true,
+                    "timeOut": "10000", // 10 seconds
+                    "extendedTimeOut": "4410000" // 10 seconds
+                }
+            toastr.error("Select Sub Category!");
+            valid = false;
+            return false;
+        }
+
+        // Title validation
+        if (!title) {
+            toastr.options =
+                {
+                    "closeButton": true,
+                    "progressBar": true,
+                    "timeOut": "10000", // 10 seconds
+                    "extendedTimeOut": "4410000" // 10 seconds
+                }
+            toastr.error("Write Title!");
+            valid = false;
+            return false;
+        }
+
+        // Main File validation
+        if (!main_file) {
+            toastr.options =
+                {
+                    "closeButton": true,
+                    "progressBar": true,
+                    "timeOut": "10000", // 10 seconds
+                    "extendedTimeOut": "4410000" // 10 seconds
+                }
+            toastr.error("Main Image Or Video Required!");
+            valid = false;
+            return false;
+        }
+
+
+        // Description validation
+        if (!description || description.length < 10) {
+            toastr.options =
+                {
+                    "closeButton": true,
+                    "progressBar": true,
+                    "timeOut": "10000", // 10 seconds
+                    "extendedTimeOut": "4410000" // 10 seconds
+                }
+            toastr.error("Write Description!");
+            valid = false;
+            return false;
+        }
+
+        // Description validation
+        if (!requirements || requirements.length < 10) {
+            toastr.options =
+                {
+                    "closeButton": true,
+                    "progressBar": true,
+                    "timeOut": "10000", // 10 seconds
+                    "extendedTimeOut": "4410000" // 10 seconds
+                }
+            toastr.error("Write Requirements!");
+            valid = false;
+            return false;
+        }
+
+
+        if (type == 'Online') {
+            const class_type = $('#class_type').val();
+            const payment_type = $('#payment_type').val();
+            const recurring_type = $('#recurring_type').val();
+
+            if (class_type == 'Live') {
+                const meeting_platform = $('#meeting_platform').val();
+
+                if (!meeting_platform) {
+                    toastr.options = {
+                        "closeButton": true,
+                        "progressBar": true,
+                        "timeOut": "10000"
+                    }
+                    toastr.error("Please select Meeting Platform (Zoom or Google Meet)!");
+                    return false;
+                }
+            }
+
+            if (recurring_type == 'Trial') {
+                if (class_type != 'Live') {
+                    toastr.error("Trial class must be Live class!");
+                    return false;
+                }
+
+                if (payment_type == 'Subscription') {
+                    toastr.error("Trial class cannot be subscription!");
+                    return false;
+                }
+
+                const trial_type = $('#trial_type').val();
+                if (!trial_type) {
+                    toastr.error("Please select Trial Type (Free or Paid)!");
+                    return false;
+                }
+            }
+
+            if (class_type == 'Video') {
+                const course = $('#selected_more_videos').val();
+                const selected_zips = $('#selected_zips').val();
+
+                if (!course) {
+                    toastr.error("Please Upload Course Videos!");
+                    return false;
+                }
+                if (!selected_zips) {
+                    toastr.error("Please Upload Resource Files!");
+                    return false;
+                }
+            }
+
+        } else {
+
+            const service_delivery = document.getElementById('service_delivery').value;
+            if (service_delivery == 0) {
+                const max_distance = document.getElementById('max_distance').value;
+                if (!max_distance) {
+                    toastr.options =
+                        {
+                            "closeButton": true,
+                            "progressBar": true,
+                            "timeOut": "10000", // 10 seconds
+                            "extendedTimeOut": "4410000" // 10 seconds
+                        }
+                    toastr.error("Add Max Distance!");
+                    valid = false;
+                    return false;
+                }
+            } else if (service_delivery == 1) {
+                const work_site = document.getElementById('work_site').value;
+                if (!work_site) {
+                    toastr.options =
+                        {
+                            "closeButton": true,
+                            "progressBar": true,
+                            "timeOut": "10000", // 10 seconds
+                            "extendedTimeOut": "4410000" // 10 seconds
+                        }
+                    toastr.error("Add Work Site Location!");
+                    valid = false;
+                    return false;
+                }
+            } else {
+
+                const max_distance = document.getElementById('max_distance').value;
+                if (!max_distance) {
+                    toastr.options =
+                        {
+                            "closeButton": true,
+                            "progressBar": true,
+                            "timeOut": "10000", // 10 seconds
+                            "extendedTimeOut": "4410000" // 10 seconds
+                        }
+                    toastr.error("Add Max Distance!");
+                    valid = false;
+                    return false;
+                }
+
+                const work_site = document.getElementById('work_site').value;
+                if (!work_site) {
+                    toastr.options =
+                        {
+                            "closeButton": true,
+                            "progressBar": true,
+                            "timeOut": "10000", // 10 seconds
+                            "extendedTimeOut": "4410000" // 10 seconds
+                        }
+                    toastr.error("Add Work Site Location!");
+                    valid = false;
+                    return false;
+                }
+
+            }
+
+        }
+
+
+        // If the form is not valid, prevent submission
+        if (valid == true) {
+            $('#myForm').submit();
+        }
+
     }
 
-    // Sub Category validation
-    if (!sub_category) {
-      toastr.options =
-          {
-              "closeButton" : true,
-               "progressBar": true,
-          "timeOut": "10000", // 10 seconds
-          "extendedTimeOut": "4410000" // 10 seconds
-          }
-                  toastr.error("Select Sub Category!");
-        valid = false;
-        return false ;
-    }
 
-    // Title validation
-    if (!title) {
-      toastr.options =
-          {
-              "closeButton" : true,
-               "progressBar": true,
-          "timeOut": "10000", // 10 seconds
-          "extendedTimeOut": "4410000" // 10 seconds
-          }
-                  toastr.error("Write Title!");
-        valid = false;
-        return false ;
-    }
+</script>
+{{-- Form Validation Script END==== --}}
 
-    // Main File validation
-    if (!main_file) {
-      toastr.options =
-          {
-              "closeButton" : true,
-               "progressBar": true,
-          "timeOut": "10000", // 10 seconds
-          "extendedTimeOut": "4410000" // 10 seconds
-          }
-                  toastr.error("Main Image Or Video Required!");
-        valid = false;
-        return false ;
-    }
+{{-- Resources Course Div Show Hide On Selection Class Type Script Start --}}
+<script>
 
-   
-
-    
- 
-
-    // Description validation
-    if (!description || description.length < 10) {
-      toastr.options =
-          {
-              "closeButton" : true,
-               "progressBar": true,
-          "timeOut": "10000", // 10 seconds
-          "extendedTimeOut": "4410000" // 10 seconds
-          }
-                  toastr.error("Write Description!");
-        valid = false;
-        return false ;
-    }
-
-    // Description validation
-    if (!requirements || requirements.length < 10) {
-      toastr.options =
-          {
-              "closeButton" : true,
-               "progressBar": true,
-          "timeOut": "10000", // 10 seconds
-          "extendedTimeOut": "4410000" // 10 seconds
-          }
-                  toastr.error("Write Requirements!");
-        valid = false;
-        return false ;
-    }
-
-
-    if (type == 'Online') {
-     const class_type = document.getElementById('class_type').value ;
-    
-
-     if (class_type == 'Video') {
-      
-      const course = document.getElementById('selected_more_videos').value ;
-    const selected_zips = document.getElementById('selected_zips').value ;
-
-    if (!course) {
-      toastr.options =
-          {
-              "closeButton" : true,
-               "progressBar": true,
-          "timeOut": "10000", // 10 seconds
-          "extendedTimeOut": "4410000" // 10 seconds
-          }
-                  toastr.error("Please Upload Course Videos!");
-        valid = false;
-        return false ;
-    }
-    if (!selected_zips) {
-      toastr.options =
-          {
-              "closeButton" : true,
-               "progressBar": true,
-          "timeOut": "10000", // 10 seconds
-          "extendedTimeOut": "4410000" // 10 seconds
-          }
-                  toastr.error("Please Upload Resource Files!");
-        valid = false;
-        return false ;
-    }
-
-    }
-
-   } else {
-
-     const service_delivery = document.getElementById('service_delivery').value ;
-    if (service_delivery == 0) {
-      const max_distance = document.getElementById('max_distance').value ;
-     if (!max_distance) {
-      toastr.options =
-          {
-              "closeButton" : true,
-               "progressBar": true,
-          "timeOut": "10000", // 10 seconds
-          "extendedTimeOut": "4410000" // 10 seconds
-          }
-                  toastr.error("Add Max Distance!");
-        valid = false;
-        return false ;
-    }
-    } else if(service_delivery == 1){
-      const work_site = document.getElementById('work_site').value ;
-     if (!work_site) {
-      toastr.options =
-          {
-              "closeButton" : true,
-               "progressBar": true,
-          "timeOut": "10000", // 10 seconds
-          "extendedTimeOut": "4410000" // 10 seconds
-          }
-                  toastr.error("Add Work Site Location!");
-        valid = false;
-        return false ;
-    }
-    } else {
-
-      const max_distance = document.getElementById('max_distance').value ;
-     if (!max_distance) {
-      toastr.options =
-          {
-              "closeButton" : true,
-               "progressBar": true,
-          "timeOut": "10000", // 10 seconds
-          "extendedTimeOut": "4410000" // 10 seconds
-          }
-                  toastr.error("Add Max Distance!");
-        valid = false;
-        return false ;
-    }
-    
-      const work_site = document.getElementById('work_site').value ;
-     if (!work_site) {
-      toastr.options =
-          {
-              "closeButton" : true,
-               "progressBar": true,
-          "timeOut": "10000", // 10 seconds
-          "extendedTimeOut": "4410000" // 10 seconds
-          }
-                  toastr.error("Add Work Site Location!");
-        valid = false;
-        return false ;
-    }
-      
-    }
-    
-   }
-
-
-
-    // If the form is not valid, prevent submission
-    if (valid == true) {
-      $('#myForm').submit();
-    }
-
-  }
-
-    
-
-    </script>
-    {{-- Form Validation Script END==== --}}
-
-    {{-- Resources Course Div Show Hide On Selection Class Type Script Start --}}
-    <script>
-
-  $('#class_type').on('change', function () {
+    $('#class_type').on('change', function () {
         var type = $('#class_type').val();
         if (type == 'Video') {
-          $('#resources_course').show();
+            $('#resources_course').show();
         } else {
-          $('#resources_course').hide();
+            $('#resources_course').hide();
         }
-  });
+    });
 
-    </script>
-    {{-- Resources Course Div Show Hide On Selection Class Type Script END --}}
+</script>
+{{-- Resources Course Div Show Hide On Selection Class Type Script END --}}
 
-    <script>
-        
+<script>
 
-        $('#category').on('change', function () {
-          var category =  $('#category').val();
-          var role =  $('#role').val();
-          var type =  $('#type').val();
-           
-          $.ajaxSetup({
+
+    $('#category').on('change', function () {
+        var category = $('#category').val();
+        var role = $('#role').val();
+        var type = $('#type').val();
+
+        $.ajaxSetup({
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             }
-            });
-
-            $.ajax({
-                type: "POST",
-                url: '/get-class-manage-sub-cates',
-                data:{ type:type, role:role, category:category, _token: '{{csrf_token()}}'},
-                dataType: 'json',
-                success: function (response) {
-
-                    var sub_cates = response['sub_cates'] ;
-                    var len = sub_cates.length ;
-                    $('#SubCategories').empty();
-
-
-                    // Loop through response values and generate HTML
-sub_cates.forEach(function(subcat) {
-    const div_main = document.createElement('div');
-    div_main.className = 'col-md-6 freelance_sub'; // Fixed class
-
-    const li = document.createElement('li');
-    li.className = 'multi-text-li';
-
-    const label = document.createElement('label');
-    const checkbox = document.createElement('input');
-
-    checkbox.type = 'checkbox';
-    checkbox.name = 'subcategories[]';
-    checkbox.className = 'subcat1-input freelancesub';
-    checkbox.value = subcat;
-
-    label.appendChild(checkbox); // Append checkbox to label
-    label.append(subcat); // Append text value to label
-    li.appendChild(label); // Append label to li
-    div_main.appendChild(li); // Append li to main div
-
-    // Append final HTML to the container
-    $('#SubCategories').append(div_main);
-  });
- 
-
-
-
-                      
-                     
-                },
-              
-            });
-          
         });
 
+        $.ajax({
+            type: "POST",
+            url: '/get-class-manage-sub-cates',
+            data: {type: type, role: role, category: category, _token: '{{csrf_token()}}'},
+            dataType: 'json',
+            success: function (response) {
+
+                var sub_cates = response['sub_cates'];
+                var len = sub_cates.length;
+                $('#SubCategories').empty();
 
 
+                // Loop through response values and generate HTML
+                sub_cates.forEach(function (subcat) {
+                    const div_main = document.createElement('div');
+                    div_main.className = 'col-md-6 freelance_sub'; // Fixed class
 
-        // Select Multiple SubCategories =========
+                    const li = document.createElement('li');
+                    li.className = 'multi-text-li';
 
-        
-     function SelectFreelanceCategorySub() {
-      const chBoxes3 = document.querySelectorAll(".dropdown-menu .subcat1-input"); 
-     const dpBtn3 = document.getElementById("multiSelectDropdown3");
-     let mySelectedListItems3 = [];
-       
-      
-    function handleCB() {
+                    const label = document.createElement('label');
+                    const checkbox = document.createElement('input');
 
-      let checkedCount = document.querySelectorAll(".dropdown-menu .subcat1-input:checked").length;
+                    checkbox.type = 'checkbox';
+                    checkbox.name = 'subcategories[]';
+                    checkbox.className = 'subcat1-input freelancesub';
+                    checkbox.value = subcat;
 
-    // Prevent checking more than 3 checkboxes
-    if (checkedCount > 3) {
-      event.target.checked = false; // Uncheck the last checkbox
-      alert("You can select up to 3 sub-categories only.");
-      return;
-    }
+                    label.appendChild(checkbox); // Append checkbox to label
+                    label.append(subcat); // Append text value to label
+                    li.appendChild(label); // Append label to li
+                    div_main.appendChild(li); // Append li to main div
 
-      mySelectedListItems3 = [];
-      let mySelectedListItemsText3 = "";
-     
-      chBoxes3.forEach((checkbox) => {
-        if (checkbox.checked) {
-             
-          mySelectedListItems3.push(checkbox.value);
-          mySelectedListItemsText3 += checkbox.value + ", ";
-        }
-      });
-      
-      $('#sub_category').val(mySelectedListItems3);
- 
-     
-    
+                    // Append final HTML to the container
+                    $('#SubCategories').append(div_main);
+                });
 
 
-      
-    dpBtn3.innerText =
-        mySelectedListItems3.length > 0
-          ? mySelectedListItemsText3.slice(0, -2)
-          : "--select sub-category--";
-    }
-  
-    chBoxes3.forEach((checkbox) => {
-      checkbox.addEventListener("change", handleCB);
+            },
+
+        });
+
     });
-       }
 
-    </script>
+
+    // Select Multiple SubCategories =========
+
+
+    function SelectFreelanceCategorySub() {
+        const chBoxes3 = document.querySelectorAll(".dropdown-menu .subcat1-input");
+        const dpBtn3 = document.getElementById("multiSelectDropdown3");
+        let mySelectedListItems3 = [];
+
+
+        function handleCB() {
+
+            let checkedCount = document.querySelectorAll(".dropdown-menu .subcat1-input:checked").length;
+
+            // Prevent checking more than 3 checkboxes
+            if (checkedCount > 3) {
+                event.target.checked = false; // Uncheck the last checkbox
+                alert("You can select up to 3 sub-categories only.");
+                return;
+            }
+
+            mySelectedListItems3 = [];
+            let mySelectedListItemsText3 = "";
+
+            chBoxes3.forEach((checkbox) => {
+                if (checkbox.checked) {
+
+                    mySelectedListItems3.push(checkbox.value);
+                    mySelectedListItemsText3 += checkbox.value + ", ";
+                }
+            });
+
+            $('#sub_category').val(mySelectedListItems3);
+
+
+            dpBtn3.innerText =
+                mySelectedListItems3.length > 0
+                    ? mySelectedListItemsText3.slice(0, -2)
+                    : "--select sub-category--";
+        }
+
+        chBoxes3.forEach((checkbox) => {
+            checkbox.addEventListener("change", handleCB);
+        });
+    }
+
+</script>
 
 
 {{-- Dropdowns Show and Hide Restrictions Start Script==== --}}
 @if ($type == 'Online')
-<script>
-$('#payment_type').on('change', function () {
-    var payment_type = $('#payment_type').val();
-    $('#recurring_type').empty();
-    if (payment_type == 'Subscription') {
-      $('#recurring_type').append('<option value="Recurring" class="fa" aria-hidden="true">Recurring</option>');
-      
-    }else{
-      $('#recurring_type').append('<option value="One-Day" class="fa" aria-hidden="true">One-Day Class</option> <option value="Recurring" class="fa" aria-hidden="true">Recurring</option>');
+    <script>
+        $('#payment_type').on('change', function () {
+            var payment_type = $('#payment_type').val();
+            $('#recurring_type').empty();
+            if (payment_type == 'Subscription') {
+                $('#recurring_type').append('<option value="Recurring" class="fa" aria-hidden="true">Recurring</option>');
 
-    }
-      GroupShow();
-  });
-  $('#class_type').on('change', function () {
-    var class_type = $('#class_type').val(); 
-    if (class_type == 'Video' ) {
-      $('#recurring_type_main').hide();
-      $('#lesson_type_main_div').hide();
-      
-    }else{
-      $('#recurring_type_main').show();
-      $('#lesson_type_main_div').show();
-     
-    }
-    GroupShow();
-  });
-  $('#lesson_type').on('change', function () {
-    var class_type = $('#class_type').val();
-    var lesson_type = $('#lesson_type').val();
-    if (class_type == 'Video' && lesson_type == 'One') {
-      $('#recurring_type_main').hide();
-      
-    }else{
-      $('#recurring_type_main').show();
-     
-    }
-    GroupShow();
-  }); 
+            } else {
+                $('#recurring_type').append('<option value="One-Day" class="fa" aria-hidden="true">One-Day Class</option> <option value="Recurring" class="fa" aria-hidden="true">Recurring</option>');
 
-  $('#recurring_type').on('change', function () {
-     
-    GroupShow();
-  }); 
+            }
+            GroupShow();
+        });
+        $('#class_type').on('change', function () {
+            var class_type = $('#class_type').val();
+            if (class_type == 'Video') {
+                $('#recurring_type_main').hide();
+                $('#lesson_type_main_div').hide();
+
+            } else {
+                $('#recurring_type_main').show();
+                $('#lesson_type_main_div').show();
+
+            }
+            GroupShow();
+        });
+        $('#lesson_type').on('change', function () {
+            var class_type = $('#class_type').val();
+            var lesson_type = $('#lesson_type').val();
+            if (class_type == 'Video' && lesson_type == 'One') {
+                $('#recurring_type_main').hide();
+
+            } else {
+                $('#recurring_type_main').show();
+
+            }
+            GroupShow();
+        });
+
+        $('#recurring_type').on('change', function () {
+
+            GroupShow();
+        });
 
 
-  function GroupShow() { 
-    
-    var class_type = $('#class_type').val();
-    var lesson_type = $('#lesson_type').val();
-    var payment_type = $('#payment_type').val();
-    var recurring_type = $('#recurring_type').val();
+        function GroupShow() {
 
-    if (class_type == 'Live' && lesson_type == 'Group'  ) {
-      $('#group_type_main').show();
-      $('#group_type_main').css('display', 'block');
-      $('#group_type').empty();
-      if (recurring_type == 'Recurring') {
-        $('#group_type').append(`<option value="Public" class="fa" aria-hidden="true">Public Group</option>
+            var class_type = $('#class_type').val();
+            var lesson_type = $('#lesson_type').val();
+            var payment_type = $('#payment_type').val();
+            var recurring_type = $('#recurring_type').val();
+
+            if (class_type == 'Live' && lesson_type == 'Group') {
+                $('#group_type_main').show();
+                $('#group_type_main').css('display', 'block');
+                $('#group_type').empty();
+                if (recurring_type == 'Recurring') {
+                    $('#group_type').append(`<option value="Public" class="fa" aria-hidden="true">Public Group</option>
                             <option value="Private" class="fa" aria-hidden="true">Private Group</option>
                             <option value="Both" class="fa" aria-hidden="true">Both</option>`);
-      } else {
-        $('#group_type').append(`<option value="Public" class="fa" aria-hidden="true">Public Group</option>`);
-      }
-      
-      
-      } else {
-      $('#group_type_main').css('display', 'none');
-        $('#group_type_main').hide();
-    }
-}
+                } else {
+                    $('#group_type').append(`<option value="Public" class="fa" aria-hidden="true">Public Group</option>`);
+                }
 
 
+            } else {
+                $('#group_type_main').css('display', 'none');
+                $('#group_type_main').hide();
+            }
+        }
 
 
-</script>
+    </script>
 @endif
 
 @if ($type == 'Inperson')
-<script>
+    <script>
 
-  $('#lesson_type').on('change', function () {
-    var group = $('#lesson_type').val();
-    if (group == 'Group') {
-      $('#group_type_main').show();
-    } else {
-      $('#group_type_main').hide();
-      
-    }
-  });
+        $('#lesson_type').on('change', function () {
+            var group = $('#lesson_type').val();
+            if (group == 'Group') {
+                $('#group_type_main').show();
+            } else {
+                $('#group_type_main').hide();
+
+            }
+        });
 
 
-  $('#service_delivery').on('change', function () {
-   var service_delivery = $('#service_delivery').val();
-   var group = $('#lesson_type').val();
-   $('#group_type').empty();
-   if (service_delivery == 0 ) {
-    $('#work_site_main').hide();
-    $('#max_distance_main').show();
-    
-      $('#group_type').append(`<option value="Private" class="fa" aria-hidden="true">Private Group</option>`);
-    
-    
-   } else if(service_delivery == 1){
+        $('#service_delivery').on('change', function () {
+            var service_delivery = $('#service_delivery').val();
+            var group = $('#lesson_type').val();
+            $('#group_type').empty();
+            if (service_delivery == 0) {
+                $('#work_site_main').hide();
+                $('#max_distance_main').show();
 
-    $('#work_site_main').show();
-    $('#max_distance_main').hide();
-   
-      $('#group_type').append(`<option value="Public" class="fa" aria-hidden="true">Public Group</option>
+                $('#group_type').append(`<option value="Private" class="fa" aria-hidden="true">Private Group</option>`);
+
+
+            } else if (service_delivery == 1) {
+
+                $('#work_site_main').show();
+                $('#max_distance_main').hide();
+
+                $('#group_type').append(`<option value="Public" class="fa" aria-hidden="true">Public Group</option>
                             <option value="Private" class="fa" aria-hidden="true">Private Group</option>
                             <option value="Both" class="fa" aria-hidden="true">Both</option>`);
- 
-   }  else {
-    $('#work_site_main').show();
-    $('#max_distance_main').show();
-     
-      $('#group_type').append(`<option value="Public" class="fa" aria-hidden="true">Public Group</option>
+
+            } else {
+                $('#work_site_main').show();
+                $('#max_distance_main').show();
+
+                $('#group_type').append(`<option value="Public" class="fa" aria-hidden="true">Public Group</option>
                             <option value="Private" class="fa" aria-hidden="true">Private Group</option>
                             <option value="Both" class="fa" aria-hidden="true">Both</option>`);
-   
-   }
+
+            }
 
 
+        });
+    </script>
 
-  });
-</script>
+    {{-- Google Script CDN --}}
+    <script
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBMA8qhhaBOYY1uv0nUfsBGcE74w6JNY7M&libraries=places"></script>
 
-{{-- Google Script CDN --}}
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBMA8qhhaBOYY1uv0nUfsBGcE74w6JNY7M&libraries=places"></script>
+    {{-- Street Address Google Api Script Start --}}
+    <script>
+        $(document).ready(function () {
+            var autocomplete;
+            var id = 'work_site';
+            var countryCode = '{{ Auth::user()->country_code }}';
 
-{{-- Street Address Google Api Script Start --}}
-<script>
-$(document).ready(function () {
-    var autocomplete;
-    var id = 'work_site';
-    var countryCode = '{{ Auth::user()->country_code }}';
+            // Initialize Google Places Autocomplete with country restriction
+            autocomplete = new google.maps.places.Autocomplete((document.getElementById(id)), {
+                types: [],
+                componentRestrictions: {country: countryCode},
+            });
 
-    // Initialize Google Places Autocomplete with country restriction
-    autocomplete = new google.maps.places.Autocomplete((document.getElementById(id)), {
-        types: [],
-        componentRestrictions: { country: countryCode },
-    });
+            // Event listener for when a place is selected
+            google.maps.event.addListener(autocomplete, 'place_changed', function () {
+                var place = autocomplete.getPlace();
+                var latitude = place.geometry.location.lat();
+                var longitude = place.geometry.location.lng();
+                // Handle selected place details
+            });
 
-    // Event listener for when a place is selected
-    google.maps.event.addListener(autocomplete, 'place_changed', function () {
-        var place = autocomplete.getPlace();
-        var latitude = place.geometry.location.lat();
-        var longitude = place.geometry.location.lng();
-        // Handle selected place details
-    });
-
-    // Show "Near Me" button when input is focused
-    $('#work_site').on('focus', function () {
-        if ($(this).val().trim() === '') {
-            $('#nearme_dropdown').show();
-        }
-    });
-
-    // Hide "Near Me" button when typing and input has value
-    $('#work_site').on('input', function () {
-        if ($(this).val().trim() === '') {
-            $('#nearme_dropdown').show(); // Show if input is cleared
-        } else {
-            $('#nearme_dropdown').hide(); // Hide if typing something
-        }
-    });
-
-    // Handle "Near Me" option click
-    $('#nearme_option').on('click', function () {
-        // Hide dropdown
-        $('#nearme_dropdown').hide();
-
-        // Get user’s live location
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(
-                function (position) {
-                    var latitude = position.coords.latitude;
-                    var longitude = position.coords.longitude;
-
-                    // Optionally, populate input with live location or process it
-                    console.log('Live Location:', latitude, longitude);
-
-                    // Example: Reverse geocode to get address
-                    var geocoder = new google.maps.Geocoder();
-                    var latLng = new google.maps.LatLng(latitude, longitude);
-                    geocoder.geocode({ location: latLng }, function (results, status) {
-                        if (status === 'OK' && results[0]) {
-                            $('#work_site').val(results[0].formatted_address);
-                        } else {
-                            alert('Unable to retrieve location');
-                        }
-                    });
-                },
-                function () {
-                    alert('Geolocation access denied');
+            // Show "Near Me" button when input is focused
+            $('#work_site').on('focus', function () {
+                if ($(this).val().trim() === '') {
+                    $('#nearme_dropdown').show();
                 }
-            );
-        } else {
-            alert('Geolocation is not supported by this browser.');
-        }
-    });
+            });
 
-    // Hide dropdown if clicked outside
-    $(document).on('click', function (event) {
-        if (!$(event.target).closest('#work_site_main').length) {
-            $('#nearme_dropdown').hide();
-        }
-    });
-});
+            // Hide "Near Me" button when typing and input has value
+            $('#work_site').on('input', function () {
+                if ($(this).val().trim() === '') {
+                    $('#nearme_dropdown').show(); // Show if input is cleared
+                } else {
+                    $('#nearme_dropdown').hide(); // Hide if typing something
+                }
+            });
+
+            // Handle "Near Me" option click
+            $('#nearme_option').on('click', function () {
+                // Hide dropdown
+                $('#nearme_dropdown').hide();
+
+                // Get user’s live location
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(
+                        function (position) {
+                            var latitude = position.coords.latitude;
+                            var longitude = position.coords.longitude;
+
+                            // Optionally, populate input with live location or process it
+                            console.log('Live Location:', latitude, longitude);
+
+                            // Example: Reverse geocode to get address
+                            var geocoder = new google.maps.Geocoder();
+                            var latLng = new google.maps.LatLng(latitude, longitude);
+                            geocoder.geocode({location: latLng}, function (results, status) {
+                                if (status === 'OK' && results[0]) {
+                                    $('#work_site').val(results[0].formatted_address);
+                                } else {
+                                    alert('Unable to retrieve location');
+                                }
+                            });
+                        },
+                        function () {
+                            alert('Geolocation access denied');
+                        }
+                    );
+                } else {
+                    alert('Geolocation is not supported by this browser.');
+                }
+            });
+
+            // Hide dropdown if clicked outside
+            $(document).on('click', function (event) {
+                if (!$(event.target).closest('#work_site_main').length) {
+                    $('#nearme_dropdown').hide();
+                }
+            });
+        });
 
 
-</script>
-{{-- Street Address Google Api Script END --}}
-    
+    </script>
+    {{-- Street Address Google Api Script END --}}
+
 @endif
 
 {{-- Dropdowns Show and Hide Restrictions END Script==== --}}
@@ -1397,447 +1452,440 @@ $(document).ready(function () {
 <script>
 
 
- // 1 ===
- new Vue({
-  el: "#upload-image1",
-  data() {
-    return {
-      preview: null,
-      media: null,
-      isImage: true,
-      maxFileSize: 10 * 1024 * 1024, // 50 MB in bytes
-    };
-  },
-  methods: {
-    previewImage: function (id) {
-      let input = document.getElementById(id);
-      if (input.files && input.files[0]) {
-        let file = input.files[0];
-        let reader = new FileReader();
-
-        // Check the file size
-        if (file.size > this.maxFileSize) {
-          // If file exceeds 50 MB, show error and reset the input
-          document.getElementById(id).value = "";
-          this.preview = null;
-          
-          toastr.options = {
-            "closeButton": true,
-            "progressBar": true
-          };
-          toastr.error("File size exceeds the 50 MB limit!");
-          return; // Exit function if file size exceeds the limit
-        }
-
-        // Check if the file is an image or video
-        this.isImage = file.type.startsWith('image/');
-
-        reader.onload = (e) => {
-          // Display image or video preview
-          this.preview = e.target.result;
-        };
-
-        this.media = file;
-        reader.readAsDataURL(file);
-      }
-    },
-    reset: function (id) {
-      if (!confirm("Are You Sure, You Want to Remove?")) {
-        return false;
-      }
-      this.media = null;
-      this.preview = null;
-      this.isImage = true; // Reset type
-      document.getElementById(id).value = "";
-    },
-  },
-});
-
-
-
- // 2 ===
- new Vue({
-  el: "#upload-image2",
-  data() {
-    return {
-      preview: null,
-      media: null,
-      isImage: true,
-      maxFileSize: 10 * 1024 * 1024, // 50 MB in bytes
-    };
-  },
-  methods: {
-    previewImage: function (id) {
-      let input = document.getElementById(id);
-      if (input.files && input.files[0]) {
-        let file = input.files[0];
-        let reader = new FileReader();
-
-        // Check the file size
-        if (file.size > this.maxFileSize) {
-          // If file exceeds 50 MB, show error and reset the input
-          document.getElementById(id).value = "";
-          this.preview = null;
-          
-          toastr.options = {
-            "closeButton": true,
-            "progressBar": true
-          };
-          toastr.error("File size exceeds the 50 MB limit!");
-          return; // Exit function if file size exceeds the limit
-        }
-
-        // Check if the file is an image or video
-        this.isImage = file.type.startsWith('image/');
-
-        reader.onload = (e) => {
-          // Display image or video preview
-          this.preview = e.target.result;
-        };
-
-        this.media = file;
-        reader.readAsDataURL(file);
-      }
-    },
-    reset: function (id) {
-      if (!confirm("Are You Sure, You Want to Remove?")) {
-        return false;
-      }
-      this.media = null;
-      this.preview = null;
-      this.isImage = true; // Reset type
-      document.getElementById(id).value = "";
-    },
-  },
-});
-
-
-
-
-// 3 =====
-new Vue({
-  el: "#upload-image3",
-  data() {
-    return {
-      images: [], // Array to hold selected images
-      imageInputValue: "", // To store concatenated file names
-      maxFileSize: 3 * 1024 * 1024, // 3 MB in bytes
-      maxFiles: 5, // Maximum number of allowed files
-    };
-  },
-  methods: {
-    previewImages: function (id) {
-      let input = document.getElementById(id);
-      let selectedFiles = input.files;
-
-      // Check if the total number of files exceeds the maximum allowed
-      if (
-        selectedFiles.length > this.maxFiles ||
-        this.images.length + selectedFiles.length > this.maxFiles
-      ) {
-        toastr.error(`You can only select up to ${this.maxFiles} images.`);
-        return;
-      }
-
-      for (let i = 0; i < selectedFiles.length; i++) {
-        let file = selectedFiles[i];
-
-        // Check if the file is an image
-        if (!file.type.startsWith("image")) {
-          toastr.error(`${file.name} is not an image!`);
-          continue;
-        }
-
-        // Check file size
-        if (file.size > this.maxFileSize) {
-          toastr.error(`${file.name} exceeds the 3 MB size limit!`);
-          continue;
-        }
-
-        let reader = new FileReader();
-        reader.onload = (e) => {
-          // Add the image to the images array
-          this.images.push({
-            src: e.target.result,
-            name: file.name,
-            type: "image",
-          });
-
-          // Update the hidden input value
-          this.updateImageInputValue();
-        };
-        reader.readAsDataURL(file);
-      }
-    },
-    removeImage: function (index) {
-      // Remove the image from the array
-      this.images.splice(index, 1);
-
-      // Update the hidden input value
-      this.updateImageInputValue();
-    },
-    updateImageInputValue: function () {
-      // Concatenate the file names with a `,_,` separator
-      this.imageInputValue = this.images.map((image) => image.name).join(",_,");
-    },
-    reset: function (id) {
-      // Reset the images and clear the file input
-      this.images = [];
-      this.imageInputValue = "";
-      document.getElementById(id).value = "";
-    },
-  },
-});
-
-
-
-
-// 4  Course====
-
-new Vue({
-  el: "#upload-image4",
-  data() {
-    return {
-      videos: [], // Array to hold selected and uploaded video details
-      videoInputValue: "", // To store concatenated video names
-      maxFileSize: 1024 * 1024 * 1024, // 1 GB in bytes
-      maxFiles: 20, // Maximum number of allowed video files
-      uploading: false, // Flag for whether a video is currently uploading
-      progress: 0, // Progress percentage for video upload
-      currentVideoIndex: 0, // Index to track the current video being uploaded
-    };
-  },
-  methods: {
-    previewVideos: function (id) {
-      let input = document.getElementById(id);
-      let selectedFiles = input.files;
-
-      // Check for max number of files
-      if (selectedFiles.length > this.maxFiles || this.videos.length + selectedFiles.length > this.maxFiles) {
-        toastr.error("You can only select up to 20 videos.");
-        return;
-      }
-
-      for (let i = 0; i < selectedFiles.length; i++) {
-        let file = selectedFiles[i];
-
-        // Validate file size
-        if (file.size > this.maxFileSize) {
-          toastr.error(`${file.name} exceeds the 1 GB size limit!`);
-          continue;
-        }
-
-        // Add the video to the videos array
-        this.videos.push({
-          file: file,
-          name: file.name,
-          type: 'video',
-          uploaded: false, // Track upload status
-          progress: 0, // Track individual file progress
-        });
-      }
-
-      // Start uploading videos
-      this.uploadNextVideo();
-    },
-    uploadNextVideo: function () {
-      // If we are already uploading or if all videos are uploaded, exit
-      if (this.uploading || this.currentVideoIndex >= this.videos.length) {
-        return;
-      }
-
-      let video = this.videos[this.currentVideoIndex];
-
-      // If the current video is already uploaded, move to the next
-      if (video.uploaded) {
-        this.currentVideoIndex++;
-        this.uploadNextVideo();
-        return;
-      }
-
-      // Start the uploading process
-      this.uploading = true;
-      let formData = new FormData();
-      formData.append('video', video.file);
-
-      axios.post('/teacher-course-video-upload', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
+    // 1 ===
+    new Vue({
+        el: "#upload-image1",
+        data() {
+            return {
+                preview: null,
+                media: null,
+                isImage: true,
+                maxFileSize: 10 * 1024 * 1024, // 50 MB in bytes
+            };
         },
-        onUploadProgress: (progressEvent) => {
-          video.progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-          this.progress = video.progress; // Update global progress bar
-        }
-      })
-      .then(response => {
-        // Mark the video as uploaded and store the file name from the response
-        video.uploaded = true;
-        video.serverName = response.data.video_name;
+        methods: {
+            previewImage: function (id) {
+                let input = document.getElementById(id);
+                if (input.files && input.files[0]) {
+                    let file = input.files[0];
+                    let reader = new FileReader();
 
-        // Update the hidden input with the file names separated by `,_,`
-        this.updateVideoInputValue();
+                    // Check the file size
+                    if (file.size > this.maxFileSize) {
+                        // If file exceeds 50 MB, show error and reset the input
+                        document.getElementById(id).value = "";
+                        this.preview = null;
 
-        // Move to the next video
-        this.currentVideoIndex++;
-        this.uploading = false;
+                        toastr.options = {
+                            "closeButton": true,
+                            "progressBar": true
+                        };
+                        toastr.error("File size exceeds the 50 MB limit!");
+                        return; // Exit function if file size exceeds the limit
+                    }
 
-        // Start uploading the next video
-        this.uploadNextVideo();
-      })
-      .catch(error => {
-        toastr.error(`Error uploading ${video.name}`);
-        this.uploading = false;
-      });
-    },
-    removeVideo: function (index) {
-      let video = this.videos[index];
+                    // Check if the file is an image or video
+                    this.isImage = file.type.startsWith('image/');
 
-      if (video.uploaded) {
-        // Remove video from server using AJAX
-        axios.post('/teacher-course-video-delete', { fileName: video.serverName })
-        .then(response => {
-          // Remove video from the videos array
-          this.videos.splice(index, 1);
+                    reader.onload = (e) => {
+                        // Display image or video preview
+                        this.preview = e.target.result;
+                    };
 
-          // Update the hidden input value
-          this.updateVideoInputValue();
-        })
-        .catch(error => {
-          toastr.error(`Error deleting ${video.name}`);
-        });
-      } else {
-        // If the video is not yet uploaded, just remove it from the array
-        this.videos.splice(index, 1);
-      }
-    },
-    updateVideoInputValue: function () {
-      // Concatenate the server file names with `,_,` separator
-      this.videoInputValue = this.videos
-        .filter(video => video.uploaded)
-        .map(video => video.serverName)
-        .join(',_,');
-
-      document.getElementById("selected_more_videos").value = this.videoInputValue;
-    }
-  }
-});
-
-
-
-new Vue({
-  el: "#upload-zip",
-  data() {
-    return {
-      zips: [], // Array to hold selected and uploaded zip details
-      zipInputValue: "", // To store concatenated zip names
-      maxFileSize: 1024 * 1024 * 1024, // 1 GB in bytes
-      maxFiles: 10, // Maximum number of allowed zip files
-      uploading: false, // Flag for whether a file is currently uploading
-      progress: 0, // Progress percentage for zip file upload
-      currentZipIndex: 0, // Index to track the current zip being uploaded
-    };
-  },
-  methods: {
-    previewZips: function (id) {
-      let input = document.getElementById(id);
-      let selectedFiles = input.files;
-
-      // Check for max number of files
-      if (selectedFiles.length > this.maxFiles || this.zips.length + selectedFiles.length > this.maxFiles) {
-        toastr.error("You can only select up to 10 zip files.");
-        return;
-      }
-
-      for (let i = 0; i < selectedFiles.length; i++) {
-        let file = selectedFiles[i];
-
-        // Validate file size
-        if (file.size > this.maxFileSize) {
-          toastr.error(`${file.name} exceeds the 1 GB size limit!`);
-          continue;
-        }
-
-        // Add the zip to the zips array
-        this.zips.push({
-          file: file,
-          name: file.name,
-          uploaded: false, // Track upload status
-          progress: 0, // Track individual file progress
-        });
-      }
-
-      // Start uploading zip files
-      this.uploadNextZip();
-    },
-    uploadNextZip: function () {
-      if (this.uploading || this.currentZipIndex >= this.zips.length) {
-        return;
-      }
-
-      let zip = this.zips[this.currentZipIndex];
-
-      if (zip.uploaded) {
-        this.currentZipIndex++;
-        this.uploadNextZip();
-        return;
-      }
-
-      this.uploading = true;
-      let formData = new FormData();
-      formData.append('zip', zip.file);
-
-      axios.post('/teacher-resource-upload', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
+                    this.media = file;
+                    reader.readAsDataURL(file);
+                }
+            },
+            reset: function (id) {
+                if (!confirm("Are You Sure, You Want to Remove?")) {
+                    return false;
+                }
+                this.media = null;
+                this.preview = null;
+                this.isImage = true; // Reset type
+                document.getElementById(id).value = "";
+            },
         },
-        onUploadProgress: (progressEvent) => {
-          zip.progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-          this.progress = zip.progress; // Update global progress bar
+    });
+
+
+    // 2 ===
+    new Vue({
+        el: "#upload-image2",
+        data() {
+            return {
+                preview: null,
+                media: null,
+                isImage: true,
+                maxFileSize: 10 * 1024 * 1024, // 50 MB in bytes
+            };
+        },
+        methods: {
+            previewImage: function (id) {
+                let input = document.getElementById(id);
+                if (input.files && input.files[0]) {
+                    let file = input.files[0];
+                    let reader = new FileReader();
+
+                    // Check the file size
+                    if (file.size > this.maxFileSize) {
+                        // If file exceeds 50 MB, show error and reset the input
+                        document.getElementById(id).value = "";
+                        this.preview = null;
+
+                        toastr.options = {
+                            "closeButton": true,
+                            "progressBar": true
+                        };
+                        toastr.error("File size exceeds the 50 MB limit!");
+                        return; // Exit function if file size exceeds the limit
+                    }
+
+                    // Check if the file is an image or video
+                    this.isImage = file.type.startsWith('image/');
+
+                    reader.onload = (e) => {
+                        // Display image or video preview
+                        this.preview = e.target.result;
+                    };
+
+                    this.media = file;
+                    reader.readAsDataURL(file);
+                }
+            },
+            reset: function (id) {
+                if (!confirm("Are You Sure, You Want to Remove?")) {
+                    return false;
+                }
+                this.media = null;
+                this.preview = null;
+                this.isImage = true; // Reset type
+                document.getElementById(id).value = "";
+            },
+        },
+    });
+
+
+    // 3 =====
+    new Vue({
+        el: "#upload-image3",
+        data() {
+            return {
+                images: [], // Array to hold selected images
+                imageInputValue: "", // To store concatenated file names
+                maxFileSize: 3 * 1024 * 1024, // 3 MB in bytes
+                maxFiles: 5, // Maximum number of allowed files
+            };
+        },
+        methods: {
+            previewImages: function (id) {
+                let input = document.getElementById(id);
+                let selectedFiles = input.files;
+
+                // Check if the total number of files exceeds the maximum allowed
+                if (
+                    selectedFiles.length > this.maxFiles ||
+                    this.images.length + selectedFiles.length > this.maxFiles
+                ) {
+                    toastr.error(`You can only select up to ${this.maxFiles} images.`);
+                    return;
+                }
+
+                for (let i = 0; i < selectedFiles.length; i++) {
+                    let file = selectedFiles[i];
+
+                    // Check if the file is an image
+                    if (!file.type.startsWith("image")) {
+                        toastr.error(`${file.name} is not an image!`);
+                        continue;
+                    }
+
+                    // Check file size
+                    if (file.size > this.maxFileSize) {
+                        toastr.error(`${file.name} exceeds the 3 MB size limit!`);
+                        continue;
+                    }
+
+                    let reader = new FileReader();
+                    reader.onload = (e) => {
+                        // Add the image to the images array
+                        this.images.push({
+                            src: e.target.result,
+                            name: file.name,
+                            type: "image",
+                        });
+
+                        // Update the hidden input value
+                        this.updateImageInputValue();
+                    };
+                    reader.readAsDataURL(file);
+                }
+            },
+            removeImage: function (index) {
+                // Remove the image from the array
+                this.images.splice(index, 1);
+
+                // Update the hidden input value
+                this.updateImageInputValue();
+            },
+            updateImageInputValue: function () {
+                // Concatenate the file names with a `,_,` separator
+                this.imageInputValue = this.images.map((image) => image.name).join(",_,");
+            },
+            reset: function (id) {
+                // Reset the images and clear the file input
+                this.images = [];
+                this.imageInputValue = "";
+                document.getElementById(id).value = "";
+            },
+        },
+    });
+
+
+    // 4  Course====
+
+    new Vue({
+        el: "#upload-image4",
+        data() {
+            return {
+                videos: [], // Array to hold selected and uploaded video details
+                videoInputValue: "", // To store concatenated video names
+                maxFileSize: 1024 * 1024 * 1024, // 1 GB in bytes
+                maxFiles: 20, // Maximum number of allowed video files
+                uploading: false, // Flag for whether a video is currently uploading
+                progress: 0, // Progress percentage for video upload
+                currentVideoIndex: 0, // Index to track the current video being uploaded
+            };
+        },
+        methods: {
+            previewVideos: function (id) {
+                let input = document.getElementById(id);
+                let selectedFiles = input.files;
+
+                // Check for max number of files
+                if (selectedFiles.length > this.maxFiles || this.videos.length + selectedFiles.length > this.maxFiles) {
+                    toastr.error("You can only select up to 20 videos.");
+                    return;
+                }
+
+                for (let i = 0; i < selectedFiles.length; i++) {
+                    let file = selectedFiles[i];
+
+                    // Validate file size
+                    if (file.size > this.maxFileSize) {
+                        toastr.error(`${file.name} exceeds the 1 GB size limit!`);
+                        continue;
+                    }
+
+                    // Add the video to the videos array
+                    this.videos.push({
+                        file: file,
+                        name: file.name,
+                        type: 'video',
+                        uploaded: false, // Track upload status
+                        progress: 0, // Track individual file progress
+                    });
+                }
+
+                // Start uploading videos
+                this.uploadNextVideo();
+            },
+            uploadNextVideo: function () {
+                // If we are already uploading or if all videos are uploaded, exit
+                if (this.uploading || this.currentVideoIndex >= this.videos.length) {
+                    return;
+                }
+
+                let video = this.videos[this.currentVideoIndex];
+
+                // If the current video is already uploaded, move to the next
+                if (video.uploaded) {
+                    this.currentVideoIndex++;
+                    this.uploadNextVideo();
+                    return;
+                }
+
+                // Start the uploading process
+                this.uploading = true;
+                let formData = new FormData();
+                formData.append('video', video.file);
+
+                axios.post('/teacher-course-video-upload', formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                    },
+                    onUploadProgress: (progressEvent) => {
+                        video.progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+                        this.progress = video.progress; // Update global progress bar
+                    }
+                })
+                    .then(response => {
+                        // Mark the video as uploaded and store the file name from the response
+                        video.uploaded = true;
+                        video.serverName = response.data.video_name;
+
+                        // Update the hidden input with the file names separated by `,_,`
+                        this.updateVideoInputValue();
+
+                        // Move to the next video
+                        this.currentVideoIndex++;
+                        this.uploading = false;
+
+                        // Start uploading the next video
+                        this.uploadNextVideo();
+                    })
+                    .catch(error => {
+                        toastr.error(`Error uploading ${video.name}`);
+                        this.uploading = false;
+                    });
+            },
+            removeVideo: function (index) {
+                let video = this.videos[index];
+
+                if (video.uploaded) {
+                    // Remove video from server using AJAX
+                    axios.post('/teacher-course-video-delete', {fileName: video.serverName})
+                        .then(response => {
+                            // Remove video from the videos array
+                            this.videos.splice(index, 1);
+
+                            // Update the hidden input value
+                            this.updateVideoInputValue();
+                        })
+                        .catch(error => {
+                            toastr.error(`Error deleting ${video.name}`);
+                        });
+                } else {
+                    // If the video is not yet uploaded, just remove it from the array
+                    this.videos.splice(index, 1);
+                }
+            },
+            updateVideoInputValue: function () {
+                // Concatenate the server file names with `,_,` separator
+                this.videoInputValue = this.videos
+                    .filter(video => video.uploaded)
+                    .map(video => video.serverName)
+                    .join(',_,');
+
+                document.getElementById("selected_more_videos").value = this.videoInputValue;
+            }
         }
-      })
-      .then(response => {
-        zip.uploaded = true;
-        zip.serverName = response.data.zip_name;
+    });
 
-        // Update the hidden input with the file names separated by `,_,`
-        this.updateZipInputValue();
 
-        this.currentZipIndex++;
-        this.uploading = false;
-        this.uploadNextZip();
-      })
-      .catch(error => {
-        toastr.error(`Error uploading ${zip.name}`);
-        this.uploading = false;
-      });
-    },
-    removeZip: function (index) {
-      let zip = this.zips[index];
+    new Vue({
+        el: "#upload-zip",
+        data() {
+            return {
+                zips: [], // Array to hold selected and uploaded zip details
+                zipInputValue: "", // To store concatenated zip names
+                maxFileSize: 1024 * 1024 * 1024, // 1 GB in bytes
+                maxFiles: 10, // Maximum number of allowed zip files
+                uploading: false, // Flag for whether a file is currently uploading
+                progress: 0, // Progress percentage for zip file upload
+                currentZipIndex: 0, // Index to track the current zip being uploaded
+            };
+        },
+        methods: {
+            previewZips: function (id) {
+                let input = document.getElementById(id);
+                let selectedFiles = input.files;
 
-      if (zip.uploaded) {
-        axios.post('/teacher-resource-delete', { fileName: zip.serverName })
-        .then(response => {
-          this.zips.splice(index, 1);
-          this.updateZipInputValue();
-        })
-        .catch(error => {
-          toastr.error(`Error deleting ${zip.name}`);
-        });
-      } else {
-        this.zips.splice(index, 1);
-      }
-    },
-    updateZipInputValue: function () {
-      this.zipInputValue = this.zips
-        .filter(zip => zip.uploaded)
-        .map(zip => zip.serverName)
-        .join(',_,');
+                // Check for max number of files
+                if (selectedFiles.length > this.maxFiles || this.zips.length + selectedFiles.length > this.maxFiles) {
+                    toastr.error("You can only select up to 10 zip files.");
+                    return;
+                }
 
-      document.getElementById("selected_zips").value = this.zipInputValue;
-    }
-  }
-});
+                for (let i = 0; i < selectedFiles.length; i++) {
+                    let file = selectedFiles[i];
 
+                    // Validate file size
+                    if (file.size > this.maxFileSize) {
+                        toastr.error(`${file.name} exceeds the 1 GB size limit!`);
+                        continue;
+                    }
+
+                    // Add the zip to the zips array
+                    this.zips.push({
+                        file: file,
+                        name: file.name,
+                        uploaded: false, // Track upload status
+                        progress: 0, // Track individual file progress
+                    });
+                }
+
+                // Start uploading zip files
+                this.uploadNextZip();
+            },
+            uploadNextZip: function () {
+                if (this.uploading || this.currentZipIndex >= this.zips.length) {
+                    return;
+                }
+
+                let zip = this.zips[this.currentZipIndex];
+
+                if (zip.uploaded) {
+                    this.currentZipIndex++;
+                    this.uploadNextZip();
+                    return;
+                }
+
+                this.uploading = true;
+                let formData = new FormData();
+                formData.append('zip', zip.file);
+
+                axios.post('/teacher-resource-upload', formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                    },
+                    onUploadProgress: (progressEvent) => {
+                        zip.progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+                        this.progress = zip.progress; // Update global progress bar
+                    }
+                })
+                    .then(response => {
+                        zip.uploaded = true;
+                        zip.serverName = response.data.zip_name;
+
+                        // Update the hidden input with the file names separated by `,_,`
+                        this.updateZipInputValue();
+
+                        this.currentZipIndex++;
+                        this.uploading = false;
+                        this.uploadNextZip();
+                    })
+                    .catch(error => {
+                        toastr.error(`Error uploading ${zip.name}`);
+                        this.uploading = false;
+                    });
+            },
+            removeZip: function (index) {
+                let zip = this.zips[index];
+
+                if (zip.uploaded) {
+                    axios.post('/teacher-resource-delete', {fileName: zip.serverName})
+                        .then(response => {
+                            this.zips.splice(index, 1);
+                            this.updateZipInputValue();
+                        })
+                        .catch(error => {
+                            toastr.error(`Error deleting ${zip.name}`);
+                        });
+                } else {
+                    this.zips.splice(index, 1);
+                }
+            },
+            updateZipInputValue: function () {
+                this.zipInputValue = this.zips
+                    .filter(zip => zip.uploaded)
+                    .map(zip => zip.serverName)
+                    .join(',_,');
+
+                document.getElementById("selected_zips").value = this.zipInputValue;
+            }
+        }
+    });
 
 
 </script>
@@ -1845,105 +1893,104 @@ new Vue({
 {{-- File Upload Script END ========= --}}
 
 
-
-    <script>
-        $(document).ready(function() {
-            $('.owl-carousel').owlCarousel({
-                items: 1,
-                margin: 30
-            });
-        })
-    </script>
-    <!-- ================ side js start here=============== -->
+<script>
+    $(document).ready(function () {
+        $('.owl-carousel').owlCarousel({
+            items: 1,
+            margin: 30
+        });
+    })
+</script>
+<!-- ================ side js start here=============== -->
 <script>
     // Sidebar script
-  document.addEventListener("DOMContentLoaded", function() {
-    let arrow = document.querySelectorAll(".arrow");
-    for (let i = 0; i < arrow.length; i++) {
-      arrow[i].addEventListener("click", function(e) {
-        let arrowParent = e.target.parentElement.parentElement; // Selecting main parent of arrow
-        arrowParent.classList.toggle("showMenu");
-      });
-    }
-  
-    let sidebar = document.querySelector(".sidebar");
-    let sidebarBtn = document.querySelector(".bx-menu");
-  
-    sidebarBtn.addEventListener("click", function() {
-      sidebar.classList.toggle("close");
+    document.addEventListener("DOMContentLoaded", function () {
+        let arrow = document.querySelectorAll(".arrow");
+        for (let i = 0; i < arrow.length; i++) {
+            arrow[i].addEventListener("click", function (e) {
+                let arrowParent = e.target.parentElement.parentElement; // Selecting main parent of arrow
+                arrowParent.classList.toggle("showMenu");
+            });
+        }
+
+        let sidebar = document.querySelector(".sidebar");
+        let sidebarBtn = document.querySelector(".bx-menu");
+
+        sidebarBtn.addEventListener("click", function () {
+            sidebar.classList.toggle("close");
+        });
+
+        // Function to toggle sidebar based on screen size
+        function toggleSidebar() {
+            let screenWidth = window.innerWidth;
+            if (screenWidth < 992) {
+                sidebar.classList.add("close");
+            } else {
+                sidebar.classList.remove("close");
+            }
+        }
+
+        // Call the function initially
+        toggleSidebar();
+
+        // Listen for resize events to adjust sidebar
+        window.addEventListener("resize", function () {
+            toggleSidebar();
+        });
     });
-  
-    // Function to toggle sidebar based on screen size
-    function toggleSidebar() {
-      let screenWidth = window.innerWidth;
-      if (screenWidth < 992) {
-        sidebar.classList.add("close");
-      } else {
-        sidebar.classList.remove("close");
-      }
-    }
-  
-    // Call the function initially
-    toggleSidebar();
-  
-    // Listen for resize events to adjust sidebar
-    window.addEventListener("resize", function() {
-      toggleSidebar();
-    });
-  });
-  
-  </script>
-  <!-- ================ side js start End=============== -->
-   
+
+</script>
+<!-- ================ side js start End=============== -->
+
 <!-- modal hide show jquery here -->
 <script>
-  $(document).ready(function () {
-    $(document).on("click", "#delete-account", function (e) {
-      e.preventDefault();
-      $("#exampleModal7").modal("show");
-      $("#delete-teacher-account").modal("hide");
-    });
+    $(document).ready(function () {
+        $(document).on("click", "#delete-account", function (e) {
+            e.preventDefault();
+            $("#exampleModal7").modal("show");
+            $("#delete-teacher-account").modal("hide");
+        });
 
-    $(document).on("click", "#delete-account", function (e) {
-      e.preventDefault();
-      $("#delete-teacher-account").modal("show");
-      $("#exampleModal7").modal("hide");
+        $(document).on("click", "#delete-account", function (e) {
+            e.preventDefault();
+            $("#delete-teacher-account").modal("show");
+            $("#exampleModal7").modal("hide");
+        });
     });
-  });
 </script>
- <!-- JavaScript to close the modal when Cancel button is clicked -->
+<!-- JavaScript to close the modal when Cancel button is clicked -->
 <script>
     // Wait for the document to load
-    document.addEventListener('DOMContentLoaded', function() {
-      // Get the Cancel button by its ID
-      var cancelButton = document.getElementById('cancelButton');
-  
-      // Add a click event listener to the Cancel button
-      cancelButton.addEventListener('click', function() {
-        // Find the modal by its ID
-        var modal = document.getElementById('exampleModal6');
-        
-        // Use Bootstrap's modal method to hide the modal
-        $(modal).modal('hide');
-      });
-    });
-  </script>
-    <script>
-        $(document).ready(function() {
-            $('.js-example-basic-multiple').select2();
-        });
-    </script>
-    <script>
-        new DataTable('#example', {
-            scrollX: true
-        });
-    </script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Get the Cancel button by its ID
+        var cancelButton = document.getElementById('cancelButton');
 
-    <script src="assets/teacher/libs/aos/js/aos.js "></script>
-    <script>
-        AOS.init();
-    </script>
-    <script src="assets/teacher/asset/js/bootstrap.min.js "></script>
+        // Add a click event listener to the Cancel button
+        cancelButton.addEventListener('click', function () {
+            // Find the modal by its ID
+            var modal = document.getElementById('exampleModal6');
+
+            // Use Bootstrap's modal method to hide the modal
+            $(modal).modal('hide');
+        });
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        $('.js-example-basic-multiple').select2();
+    });
+</script>
+<script>
+    new DataTable('#example', {
+        scrollX: true
+    });
+</script>
+
+<script src="assets/teacher/libs/aos/js/aos.js "></script>
+<script>
+    AOS.init();
+</script>
+<script src="assets/teacher/asset/js/bootstrap.min.js "></script>
 
 </body>
 <!--========== Underline tabes JS Start========== -->
@@ -2006,7 +2053,7 @@ new Vue({
     // Loading Text
     const loadingText = document.querySelector('#loadingText');
 
-    // Slect File Input 
+    // Slect File Input
     const fileInput = document.querySelector('#fileInput');
 
     // Select Preview Image
@@ -2044,24 +2091,24 @@ new Vue({
     // Append Images Types Array Inisde Tooltip Data
     toolTipData.innerHTML = [...imagesTypes].join(', .');
 
-    // When (drop-zoon) has (dragover) Event 
-    dropZoon.addEventListener('dragover', function(event) {
-        // Prevent Default Behavior 
+    // When (drop-zoon) has (dragover) Event
+    dropZoon.addEventListener('dragover', function (event) {
+        // Prevent Default Behavior
         event.preventDefault();
 
         // Add Class (drop-zoon--over) On (drop-zoon)
         dropZoon.classList.add('drop-zoon--over');
     });
 
-    // When (drop-zoon) has (dragleave) Event 
-    dropZoon.addEventListener('dragleave', function(event) {
+    // When (drop-zoon) has (dragleave) Event
+    dropZoon.addEventListener('dragleave', function (event) {
         // Remove Class (drop-zoon--over) from (drop-zoon)
         dropZoon.classList.remove('drop-zoon--over');
     });
 
-    // When (drop-zoon) has (drop) Event 
-    dropZoon.addEventListener('drop', function(event) {
-        // Prevent Default Behavior 
+    // When (drop-zoon) has (drop) Event
+    dropZoon.addEventListener('drop', function (event) {
+        // Prevent Default Behavior
         event.preventDefault();
 
         // Remove Class (drop-zoon--over) from (drop-zoon)
@@ -2074,14 +2121,14 @@ new Vue({
         uploadFile(file);
     });
 
-    // When (drop-zoon) has (click) Event 
-    dropZoon.addEventListener('click', function(event) {
+    // When (drop-zoon) has (click) Event
+    dropZoon.addEventListener('click', function (event) {
         // Click The (fileInput)
         fileInput.click();
     });
 
-    // When (fileInput) has (change) Event 
-    fileInput.addEventListener('change', function(event) {
+    // When (fileInput) has (change) Event
+    fileInput.addEventListener('change', function (event) {
         // Select The Chosen File
         const file = event.target.files[0];
 
@@ -2093,9 +2140,9 @@ new Vue({
     function uploadFile(file) {
         // FileReader()
         const fileReader = new FileReader();
-        // File Type 
+        // File Type
         const fileType = file.type;
-        // File Size 
+        // File Size
         const fileSize = file.size;
 
         // If File Is Passed from the (File Validation) Function
@@ -2113,10 +2160,10 @@ new Vue({
             // Remove Class (uploaded-file__info--active) from (uploadedFileInfo)
             uploadedFileInfo.classList.remove('uploaded-file__info--active');
 
-            // After File Reader Loaded 
-            fileReader.addEventListener('load', function() {
-                // After Half Second 
-                setTimeout(function() {
+            // After File Reader Loaded
+            fileReader.addEventListener('load', function () {
+                // After Half Second
+                setTimeout(function () {
                     // Add Class (upload-area--open) On (uploadArea)
                     uploadArea.classList.add('upload-area--open');
 
@@ -2143,13 +2190,14 @@ new Vue({
                 progressMove();
             });
 
-            // Read (file) As Data Url 
+            // Read (file) As Data Url
             fileReader.readAsDataURL(file);
         } else { // Else
 
             this; // (this) Represent The fileValidate(fileType, fileSize) Function
 
-        };
+        }
+        ;
     };
 
     // Progress Counter Increase Function
@@ -2157,11 +2205,11 @@ new Vue({
         // Counter Start
         let counter = 0;
 
-        // After 600ms 
+        // After 600ms
         setTimeout(() => {
             // Every 100ms
             let counterIncrease = setInterval(() => {
-                // If (counter) is equle 100 
+                // If (counter) is equle 100
                 if (counter === 100) {
                     // Stop (Counter Increase)
                     clearInterval(counterIncrease);
@@ -2186,9 +2234,10 @@ new Vue({
             // Add Inisde (uploadedFileIconText) The (jpg) Value
             uploadedFileIconText.innerHTML = 'jpg';
         } else { // else
-            // Add Inisde (uploadedFileIconText) The Uploaded File Type 
+            // Add Inisde (uploadedFileIconText) The Uploaded File Type
             uploadedFileIconText.innerHTML = isImage[0];
-        };
+        }
+        ;
 
         // If The Uploaded File Is An Image
         if (isImage.length !== 0) {
@@ -2197,10 +2246,12 @@ new Vue({
                 return true;
             } else { // Else File Size
                 return alert('Please Your File Should be 2 Megabytes or Less');
-            };
-        } else { // Else File Type 
+            }
+            ;
+        } else { // Else File Type
             return alert('Please make sure to upload An Image File Type');
-        };
+        }
+        ;
     };
 
     // :)
@@ -2234,8 +2285,149 @@ new Vue({
     }
 
     // Call the function to show the additional options for the default checked radio button on page load
-    window.onload = function() {
+    window.onload = function () {
         showAdditionalOptions1();
     };
+</script>
+
+
+<script>
+
+    $(document).ready(function () {
+        checkMeetingPlatformVisibility();
+    });
+
+
+    $('#class_type').on('change', function () {
+        checkMeetingPlatformVisibility();
+
+        var class_type = $('#class_type').val();
+        if (class_type == 'Video') {
+            $('#resources_course').show();
+            $('#recurring_type_main').hide();
+            $('#lesson_type_main_div').hide();
+            $('#meeting_platform_main').hide();
+        } else {
+            $('#resources_course').hide();
+            $('#recurring_type_main').show();
+            $('#lesson_type_main_div').show();
+            checkMeetingPlatformVisibility();
+        }
+        GroupShow();
+    });
+
+
+    $('#recurring_type').on('change', function () {
+        checkMeetingPlatformVisibility();
+
+        var recurring_type = $('#recurring_type').val();
+
+        if (recurring_type == 'Trial') {
+            $('#trial_type_main').show();
+        } else {
+            $('#trial_type_main').hide();
+        }
+
+        GroupShow();
+    });
+
+    // Update Payment Type based on Trial Selection
+    $('#payment_type').on('change', function () {
+        checkMeetingPlatformVisibility();
+
+        var payment_type = $('#payment_type').val();
+        $('#recurring_type').empty();
+
+        if (payment_type == 'Subscription') {
+            $('#recurring_type').append('<option value="Recurring" class="fa">Recurring Class</option>');
+            $('#trial_type_main').hide();
+        } else {
+            $('#recurring_type').append(`
+                <option value="Recurring" class="fa">Recurring Class</option>
+                <option value="OneDay" class="fa">One-Day Class</option>
+                <option value="Trial" class="fa">Trial Class</option>
+            `);
+        }
+        GroupShow();
+    });
+
+    // Class Type Change এ Trial logic
+    $('#class_type').on('change', function () {
+        var class_type = $('#class_type').val();
+
+        if (class_type == 'Video') {
+            $('#recurring_type_main').hide();
+            $('#trial_type_main').hide();
+            $('#lesson_type_main_div').hide();
+        } else {
+            $('#recurring_type_main').show();
+            $('#lesson_type_main_div').show();
+        }
+
+        GroupShow();
+    });
+
+    $('#lesson_type').on('change', function () {
+        checkMeetingPlatformVisibility();
+        GroupShow();
+    });
+
+    function checkMeetingPlatformVisibility() {
+        var class_type = $('#class_type').val();
+        var recurring_type = $('#recurring_type').val();
+
+        if (class_type == 'Live') {
+            $('#meeting_platform_main').show();
+            $('#meeting_platform_main').css('display', 'block');
+        } else {
+            $('#meeting_platform_main').hide();
+            $('#meeting_platform_main').css('display', 'none');
+            $('#meeting_platform').val(''); // Clear selection
+        }
+    }
+
+    function GroupShow() {
+        var class_type = $('#class_type').val();
+        var lesson_type = $('#lesson_type').val();
+        var payment_type = $('#payment_type').val();
+        var recurring_type = $('#recurring_type').val();
+
+        // Trial Class Validation
+        if (recurring_type == 'Trial') {
+            if (class_type != 'Live') {
+                toastr.error('Trial class must be Live class');
+                $('#recurring_type').val('Recurring');
+                return;
+            }
+
+            if (payment_type == 'Subscription') {
+                toastr.error('Trial class cannot be subscription');
+                $('#payment_type').val('OneOff');
+                return;
+            }
+        }
+
+        // Group Type Logic
+        if (class_type == 'Live' && lesson_type == 'Group') {
+            $('#group_type_main').show();
+            $('#group_type_main').css('display', 'block');
+            $('#group_type').empty();
+
+            if (recurring_type == 'Recurring') {
+                $('#group_type').append(`
+                    <option value="Public" class="fa">Public Group</option>
+                    <option value="Private" class="fa">Private Group</option>
+                    <option value="Both" class="fa">Both</option>
+                `);
+            } else {
+                $('#group_type').append(`
+                    <option value="Public" class="fa">Public Group</option>
+                `);
+            }
+        } else {
+            $('#group_type_main').css('display', 'none');
+            $('#group_type_main').hide();
+        }
+    }
 </script>
 </html>

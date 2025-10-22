@@ -494,8 +494,14 @@ class OrderManagementController extends Controller
             }
         }
 
-
-        return view('User-Dashboard.class-management', compact('pendingOrders', 'activeOrders', 'deliveredOrders', 'completedOrders', 'cancelledOrders', 'reschedule_hours'));
+        return view('User-Dashboard.class-management', compact(
+            'pendingOrders',
+            'activeOrders',
+            'deliveredOrders',
+            'completedOrders',
+            'cancelledOrders',
+            'reschedule_hours'
+        ));
     }
 
 
@@ -1065,7 +1071,15 @@ class OrderManagementController extends Controller
         }
 
 
-        return view('Teacher-Dashboard.client-managment', compact('pendingOrders', 'priorityOrders', 'activeOrders', 'deliveredOrders', 'completedOrders', 'cancelledOrders', 'reschedule_hours'));
+        return view('Teacher-Dashboard.client-managment', compact(
+            'pendingOrders',
+            'priorityOrders',
+            'activeOrders',
+            'deliveredOrders',
+            'completedOrders',
+            'cancelledOrders',
+            'reschedule_hours'
+        ));
     }
 
 
@@ -1144,8 +1158,6 @@ class OrderManagementController extends Controller
     // Cancel Order----------------
     public function CancelOrder(Request $request)
     {
-
-
         if (!Auth::check()) {
             return redirect('/')->with('error', 'Login First!');
         }
@@ -1175,22 +1187,19 @@ class OrderManagementController extends Controller
 
 
         if ($order->status == 0) {
-
             $paymentIntent = PaymentIntent::retrieve($order->payment_id);
-            $canceledIntent = $paymentIntent->cancel();
+            $paymentIntent->cancel();
             $cancelOrder->refund = 1;
             $cancelOrder->amount = $order->finel_price;
             $order->refund = 1;
-
         } else if (Auth::user()->role == 1 && $request->order_refund == 1) {
-
             $cancelOrder->refund = 1;
             $cancelOrder->refund_type = $request->refund;
             $paymentIntent = PaymentIntent::retrieve($order->payment_id);
             if ($request->refund == 0) {
                 // Full Refund
                 $paymentIntent = PaymentIntent::retrieve($order->payment_id);
-                $canceledIntent = $paymentIntent->cancel();
+                $paymentIntent->cancel();
                 $cancelOrder->amount = $order->finel_price;
 
             } else {
@@ -2245,9 +2254,9 @@ class OrderManagementController extends Controller
 
 
         if ($order) {
-            return redirect()->back()->with('success', 'Dispute Order Request Refund Submmitted Successfuly');
+            return redirect()->back()->with('success', 'Dispute Order Request Refund Submitted Successfully');
         } else {
-            return redirect()->back()->with('error', 'Something went rong,tryagain later!');
+            return redirect()->back()->with('error', 'Something went rong,try again later!');
         }
 
 
