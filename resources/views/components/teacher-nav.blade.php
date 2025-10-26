@@ -24,11 +24,11 @@
                   @php  $firstLetter = strtoupper(substr(Auth::user()->first_name, 0, 1));  @endphp
                   
                   <div class="img_profile">
-                 <img src="assets/profile/avatars/({{$firstLetter}}).jpg"> 
+                 <img src="{{ asset(Auth::user()->profile) }}"> 
                 </div>  
                 @else
                 <div class="img_profile" style="width: 50px; height: 50px;">
-                  <img src="assets/profile/img/{{Auth::user()->profile}}" style="width: 100%; height: 100%;"> 
+                  <img src="{{ asset(Auth::user()->profile) }}" style="width: 100%; height: 100%;"> 
                 </div>  
                      
                  @endif
@@ -65,6 +65,11 @@
                             Dashboard</a
                           >
                         </li>
+                            <li>
+                  <a class="dropdown-item" href="/profile">
+                    <i class="bx bx-user icon"></i> &nbsp;&nbsp;Profile</a
+                  >
+                </li>
                         @if (Auth::user())
                         @php
                         $expert = \App\Models\ExpertProfile::where(['user_id'=>Auth::user()->id, 'status'=>1])->first();

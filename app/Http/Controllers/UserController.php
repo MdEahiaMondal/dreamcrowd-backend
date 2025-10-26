@@ -11,6 +11,8 @@ use App\Models\Faqs;
 use App\Models\PannelFaqs;
 use App\Models\User;
 use App\Models\WishList;
+use App\Models\BookOrder;
+use App\Models\CancelOrder;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -30,17 +32,58 @@ class UserController extends Controller
                 return redirect()->to('/admin-dashboard');
             }
         }
-
-
     }
 
     public function UserDashboard()
     {
+
         if ($redirect = $this->UsercheckAuth()) {
             return $redirect;
         }
 
-        return view("User-Dashboard.index");
+        // Base query
+        $orders = BookOrder::query();
+
+        // === COUNT STATISTICS ===
+        $stats = [
+            'all_orders'        => BookOrder::count(),
+
+            // Class orders (based on TeacherGig service_role)
+            'class_orders'      => BookOrder::whereHas('gig', function ($q) {
+                $q->where('service_role', 'Class');
+            })->count(),
+
+            // Freelancer orders (based on TeacherGig freelance_service)
+            'freelancer_orders' => BookOrder::whereHas('gig', function ($q) {
+                $q->where('service_role', 'Freelance');
+            })->count(),
+
+            // Status-based counts
+            'completed_orders'  =>  BookOrder::where('status', 3)->count(),
+
+            'cancelled_orders'  =>  BookOrder::where('status', 4)->count(),
+
+            'active_orders'     => BookOrder::where('status', 1)->count(),
+
+            // Work site-based counts
+            'online_orders' => BookOrder::whereHas('gig', function ($q) {
+                $q->where('service_type', 'Online');
+            })->count(),
+
+            'inperson_orders' => BookOrder::whereHas('gig', function ($q) {
+                $q->where('service_type', 'Inperson');
+            })->count(),
+
+        ];
+
+        // === RECENT BOOKINGS ===
+        $recentBookings = BookOrder::with(['gig', 'booker'])
+            ->latest()
+            ->take(9)
+            ->get();
+
+
+        return view("User-Dashboard.index", compact(['stats', 'recentBookings']));
     }
 
 
@@ -52,9 +95,43 @@ class UserController extends Controller
         }
 
 
+
         $faqs = PannelFaqs::where(['type' => 'buyer'])->get();
         return view("User-Dashboard.faq", compact('faqs'));
     }
+
+    
+    public function profile()
+    {
+        $user = Auth::user();
+        return view("common.profile", compact('user'));
+    }
+
+     public function update(Request $request)
+    {
+        $user = Auth::user();
+
+        $request->validate([
+            'first_name' => 'required|string|max:100',
+            'last_name'  => 'required|string|max:100',
+            'country'    => 'nullable|string|max:100',
+            'profile'    => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+        ]);
+
+        if ($request->hasFile('profile')) {
+            $filename = time() . '.' . $request->profile->extension();
+            $request->profile->move(public_path('uploads/profiles'), $filename);
+            $user->profile = 'uploads/profiles/' . $filename;
+        }
+
+        $user->first_name = $request->first_name;
+        $user->last_name  = $request->last_name;
+        $user->country    = $request->country;
+        $user->save();
+
+        return back()->with('success', 'Profile updated successfully!');
+    }
+
 
 
     public function ChangePassword()
@@ -68,6 +145,7 @@ class UserController extends Controller
     }
 
 
+
     public function ChangeEmail()
     {
 
@@ -76,6 +154,7 @@ class UserController extends Controller
         }
         return view("User-Dashboard.change-email");
     }
+
 
 
     public function ChangeCardDetail()
@@ -88,6 +167,7 @@ class UserController extends Controller
         $bank_details = BankDetails::where(['user_id' => Auth::user()->id])->first();
         return view("User-Dashboard.card-detail", compact('bank_details'));
     }
+
 
 
     public function DeleteAccount(Request $request)
@@ -115,10 +195,8 @@ class UserController extends Controller
                 $user->delete();
                 Auth::logout();
                 return redirect()->to('/')->with('success', 'Account Deleted!');
-
             } else {
                 return redirect()->back()->with('error', 'Something Went Rong,Tryagain Later!');
-
             }
         } elseif ($request->mainOptions == 'option2') {
 
@@ -133,10 +211,8 @@ class UserController extends Controller
                 $user->delete();
                 Auth::logout();
                 return redirect()->to('/')->with('success', 'Account Deleted!');
-
             } else {
                 return redirect()->back()->with('error', 'Something Went Rong,Tryagain Later!');
-
             }
         } elseif ($request->mainOptions == 'option3') {
 
@@ -150,10 +226,8 @@ class UserController extends Controller
                 $user->delete();
                 Auth::logout();
                 return redirect()->to('/')->with('success', 'Account Deleted!');
-
             } else {
                 return redirect()->back()->with('error', 'Something Went Rong,Tryagain Later!');
-
             }
         } else {
 
@@ -168,14 +242,10 @@ class UserController extends Controller
                 $user->delete();
                 Auth::logout();
                 return redirect()->to('/')->with('success', 'Account Deleted!');
-
             } else {
                 return redirect()->back()->with('error', 'Something Went Rong,Tryagain Later!');
-
             }
         }
-
-
     }
 
 
@@ -193,11 +263,12 @@ class UserController extends Controller
         }
 
         return view("User-Dashboard.contact");
-
     }
 
     public function ContactMail(Request $request)
     {
+
+
         if ($request->msg == null) {
             return redirect()->back()->with('error', 'Please Write a Text Message!');
         }
@@ -212,7 +283,7 @@ class UserController extends Controller
         $name = $request->first_name . ' ' . $request->last_name;
         $subject = $request->subject;
         $mail = $request->email;
-        $mail_send = Mail::to('ma2550645@gmail.com')->send(new ContactMail($mailData, $subject, $name, $mail));
+        $mail_send =  Mail::to('ma2550645@gmail.com')->send(new ContactMail($mailData, $subject, $name, $mail));
         //    $mail_send =  Mail::to('dreamcrowd@bravemindstudio.com')->send(new ContactMail($mailData, $subject,$name, $mail));
 
         if ($mail_send) {
@@ -220,7 +291,6 @@ class UserController extends Controller
         } else {
             return redirect()->back()->with('error', 'Something Went Rong, Tryagain Later!');
         }
-
     }
     // Contact Us Functions End================
 
@@ -260,7 +330,7 @@ class UserController extends Controller
     }
 
 
-    // Wish List Functions END================
+    // Wish List Functions END================ 
 
 
 }

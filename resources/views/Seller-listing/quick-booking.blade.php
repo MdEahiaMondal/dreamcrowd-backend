@@ -901,6 +901,23 @@
                             @endif
 
 
+                            <a
+                                href="#"
+                                type="button"
+                                class="btn contact-btn"
+                                data-bs-toggle="modal"
+                                id="contact-us"
+                                data-bs-target="#contact-me-modal"
+                            >Contact Me
+                            </a>
+
+                            @if (Auth::user())
+                                <button onclick="ServicePayemnt();" class="btn booking-btn">Complete Booking</button>
+                            @else
+                                <button data-bs-toggle="modal" data-bs-target="#exampleModal" class="btn booking-btn">
+                                    Complete Booking
+                                </button>
+                            @endif
                         </div>
                     </div>
 
@@ -1513,7 +1530,6 @@
             <p class="float-start">Total Amount: <span id="total_price">${{$rate}}</span></p>
             <div class="float-end">
 
-                {{-- @if (Auth::user() && Auth::user()->role == 0) --}}
                 <a
                     href="#"
                     type="button"
@@ -1525,17 +1541,17 @@
                 >
 
 
-                <button onclick="ServicePayemnt();" class="btn booking-btn">Complete Booking</button>
-                {{-- @endif --}}
+                @if (Auth::user())
+                    <button onclick="ServicePayemnt();" class="btn booking-btn">Complete Booking</button>
+                @else
+                    <button data-bs-toggle="modal" data-bs-target="#exampleModal" class="btn booking-btn">Complete
+                        Booking
+                    </button>
+                @endif
             </div>
         </div>
     </div>
 </div>
-
-</form>
-
-</div>
-
 
 <!-- Send Message  Modal Start =========-->
 <div

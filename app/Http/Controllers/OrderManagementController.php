@@ -50,7 +50,7 @@ class OrderManagementController extends Controller
         $admin_duration = BookingDuration::first();
         $reschedule_hours = (int)($admin_duration?->reschedule ?? 12);
 
-        $perPage = 20;
+                        $perPage = 20;
 
         $pendingOrders = DB::table('book_orders')
             ->join('expert_profiles', 'book_orders.teacher_id', '=', 'expert_profiles.user_id')

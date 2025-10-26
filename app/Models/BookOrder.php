@@ -48,5 +48,12 @@ class BookOrder extends Model
             'status'
     ];
 
+    public function gig(){
+        return $this->belongsTo(TeacherGig::class, 'gig_id');
+    }
+
+    public function booker(){
+        return $this->belongsTo(User::class, 'user_id');
+    }
 
 }
