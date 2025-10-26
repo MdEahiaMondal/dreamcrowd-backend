@@ -172,6 +172,8 @@ class ClassManagementController extends Controller
                 $app = ExpertProfile::where(['user_id' => Auth::user()->id, 'status' => 1])->first();
 
                 if ($app->category_freelance == null) {
+                    dd('okk');
+
                     return redirect()->to('/teacher-add-new-category/' . $app->id)->with('error', 'Please Add Categories For Freelance!');
                 }
 
@@ -181,7 +183,6 @@ class ClassManagementController extends Controller
                 if ($request->engine == 'Online') {
                     $categories = Category::whereIn('id', $categoryIds)->where('service_type', 'Online')->pluck('category')->toArray();
                     $categoryIds = Category::whereIn('id', $categoryIds)->where('service_type', 'Online')->pluck('id')->toArray();
-
                     return view("Teacher-Dashboard.Learn-How-5", compact('categories', 'categoryIds', 'banner', 'role', 'type'));
                 } else {
                     $categories = Category::whereIn('id', $categoryIds)->where('service_type', 'Inperson')->pluck('category')->toArray();
@@ -479,7 +480,6 @@ class ClassManagementController extends Controller
     // Gig Payment Upload ====
     public function ClassGigPaymentUpload(Request $request)
     {
-
         if ($redirect = $this->TeachercheckAuth()) {
             return $redirect;
         }
@@ -488,11 +488,9 @@ class ClassManagementController extends Controller
         $gigData = TeacherGigData::where(['gig_id' => $request->gig_id])->first();
         $payment = new TeacherGigPayment();
 
-
         $payment->gig_id = $request->gig_id;
 
         if ($gig->service_role == 'Class') {
-
 
             if ($gig->class_type == 'Video' || $gig->lesson_type == 'One') {
 
@@ -500,11 +498,10 @@ class ClassManagementController extends Controller
                 $payment->rate = $request->rate;
                 $payment->earning = $request->earning;
 
-
             } else {
 
                 if (in_array($gigData->group_type, ['Public', 'Both'])) {
-                    $gig->private_rate = $request->private_rate;
+                    $gig->public_rate = $request->public_rate;
                     $payment->public_rate = $request->public_rate;
                     $payment->public_earning = $request->public_earning;
                     $payment->public_group_size = $request->public_group_size;
@@ -518,10 +515,9 @@ class ClassManagementController extends Controller
                     $payment->private_group_size = $request->private_group_size;
                     $payment->private_discount = $request->private_discount;
                 }
-
-
             }
 
+            // Minor Attend
             $payment->minor_attend = $request->minor_attend;
             if ($request->minor_attend == 1) {
                 $payment->age_limit = $request->age_limit;
@@ -533,13 +529,20 @@ class ClassManagementController extends Controller
             if ($gig->class_type == 'Video') {
                 $payment->duration = $request->duration;
             } else {
-                $payment->duration = $request->durationH . ':' . $request->durationM;
+                if ($gigData->recurring_type == 'Trial') {
+                    if ($gigData->trial_type == 'Free') {
+                        $payment->duration = '00:30';
+                        $gig->duration = '00:30';
+                    } else {
+                        $payment->duration = $request->durationH . ':' . $request->durationM;
+                        $gig->duration = $request->durationH . ':' . $request->durationM;
+                    }
+                } else {
+                    $payment->duration = $request->durationH . ':' . $request->durationM;
+                }
             }
 
-
-            //   Repeat On Day Insert
-
-            if ($gigData->recurring_type == 'OneDay') {
+            if ($gigData->recurring_type == 'OneDay' || $gigData->recurring_type == 'Trial') {
 
                 $gig->start_date = $request->start_date;
                 $gig->start_time = $request->start_time;
@@ -547,14 +550,36 @@ class ClassManagementController extends Controller
                 $payment->start_date = $request->start_date;
                 $payment->start_time = $request->start_time;
                 $payment->end_time = $request->end_time;
-                $gig->status = 1;
-            } else {
+
+                if ($gigData->recurring_type == 'Trial') {
+                    $payment->is_trial = 1;
+                    $payment->trial_type = $gigData->trial_type;
+
+                    if ($gigData->trial_type == 'Free') {
+                        if (in_array($gigData->group_type, ['Public', 'Both'])) {
+                            $gig->public_rate = 0;
+                            $payment->public_rate = 0;
+                            $payment->public_earning = 0;
+                            $payment->public_discount = 0;
+                        }
+
+                        if (in_array($gigData->group_type, ['Private', 'Both'])) {
+                            $gig->private_rate = 0;
+                            $payment->private_rate = 0;
+                            $payment->private_earning = 0;
+                            $payment->private_discount = 0;
+                        }
+                    }
+                }
 
                 $gig->status = 1;
+
+            } else {
+                $gig->status = 1;
+
                 if ($request->day_repeat != null) {
-                    $i = 0;
                     foreach ($request->day_repeat as $key => $value) {
-                        $day = TeacherReapetDays::create([
+                        TeacherReapetDays::create([
                             'gig_id' => $request->gig_id,
                             'day' => $value,
                             'start_time' => $request->start_repeat[$key],
@@ -562,13 +587,9 @@ class ClassManagementController extends Controller
                         ]);
                     }
                 }
-
             }
 
-
         } else {
-
-
             if ($gigData->freelance_type == 'Both') {
                 $gig->rate = $request->rate . '|*|' . $request->rate_2;
                 $payment->rate = $request->rate . '|*|' . $request->rate_2;
@@ -594,24 +615,19 @@ class ClassManagementController extends Controller
                 $gig->revision = $request->revision;
             }
 
-
             $payment->positive_term = $request->positive_term;
             $payment->full_available = $request->full_available;
             $gig->full_available = $request->full_available;
 
-
             if ($gig->service_type != 'Inperson' && $gigData->freelance_service != 'Normal') {
-
                 if ($gigData->freelance_service == 'Consultation') {
                     $payment->duration = $request->durationH . ':' . $request->durationM;
                 }
             }
 
-
             if ($request->full_available == 0) {
-                $i = 0;
                 foreach ($request->day_repeat as $key => $value) {
-                    $day = TeacherReapetDays::create([
+                    TeacherReapetDays::create([
                         'gig_id' => $request->gig_id,
                         'day' => $value,
                         'start_time' => $request->start_repeat[$key],
@@ -621,27 +637,18 @@ class ClassManagementController extends Controller
             }
 
             $gig->status = 1;
-
-
         }
 
-
         $payment->save();
-
         $gig->update();
-
 
         if ($payment) {
             setcookie("gig_id", "", time() - 3600, "/"); // Expire the cookie
-            return redirect()->to('/class-management')->with('success', 'Your Service Published Successfuly!');
+            return redirect()->to('/class-management')->with('success', 'Your Service Published Successfully!');
         } else {
-            return redirect()->to('/class-management')->with('error', 'Something Went Rong, Try Again Later!');
-
+            return redirect()->to('/class-management')->with('error', 'Something Went Wrong, Try Again Later!');
         }
-
-
     }
-
 
     // Upload Course Videos Function Start==========
 
@@ -822,13 +829,17 @@ class ClassManagementController extends Controller
     // Service Draft Edit Function Start ========
     public function TeacherServiceEdit($id, $action)
     {
-
+        // Check authentication
+        if ($redirect = $this->TeachercheckAuth()) {
+            return $redirect;
+        }
 
         $gig = TeacherGig::find($id);
         $gigData = TeacherGigData::where(['gig_id' => $gig->id])->first();
         $banner = SiteBanner::all();
         $selectedCate = Category::find($gigData->category);
         $sub_categories = SubCategory::where('cate_id', $gigData->category)->pluck('sub_category')->toArray();
+
         if ($gig->service_role == 'Class') {
 
             $app = ExpertProfile::where(['user_id' => Auth::user()->id, 'status' => 1])->first();
@@ -839,11 +850,9 @@ class ClassManagementController extends Controller
 
             $categoryIds = explode(',', $app->category_class);
 
-
             if ($gig->service_type == 'Online') {
                 $categories = Category::whereIn('id', $categoryIds)->where('service_type', 'Online')->pluck('category')->toArray();
                 $categoryIds = Category::whereIn('id', $categoryIds)->where('service_type', 'Online')->pluck('id')->toArray();
-
 
                 return view("Teacher-Dashboard.edit-Learn-How", compact('categories', 'sub_categories', 'categoryIds', 'banner', 'selectedCate', 'gig', 'gigData'));
             } else {
@@ -854,7 +863,6 @@ class ClassManagementController extends Controller
             }
         } else {
 
-
             $app = ExpertProfile::where(['user_id' => Auth::user()->id, 'status' => 1])->first();
 
             if ($app->category_freelance == null) {
@@ -862,7 +870,6 @@ class ClassManagementController extends Controller
             }
 
             $categoryIds = explode(',', $app->category_freelance);
-
 
             if ($gig->service_type == 'Online') {
                 $categories = Category::whereIn('id', $categoryIds)->where('service_type', 'Online')->pluck('category')->toArray();
@@ -876,10 +883,7 @@ class ClassManagementController extends Controller
                 return view("Teacher-Dashboard.edit-Learn-How-5", compact('categories', 'sub_categories', 'categoryIds', 'banner', 'selectedCate', 'gig', 'gigData'));
             }
         }
-
-
     }
-
     // Update Function Service Data Start
     // Gig Data Upload
     public function ClassGigDataUpdate(Request $request)

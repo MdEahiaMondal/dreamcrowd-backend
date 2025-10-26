@@ -44,21 +44,48 @@ class ZoomController extends Controller
     {
         $user = Auth::user();
 
+//        $response = Http::withToken($user->zoom_access_token)
+//            ->post('https://api.zoom.us/v2/users/me/meetings', [
+//                'topic' => $request->topic ?? 'Live Class',
+//                'type' => 2,
+//                'start_time' => $request->start_time, // ISO 8601 format
+//                'duration' => $request->duration ?? 60,
+//                'timezone' => 'Asia/Dhaka',
+//                'settings' => [
+//                    'join_before_host' => true,
+//                    'participant_video' => true,
+//                    'host_video' => true,
+//                    'mute_upon_entry' => true,
+//                ],
+//            ])->json();
+
+        // ধরি, আপনার ডাটাবেস থেকে এই ইউজারদের লিস্ট পেয়েছেন
+// প্রতিটি ইউজারের email এবং name লাগবে
+        $allowedUsers = [
+            ['email' => 'student1@gmail.com', 'name' => 'Student One'],
+            ['email' => 'student2@gmail.com', 'name' => 'Student Two'],
+        ];
+
         $response = Http::withToken($user->zoom_access_token)
             ->post('https://api.zoom.us/v2/users/me/meetings', [
-                'topic' => $request->topic ?? 'Live Class',
-                'type' => 2,
-                'start_time' => $request->start_time, // ISO 8601 format
-                'duration' => $request->duration ?? 60,
-                'timezone' => 'Asia/Dhaka',
+                'topic' => 'Live Class',
+                'type' => 1,
+                'start_time' => now()->addMinutes(10)->toIso8601String(),
+                'duration' => 60,
                 'settings' => [
-                    'join_before_host' => true,
-                    'participant_video' => true,
-                    'host_video' => true,
-                    'mute_upon_entry' => true,
-                ],
-            ])->json();
+                    'join_before_host' => false,
 
+                    'meeting_authentication' => true,
+                    'authentication_domains' => "mdeahiamondal@gmail.com",
+
+//                    'authentication_option' => [
+//                        'type' => 2
+//                    ],
+
+                    'waiting_room' => false
+                ],
+            ]);
+        dd($response->json());
         return response()->json($response);
     }
 }

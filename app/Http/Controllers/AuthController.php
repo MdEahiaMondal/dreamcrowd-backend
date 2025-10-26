@@ -435,9 +435,9 @@ class AuthController extends Controller
             $user->update();
             Auth::login($user);
 
-            return redirect('/')->with('success', 'Your Email is Verified Successfuly!');
+            return redirect('/')->with('success', 'your email has been successfully verified');
         } else {
-            return redirect('/')->with('error', 'This Verification Link is Expiered!');
+            return redirect('/')->with('error', 'This Verification Link is Expired!');
         }
     }
     // Email Verifiy Customly Account Create Function END========
