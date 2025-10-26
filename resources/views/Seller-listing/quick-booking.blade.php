@@ -1527,7 +1527,7 @@
             @php
                 $rate = ($gig->lesson_type == 'Group') ? (($gigData->group_type == 'Both' || $gigData->group_type == 'Public') ? $gig->public_rate : $gig->private_rate ) : $gig->rate ;
             @endphp
-            <p class="float-start">Total Amount: <span id="total_price">${{$rate}}</span></p>
+            <p class="float-start">Total Amount <span id="total_price">${{$rate}}</span></p>
             <div class="float-end">
 
                 <a
