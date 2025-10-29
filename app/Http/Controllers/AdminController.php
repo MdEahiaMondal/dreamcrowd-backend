@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Transaction;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Stevebauman\Location\Facades\Location;
@@ -31,86 +32,81 @@ use Illuminate\Http\Request;
 class AdminController extends Controller
 {
 
-    public function AdmincheckAuth() {
-
+    public function AdmincheckAuth()
+    {
         if (!Auth::user()) {
-           return redirect()->to('/')->with('error','Please LoginIn to Your Account!');
+            return redirect()->to('/')->with('error', 'Please LoginIn to Your Account!');
         } else {
             if (Auth::user()->role == 0) {
                 return redirect()->to('/user-dashboard');
-            }elseif(Auth::user()->role == 1){
+            } elseif (Auth::user()->role == 1) {
                 return redirect()->to('/teacher-dashboard');
             }
         }
-        
-        
     }
-    
-    public function AdminDashboard()  {
+
+    public function AdminDashboard()
+    {
 
         if ($redirect = $this->AdmincheckAuth()) {
-            return $redirect;  
+            return $redirect;
         }
-        
+
         return view("Admin-Dashboard.dashboard");
     }
 
-    
+
     // Seller Management Start================
-    
+
     // Seller Application Functions Start =========
 
-    public function AllApplication()  {
-        
+    public function AllApplication()
+    {
+
         if ($redirect = $this->AdmincheckAuth()) {
-            return $redirect;  
+            return $redirect;
         }
-        
-        $new_app = ExpertProfile::where(['status'=>0])->latest()->get();
-        $approved_app = ExpertProfile::where(['status'=>1])->latest()->get();
-        $reject_app = ExpertProfile::where(['status'=>2])->latest()->get();
-        
-        return view("Admin-Dashboard.all-application", compact('new_app','approved_app','reject_app'));
+
+        $new_app = ExpertProfile::where(['status' => 0])->latest()->get();
+        $approved_app = ExpertProfile::where(['status' => 1])->latest()->get();
+        $reject_app = ExpertProfile::where(['status' => 2])->latest()->get();
+
+        return view("Admin-Dashboard.all-application", compact('new_app', 'approved_app', 'reject_app'));
     }
-    
-    
-    
-    public function ApplicationRequest($id)  {
-      
+
+
+    public function ApplicationRequest($id)
+    {
+
         if ($redirect = $this->AdmincheckAuth()) {
-            return $redirect;  
+            return $redirect;
         }
-        
-        
+
+
         $app = ExpertProfile::find($id);
-         
+
         return view("User-Dashboard.Application-request", compact('app'));
     }
-    
-    
-    
-    
-    public function GetClassSubCategory(Request $request)  {
-       
-       
-        
-        
-            $category = Category::where(['id'=>$request->cate_id])->first();
-            $sub_cate = SubCategory::where(['cate_id'=>$request->cate_id])->pluck('sub_category');
-          
+
+
+    public function GetClassSubCategory(Request $request)
+    {
+
+
+        $category = Category::where(['id' => $request->cate_id])->first();
+        $sub_cate = SubCategory::where(['cate_id' => $request->cate_id])->pluck('sub_category');
+
         $response['category'] = $category;
         $response['sub_cate'] = $sub_cate;
         return response()->json($response);
-        
-      }
-    
-    
-    
-    
-    public function RejectApplicationCategory(Request $request)  {
-       
-       
-        
+
+    }
+
+
+    public function RejectApplicationCategory(Request $request)
+    {
+
+
         $app = ExpertProfile::find($request->app_id);
 
         if ($request->type == 'Class') {
@@ -119,137 +115,133 @@ class AdminController extends Controller
         } else {
             $cate = $app->category_freelance;
             $sub_cate = $app->sub_category_freelance;
-            
+
         }
 
-        $category = Category::where(['id'=>$request->cate_id])->first();
-        $sub_category = SubCategory::where(['cate_id'=>$request->cate_id])->pluck('sub_category');
-       
-       
-        $array = explode(',',$cate);
+        $category = Category::where(['id' => $request->cate_id])->first();
+        $sub_category = SubCategory::where(['cate_id' => $request->cate_id])->pluck('sub_category');
+
+
+        $array = explode(',', $cate);
         $result = array_diff($array, [$request->cate_id]);
-        
-        $result = implode(',',$result);
-        
+
+        $result = implode(',', $result);
+
         if ($sub_category) {
 
-            $sub_cate = explode('|*|',$sub_cate);
+            $sub_cate = explode('|*|', $sub_cate);
             if ($category->service_type == 'Online') {
-                $array1 = explode(',',$sub_cate[0]);
+                $array1 = explode(',', $sub_cate[0]);
             } else {
-                $array1 = explode(',',$sub_cate[1]);
-              }
-            
-            
+                $array1 = explode(',', $sub_cate[1]);
+            }
+
+
             $array1 = array_map('trim', $array1);
-            $array2 = $sub_category ;
-            $object1 = (object) ['items' => collect($array1) ];
-            $object2 = (object) ['items' => collect($array2)];
+            $array2 = $sub_category;
+            $object1 = (object)['items' => collect($array1)];
+            $object2 = (object)['items' => collect($array2)];
             $result_sub = array_diff($object1->items->toArray(), $object2->items->toArray());
             // $result_sub = array_diff($array1, $array2);
-            $result_sub = implode(',',$result_sub);
-    
+            $result_sub = implode(',', $result_sub);
+
             if ($request->type == 'Class') {
                 $app->category_class = $result;
 
-                if ($category->service_type == 'Online') { 
-                    $app->sub_category_class = $result_sub.'|*|'.$sub_cate[1];
+                if ($category->service_type == 'Online') {
+                    $app->sub_category_class = $result_sub . '|*|' . $sub_cate[1];
                 } else {
-                    $app->sub_category_class = $sub_cate[0].'|*|'.$result_sub;
-                  }
-            
-                } else {
+                    $app->sub_category_class = $sub_cate[0] . '|*|' . $result_sub;
+                }
+
+            } else {
                 $app->category_freelance = $result;
-                if ($category->service_type == 'Online') { 
-                    $app->sub_category_freelance = $result_sub.'|*|'.$sub_cate[1];
+                if ($category->service_type == 'Online') {
+                    $app->sub_category_freelance = $result_sub . '|*|' . $sub_cate[1];
                 } else {
-                    $app->sub_category_freelance = $sub_cate[0].'|*|'.$result_sub;
-                  }
-                 
-             }
-            
+                    $app->sub_category_freelance = $sub_cate[0] . '|*|' . $result_sub;
+                }
+
+            }
+
         }
 
 
-       
-     
         $app->update();
 
 
         if ($app) {
             $response['cate'] = $app;
             $response['type'] = $request->type;
-        $response['success'] = true;
-        $response['message'] = 'Category Removed Successfuly!';
-        return response()->json($response);
+            $response['success'] = true;
+            $response['message'] = 'Category Removed Successfuly!';
+            return response()->json($response);
         } else {
-            
-        $response['error'] = true;
-        $response['message'] = 'Something Wrong, Tryagain Later!';
-        return response()->json($response);
+
+            $response['error'] = true;
+            $response['message'] = 'Something Wrong, Tryagain Later!';
+            return response()->json($response);
         }
-        
-          
-       
-        
-      }
-    
-    
-    
-    public function RejectClassSubCategory(Request $request)  {
-       
-       
-        
+
+
+    }
+
+
+    public function RejectClassSubCategory(Request $request)
+    {
+
+
         $sub_cate = ExpertProfile::find($request->app_id);
         if ($request->service_type == 'class_sub') {
-            $sub_cates = explode('|*|',$sub_cate->sub_category_class);
+            $sub_cates = explode('|*|', $sub_cate->sub_category_class);
             if ($request->cates_type == 'Online') {
-               $sub_cates = $request->sub_category.'|*|'.$sub_cates[1];
+                $sub_cates = $request->sub_category . '|*|' . $sub_cates[1];
             } else {
-                $sub_cates = $sub_cates[0].'|*|'.$request->sub_category;
+                $sub_cates = $sub_cates[0] . '|*|' . $request->sub_category;
             }
-            
+
             $sub_cate->sub_category_class = $sub_cates;
-        } else{
-            $sub_cates = explode('|*|',$sub_cate->sub_category_freelance);
+        } else {
+            $sub_cates = explode('|*|', $sub_cate->sub_category_freelance);
             if ($request->cates_type == 'Online') {
-               $sub_cates = $request->sub_category.'|*|'.$sub_cates[1];
+                $sub_cates = $request->sub_category . '|*|' . $sub_cates[1];
             } else {
-                $sub_cates = $sub_cates[0].'|*|'.$request->sub_category;
+                $sub_cates = $sub_cates[0] . '|*|' . $request->sub_category;
             }
-              $sub_cate->sub_category_freelance = $sub_cates;
+            $sub_cate->sub_category_freelance = $sub_cates;
         }
         $sub_cate->update();
-         
+
         if ($sub_cate) {
 
             $response['service_type'] = $request->service_type;
             if ($request->service_type == 'class_sub') {
                 $response['sub_category'] = $sub_cate->sub_category_class;
             } else {
-                 $response['sub_category'] = $sub_cate->sub_category_freelance;
-              }
-            
+                $response['sub_category'] = $sub_cate->sub_category_freelance;
+            }
+
             $response['success'] = true;
             $response['message'] = 'Sub Category Rejected Successfuly!';
             return response()->json($response);
-            } else {
-                $response['error'] = true;
-                $response['message'] = 'Something Wrong, Tryagain Later!';
-                return response()->json($response);
-          }
-        
-        
-      }
-    
-      public function RejectAllCategories($id)   {
- 
-        if ($redirect = $this->AdmincheckAuth()) {
-            return $redirect;  
+        } else {
+            $response['error'] = true;
+            $response['message'] = 'Something Wrong, Tryagain Later!';
+            return response()->json($response);
         }
-        
+
+
+    }
+
+    public function RejectAllCategories($id)
+    {
+
+        if ($redirect = $this->AdmincheckAuth()) {
+            return $redirect;
+        }
+
         $category = ExpertProfile::find($id);
-        
+
         $category->category_class = null;
         $category->sub_category_class = null;
         $category->category_freelance = null;
@@ -258,81 +250,79 @@ class AdminController extends Controller
         $category->update();
 
         if ($category) {
-            return redirect()->back()->with('success','All Categories Rejected Successfuly!');
-        
-        }else{
-            return redirect()->back()->with('error','Something Error Please Try again Later!');
-        
+            return redirect()->back()->with('success', 'All Categories Rejected Successfuly!');
+
+        } else {
+            return redirect()->back()->with('error', 'Something Error Please Try again Later!');
+
         }
 
-      }
-    
-    
-    
-    public function ApplicationAction(Request $request)  {
-       
+    }
+
+
+    public function ApplicationAction(Request $request)
+    {
+
         if ($redirect = $this->AdmincheckAuth()) {
-            return $redirect;  
+            return $redirect;
         }
-        
+
         $expert = ExpertProfile::find($request->app_id);
 
         if ($request->action == 'reject') {
 
             $user = User::find($expert->user_id);
             $user->role = 0;
-            
+
 
             $expert->status = 2;
-            $expert->action_date = date("M d, Y") ;
-           
-            $payment = ExpertFastPayment::where(['user_id'=>$expert->user_id,'status'=>0])->first();
-            Stripe::setApiKey(config('services.stripe.secret'));  
+            $expert->action_date = date("M d, Y");
+
+            $payment = ExpertFastPayment::where(['user_id' => $expert->user_id, 'status' => 0])->first();
+            Stripe::setApiKey(config('services.stripe.secret'));
             if ($request->payment_refund == 'Yes') {
                 if (!$payment) {
                     return redirect()->back()->with(['error' => 'Payment not found!'], 404);
                 }
                 if ($payment) {
- 
-                // Cancel the PaymentIntent
-                $paymentIntent = PaymentIntent::retrieve($payment->stripe_payment_intent_id);
-                $paymentIntent->cancel();
-             
+
+                    // Cancel the PaymentIntent
+                    $paymentIntent = PaymentIntent::retrieve($payment->stripe_payment_intent_id);
+                    $paymentIntent->cancel();
+
                     $payment->return = 1;
                     $payment->status = 2;
-                    $payment->update(); 
+                    $payment->update();
                 }
-            } else { 
+            } else {
                 if ($payment) {
-                // Capture the payment
-                $paymentIntent = PaymentIntent::retrieve($payment->stripe_payment_intent_id);
-                $paymentIntent->capture();
-                $payment->status = 2;
-                $payment->update(); 
+                    // Capture the payment
+                    $paymentIntent = PaymentIntent::retrieve($payment->stripe_payment_intent_id);
+                    $paymentIntent->capture();
+                    $payment->status = 2;
+                    $payment->update();
                 }
             }
-            
-            
-                RejectExpert::updateOrCreate(
-                    [
-                        'user_id' => $expert->user_id, // Match condition
-                        'expert_id' => $expert->id    // Match condition
-                    ],
-                    [
-                        'reason' => $request->reason  // Data to insert or update
-                    ]
-                );
-           
-           
+
+
+            RejectExpert::updateOrCreate(
+                [
+                    'user_id' => $expert->user_id, // Match condition
+                    'expert_id' => $expert->id    // Match condition
+                ],
+                [
+                    'reason' => $request->reason  // Data to insert or update
+                ]
+            );
+
 
             $user->update();
             $expert->update();
             if ($expert) {
-                return redirect()->to('/all-application')->with('success','Application Rejected Successfuly!');
+                return redirect()->to('/all-application')->with('success', 'Application Rejected Successfuly!');
             } else {
-                return redirect()->back()->with('error','Something Rong, Tryagain Later!');
-             }
-
+                return redirect()->back()->with('error', 'Something Rong, Tryagain Later!');
+            }
 
 
         } else {
@@ -350,376 +340,372 @@ class AdminController extends Controller
             $user->update();
 
             $expert->status = 1;
-            $expert->action_date = date("M d, Y") ;
+            $expert->action_date = date("M d, Y");
             $expert->update();
-            $payment = ExpertFastPayment::where(['user_id'=>$expert->user_id,'status'=>0])->first();
-           if ($payment) {
-            // Capture the payment
-            $paymentIntent = PaymentIntent::retrieve($payment->stripe_payment_intent_id);
-            $paymentIntent->capture();
-            $payment->status = 1;
-            $payment->update();
-           }
-            
+            $payment = ExpertFastPayment::where(['user_id' => $expert->user_id, 'status' => 0])->first();
+            if ($payment) {
+                // Capture the payment
+                $paymentIntent = PaymentIntent::retrieve($payment->stripe_payment_intent_id);
+                $paymentIntent->capture();
+                $payment->status = 1;
+                $payment->update();
+            }
+
             if ($expert) {
-                return redirect()->to('/all-application')->with('success','Application Approved Successfuly!');
+                return redirect()->to('/all-application')->with('success', 'Application Approved Successfuly!');
             } else {
-                return redirect()->back()->with('error','Something Rong, Tryagain Later!');
-             }
+                return redirect()->back()->with('error', 'Something Rong, Tryagain Later!');
+            }
         }
-        
-       
-        
-      }
-    
+
+
+    }
+
 
     //   Seller Application Functions  END==========
 
     //   Seller Request Functions  END==========
-    
-    public function SellerRequest()  {
-         
+
+    public function SellerRequest()
+    {
+
         if ($redirect = $this->AdmincheckAuth()) {
-            return $redirect;  
+            return $redirect;
         }
-        
-        
-        $request = TeacherRequest::where(['status'=>0])->get();
-        
+
+
+        $request = TeacherRequest::where(['status' => 0])->get();
+
         return view("Admin-Dashboard.seller-request", compact('request'));
     }
-    
 
-    public function SellerUpdateRequest($id)  {
-         
-         
+
+    public function SellerUpdateRequest($id)
+    {
+
+
         if ($redirect = $this->AdmincheckAuth()) {
-            return $redirect;  
+            return $redirect;
         }
-        
+
         $request = TeacherRequest::find($id);
         if ($request->request_type == 'profile') {
             $main = TeacherProfileRequest::find($request->request_id);
-          }  elseif($request->request_type == 'location'){
+        } elseif ($request->request_type == 'location') {
             $main = TeacherLocationRequest::find($request->request_id);
-          }  else{
-               $main = TeacherCategoryRequest::find($request->request_id);
-            }
+        } else {
+            $main = TeacherCategoryRequest::find($request->request_id);
+        }
         $user = User::find($request->user_id);
-        $expert = ExpertProfile::where(['user_id'=>$request->user_id])->first();
-        
-        return view("Admin-Dashboard.Application-request", compact('request','user','expert','main'));
+        $expert = ExpertProfile::where(['user_id' => $request->user_id])->first();
+
+        return view("Admin-Dashboard.Application-request", compact('request', 'user', 'expert', 'main'));
     }
 
-    public function RejectSellerRequest($id)   {
- 
+    public function RejectSellerRequest($id)
+    {
+
         if ($redirect = $this->AdmincheckAuth()) {
-            return $redirect;  
+            return $redirect;
         }
-        
+
         $request = TeacherRequest::find($id);
         $request->status = 2;
         $request->update();
 
         if ($request) {
-            return redirect()->to('/seller-request')->with('success','Seller Request Rejected!');
-        
-        }else{
-            return redirect()->back()->with('error','Something Error Please Try again Later!');
-        
+            return redirect()->to('/seller-request')->with('success', 'Seller Request Rejected!');
+
+        } else {
+            return redirect()->back()->with('error', 'Something Error Please Try again Later!');
+
         }
-        
+
     }
 
     // Fetch Sub Categories Function Start ======
 
-        
-    
-    public function GetRequestedSubCategory(Request $request)  {
-       
+
+    public function GetRequestedSubCategory(Request $request)
+    {
+
         if ($redirect = $this->AdmincheckAuth()) {
-            return $redirect;  
+            return $redirect;
         }
-        
-        
-            $sub_cate = SubCategory::where([ 'cate_id'=>$request->cate_id])->pluck('sub_category');
-       
-          
+
+
+        $sub_cate = SubCategory::where(['cate_id' => $request->cate_id])->pluck('sub_category');
+
+
         $response['sub_cate'] = $sub_cate;
         return response()->json($response);
-        
-      }
-    
 
-        
-    public function RejectRequestedSubCategory(Request $request)  {
-       
+    }
+
+
+    public function RejectRequestedSubCategory(Request $request)
+    {
+
         if ($redirect = $this->AdmincheckAuth()) {
-            return $redirect;  
+            return $redirect;
         }
-        
+
         $request_cate = TeacherRequest::find($request->request_id);
         $sub_cate = TeacherCategoryRequest::find($request_cate->request_id);
 
-        $sub_cates = explode('|*|',$sub_cate->sub_category);
+        $sub_cates = explode('|*|', $sub_cate->sub_category);
         if ($request->cates_type == 'Online') {
-           $sub_cates = $request->sub_category.'|*|'.$sub_cates[1];
+            $sub_cates = $request->sub_category . '|*|' . $sub_cates[1];
         } else {
-            $sub_cates = $sub_cates[0].'|*|'.$request->sub_category;
+            $sub_cates = $sub_cates[0] . '|*|' . $request->sub_category;
         }
-        
-            $sub_cate->sub_category = $sub_cates;
-         
+
+        $sub_cate->sub_category = $sub_cates;
+
         $sub_cate->update();
-         
+
         if ($sub_cate) {
 
             $response['service_role'] = $request->service_role;
-             
+
             $response['sub_category'] = $sub_cate->sub_category;
-             
+
             $response['success'] = true;
             $response['message'] = 'Sub Category Rejected Successfuly!';
             return response()->json($response);
-            } else {
-                $response['error'] = true;
-                $response['message'] = 'Something Wrong, Tryagain Later!';
-                return response()->json($response);
-          }
-        
-        
-      }
-
-      
-    
-    public function RejectRequestedApplicationCategory(Request $request)  {
-       
-        if ($redirect = $this->AdmincheckAuth()) {
-            return $redirect;  
+        } else {
+            $response['error'] = true;
+            $response['message'] = 'Something Wrong, Tryagain Later!';
+            return response()->json($response);
         }
-        
+
+
+    }
+
+
+    public function RejectRequestedApplicationCategory(Request $request)
+    {
+
+        if ($redirect = $this->AdmincheckAuth()) {
+            return $redirect;
+        }
+
         $request_cate = TeacherRequest::find($request->request_id);
         $app = TeacherCategoryRequest::find($request_cate->request_id);
-         
-         
-            $cate = $app->category;
-            $sub_cate = $app->sub_category;
-         $sub_cate = explode('|*|',$sub_cate);
 
-        $category = Category::where(['id'=>$request->cate_id])->first();
-        $sub_category = SubCategory::where(['cate_id'=>$request->cate_id])->pluck('sub_category');
-        
-       
-        $array = explode(',',$cate);
+
+        $cate = $app->category;
+        $sub_cate = $app->sub_category;
+        $sub_cate = explode('|*|', $sub_cate);
+
+        $category = Category::where(['id' => $request->cate_id])->first();
+        $sub_category = SubCategory::where(['cate_id' => $request->cate_id])->pluck('sub_category');
+
+
+        $array = explode(',', $cate);
         $array = array_map('trim', $array);
         $result = array_diff($array, [$category->id]);
-        
-        $result = implode(',',$result);
-        
+
+        $result = implode(',', $result);
+
         if ($sub_category) {
-             
-            
+
+
             if ($category->service_type == 'Online') {
-                $array1 = explode(',',$sub_cate[0]);
+                $array1 = explode(',', $sub_cate[0]);
             } else {
-                $array1 = explode(',',$sub_cate[1]);
-              }
+                $array1 = explode(',', $sub_cate[1]);
+            }
 
-            
+
             $array1 = array_map('trim', $array1);
-            $array2 = $sub_category ;
-            $object1 = (object) ['items' => collect($array1) ];
-            $object2 = (object) ['items' => collect($array2)];
+            $array2 = $sub_category;
+            $object1 = (object)['items' => collect($array1)];
+            $object2 = (object)['items' => collect($array2)];
             $result_sub = array_diff($object1->items->toArray(), $object2->items->toArray());
-            
-            // $result_sub = array_diff($array1, $array2);
-            $result_sub = implode(',',$result_sub);
-             
-            
-             
-                $app->category = $result;
 
-                if ($category->service_type == 'Online') { 
-                    $app->sub_category = $result_sub.'|*|'.$sub_cate[1];
-                } else {
-                    $app->sub_category = $sub_cate[0].'|*|'.$result_sub;
-                  }
-                 
-             
-            
+            // $result_sub = array_diff($array1, $array2);
+            $result_sub = implode(',', $result_sub);
+
+
+            $app->category = $result;
+
+            if ($category->service_type == 'Online') {
+                $app->sub_category = $result_sub . '|*|' . $sub_cate[1];
+            } else {
+                $app->sub_category = $sub_cate[0] . '|*|' . $result_sub;
+            }
+
+
         }
 
 
-       
-     
         $app->update();
 
 
         if ($app) {
             $response['cate'] = $app;
             $response['type'] = $request->type;
-        $response['success'] = true;
-        $response['message'] = 'Category Removed Successfuly!';
-        return response()->json($response);
+            $response['success'] = true;
+            $response['message'] = 'Category Removed Successfuly!';
+            return response()->json($response);
         } else {
-            
-        $response['error'] = true;
-        $response['message'] = 'Something Wrong, Tryagain Later!';
-        return response()->json($response);
+
+            $response['error'] = true;
+            $response['message'] = 'Something Wrong, Tryagain Later!';
+            return response()->json($response);
         }
-        
-          
-       
-        
-      }
-    
-    
+
+
+    }
+
 
     // Fetch Sub Categories Function End ======
-    
 
-    public function ApproveSellerRequest($id)   {
- 
+
+    public function ApproveSellerRequest($id)
+    {
+
         if ($redirect = $this->AdmincheckAuth()) {
-            return $redirect;  
+            return $redirect;
         }
-        
+
         $request = TeacherRequest::find($id);
 
         $user = User::find($request->user_id);
-        $expert = ExpertProfile::where(['user_id'=>$request->user_id])->first();
-        
-        
+        $expert = ExpertProfile::where(['user_id' => $request->user_id])->first();
+
+
         if ($request->request_type == 'profile') {
-            
+
             $main = TeacherProfileRequest::find($request->request_id);
-           
+
             if ($main->profile_image != null) {
-                $expert->profile_image =  $main->profile_image ;
-                $user->profile =  $main->profile_image ;
+                $expert->profile_image = $main->profile_image;
+                $user->profile = $main->profile_image;
             }
-            
-            
+
+
             if ($main->first_name != null) {
-                $expert->first_name =  $main->first_name ;
-                $user->first_name =  $main->first_name ;
+                $expert->first_name = $main->first_name;
+                $user->first_name = $main->first_name;
             }
             if ($main->last_name != null) {
-                $expert->last_name =  $main->last_name ;
-                $user->last_name =  $main->last_name ;
+                $expert->last_name = $main->last_name;
+                $user->last_name = $main->last_name;
             }
             if ($main->show_full_name != 0) {
-                $expert->show_full_name =  1 ; 
-            }else{
-                $expert->show_full_name = 0 ;  
+                $expert->show_full_name = 1;
+            } else {
+                $expert->show_full_name = 0;
             }
-       
+
 
             if ($main->gender != null) {
-                $expert->gender =  $main->gender ; 
+                $expert->gender = $main->gender;
             }
             if ($main->profession != null) {
-                $expert->profession =  $main->profession ;
+                $expert->profession = $main->profession;
             }
             if ($main->primary_language != null) {
-                $expert->primary_language =  $main->primary_language ;
+                $expert->primary_language = $main->primary_language;
             }
             if ($main->primary_language != 'English') {
-                $expert->fluent_english =  $main->fluent_english ;
-            }else{
-                $expert->fluent_english =  Null ;
+                $expert->fluent_english = $main->fluent_english;
+            } else {
+                $expert->fluent_english = Null;
             }
-            $expert->fluent_other_language  =  $main->speak_other_language ;
-             
+            $expert->fluent_other_language = $main->speak_other_language;
+
             if ($main->speak_other_language == 1) {
-                $expert->speak_other_language  = 1 ;
-            // if ($main->other_language != null) {
-                $expert->fluent_other_language =  $main->other_language ;
-            // }
-            }else{
-                $expert->speak_other_language  = 0 ;
-                 
-                $expert->fluent_other_language =  null ;
+                $expert->speak_other_language = 1;
+                // if ($main->other_language != null) {
+                $expert->fluent_other_language = $main->other_language;
+                // }
+            } else {
+                $expert->speak_other_language = 0;
+
+                $expert->fluent_other_language = null;
             }
             if ($main->overview != null) {
-                $expert->overview =  $main->overview ;
+                $expert->overview = $main->overview;
             }
             if ($main->about_me != null) {
-                $expert->about_me =  $main->about_me ;
+                $expert->about_me = $main->about_me;
             }
             if ($main->main_image != null) {
-                $expert->main_image =  $main->main_image ;
+                $expert->main_image = $main->main_image;
             }
             if ($main->more_image_1 != null) {
-                $expert->more_image_1 =  $main->more_image_1 ;
+                $expert->more_image_1 = $main->more_image_1;
             }
             if ($main->more_image_2 != null) {
-                $expert->more_image_2 =  $main->more_image_2 ;
+                $expert->more_image_2 = $main->more_image_2;
             }
             if ($main->more_image_3 != null) {
-                $expert->more_image_3 =  $main->more_image_3 ;
+                $expert->more_image_3 = $main->more_image_3;
             }
             if ($main->more_image_4 != null) {
-                $expert->more_image_4 =  $main->more_image_4 ;
+                $expert->more_image_4 = $main->more_image_4;
             }
             if ($main->more_image_5 != null) {
-                $expert->more_image_5 =  $main->more_image_5 ;
+                $expert->more_image_5 = $main->more_image_5;
             }
             if ($main->more_image_6 != null) {
-                $expert->more_image_6 =  $main->more_image_6 ;
+                $expert->more_image_6 = $main->more_image_6;
             }
             if ($main->video != null) {
-                $expert->video =  $main->video ;
+                $expert->video = $main->video;
             }
 
-            $request->status = 1; 
-            
+            $request->status = 1;
+
             $expert->update();
             $user->update();
             $request->update();
-          
+
             if ($expert) {
-            return redirect()->to('/seller-request')->with('success','Seller Request Approved!');
-                    
-            }else{
-             return redirect()->back()->with('error','Something Error Please Try again Later!');
-                    
+                return redirect()->to('/seller-request')->with('success', 'Seller Request Approved!');
+
+            } else {
+                return redirect()->back()->with('error', 'Something Error Please Try again Later!');
+
             }
 
 
         } elseif ($request->request_type == 'location') {
-            
+
             $main = TeacherLocationRequest::find($request->request_id);
-           
-
-            $expert->street_address = $main->street_address ;
-            $expert->ip_address = $main->ip_address ;
-            $user->ip = $main->ip_address ;
-            $expert->latitude = $main->latitude ;
-            $expert->longitude = $main->longitude ;
-            $expert->country = $main->country ;
-            $user->country = $main->country ;
-            $expert->city = $main->city ;
-            $user->city = $main->city ;
-            $expert->zip_code = $main->zip_code ;
-            $user->zip_code = $main->zip_code ;
 
 
-            $request->status = 1; 
+            $expert->street_address = $main->street_address;
+            $expert->ip_address = $main->ip_address;
+            $user->ip = $main->ip_address;
+            $expert->latitude = $main->latitude;
+            $expert->longitude = $main->longitude;
+            $expert->country = $main->country;
+            $user->country = $main->country;
+            $expert->city = $main->city;
+            $user->city = $main->city;
+            $expert->zip_code = $main->zip_code;
+            $user->zip_code = $main->zip_code;
+
+
+            $request->status = 1;
 
             $expert->update();
             $user->update();
             $request->update();
 
             if ($expert) {
-            return redirect()->to('/seller-request')->with('success','Seller Request Approved!');
-                    
-            }else{
-             return redirect()->back()->with('error','Something Error Please Try again Later!');
-                    
+                return redirect()->to('/seller-request')->with('success', 'Seller Request Approved!');
+
+            } else {
+                return redirect()->back()->with('error', 'Something Error Please Try again Later!');
+
             }
-            
-        } else{
+
+        } else {
 
             $main = TeacherCategoryRequest::find($request->request_id);
 
@@ -738,14 +724,14 @@ class AdminController extends Controller
                 $sub_array20 = explode(',', $sub_array2[0]);
                 $sub_array21 = explode(',', $sub_array2[1]);
             }
-            
+
             // Convert the strings to arrays
             $array1 = explode(',', $main->category);
             $sub_array1 = explode('|*|', $main->sub_category);
             $sub_array10 = explode(',', $sub_array1[0]);
             $sub_array11 = explode(',', $sub_array1[1]);
-              
-             
+
+
             foreach ($array1 as $item) {
                 if (!in_array($item, $array2)) {
                     $array2[] = $item;
@@ -762,152 +748,143 @@ class AdminController extends Controller
                 }
             }
 
-         
-            
+
             // Convert back to a string
             $category = implode(',', $array2);
             // Convert back to a string
-            $sub_category0 = implode(',', $sub_array20); 
-            $sub_category1 = implode(',', $sub_array21); 
-            $sub_category = $sub_category0.'|*|'.$sub_category1; 
-            
+            $sub_category0 = implode(',', $sub_array20);
+            $sub_category1 = implode(',', $sub_array21);
+            $sub_category = $sub_category0 . '|*|' . $sub_category1;
+
 
             if ($main->category_role == 'Freelance') {
                 if ($get_cate != null) {
-                    $expert->category_freelance = $category ;
+                    $expert->category_freelance = $category;
                 } else {
-                    $expert->category_freelance = $main->category ;
+                    $expert->category_freelance = $main->category;
                 }
                 if ($get_cate_sub != null) {
-                    $expert->sub_category_freelance = $sub_category ;
+                    $expert->sub_category_freelance = $sub_category;
                 } else {
-                    $expert->sub_category_freelance = $main->sub_category ;
+                    $expert->sub_category_freelance = $main->sub_category;
                 }
-                
-               
-               
-            }else{
+
+
+            } else {
 
                 if ($get_cate != null) {
-                    $expert->category_class = $category ;
+                    $expert->category_class = $category;
                 } else {
-                    $expert->category_class = $main->category ;
+                    $expert->category_class = $main->category;
                 }
                 if ($get_cate_sub != null) {
-                    $expert->sub_category_class = $sub_category ;
+                    $expert->sub_category_class = $sub_category;
                 } else {
-                    $expert->sub_category_class = $main->sub_category ;
+                    $expert->sub_category_class = $main->sub_category;
                 }
- 
+
             }
 
-            
-             
+
             $request->status = 1;
             $expert->update();
             $request->update();
 
             if ($expert) {
-                return redirect()->to('/seller-request')->with('success','Seller Request Approved!');
-                        
-                }else{
-                 return redirect()->back()->with('error','Something Error Please Try again Later!');
-                        
-                }
+                return redirect()->to('/seller-request')->with('success', 'Seller Request Approved!');
+
+            } else {
+                return redirect()->back()->with('error', 'Something Error Please Try again Later!');
+
+            }
         }
 
-        
-       
-        
+
     }
-    
+
     //   Seller Request Functions  END==========
-    
+
     // Seller Management END================
-    
+
     // Admin Management Start================
 
-    public function AdminManagement()  {
-       
-        if ($redirect = $this->AdmincheckAuth()) {
-            return $redirect;  
-        }
-        
+    public function AdminManagement()
+    {
 
-        $admins = User::where('role','=',2)->where('admin_role','<',Auth::user()->admin_role)->paginate(10);
+        if ($redirect = $this->AdmincheckAuth()) {
+            return $redirect;
+        }
+
+
+        $admins = User::where('role', '=', 2)->where('admin_role', '<', Auth::user()->admin_role)->paginate(10);
         return view("Admin-Dashboard.admin-management", compact('admins'));
     }
-    
-    
+
+
     // Create Admin ============
-    public function CreateAdmin(Request $request)  {
-         
+    public function CreateAdmin(Request $request)
+    {
+
         if ($redirect = $this->AdmincheckAuth()) {
-            return $redirect;  
+            return $redirect;
         }
 
-           
+
         $password = $request->input('password');
-    
-        
+
+
         if (strlen($password) < 8) {
-            return redirect()->back()->with('error','The password must be at least 8 characters long.');
-        
+            return redirect()->back()->with('error', 'The password must be at least 8 characters long.');
+
         }
-    
-       if (!preg_match('/[A-Z]/', $password)) {
-            return redirect()->back()->with('error','The password must contain at least one uppercase letter.');
+
+        if (!preg_match('/[A-Z]/', $password)) {
+            return redirect()->back()->with('error', 'The password must contain at least one uppercase letter.');
         }
         if (!preg_match('/[0-9]/', $password)) {
-            return redirect()->back()->with('error','The password must contain at least one number.');
+            return redirect()->back()->with('error', 'The password must contain at least one number.');
         }
-    
+
         if (!preg_match('/[\W_]/', $password)) {
-            return redirect()->back()->with('error','The password must contain at least one special character.');
-        }
-    
-
-        if ($request->password !=  $request->c_password ) { 
-            return redirect()->back()->with('error','Password did not Matched!');
+            return redirect()->back()->with('error', 'The password must contain at least one special character.');
         }
 
 
-        
-        if ($request->email == null ||$request->password == null || $request->c_password == null || $request->first_name == null || $request->last_name == null ) {
-            return redirect()->back()->with('error','All Fields Are Required!');
-        }
-      
-        if ($request->password !=  $request->c_password ) {
-            return redirect()->back()->with('error','Password did not Matched');
+        if ($request->password != $request->c_password) {
+            return redirect()->back()->with('error', 'Password did not Matched!');
         }
 
-        $user = User::where(['email'=>$request->email])->first();
+
+        if ($request->email == null || $request->password == null || $request->c_password == null || $request->first_name == null || $request->last_name == null) {
+            return redirect()->back()->with('error', 'All Fields Are Required!');
+        }
+
+        if ($request->password != $request->c_password) {
+            return redirect()->back()->with('error', 'Password did not Matched');
+        }
+
+        $user = User::where(['email' => $request->email])->first();
 
         if (!empty($user)) {
-            return redirect()->back()->with('error','This Email is Already Registered');
-        
+            return redirect()->back()->with('error', 'This Email is Already Registered');
+
         }
 
         if ($request->role >= Auth::user()->admin_role) {
-            return redirect()->back()->with('error','You are Not Allowed to Add Admin in Heigher Rank!');
-    
-        }  
+            return redirect()->back()->with('error', 'You are Not Allowed to Add Admin in Heigher Rank!');
+
+        }
 
 
-
-        
         //  $userIp = $_SERVER['REMOTE_ADDR']; /* Live IP address */
-         // $userIp = $request->ip(); /* Live IP address */
+        // $userIp = $request->ip(); /* Live IP address */
         //  $userIp = '162.159.24.227'; /* Static IP address */
         //  $location = Location::get($userIp);
-             //  echo $location->countryName;
-             // echo $location->countryCode ;
-             // echo $location->cityName ;
+        //  echo $location->countryName;
+        // echo $location->countryCode ;
+        // echo $location->cityName ;
 
-            
-             
 
-             
         $user = User::create([
             'first_name' => $request->first_name,
             'last_name' => $request->last_name,
@@ -923,74 +900,74 @@ class AdminController extends Controller
         ]);
 
         if ($user) {
-            return redirect()->back()->with('success','New Admin Created Successfuly!');
-        
-        }else{
-            return redirect()->back()->with('error','Something Error Please Try again Later!');
-        
+            return redirect()->back()->with('success', 'New Admin Created Successfuly!');
+
+        } else {
+            return redirect()->back()->with('error', 'Something Error Please Try again Later!');
+
         }
 
 
     }
 
-    public function UpdateAdmin(Request $request)  {
-         
+    public function UpdateAdmin(Request $request)
+    {
+
         if ($redirect = $this->AdmincheckAuth()) {
-            return $redirect;  
+            return $redirect;
         }
-        
-        if ($request->email == null  || $request->first_name == null || $request->last_name == null ) {
-            return redirect()->back()->with('error','Fields Are Required!');
+
+        if ($request->email == null || $request->first_name == null || $request->last_name == null) {
+            return redirect()->back()->with('error', 'Fields Are Required!');
         }
 
         if ($request->role >= Auth::user()->admin_role) {
-            return redirect()->back()->with('error','You are Not Allowed to Update Admin in Heigher Rank!');
-    
-        }  
+            return redirect()->back()->with('error', 'You are Not Allowed to Update Admin in Heigher Rank!');
+
+        }
 
         $admin = User::find($request->id);
 
         if ($request->email != $admin->email) {
 
-            $user = User::where(['email'=>$request->email])->first();
+            $user = User::where(['email' => $request->email])->first();
             if (!empty($user)) {
-            return redirect()->back()->with('error','This Email is Already Registered');
-        
-           }
-           $admin->email = $request->email;
+                return redirect()->back()->with('error', 'This Email is Already Registered');
+
+            }
+            $admin->email = $request->email;
         }
 
         if ($request->password != null) {
 
-               
-        $password = $request->input('password');
-    
-        
-        if (strlen($password) < 8) {
-            return redirect()->back()->with('error','The password must be at least 8 characters long.');
-        
-        }
-    
-       if (!preg_match('/[A-Z]/', $password)) {
-            return redirect()->back()->with('error','The password must contain at least one uppercase letter.');
-        }
-        if (!preg_match('/[0-9]/', $password)) {
-            return redirect()->back()->with('error','The password must contain at least one number.');
-        }
-    
-        if (!preg_match('/[\W_]/', $password)) {
-            return redirect()->back()->with('error','The password must contain at least one special character.');
-        }
-    
 
-        if ($request->password !=  $request->c_password ) { 
-            return redirect()->back()->with('error','Password did not Matched!');
-        }
+            $password = $request->input('password');
 
 
+            if (strlen($password) < 8) {
+                return redirect()->back()->with('error', 'The password must be at least 8 characters long.');
 
-            if ($request->password !=  $request->c_password ) {
-                return redirect()->back()->with('error','Password did not Matched');
+            }
+
+            if (!preg_match('/[A-Z]/', $password)) {
+                return redirect()->back()->with('error', 'The password must contain at least one uppercase letter.');
+            }
+            if (!preg_match('/[0-9]/', $password)) {
+                return redirect()->back()->with('error', 'The password must contain at least one number.');
+            }
+
+            if (!preg_match('/[\W_]/', $password)) {
+                return redirect()->back()->with('error', 'The password must contain at least one special character.');
+            }
+
+
+            if ($request->password != $request->c_password) {
+                return redirect()->back()->with('error', 'Password did not Matched!');
+            }
+
+
+            if ($request->password != $request->c_password) {
+                return redirect()->back()->with('error', 'Password did not Matched');
             }
             $admin->password = Hash::make($request->password);
         }
@@ -1000,333 +977,334 @@ class AdminController extends Controller
         $admin->admin_role = $request->role;
         $admin->update();
 
-        return redirect()->back()->with('success','Admin Details Updated Successfuly!');
-            
+        return redirect()->back()->with('success', 'Admin Details Updated Successfuly!');
+
     }
 
 
     // Delete Admin ===========
-    public function DeleteAdmin($id) {
-         
+    public function DeleteAdmin($id)
+    {
+
         if ($redirect = $this->AdmincheckAuth()) {
-            return $redirect;  
+            return $redirect;
         }
-        
+
         $admin = User::find($id);
         $admin->delete();
-        return redirect()->back()->with('success','Admin Deleted Successfuly!');
-        
+        return redirect()->back()->with('success', 'Admin Deleted Successfuly!');
+
     }
 
     // Block Admin ===========
-    public function BlockAdmin($id) {
-         
+    public function BlockAdmin($id)
+    {
+
         if ($redirect = $this->AdmincheckAuth()) {
-            return $redirect;  
+            return $redirect;
         }
-        
+
         $admin = User::find($id);
         if ($admin->status == 2) {
-             $admin->status = 1;
-             $admin->update();
-             return redirect()->back()->with('success','Admin Un Blocked Successfuly!');
-        }else{
-             $admin->status = 2;
-             $admin->update();
-             return redirect()->back()->with('success','Admin Blocked Successfuly!');
+            $admin->status = 1;
+            $admin->update();
+            return redirect()->back()->with('success', 'Admin Un Blocked Successfuly!');
+        } else {
+            $admin->status = 2;
+            $admin->update();
+            return redirect()->back()->with('success', 'Admin Blocked Successfuly!');
         }
-    
-        
+
+
     }
 
     // Admin Management End================
 
 // Admin Profile Functions Start ================
 // Account Setting Functions Start =================
-public function AdminProfile()  {
-     
-    if ($redirect = $this->AdmincheckAuth()) {
-        return $redirect;  
-    }
-    
-    
-    $web_setting = WebSetting::first();
-    $bank_details = BankDetails::where(['user_id'=>Auth::user()->id])->first();
-    return view("Admin-Dashboard.account-setting", compact('web_setting','bank_details'));
+    public function AdminProfile()
+    {
 
-}
-
-
-
-
-
-    public function UpdatePassword(Request $request)  {
-         
-         
-        $password = $request->input('new_password');
-    
-        
-        if (strlen($password) < 8) {
-            return redirect()->back()->with('error','The password must be at least 8 characters long.');
-        
+        if ($redirect = $this->AdmincheckAuth()) {
+            return $redirect;
         }
-    
-       if (!preg_match('/[A-Z]/', $password)) {
-            return redirect()->back()->with('error','The password must contain at least one uppercase letter.');
+
+
+        $web_setting = WebSetting::first();
+        $bank_details = BankDetails::where(['user_id' => Auth::user()->id])->first();
+        return view("Admin-Dashboard.account-setting", compact('web_setting', 'bank_details'));
+
+    }
+
+
+    public function UpdatePassword(Request $request)
+    {
+
+
+        $password = $request->input('new_password');
+
+
+        if (strlen($password) < 8) {
+            return redirect()->back()->with('error', 'The password must be at least 8 characters long.');
+
+        }
+
+        if (!preg_match('/[A-Z]/', $password)) {
+            return redirect()->back()->with('error', 'The password must contain at least one uppercase letter.');
         }
         if (!preg_match('/[0-9]/', $password)) {
-            return redirect()->back()->with('error','The password must contain at least one number.');
+            return redirect()->back()->with('error', 'The password must contain at least one number.');
         }
-    
-        if (!preg_match('/[\W_]/', $password)) {
-            return redirect()->back()->with('error','The password must contain at least one special character.');
-        }
-    
 
-        if ($request->new_password !=  $request->c_password ) { 
-            return redirect()->back()->with('error','Password did not Matched!');
+        if (!preg_match('/[\W_]/', $password)) {
+            return redirect()->back()->with('error', 'The password must contain at least one special character.');
         }
-        
+
+
+        if ($request->new_password != $request->c_password) {
+            return redirect()->back()->with('error', 'Password did not Matched!');
+        }
+
         $user = User::find(Auth::user()->id);
 
-        if (Hash::check($request->password,$user->password)) {
+        if (Hash::check($request->password, $user->password)) {
             if ($request->new_password != $request->c_password) {
-                return redirect()->back()->with('error',"New Password and Confirm Password Didn't Matched!");
-    
+                return redirect()->back()->with('error', "New Password and Confirm Password Didn't Matched!");
+
             }
             $user->password = Hash::make($request->new_password);
             $user->update();
             if ($user) {
-                return redirect()->back()->with('success','Password Changed Successfuly!');
-                
+                return redirect()->back()->with('success', 'Password Changed Successfuly!');
+
             } else {
-                return redirect()->back()->with('error','Something Went Rong,Tryagain Later!');
-    
+                return redirect()->back()->with('error', 'Something Went Rong,Tryagain Later!');
+
             }
-            
-        }else {
-            return redirect()->back()->with('error','You Entered an Incorrect Password!');
-    
+
+        } else {
+            return redirect()->back()->with('error', 'You Entered an Incorrect Password!');
+
         }
 
     }
 
-    public function ChangeEmailSendCode(Request $request)   {
- 
-        
-        
+    public function ChangeEmailSendCode(Request $request)
+    {
+
+
         $user = User::find(Auth::user()->id);
 
         if ($user->email != $request->email) {
-            return response()->json(['error'=> true,
-            'message'=>'Crrunt Email is Invalid!']);
+            return response()->json(['error' => true,
+                'message' => 'Crrunt Email is Invalid!']);
         }
-        
+
         $randomNumber = random_int(100000, 999999);
 
-        $user->email_code = $randomNumber ;
+        $user->email_code = $randomNumber;
 
-        
+
         $mailData = [
             'title' => 'Email Change',
             'randomNumber' => $randomNumber,
         ];
-        
+
         $email_send = Mail::to($request->email)->send(new ChangeEmail($mailData));
-        
+
         if ($email_send) {
             $user->update();
-            return response()->json(['success'=> true,
-            'message'=>'Verification Code Send to Your Mail!']);
+            return response()->json(['success' => true,
+                'message' => 'Verification Code Send to Your Mail!']);
         } else {
-            return response()->json(['error'=> true,
-            'message'=>'Something Went Rong, Tryagain!']);
+            return response()->json(['error' => true,
+                'message' => 'Something Went Rong, Tryagain!']);
         }
-        
-        
+
+
     }
 
 
-    
-    public function UpdateEmail(Request $request)  {
-      
-        
+    public function UpdateEmail(Request $request)
+    {
+
+
         $user = User::find(Auth::user()->id);
 
         if ($user->email != $request->email) {
-            return redirect()->back()->with('error',"Crrunt Email is Invalid!");
+            return redirect()->back()->with('error', "Crrunt Email is Invalid!");
 
         }
-        
+
         if ($user->email == $request->new_email) {
-            return redirect()->back()->with('error',"Please Use Different Email!");
+            return redirect()->back()->with('error', "Please Use Different Email!");
 
         }
 
-        $new_mail = User::where(['email'=>$request->new_email])->first();
+        $new_mail = User::where(['email' => $request->new_email])->first();
 
         if ($new_mail) {
-            return redirect()->back()->with('error',"This Email Already in Use!");
+            return redirect()->back()->with('error', "This Email Already in Use!");
 
         }
 
         if ($user->email_code != $request->code) {
-            return redirect()->back()->with('error',"You Enterred an Incorrect Code!");
+            return redirect()->back()->with('error', "You Enterred an Incorrect Code!");
 
         }
 
         $user->email = $request->new_email;
         $user->email_code = null;
-         $user->update();
+        $user->update();
 
-            if ($user) {
-                return redirect()->back()->with('success','Email Updated Successfuly!');
-                
-            } else {
-                return redirect()->back()->with('error','Something Went Rong,Tryagain Later!');
-    
-            }
-            
-        
+        if ($user) {
+            return redirect()->back()->with('success', 'Email Updated Successfuly!');
+
+        } else {
+            return redirect()->back()->with('error', 'Something Went Rong,Tryagain Later!');
+
+        }
+
 
     }
 
-    public function UpdateBankDetails(Request $request) {
-  
+    public function UpdateBankDetails(Request $request)
+    {
+
         $user = User::find(Auth::user()->id);
 
-        $bank_details = BankDetails::where(['user_id'=>$user->id])->first();
+        $bank_details = BankDetails::where(['user_id' => $user->id])->first();
 
         if ($user->role == 2 || $user->role == 3) {
-         
-            if ($bank_details) {
-
-                $bank_details->user_id= $user->id;
-                $bank_details->bank_name= $request->bank_name;
-                $bank_details->holder_name= $request->holder_name;
-                $bank_details->iban= $request->iban;
-                $bank_details->update();
-
-                if ($bank_details) {
-                    return redirect()->back()->with('success','Bank Details Updated Successfuly!');
-                    
-                } else {
-                    return redirect()->back()->with('error','Something Went Rong,Tryagain Later!');
-        
-                }
-                
-            } else {
-                
-                $bank_details = BankDetails::create([
-                    'user_id'=> $user->id,
-                    'bank_name'=> $request->bank_name,
-                    'holder_name'=> $request->holder_name,
-                    'iban'=> $request->iban,
-                ]);
-
-                if ($bank_details) {
-                    return redirect()->back()->with('success','Bank Details Updated Successfuly!');
-                    
-                } else {
-                    return redirect()->back()->with('error','Something Went Rong,Tryagain Later!');
-        
-                }
-
-
-            }
-            
-
-        }else{
-
 
             if ($bank_details) {
 
-                $bank_details->user_id= $user->id;
-                $bank_details->holder_name= $request->holder_name;
-                $bank_details->card_number= $request->card_number;
-                $bank_details->cvv= $request->cvv;
-                $bank_details->expiry_date= $request->expiry_date;
+                $bank_details->user_id = $user->id;
+                $bank_details->bank_name = $request->bank_name;
+                $bank_details->holder_name = $request->holder_name;
+                $bank_details->iban = $request->iban;
                 $bank_details->update();
 
                 if ($bank_details) {
-                    return redirect()->back()->with('success','Bank Details Updated Successfuly!');
-                    
+                    return redirect()->back()->with('success', 'Bank Details Updated Successfuly!');
+
                 } else {
-                    return redirect()->back()->with('error','Something Went Rong,Tryagain Later!');
-        
+                    return redirect()->back()->with('error', 'Something Went Rong,Tryagain Later!');
+
                 }
-                
+
             } else {
-                
+
                 $bank_details = BankDetails::create([
-                    'user_id'=> $user->id,
-                    'holder_name'=> $request->holder_name,
-                    'card_number'=> $request->card_number,
-                    'cvv'=> $request->cvv,
-                    'expiry_date'=> $request->expiry_date,
+                    'user_id' => $user->id,
+                    'bank_name' => $request->bank_name,
+                    'holder_name' => $request->holder_name,
+                    'iban' => $request->iban,
                 ]);
 
                 if ($bank_details) {
-                    return redirect()->back()->with('success','Bank Details Updated Successfuly!');
-                    
+                    return redirect()->back()->with('success', 'Bank Details Updated Successfuly!');
+
                 } else {
-                    return redirect()->back()->with('error','Something Went Rong,Tryagain Later!');
-        
+                    return redirect()->back()->with('error', 'Something Went Rong,Tryagain Later!');
+
                 }
 
 
             }
 
+
+        } else {
+
+
+            if ($bank_details) {
+
+                $bank_details->user_id = $user->id;
+                $bank_details->holder_name = $request->holder_name;
+                $bank_details->card_number = $request->card_number;
+                $bank_details->cvv = $request->cvv;
+                $bank_details->expiry_date = $request->expiry_date;
+                $bank_details->update();
+
+                if ($bank_details) {
+                    return redirect()->back()->with('success', 'Bank Details Updated Successfuly!');
+
+                } else {
+                    return redirect()->back()->with('error', 'Something Went Rong,Tryagain Later!');
+
+                }
+
+            } else {
+
+                $bank_details = BankDetails::create([
+                    'user_id' => $user->id,
+                    'holder_name' => $request->holder_name,
+                    'card_number' => $request->card_number,
+                    'cvv' => $request->cvv,
+                    'expiry_date' => $request->expiry_date,
+                ]);
+
+                if ($bank_details) {
+                    return redirect()->back()->with('success', 'Bank Details Updated Successfuly!');
+
+                } else {
+                    return redirect()->back()->with('error', 'Something Went Rong,Tryagain Later!');
+
+                }
+
+
+            }
 
 
         }
-        
+
     }
 
 
-    public function DeleteBankDetails($id)   {
-         
-        
-        
+    public function DeleteBankDetails($id)
+    {
+
+
         $bank_details = BankDetails::find($id);
         $bank_details->delete();
         if ($bank_details) {
-            return redirect()->back()->with('success','Bank Details Deleted!');
-            
+            return redirect()->back()->with('success', 'Bank Details Deleted!');
+
         } else {
-            return redirect()->back()->with('error','Something Went Rong,Tryagain Later!');
+            return redirect()->back()->with('error', 'Something Went Rong,Tryagain Later!');
 
         }
     }
 
 
-    public function UpdateWebSetting(Request $request)  {
-         
+    public function UpdateWebSetting(Request $request)
+    {
+
         if ($redirect = $this->AdmincheckAuth()) {
-            return $redirect;  
+            return $redirect;
         }
-        
+
         $web_setting = WebSetting::first();
 
         if ($web_setting) {
-           
-            $web_setting->classes_expert = $request->classes_expert;
-                $web_setting->remote_expert = $request->remote_expert;
-                $web_setting->commission_rate = $request->commission_rate;
-                $web_setting->currency = $request->currency;
-                $web_setting->meta_description = $request->meta_description;
-                $web_setting->update();
 
-                if ($web_setting) {
-                    return redirect()->back()->with('success','Web Setting Updated Successfuly!');
-                    
-                } else {
-                    return redirect()->back()->with('error','Something Went Rong,Tryagain Later!');
-        
-                }
-            
+            $web_setting->classes_expert = $request->classes_expert;
+            $web_setting->remote_expert = $request->remote_expert;
+            $web_setting->commission_rate = $request->commission_rate;
+            $web_setting->currency = $request->currency;
+            $web_setting->meta_description = $request->meta_description;
+            $web_setting->update();
+
+            if ($web_setting) {
+                return redirect()->back()->with('success', 'Web Setting Updated Successfuly!');
+
+            } else {
+                return redirect()->back()->with('error', 'Something Went Rong,Tryagain Later!');
+
+            }
+
         } else {
-            
+
             $web_setting = WebSetting::create([
                 'classes_expert' => $request->classes_expert,
                 'remote_expert' => $request->remote_expert,
@@ -1336,14 +1314,13 @@ public function AdminProfile()  {
             ]);
 
             if ($web_setting) {
-                return redirect()->back()->with('success','Web Setting Updated Successfuly!');
-                
+                return redirect()->back()->with('success', 'Web Setting Updated Successfuly!');
+
             } else {
-                return redirect()->back()->with('error','Something Went Rong,Tryagain Later!');
-    
+                return redirect()->back()->with('error', 'Something Went Rong,Tryagain Later!');
+
             }
         }
-        
 
 
     }
@@ -1353,99 +1330,169 @@ public function AdminProfile()  {
     // Account Setting Functions END =================
 
 
-    
     // Notes & Calender Functions Start================
-    public function AdminNotesCalender(Request $request)   {
-       
+    public function AdminNotesCalender(Request $request)
+    {
+
         if ($redirect = $this->AdmincheckAuth()) {
-            return $redirect;  
-        } 
-        
+            return $redirect;
+        }
+
         return view("Admin-Dashboard.notes&calender");
 
     }
 
 
+    // Fetch all calendar events for the teacher
+    public function AdminCalenderindex(Request $request)
+    {
+        $userId = Auth::user()->id;
+        $events = AdminCalender::where('user_id', $userId)->get();
 
+        return response()->json($events);
+    }
 
-       // Fetch all calendar events for the teacher
-       public function AdminCalenderindex(Request $request)
-       {
-           $userId = Auth::user()->id;
-           $events = AdminCalender::where('user_id', $userId)->get();
-   
-           return response()->json($events);
-       }
-   
-       // Store a new event/note
-       public function AdminCalenderstore(Request $request)
-       {
-         
-           $request->validate([
-               'title' => 'required',
-               'date'  => 'required',
-               'time'  => 'required',
-               'color' => 'required',
-               'reminder' => 'required',
-               'notes' => 'required',
-           ]);
-   
-           $event = new AdminCalender();
-           $event->user_id = Auth::user()->id;  // Store currently authenticated teacher
-           $event->title = $request->title;
-           $event->color = $request->color;
-           $event->reminder = $request->reminder;
-           $event->date = $request->date;
-           $event->time = $request->time;
-           $event->notes = $request->notes;
-           $event->save();
-   
-           return response()->json(['success' => 'Event added successfully', 'event' => $event]);
-       }
-   
-       // Update an event/note
-       public function AdminCalenderupdate(Request $request, $id)
-       {
-           $request->validate([
-               'title_upd' => 'required|string',
-               'date_upd'  => 'required|date',
-               'time_upd'  => 'nullable',
-               'color_upd' => 'nullable|string',
-               'reminder_upd' => 'nullable|string',
-               'notes_upd' => 'nullable|string',
-           ]);
-   
-           $event = AdminCalender::find($id);
-           if (!$event || $event->user_id != Auth::user()->id) {
-               return response()->json(['error' => 'Unauthorized or not found'], 403);
-           }
-   
-           $event->title = $request->title_upd;
-           $event->color = $request->color_upd;
-           $event->reminder = $request->reminder_upd;
-           $event->date = $request->date_upd;
-           $event->time = $request->time_upd;
-           $event->notes = $request->notes_upd;
-           $event->save();
-   
-           return response()->json(['success' => 'Event updated successfully']);
-       }
-   
-       // Delete an event/note
-       public function AdminCalenderdestroy($id)
-       {
-           $event = AdminCalender::find($id);
-           if (!$event || $event->user_id != Auth::user()->id) {
-               return response()->json(['error' => 'Unauthorized or not found'], 403);
-           }
-   
-           $event->delete();
-   
-           return response()->json(['success' => 'Event deleted successfully']);
-       }
+    // Store a new event/note
+    public function AdminCalenderstore(Request $request)
+    {
+
+        $request->validate([
+            'title' => 'required',
+            'date' => 'required',
+            'time' => 'required',
+            'color' => 'required',
+            'reminder' => 'required',
+            'notes' => 'required',
+        ]);
+
+        $event = new AdminCalender();
+        $event->user_id = Auth::user()->id;  // Store currently authenticated teacher
+        $event->title = $request->title;
+        $event->color = $request->color;
+        $event->reminder = $request->reminder;
+        $event->date = $request->date;
+        $event->time = $request->time;
+        $event->notes = $request->notes;
+        $event->save();
+
+        return response()->json(['success' => 'Event added successfully', 'event' => $event]);
+    }
+
+    // Update an event/note
+    public function AdminCalenderupdate(Request $request, $id)
+    {
+        $request->validate([
+            'title_upd' => 'required|string',
+            'date_upd' => 'required|date',
+            'time_upd' => 'nullable',
+            'color_upd' => 'nullable|string',
+            'reminder_upd' => 'nullable|string',
+            'notes_upd' => 'nullable|string',
+        ]);
+
+        $event = AdminCalender::find($id);
+        if (!$event || $event->user_id != Auth::user()->id) {
+            return response()->json(['error' => 'Unauthorized or not found'], 403);
+        }
+
+        $event->title = $request->title_upd;
+        $event->color = $request->color_upd;
+        $event->reminder = $request->reminder_upd;
+        $event->date = $request->date_upd;
+        $event->time = $request->time_upd;
+        $event->notes = $request->notes_upd;
+        $event->save();
+
+        return response()->json(['success' => 'Event updated successfully']);
+    }
+
+    // Delete an event/note
+    public function AdminCalenderdestroy($id)
+    {
+        $event = AdminCalender::find($id);
+        if (!$event || $event->user_id != Auth::user()->id) {
+            return response()->json(['error' => 'Unauthorized or not found'], 403);
+        }
+
+        $event->delete();
+
+        return response()->json(['success' => 'Event deleted successfully']);
+    }
 
 
     // Notes & Calender Functions End================
+
+
+    /**
+     * Admin manually marks payout as completed
+     * This should be in your Admin controller, but I'm showing it here
+     */
+    public function adminMarkPayoutCompleted($transactionId)
+    {
+        // This method would be in AdminController
+        if (!Auth::check() || Auth::user()->role != 2) {
+            return redirect('/')->with('error', 'Unauthorized access');
+        }
+
+        try {
+            $transaction = Transaction::findOrFail($transactionId);
+
+            if ($transaction->payout_status == 'paid') {
+                return redirect()->back()->with('error', 'Payout already completed');
+            }
+
+            $transaction->markPayoutCompleted();
+
+            \Log::info('Admin marked payout as completed', [
+                'transaction_id' => $transaction->id,
+                'seller_id' => $transaction->seller_id,
+                'amount' => $transaction->seller_earnings,
+                'admin_id' => Auth::id()
+            ]);
+
+            return redirect()->back()->with('success', 'Payout marked as completed successfully');
+
+        } catch (\Exception $e) {
+            \Log::error('Payout completion failed: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Failed to mark payout as completed');
+        }
+    }
+
+    /**
+     * Batch process payouts for multiple transactions
+     */
+    public function adminBatchProcessPayouts(Request $request)
+    {
+        if (!Auth::check() || Auth::user()->role != 2) {
+            return redirect('/')->with('error', 'Unauthorized access');
+        }
+
+        $transactionIds = $request->transaction_ids; // Array of IDs
+
+        if (empty($transactionIds)) {
+            return redirect()->back()->with('error', 'No transactions selected');
+        }
+
+        $processed = 0;
+        $failed = 0;
+
+        foreach ($transactionIds as $id) {
+            try {
+                $transaction = Transaction::find($id);
+
+                if ($transaction && $transaction->payout_status == 'pending' && $transaction->status == 'completed') {
+                    $transaction->markPayoutCompleted();
+                    $processed++;
+                }
+
+            } catch (\Exception $e) {
+                \Log::error('Batch payout failed for transaction ' . $id . ': ' . $e->getMessage());
+                $failed++;
+            }
+        }
+
+        return redirect()->back()->with('success', "Processed {$processed} payouts successfully. Failed: {$failed}");
+    }
 
 
 }

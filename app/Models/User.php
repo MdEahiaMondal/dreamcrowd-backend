@@ -68,4 +68,60 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+
+    /**
+     * Get transactions where user is a seller
+     */
+    public function sellerTransactions()
+    {
+        return $this->hasMany(Transaction::class, 'seller_id');
+    }
+
+    /**
+     * Get transactions where user is a buyer
+     */
+    public function buyerTransactions()
+    {
+        return $this->hasMany(Transaction::class, 'buyer_id');
+    }
+
+    /**
+     * Get custom seller commission
+     */
+    public function sellerCommission()
+    {
+        return $this->hasOne(SellerCommission::class, 'seller_id');
+    }
+
+    /**
+     * Get total earnings as seller
+     */
+    public function getTotalEarningsAttribute()
+    {
+        return $this->sellerTransactions()
+            ->where('status', 'completed')
+            ->sum('seller_earnings');
+    }
+
+    /**
+     * Get pending payout amount
+     */
+    public function getPendingPayoutAttribute()
+    {
+        return $this->sellerTransactions()
+            ->where('status', 'completed')
+            ->where('payout_status', 'pending')
+            ->sum('seller_earnings');
+    }
+
+    /**
+     * Get total spent as buyer
+     */
+    public function getTotalSpentAttribute()
+    {
+        return $this->buyerTransactions()
+            ->where('status', 'completed')
+            ->sum('total_amount');
+    }
 }

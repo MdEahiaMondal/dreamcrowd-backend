@@ -10,50 +10,69 @@ class BookOrder extends Model
     use HasFactory;
 
     protected $fillable = [
-            'user_id',
-            'gig_id',
-            'teacher_id',
-            'zoom_link',
-            'title',
-            'frequency',
-            'group_type',
-            'emails',
-            'extra_guests',
-            'guests',
-            'childs',
-            'total_people',
-            'service_delivery',
-            'work_site',
-            'freelance_service',
-            'price',
-            'buyer_commission',
-            'coupen',
-            'discount',
-            'finel_price',
-            'payment_type',
-            'payment_id',
-            'holder_name',
-            'card_number',
-            'cvv',
-            'date',
-            'action_date',
-            'teacher_reschedule',
-            'user_reschedule',
-            'teacher_reschedule_time',
-            'user_dispute',
-            'teacher_dispute',
-            'auto_dispute_processed',
-            'refund',
-            'start_job',
-            'status'
+        'user_id',
+        'gig_id',
+        'teacher_id',
+        'zoom_link',
+        'title',
+        'frequency',
+        'group_type',
+        'emails',
+        'extra_guests',
+        'guests',
+        'childs',
+        'total_people',
+        'service_delivery',
+        'work_site',
+        'freelance_service',
+        'price',
+        'buyer_commission',
+        'coupen',
+        'discount',
+        'finel_price',
+        'payment_type',
+        'payment_id',
+        'holder_name',
+        'card_number',
+        'cvv',
+        'date',
+        'action_date',
+        'teacher_reschedule',
+        'user_reschedule',
+        'teacher_reschedule_time',
+        'user_dispute',
+        'teacher_dispute',
+        'auto_dispute_processed',
+        'refund',
+        'start_job',
+        'status',
+        'buyer_commission_rate',
+        'buyer_commission_amount',
+        'seller_commission_rate',
+        'seller_commission_amount',
+        'total_admin_commission',
+        'seller_earnings',
+        'admin_absorbed_discount',
+        'payment_status',
     ];
 
-    public function gig(){
+    public function gig()
+    {
         return $this->belongsTo(TeacherGig::class, 'gig_id');
     }
 
-    public function booker(){
+    public function booker()
+    {
         return $this->belongsTo(User::class, 'user_id');
     }
 
+    protected $casts = [
+        'buyer_commission_rate' => 'decimal:2',
+        'buyer_commission_amount' => 'decimal:2',
+        'seller_commission_rate' => 'decimal:2',
+        'seller_commission_amount' => 'decimal:2',
+        'total_admin_commission' => 'decimal:2',
+        'seller_earnings' => 'decimal:2',
+        'admin_absorbed_discount' => 'boolean',
+    ];
 }

@@ -14,21 +14,24 @@ class Kernel extends ConsoleKernel
     {
         // Schedule your custom command
         $schedule->command('update:teacher-gig-status')->everyFiveMinutes();
-         $schedule->command('orders:auto-cancel')->everyFiveMinutes();
-          $schedule->command('orders:auto-deliver')->hourly();
-          $schedule->command('orders:auto-complete')->hourly();
-         $schedule->command('disputes:process')->hourly(); // Or every 30 minutes
+        $schedule->command('orders:auto-cancel')
+            ->everyTenMinutes()
+            ->withoutOverlapping()
+            ->runInBackground()
+            ->appendOutputTo(storage_path('logs/auto-cancel.log'));
+        $schedule->command('orders:auto-deliver')->hourly();
+        $schedule->command('orders:auto-complete')->hourly();
+        $schedule->command('disputes:process')->hourly(); // Or every 30 minutes
     }
 
-    
-   
+
     /**
      * Register the commands for the application.
      */
     protected function commands(): void
     {
-        
-        $this->load(__DIR__.'/Commands');
+
+        $this->load(__DIR__ . '/Commands');
 
         require base_path('routes/console.php');
     }

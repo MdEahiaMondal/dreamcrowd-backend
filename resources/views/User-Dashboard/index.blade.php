@@ -220,9 +220,6 @@
             </div>
         </div>
     </div>
-    </div>
-    </div>
-    </div>
     <!-- =============================== MAIN CONTENT END HERE =========================== -->
 </section>
 
@@ -375,7 +372,6 @@
 </script>
 <script>
     (function ($) {
-
         $('.dropdown-toggle').click(function (e) {
             var _this = $(this);
             e.preventDefault();
@@ -383,5 +379,5 @@
             _this.parent().next('.sub-menu').toggleClass('toggled-on');
             _this.attr('aria-expanded', _this.attr('aria-expanded') === 'false' ? 'true' : 'false');
         });
-
     })(jQuery);
+</script>

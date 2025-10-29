@@ -3,6 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\BookingDuration;
+use App\Models\Transaction;
+use App\Models\Coupon;
+use App\Models\CouponUsage;
+use App\Models\TopSellerTag;
 use Carbon\Carbon;
 use App\Models\BookOrder;
 use App\Models\CancelOrder;
@@ -36,8 +40,6 @@ class OrderManagementController extends Controller
 
     public function OrderManagement()
     {
-
-
         if (!Auth::user()) {
             return redirect()->to('/')->with('error', 'Please LoginIn to Your Account!');
         } else {
@@ -47,10 +49,11 @@ class OrderManagementController extends Controller
                 return redirect()->to('/admin-dashboard');
             }
         }
+
         $admin_duration = BookingDuration::first();
         $reschedule_hours = (int)($admin_duration?->reschedule ?? 12);
 
-                        $perPage = 20;
+        $perPage = 20;
 
         $pendingOrders = DB::table('book_orders')
             ->join('expert_profiles', 'book_orders.teacher_id', '=', 'expert_profiles.user_id')
@@ -1085,21 +1088,17 @@ class OrderManagementController extends Controller
 
 
     // Order Action FUnctions Start =======================
-
-
     // Active Order----------------
     public function ActiveOrder($id)
     {
         if (!Auth::user()) {
             return redirect('/')->with('error', 'Login First!');
         }
+
         $order = BookOrder::find($id);
-
-        $classes = ClassDate::where(['order_id' => $id])->get();
-        $classes_ids = ClassDate::where(['order_id' => $id])->pluck('id');
-
-        $reschedule = ClassReschedule::whereIn('class_id', $classes_ids)->where('order_id', '=', $id)->get();
-
+//        $classes = ClassDate::where(['order_id' => $id])->get();
+//        $classes_ids = ClassDate::where(['order_id' => $id])->pluck('id');
+//        $reschedule = ClassReschedule::whereIn('class_id', $classes_ids)->where('order_id', '=', $id)->get();
 
         if ($order && $order->status == 0) {
 
@@ -1111,11 +1110,10 @@ class OrderManagementController extends Controller
                 return redirect('/')->with('error', 'Only Teacher can accept this order!');
             }
 
-
             $classes = ClassDate::where('order_id', $id)->get();
             $classIds = $classes->pluck('id');
 
-// Get all rescheduled classes for this order
+            // Get all rescheduled classes for this order
             $reschedules = ClassReschedule::whereIn('class_id', $classIds)
                 ->where('order_id', $id)
                 ->where('status', 0)
@@ -1123,21 +1121,62 @@ class OrderManagementController extends Controller
 
             if ($reschedules) {
                 foreach ($reschedules as $reschedule) {
-                    // Find the corresponding ClassDate
                     $class = $classes->where('id', $reschedule->class_id)->first();
                     if ($class) {
-                        // Update ClassDate with rescheduled dates
                         $class->user_date = $reschedule->user_date;
                         $class->teacher_date = $reschedule->teacher_date;
                         $class->save();
 
-                        // Mark reschedule as completed
                         $reschedule->status = 1;
                         $reschedule->save();
                     }
                 }
             }
 
+            // ============ UPDATE TRANSACTION STATUS ============
+            try {
+                // Find transaction
+                $transaction = Transaction::where('buyer_id', $order->user_id)
+                    ->where('seller_id', $order->teacher_id)
+                    ->where('status', 'pending')
+                    ->whereHas('bookOrder', function ($q) use ($order) {
+                        $q->where('id', $order->id);
+                    })
+                    ->orWhere(function ($query) use ($order) {
+                        $query->where('service_id', $order->gig_id)
+                            ->where('buyer_id', $order->user_id)
+                            ->where('seller_id', $order->teacher_id)
+                            ->where('status', 'pending');
+                    })
+                    ->first();
+
+                // Capture Stripe payment
+                \Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
+                $paymentIntent = \Stripe\PaymentIntent::retrieve($order->payment_id);
+
+                if ($paymentIntent->status === 'requires_capture') {
+                    $paymentIntent->capture();
+                    \Log::info('Payment captured for order: ' . $order->id);
+                }
+
+                // Update transaction status
+                if ($transaction) {
+                    $transaction->markAsCompleted($order->payment_id);
+
+                    \Log::info('Transaction marked as completed', [
+                        'transaction_id' => $transaction->id,
+                        'order_id' => $order->id,
+                        'amount' => $transaction->total_amount
+                    ]);
+                }
+
+                // Update BookOrder payment status
+                $order->payment_status = 'completed';
+
+            } catch (\Exception $e) {
+                \Log::error('Payment capture failed for order ' . $order->id . ': ' . $e->getMessage());
+                return redirect()->back()->with('error', 'Payment capture failed. Please contact support.');
+            }
 
             $order->status = 1;
             $order->teacher_reschedule = 0;
@@ -1147,12 +1186,10 @@ class OrderManagementController extends Controller
         }
 
         if ($order) {
-            return redirect()->back()->with('success', 'Order Activated Successfuly!');
+            return redirect()->back()->with('success', 'Order Activated Successfully!');
         } else {
-            return redirect()->back()->with('error', 'Something went rong, tryagain latter!');
+            return redirect()->back()->with('error', 'Something went wrong, try again later!');
         }
-
-
     }
 
     // Cancel Order----------------
@@ -1172,109 +1209,151 @@ class OrderManagementController extends Controller
         $order->frequency = $order->frequency ?? 1;
 
         $now = now();
-
         $cancelOrder = new CancelOrder();
         Stripe::setApiKey(env('STRIPE_SECRET'));
 
-        // Get all classes for this order
         $classes = ClassDate::where('order_id', $order->id)->get();
-
         $refundableClasses = [];
         $nonRefundableClasses = [];
         $refundAmount = 0;
         $date = Auth::user()->role == 1 ? 'teacher_date' : 'user_date';
         $time_zone = Auth::user()->role == 1 ? 'teacher_time_zone' : 'user_time_zone';
 
-
+        // ============ SCENARIO A: PENDING ORDER - FULL REFUND ============
         if ($order->status == 0) {
-            $paymentIntent = PaymentIntent::retrieve($order->payment_id);
-            $paymentIntent->cancel();
-            $cancelOrder->refund = 1;
-            $cancelOrder->amount = $order->finel_price;
-            $order->refund = 1;
-        } else if (Auth::user()->role == 1 && $request->order_refund == 1) {
-            $cancelOrder->refund = 1;
-            $cancelOrder->refund_type = $request->refund;
-            $paymentIntent = PaymentIntent::retrieve($order->payment_id);
-            if ($request->refund == 0) {
-                // Full Refund
+            try {
                 $paymentIntent = PaymentIntent::retrieve($order->payment_id);
                 $paymentIntent->cancel();
+
+                $cancelOrder->refund = 1;
                 $cancelOrder->amount = $order->finel_price;
+                $order->refund = 1;
 
-            } else {
+                // ============ UPDATE TRANSACTION STATUS ============
+                $transaction = Transaction::where('buyer_id', $order->user_id)
+                    ->where('seller_id', $order->teacher_id)
+                    ->where('status', 'pending')
+                    ->first();
 
-                // Get the refund amount from the request
-                $refundAmount = floatval($request->refund_amount);
-                $finalPrice = floatval($order->finel_price);
-
-                // Validate the refund amount
-                if ($refundAmount == null) {
-                    return redirect()->back()->with('error', 'Add Refund Amount!');
-                }
-
-                if ($refundAmount > $finalPrice) {
-                    return redirect()->back()->with('error', 'Refund amount cannot exceed the final price!');
-                }
-
-                // Retrieve the PaymentIntent from Stripe using the order's payment_id
-                $paymentIntent = PaymentIntent::retrieve($order->payment_id);
-
-                // Check if the PaymentIntent needs to be captured first
-                if ($paymentIntent->status === 'requires_payment_method') {
-                    // Attach a valid payment method (use the saved card or a new card)
-                    $paymentIntent = $paymentIntent->confirm([
-                        'payment_method' => 'pm_card_visa', // Replace with your payment method ID
+                if ($transaction) {
+                    $transaction->markAsRefunded();
+                    \Log::info('Transaction refunded (pending order)', [
+                        'transaction_id' => $transaction->id,
+                        'order_id' => $order->id
                     ]);
-
-                }
-                // Now, process the partial refund
-
-                // Check if the PaymentIntent needs to be captured first
-                if ($paymentIntent->status === 'requires_capture') {
-                    try {
-                        // Capture the full amount before processing the partial refund
-                        $paymentIntent->capture();
-                    } catch (\Exception $e) {
-                        return redirect()->back()->with('error', 'Error capturing payment: ' . $e->getMessage());
-                    }
                 }
 
-
-                if ($paymentIntent->status === 'succeeded') {
-                    try {
-                        $refund = Refund::create([
-                            'payment_intent' => $order->payment_id,
-                            'amount' => round($refundAmount * 100), // Convert to cents (Stripe works in cents)
-                        ]);
-                        // Redirect or return success
-                        // return redirect()->back()->with('success', 'Partial refund processed successfully.');
-                    } catch (\Exception $e) {
-                        return redirect()->back()->with('error', 'Error processing refund: ' . $e->getMessage());
-                    }
-                }
-
-
-                $cancelOrder->amount = $request->refund_amount;
+            } catch (\Exception $e) {
+                \Log::error('Pending order cancellation failed: ' . $e->getMessage());
+                return redirect()->back()->with('error', 'Cancellation failed: ' . $e->getMessage());
             }
 
+            // ============ SCENARIO B: TEACHER-INITIATED REFUND ============
+        } else if (Auth::user()->role == 1 && $request->order_refund == 1) {
 
-            $order->refund = 1;
+            $cancelOrder->refund = 1;
+            $cancelOrder->refund_type = $request->refund;
 
+            try {
+                $paymentIntent = PaymentIntent::retrieve($order->payment_id);
 
+                if ($request->refund == 0) {
+                    // Full Refund
+                    if (in_array($paymentIntent->status, ['requires_capture', 'requires_confirmation'])) {
+                        $paymentIntent->cancel();
+                    } else if ($paymentIntent->status === 'succeeded') {
+                        Refund::create(['payment_intent' => $order->payment_id]);
+                    }
+
+                    $cancelOrder->amount = $order->finel_price;
+                    $order->refund = 1;
+
+                    // ============ UPDATE TRANSACTION - FULL REFUND ============
+                    $transaction = Transaction::where('buyer_id', $order->user_id)
+                        ->where('seller_id', $order->teacher_id)
+                        ->first();
+
+                    if ($transaction) {
+                        $transaction->markAsRefunded();
+                        $transaction->payout_status = 'failed'; // Seller won't get paid
+                        $transaction->save();
+
+                        \Log::info('Transaction fully refunded by teacher', [
+                            'transaction_id' => $transaction->id,
+                            'order_id' => $order->id
+                        ]);
+                    }
+
+                } else {
+                    // Partial Refund
+                    $refundAmount = floatval($request->refund_amount);
+                    $finalPrice = floatval($order->finel_price);
+
+                    if ($refundAmount == null) {
+                        return redirect()->back()->with('error', 'Add Refund Amount!');
+                    }
+
+                    if ($refundAmount > $finalPrice) {
+                        return redirect()->back()->with('error', 'Refund amount cannot exceed the final price!');
+                    }
+
+                    if ($paymentIntent->status === 'requires_capture') {
+                        $paymentIntent->capture();
+                    }
+
+                    if ($paymentIntent->status === 'succeeded') {
+                        Refund::create([
+                            'payment_intent' => $order->payment_id,
+                            'amount' => round($refundAmount * 100)
+                        ]);
+                    }
+
+                    $cancelOrder->amount = $request->refund_amount;
+                    $order->refund = 1;
+
+                    // ============ UPDATE TRANSACTION - PARTIAL REFUND ============
+                    $transaction = Transaction::where('buyer_id', $order->user_id)
+                        ->where('seller_id', $order->teacher_id)
+                        ->first();
+
+                    if ($transaction) {
+                        $remainingAmount = $transaction->total_amount - $refundAmount;
+
+                        // Recalculate commissions on remaining amount
+                        $newSellerCommission = ($remainingAmount * $transaction->seller_commission_rate) / 100;
+                        $newBuyerCommission = ($remainingAmount * $transaction->buyer_commission_rate) / 100;
+
+                        $transaction->coupon_discount += $refundAmount;
+                        $transaction->seller_commission_amount = $newSellerCommission;
+                        $transaction->buyer_commission_amount = $newBuyerCommission;
+                        $transaction->total_admin_commission = $newSellerCommission + $newBuyerCommission;
+                        $transaction->seller_earnings = $remainingAmount - $newSellerCommission;
+                        $transaction->notes .= "\n[" . now()->format('Y-m-d H:i:s') . "] Partial refund by teacher: $" . $refundAmount;
+                        $transaction->save();
+
+                        \Log::info('Transaction partially refunded', [
+                            'transaction_id' => $transaction->id,
+                            'refund_amount' => $refundAmount,
+                            'new_seller_earnings' => $transaction->seller_earnings
+                        ]);
+                    }
+                }
+
+            } catch (\Exception $e) {
+                \Log::error('Teacher refund failed: ' . $e->getMessage());
+                return redirect()->back()->with('error', 'Refund failed: ' . $e->getMessage());
+            }
+
+            // ============ SCENARIO C: ACTIVE ORDER - AUTO REFUND BASED ON CLASSES ============
         } else if ($order->status == 1) {
 
             foreach ($classes as $class) {
-                $classTime = \Carbon\Carbon::parse($class->$date)
-                    ->timezone($class->$time_zone);
-
-                $diffInHours = $now->diffInHours($classTime, false); // Signed difference (future = positive, past = negative)
+                $classTime = \Carbon\Carbon::parse($class->$date)->timezone($class->$time_zone);
+                $diffInHours = $now->diffInHours($classTime, false);
 
                 if ($diffInHours > $reschedule_hours) {
-                    // Class is in the future and outside reschedule window => refundable
                     $refundableClasses[] = $class;
                 } else {
-                    // Class is in the past or too close => non-refundable
                     $nonRefundableClasses[] = $class;
                 }
             }
@@ -1282,94 +1361,101 @@ class OrderManagementController extends Controller
             $refundableCount = count($refundableClasses);
             $totalClasses = count($classes);
 
-
             if ($totalClasses > 0 && $refundableCount > 0) {
                 $pricePerClass = $order->finel_price / $order->frequency;
                 $refundAmount = round($pricePerClass * $refundableCount, 2);
             }
 
-
-            // Proceed based on refundable logic
+            // Full class-based refund
             if ($totalClasses == $refundableCount && $order->freelance_service != 'Normal') {
-
-                $paymentIntent = PaymentIntent::retrieve($order->payment_id);
-                $canceledIntent = $paymentIntent->cancel();
-                $cancelOrder->refund = 1;
-                $cancelOrder->amount = $order->finel_price;
-                $order->refund = 1;
-            } else if ($refundAmount > 0 && $order->freelance_service != 'Normal') {
-
-
                 try {
+                    $paymentIntent = PaymentIntent::retrieve($order->payment_id);
+                    $canceledIntent = $paymentIntent->cancel();
 
+                    $cancelOrder->refund = 1;
+                    $cancelOrder->amount = $order->finel_price;
+                    $order->refund = 1;
 
-                    // Payment accept and partial refund ====
-                    // Retrieve the PaymentIntent from Stripe using the order's payment_id
+                    // ============ UPDATE TRANSACTION - FULL REFUND ============
+                    $transaction = Transaction::where('buyer_id', $order->user_id)
+                        ->where('seller_id', $order->teacher_id)
+                        ->first();
+
+                    if ($transaction) {
+                        $transaction->markAsRefunded();
+                        \Log::info('Transaction fully refunded (all classes refundable)', [
+                            'transaction_id' => $transaction->id
+                        ]);
+                    }
+
+                } catch (\Exception $e) {
+                    \Log::error('Full refund failed: ' . $e->getMessage());
+                    return redirect()->back()->with('error', 'Refund failed: ' . $e->getMessage());
+                }
+                // Partial class-based refund
+            } else if ($refundAmount > 0 && $order->freelance_service != 'Normal') {
+                try {
                     $paymentIntent = PaymentIntent::retrieve($order->payment_id);
 
-                    // Check if the PaymentIntent needs to be captured first
-                    if ($paymentIntent->status === 'requires_payment_method') {
-                        // Attach a valid payment method (use the saved card or a new card)
-                        $paymentIntent = $paymentIntent->confirm([
-                            'payment_method' => 'pm_card_visa', // Replace with your payment method ID
-                        ]);
-
-                    }
-                    // Now, process the partial refund
-
-                    // Check if the PaymentIntent needs to be captured first
                     if ($paymentIntent->status === 'requires_capture') {
-                        try {
-                            // Capture the full amount before processing the partial refund
-                            $paymentIntent->capture();
-                        } catch (\Exception $e) {
-                            return redirect()->back()->with('error', 'Error capturing payment: ' . $e->getMessage());
-                        }
+                        $paymentIntent->capture();
                     }
-
 
                     if ($paymentIntent->status === 'succeeded') {
-                        try {
-                            $refund = Refund::create([
-                                'payment_intent' => $order->payment_id,
-                                'amount' => round($refundAmount * 100), // Convert to cents (Stripe works in cents)
-                            ]);
-                            // Redirect or return success
-                            // return redirect()->back()->with('success', 'Partial refund processed successfully.');
-                        } catch (\Exception $e) {
-                            return redirect()->back()->with('error', 'Error processing refund: ' . $e->getMessage());
-                        }
+                        Refund::create([
+                            'payment_intent' => $order->payment_id,
+                            'amount' => round($refundAmount * 100)
+                        ]);
                     }
-                    // Payment accept and partial refund ====
 
                     $cancelOrder->refund = 1;
                     $cancelOrder->refund_type = 1;
                     $cancelOrder->amount = $refundAmount;
+                    $order->refund = 1;
+
+                    // ============ UPDATE TRANSACTION - PARTIAL REFUND ============
+                    $transaction = Transaction::where('buyer_id', $order->user_id)
+                        ->where('seller_id', $order->teacher_id)
+                        ->first();
+
+                    if ($transaction) {
+                        $remainingAmount = $transaction->total_amount - $refundAmount;
+                        $newSellerCommission = ($remainingAmount * $transaction->seller_commission_rate) / 100;
+                        $newBuyerCommission = ($remainingAmount * $transaction->buyer_commission_rate) / 100;
+
+                        $transaction->coupon_discount += $refundAmount;
+                        $transaction->seller_commission_amount = $newSellerCommission;
+                        $transaction->buyer_commission_amount = $newBuyerCommission;
+                        $transaction->total_admin_commission = $newSellerCommission + $newBuyerCommission;
+                        $transaction->seller_earnings = $remainingAmount - $newSellerCommission;
+                        $transaction->notes .= "\n[" . now()->format('Y-m-d H:i:s') . "] Partial refund ({$refundableCount}/{$totalClasses} classes): $" . $refundAmount;
+                        $transaction->save();
+
+                        \Log::info('Transaction partially refunded (class-based)', [
+                            'transaction_id' => $transaction->id,
+                            'refundable_classes' => $refundableCount,
+                            'total_classes' => $totalClasses,
+                            'refund_amount' => $refundAmount
+                        ]);
+                    }
 
                 } catch (\Exception $e) {
+                    \Log::error('Partial refund failed: ' . $e->getMessage());
                     return redirect()->back()->with('error', 'Refund Failed: ' . $e->getMessage());
                 }
-
-                $order->refund = 1;
             } else {
-                // No refund (either all attended or within reschedule window)
+                // No refund
                 $cancelOrder->refund = 0;
                 $cancelOrder->amount = 0;
             }
-
-
         }
 
-
-        // Get all rescheduled classes for this order
+        // Cancel rescheduled classes
         $reschedules = ClassReschedule::where('order_id', $order->id)->where('status', 0)->get();
-
         if ($reschedules) {
             foreach ($reschedules as $reschedule) {
-
                 $reschedule->status = 2;
                 $reschedule->save();
-
             }
         }
 
@@ -1380,24 +1466,20 @@ class OrderManagementController extends Controller
         $cancelOrder->save();
 
         $order->status = 4;
+        $order->payment_status = 'refunded';
         $order->action_date = Carbon::now()->format('Y-m-d H:i');
         $order->update();
-
 
         if ($order) {
             return redirect()->back()->with('success', 'Order canceled successfully' . ($refundAmount > 0 ? ' and refund initiated.' : '.'));
         } else {
-            return redirect()->back()->with('error', 'Something went rong, tryagain latter!');
+            return redirect()->back()->with('error', 'Something went wrong, try again later!');
         }
-
-
     }
-
 
     // Deliver Order==========
     public function DeliverOrder($id)
     {
-
         if (!Auth::user()) {
             return redirect()->to('/')->with('error', 'Please LoginIn to Your Account!');
         } else {
@@ -1417,16 +1499,198 @@ class OrderManagementController extends Controller
             $order->status = 2;
             $order->action_date = Date('M d, Y');
             $order->update();
+
+            \Log::info('Order delivered', [
+                'order_id' => $order->id,
+                'seller_id' => $order->teacher_id
+            ]);
+        }
+        if ($order) {
+            return redirect()->back()->with('success', 'Order Delivered Successfully!');
+        } else {
+            return redirect()->back()->with('error', 'Something went wrong, try again later!');
+        }
+    }
+
+    // Dispute Order Function  ======Start
+    public function DisputeOrder(Request $request)
+    {
+        if (!Auth::check()) {
+            return redirect('/')->with('error', 'Login First!');
+        }
+
+        $order = BookOrder::find($request->order_id);
+        if (!$order) {
+            return redirect()->back()->with('error', 'Order Not Found!');
+        }
+
+        $dispute = new DisputeOrder();
+
+        if ($request->refund == 0) {
+            $dispute->amount = $order->finel_price;
+        } else {
+            $refundAmount = floatval($request->refund_amount);
+            $finalPrice = floatval($order->finel_price);
+
+            if ($refundAmount == null) {
+                return redirect()->back()->with('error', 'Add Refund Amount!');
+            }
+
+            if ($refundAmount > $finalPrice) {
+                return redirect()->back()->with('error', 'Refund amount cannot exceed the final price!');
+            }
+
+            $dispute->amount = $request->refund_amount;
+        }
+
+        $dispute->user_id = Auth::user()->id;
+        $dispute->user_role = Auth::user()->role;
+        $dispute->order_id = $order->id;
+        $dispute->refund = 1;
+        $dispute->refund_type = $request->refund;
+        $dispute->reason = $request->reason;
+        $dispute->save();
+
+        if (Auth::user()->role == 1) {
+            $order->teacher_dispute = 1;
+        } else {
+            $order->user_dispute = 1;
+        }
+
+        $order->status = 4;
+        $order->update();
+
+        // ============ UPDATE TRANSACTION STATUS ============
+        $transaction = Transaction::where('buyer_id', $order->user_id)
+            ->where('seller_id', $order->teacher_id)
+            ->first();
+
+        if ($transaction) {
+            $transaction->status = 'refunded'; // Pending admin decision
+            $transaction->notes .= "\n[" . now()->format('Y-m-d H:i:s') . "] Dispute filed by " . (Auth::user()->role == 1 ? 'Seller' : 'Buyer');
+            $transaction->save();
+
+            \Log::info('Dispute filed', [
+                'transaction_id' => $transaction->id,
+                'order_id' => $order->id,
+                'filed_by' => Auth::user()->role == 1 ? 'seller' : 'buyer'
+            ]);
         }
 
         if ($order) {
-            return redirect()->back()->with('success', 'Order Delivered Successfuly!');
+            return redirect()->back()->with('success', 'Dispute Order Request Refund Submitted Successfully');
         } else {
-            return redirect()->back()->with('error', 'Something went rong, tryagain latter!');
+            return redirect()->back()->with('error', 'Something went wrong, try again later!');
+        }
+    }
+    // Dispute Order Function  ======END
+
+    // Accept Disputed Order and Give Refund =====
+    public function AcceptDisputedOrder($id)
+    {
+        if (!Auth::check()) {
+            return redirect('/')->with('error', 'Login First!');
         }
 
+        Stripe::setApiKey(env('STRIPE_SECRET'));
 
+        $order = BookOrder::where(['id' => $id, 'user_dispute' => 1, 'teacher_dispute' => 0])->first();
+
+        if (!$order) {
+            return back()->with('error', 'Order not found or not in delivered status.');
+        }
+
+        $dispute = DisputeOrder::where(['order_id' => $order->id, 'status' => 0])->first();
+
+        if (!$dispute) {
+            return redirect()->back()->with('error', 'No pending dispute found for this Order');
+        }
+
+        try {
+            $paymentIntent = PaymentIntent::retrieve($order->payment_id);
+
+            if ($dispute->refund_type == 0) {
+                // Full refund
+                if (in_array($paymentIntent->status, ['requires_capture', 'requires_confirmation', 'requires_payment_method'])) {
+                    $paymentIntent->cancel();
+                } elseif ($paymentIntent->status === 'succeeded') {
+                    Refund::create(['payment_intent' => $order->payment_id]);
+                }
+
+                // ============ UPDATE TRANSACTION - FULL REFUND ============
+                $transaction = Transaction::where('buyer_id', $order->user_id)
+                    ->where('seller_id', $order->teacher_id)
+                    ->first();
+
+                if ($transaction) {
+                    $transaction->markAsRefunded();
+                    $transaction->payout_status = 'failed';
+                    $transaction->notes .= "\n[" . now()->format('Y-m-d H:i:s') . "] Dispute resolved - Full refund approved";
+                    $transaction->save();
+                }
+
+            } else {
+                // Partial refund
+                $refundAmount = floatval($dispute->amount);
+                $finalPrice = floatval($order->finel_price);
+
+                if (!$refundAmount || $refundAmount > $finalPrice) {
+                    return redirect()->back()->with('error', 'Invalid refund amount for this Order');
+                }
+
+                if ($paymentIntent->status === 'requires_capture') {
+                    $paymentIntent->capture();
+                }
+
+                if ($paymentIntent->status === 'succeeded') {
+                    Refund::create([
+                        'payment_intent' => $order->payment_id,
+                        'amount' => round($refundAmount * 100)
+                    ]);
+                }
+
+                // ============ UPDATE TRANSACTION - PARTIAL REFUND ============
+                $transaction = Transaction::where('buyer_id', $order->user_id)
+                    ->where('seller_id', $order->teacher_id)
+                    ->first();
+
+                if ($transaction) {
+                    $remainingAmount = $transaction->total_amount - $refundAmount;
+                    $newSellerCommission = ($remainingAmount * $transaction->seller_commission_rate) / 100;
+                    $newBuyerCommission = ($remainingAmount * $transaction->buyer_commission_rate) / 100;
+
+                    $transaction->coupon_discount += $refundAmount;
+                    $transaction->seller_commission_amount = $newSellerCommission;
+                    $transaction->buyer_commission_amount = $newBuyerCommission;
+                    $transaction->total_admin_commission = $newSellerCommission + $newBuyerCommission;
+                    $transaction->seller_earnings = $remainingAmount - $newSellerCommission;
+                    $transaction->notes .= "\n[" . now()->format('Y-m-d H:i:s') . "] Dispute resolved - Partial refund: $" . $refundAmount;
+                    $transaction->save();
+                }
+            }
+
+            $dispute->status = 1;
+            $dispute->save();
+
+            $order->auto_dispute_processed = 0;
+            $order->refund = 1;
+            $order->payment_status = 'refunded';
+            $order->save();
+
+            \Log::info('Dispute resolved', [
+                'order_id' => $order->id,
+                'refund_type' => $dispute->refund_type == 0 ? 'full' : 'partial',
+                'amount' => $dispute->amount
+            ]);
+
+        } catch (\Exception $e) {
+            \Log::error('Dispute refund failed: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Refund failed for Order: ' . $e->getMessage());
+        }
+
+        return redirect()->back()->with('success', 'Refund request accepted for this Order');
     }
+    //  Accept Disputed Order and Give Refund =====
 
     // Freelance Online Order Deliver ===================
     public function FreelanceOrderDeliver(Request $request)
@@ -1508,9 +1772,163 @@ class OrderManagementController extends Controller
 
         return redirect()->back()->with('success', 'Order delivered and message sent successfully!');
     }
-
     // Freelance Online Order Deliver ===================
 
+    // Back to Active Start =====
+    public function BackToActive($id)
+    {
+
+        if (!Auth::check()) {
+            return redirect('/')->with('error', 'Login First!');
+        }
+
+
+        // Get the order with status 2 (delivered)
+        $order = BookOrder::where(['id' => $id, 'status' => 2])->first();
+
+        if (!$order) {
+            return back()->with('error', 'Order not found or not in delivered status.');
+        }
+
+        // Get the first class related to the order
+        $class = ClassDate::where(['order_id' => $order->id])->first();
+
+        if ($class) {
+            // Extend both user_date and teacher_date by 7 days
+            $class->user_date = Carbon::parse($class->user_date)->addDays(7);
+            $class->teacher_date = Carbon::parse($class->teacher_date)->addDays(7);
+            $class->save();
+        }
+
+        // Optionally update the order status back to active (1)
+        $order->status = 1;
+        $order->update();
+
+
+        if ($order) {
+            return back()->with('success', 'Order reactivated and class date extended by 7 days.');
+        } else {
+            return redirect()->back()->with('error', 'Something went rong,tryagain later!');
+        }
+
+    }
+    // Back to Active END =====
+
+    // Back to Active UnSetisfied Start =====
+    public function UnSetisfiedDelivery(Request $request)
+    {
+
+        if (!Auth::check() || Auth::user()->role != 0) {
+            return redirect('/')->with('error', 'Login First!');
+        }
+
+
+        // Get the order with status 2 (delivered)
+        $order = BookOrder::where(['id' => $request->id, 'status' => 2])->first();
+
+        if (!$order) {
+            return response()->json(['error' => 'Order not found or not in delivered status.']);
+        }
+
+        // Get the first class related to the order
+        $class = ClassDate::where(['order_id' => $order->id])->first();
+
+        if ($class) {
+            // Extend both user_date and teacher_date by 7 days
+            $class->user_date = Carbon::parse($class->user_date)->addDays(7);
+            $class->teacher_date = Carbon::parse($class->teacher_date)->addDays(7);
+            $class->save();
+        }
+
+        // Optionally update the order status back to active (1)
+
+        // Find chat message
+        $chat = Chat::find($request->message);
+
+        // If chat message exists
+        if ($chat) {
+            // Update SMS with disabled button
+            $oldSms = $chat->sms;
+
+            // Use regex or simple str_replace to update button
+            // Example simple way: replace status="0" with status="1" and add disabled
+
+            $newSms = str_replace(
+                'data-status="0"',
+                'data-status="1" disabled',
+                $oldSms
+            );
+
+            // Save updated sms
+            $chat->sms = $newSms;
+            $chat->save();
+        }
+
+        $order->status = 1;
+        $order->update();
+
+
+        if ($order) {
+            return response()->json(['success' => 'Order reactivated and class date extended by 7 days.']);
+        } else {
+            return response()->json(['error' => 'Something went rong,tryagain later!']);
+        }
+
+    }
+    // Back to Active UnSetisfied Start =====
+
+    //  Inperson Normal Freelance First Start Jon in Active Tab =====
+    public function StartJobActive($id)
+    {
+        if (!Auth::check() || Auth::user()->role != 1) {
+            return redirect('/')->with('error', 'Login First!');
+        }
+
+        $order = BookOrder::where(['id' => $id, 'status' => 1, 'start_job' => 0])->first();
+
+        if (!$order) {
+            return back()->with('error', 'Order not found!');
+        }
+
+        // ============ CAPTURE PAYMENT ON JOB START ============
+        try {
+            \Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
+            $paymentIntent = \Stripe\PaymentIntent::retrieve($order->payment_id);
+
+            if ($paymentIntent->status === 'requires_capture') {
+                $paymentIntent->capture();
+
+                \Log::info('Payment captured on job start', [
+                    'order_id' => $order->id,
+                    'payment_intent' => $order->payment_id
+                ]);
+            }
+
+            // Update transaction if still pending
+            $transaction = Transaction::where('buyer_id', $order->user_id)
+                ->where('seller_id', $order->teacher_id)
+                ->where('status', 'pending')
+                ->first();
+
+            if ($transaction) {
+                $transaction->markAsCompleted($order->payment_id);
+                \Log::info('Transaction completed on job start', [
+                    'transaction_id' => $transaction->id
+                ]);
+            }
+
+            $order->start_job = 1;
+            $order->payment_status = 'completed';
+            $order->save();
+
+            return redirect()->back()->with('success', 'Job started successfully and payment captured.');
+
+        } catch (\Exception $e) {
+            \Log::error('Payment capture on job start failed: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Failed to start job: ' . $e->getMessage());
+        }
+    }
+    //  Inperson Normal Freelance First Start Jon in Active Tab =====
 
     // Reshedule Class Function start=====
     public function UserResheduleClass($id)
@@ -1677,7 +2095,6 @@ class OrderManagementController extends Controller
 
 
     }
-
     // Reshedule Class Function END=====
 
 
@@ -2193,300 +2610,13 @@ class OrderManagementController extends Controller
     }
     // Reshedule Reject Function Update Main Class ======END
 
-
-    // Dispute Order Function  ======Start
-    public function DisputeOrder(Request $request)
-    {
-
-
-        if (!Auth::check()) {
-            return redirect('/')->with('error', 'Login First!');
-        }
-
-        $order = BookOrder::find($request->order_id);
-        if (!$order) {
-            return redirect()->back()->with('error', 'Order Not Found!');
-        }
-
-
-        $dispute = new DisputeOrder();
-
-        if ($request->refund == 0) {
-            $dispute->amount = $order->finel_price;
-
-        } else {
-
-            // Get the refund amount from the request
-            $refundAmount = floatval($request->refund_amount);
-            $finalPrice = floatval($order->finel_price);
-
-
-            // Validate the refund amount
-            if ($refundAmount == null) {
-                return redirect()->back()->with('error', 'Add Refund Amount!');
-            }
-
-            if ($refundAmount > $finalPrice) {
-                return redirect()->back()->with('error', 'Refund amount cannot exceed the final price!');
-            }
-
-            $dispute->amount = $request->refund_amount;
-
-        }
-
-        $dispute->user_id = Auth::user()->id;
-        $dispute->user_role = Auth::user()->role;
-        $dispute->order_id = $order->id;
-        $dispute->refund = 1;
-        $dispute->refund_type = $request->refund;
-        $dispute->reason = $request->reason;
-        $dispute->save();
-
-        if (Auth::user()->role == 1) {
-            $order->teacher_dispute = 1;
-        } else {
-            $order->user_dispute = 1;
-
-        }
-
-        $order->status = 4;
-        $order->update();
-
-
-        if ($order) {
-            return redirect()->back()->with('success', 'Dispute Order Request Refund Submitted Successfully');
-        } else {
-            return redirect()->back()->with('error', 'Something went rong,try again later!');
-        }
-
-
-    }
-    // Dispute Order Function  ======END
-
-
-    // Back to Active Start =====
-    public function BackToActive($id)
-    {
-
-        if (!Auth::check()) {
-            return redirect('/')->with('error', 'Login First!');
-        }
-
-
-        // Get the order with status 2 (delivered)
-        $order = BookOrder::where(['id' => $id, 'status' => 2])->first();
-
-        if (!$order) {
-            return back()->with('error', 'Order not found or not in delivered status.');
-        }
-
-        // Get the first class related to the order
-        $class = ClassDate::where(['order_id' => $order->id])->first();
-
-        if ($class) {
-            // Extend both user_date and teacher_date by 7 days
-            $class->user_date = Carbon::parse($class->user_date)->addDays(7);
-            $class->teacher_date = Carbon::parse($class->teacher_date)->addDays(7);
-            $class->save();
-        }
-
-        // Optionally update the order status back to active (1)
-        $order->status = 1;
-        $order->update();
-
-
-        if ($order) {
-            return back()->with('success', 'Order reactivated and class date extended by 7 days.');
-        } else {
-            return redirect()->back()->with('error', 'Something went rong,tryagain later!');
-        }
-
-    }
-    // Back to Active END =====
-
-
-    // Back to Active UnSetisfied Start =====
-    public function UnSetisfiedDelivery(Request $request)
-    {
-
-        if (!Auth::check() || Auth::user()->role != 0) {
-            return redirect('/')->with('error', 'Login First!');
-        }
-
-
-        // Get the order with status 2 (delivered)
-        $order = BookOrder::where(['id' => $request->id, 'status' => 2])->first();
-
-        if (!$order) {
-            return response()->json(['error' => 'Order not found or not in delivered status.']);
-        }
-
-        // Get the first class related to the order
-        $class = ClassDate::where(['order_id' => $order->id])->first();
-
-        if ($class) {
-            // Extend both user_date and teacher_date by 7 days
-            $class->user_date = Carbon::parse($class->user_date)->addDays(7);
-            $class->teacher_date = Carbon::parse($class->teacher_date)->addDays(7);
-            $class->save();
-        }
-
-        // Optionally update the order status back to active (1)
-
-        // Find chat message
-        $chat = Chat::find($request->message);
-
-        // If chat message exists
-        if ($chat) {
-            // Update SMS with disabled button
-            $oldSms = $chat->sms;
-
-            // Use regex or simple str_replace to update button
-            // Example simple way: replace status="0" with status="1" and add disabled
-
-            $newSms = str_replace(
-                'data-status="0"',
-                'data-status="1" disabled',
-                $oldSms
-            );
-
-            // Save updated sms
-            $chat->sms = $newSms;
-            $chat->save();
-        }
-
-        $order->status = 1;
-        $order->update();
-
-
-        if ($order) {
-            return response()->json(['success' => 'Order reactivated and class date extended by 7 days.']);
-        } else {
-            return response()->json(['error' => 'Something went rong,tryagain later!']);
-        }
-
-    }
-    // Back to Active UnSetisfied Start =====
-
-
-    // Accept Disputed Order and Give Refund =====
-    public function AcceptDisputedOrder($id)
-    {
-
-        if (!Auth::check()) {
-            return redirect('/')->with('error', 'Login First!');
-        }
-
-        Stripe::setApiKey(env('STRIPE_SECRET'));
-
-        // Get the order with status 2 (delivered)
-        $order = BookOrder::where(['id' => $id, 'user_dispute' => 1, 'teacher_dispute' => 0])->first();
-
-        if (!$order) {
-            return back()->with('error', 'Order not found or not in delivered status.');
-        }
-
-
-        $dispute = DisputeOrder::where(['order_id' => $order->id, 'status' => 0])->first();
-
-        if (!$dispute) {
-            return redirect()->back()->with('error', 'No pending dispute found for this Order');
-        }
-
-        try {
-            $paymentIntent = PaymentIntent::retrieve($order->payment_id);
-
-            if ($dispute->refund_type == 0) {
-                // Full refund (cancel if still cancellable)
-                if (in_array($paymentIntent->status, ['requires_capture', 'requires_confirmation', 'requires_payment_method'])) {
-                    $paymentIntent->cancel();
-                    return redirect()->back()->with('error', 'Full refund (cancel) processed for this Order');
-
-                } elseif ($paymentIntent->status === 'succeeded') {
-                    Refund::create([
-                        'payment_intent' => $order->payment_id
-                    ]);
-
-                    return redirect()->back()->with('error', 'Full refund issued via refund() for this Order');
-
-                }
-            } else {
-                // Partial refund
-                $refundAmount = floatval($dispute->amount);
-                $finalPrice = floatval($order->finel_price);
-
-                if (!$refundAmount || $refundAmount > $finalPrice) {
-                    return redirect()->back()->with('error', 'Invalid refund amount for this Order');
-
-                }
-
-                if ($paymentIntent->status === 'requires_capture') {
-                    $paymentIntent->capture(); // Required before refund
-                }
-
-                if ($paymentIntent->status === 'succeeded') {
-                    Refund::create([
-                        'payment_intent' => $order->payment_id,
-                        'amount' => round($refundAmount * 100) // Stripe uses cents
-                    ]);
-
-                    return redirect()->back()->with('success', 'Partial refund of {$refundAmount} issued for this Order');
-
-                }
-            }
-
-            // Finalize and prevent re-processing
-            $dispute->status = 1;
-            $dispute->save();
-
-            $order->auto_dispute_processed = 0;
-            $order->refund = 1;
-            $order->save();
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Refund failed for Order ' . $e->getMessage());
-
-        }
-
-
-        return redirect()->back()->with('success', 'Refund request accepted for this Order');
-
-    }
-    //  Accept Disputed Order and Give Refund =====
-
-    //  Inperson Normal Freelance First Start Jon in Active Tab =====
-    public function StartJobActive($id)
-    {
-
-
-        if (!Auth::check() || Auth::user()->role != 1) {
-            return redirect('/')->with('error', 'Login First!');
-        }
-
-        Stripe::setApiKey(env('STRIPE_SECRET'));
-
-        // Get the order with status 2 (delivered)
-        $order = BookOrder::where(['id' => $id, 'status' => 1, 'start_job' => 0])->first();
-
-        if (!$order) {
-            return back()->with('error', 'Order not found!');
-        }
-
-        $order->start_job = 1;
-        $order->save();
-
-        return redirect()->back()->with('success', 'Now this job started.');
-
-
-    }
-    //  Inperson Normal Freelance First Start Jon in Active Tab =====
-
-
     // Submit Review of Order ===========
     public function submitReview(Request $request)
     {
         if (!Auth::check() || Auth::user()->role != 0) {
             return redirect('/')->with('error', 'Login First!');
         }
+
         if ($request->order_id == null || $request->rating == 0) {
             return back()->with('error', 'Please Select Rating First!');
         }
@@ -2510,7 +2640,7 @@ class OrderManagementController extends Controller
             ->first();
 
         if ($existingReview && $existingReview->replies->count() > 0) {
-            return redirect()->back()->with('error', 'You have already submitted a review for this order. You can not edit it.');
+            return redirect()->back()->with('error', 'You have already submitted a review for this order. You cannot edit it.');
         }
 
         if ($existingReview) {
@@ -2518,7 +2648,6 @@ class OrderManagementController extends Controller
                 'rating' => $request->rating,
                 'cmnt' => $request->cmnt
             ]);
-            return redirect()->back()->with('success', 'Successfully submitted a review for this order.');
         } else {
             ServiceReviews::create([
                 'user_id' => Auth::id(),
@@ -2529,9 +2658,32 @@ class OrderManagementController extends Controller
                 'cmnt' => $request->cmnt
             ]);
         }
+
+        // ============ AUTO-COMPLETE ORDER AFTER REVIEW ============
+        if ($order->status == 2) { // Delivered
+            $order->status = 3; // Completed
+            $order->action_date = now()->format('Y-m-d H:i:s');
+            $order->save();
+
+            // Update transaction notes (payout remains pending for admin)
+            $transaction = Transaction::where('buyer_id', $order->user_id)
+                ->where('seller_id', $order->teacher_id)
+                ->first();
+
+            if ($transaction && $transaction->payout_status == 'pending') {
+                $transaction->notes .= "\n[" . now()->format('Y-m-d H:i:s') . "] Buyer submitted review (Rating: {$request->rating}/5) - Ready for payout";
+                $transaction->save();
+
+                \Log::info('Order completed with review', [
+                    'order_id' => $order->id,
+                    'transaction_id' => $transaction->id,
+                    'rating' => $request->rating
+                ]);
+            }
+        }
+
         return redirect()->back()->with('success', 'Thank you for your review!');
     }
-
     public function deleteReview($review_id)
     {
         ServiceReviews::where('id', $review_id)
@@ -2673,6 +2825,58 @@ class OrderManagementController extends Controller
             'message' => 'Review updated successfully!',
             'review' => $review
         ]);
+    }
+
+    /**
+     * Get transaction for an order
+     */
+    private function getTransactionForOrder($order)
+    {
+        return Transaction::where('buyer_id', $order->user_id)
+            ->where('seller_id', $order->teacher_id)
+            ->where(function($query) use ($order) {
+                $query->where('service_id', $order->gig_id)
+                    ->orWhereHas('bookOrder', function($q) use ($order) {
+                        $q->where('id', $order->id);
+                    });
+            })
+            ->first();
+    }
+
+    /**
+     * Log transaction status change
+     */
+    private function logTransactionChange($transaction, $event, $additionalData = [])
+    {
+        \Log::info('Transaction status changed', array_merge([
+            'transaction_id' => $transaction->id,
+            'event' => $event,
+            'status' => $transaction->status,
+            'payout_status' => $transaction->payout_status,
+            'timestamp' => now()->format('Y-m-d H:i:s')
+        ], $additionalData));
+    }
+
+    /**
+     * Capture Stripe payment safely
+     */
+    private function captureStripePayment($paymentIntentId)
+    {
+        try {
+            \Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
+            $paymentIntent = \Stripe\PaymentIntent::retrieve($paymentIntentId);
+
+            if ($paymentIntent->status === 'requires_capture') {
+                $paymentIntent->capture();
+                return ['success' => true, 'message' => 'Payment captured'];
+            }
+
+            return ['success' => true, 'message' => 'Payment already captured'];
+
+        } catch (\Exception $e) {
+            \Log::error('Payment capture failed: ' . $e->getMessage());
+            return ['success' => false, 'message' => $e->getMessage()];
+        }
     }
 
 }

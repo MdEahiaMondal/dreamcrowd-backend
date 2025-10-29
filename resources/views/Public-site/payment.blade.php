@@ -317,10 +317,47 @@
                                        placeholder="MM/YY" required>
                             </div>
                             <div class="col-12 form-input">
-                                <label for="coupon" class="form-label enter-coupon">Enter Coupon</label>
-                                <input type="hidden" id="discount" name="discount" value="0">
-                                <input type="text" class="form-control payment-input" id="coupon" name="coupon"
-                                       placeholder="OR87262">
+                                <label for="coupon" class="form-label enter-coupon">
+                                    <i class="fa-solid fa-ticket"></i> Enter Coupon Code
+                                </label>
+                                <div class="input-group">
+                                    <input type="hidden" id="discount" name="discount" value="0">
+                                    <input type="hidden" id="coupon_valid" name="coupon_valid" value="0">
+                                    <input type="hidden" id="original_price" value="{{ $formData['price'] }}">
+                                    <input type="hidden" id="buyer_commission_rate"
+                                           value="{{ $formData['buyer_commission'] }}">
+                                    <input type="hidden" id="seller_id" value="{{ $gig->user_id }}">
+
+                                    <input
+                                        type="text"
+                                        class="form-control payment-input"
+                                        id="coupon"
+                                        name="coupon"
+                                        placeholder="Enter coupon code (e.g., SAVE10)"
+                                        style="text-transform: uppercase;"
+                                    />
+                                    <button
+                                        class="btn btn-outline-success"
+                                        type="button"
+                                        id="apply_coupon_btn"
+                                        onclick="applyCoupon()"
+                                        style="border: 2px solid #28a745;"
+                                    >
+                                        <span id="coupon_btn_text">Apply</span>
+                                        <span id="coupon_spinner" class="spinner-border spinner-border-sm"
+                                              style="display: none;"></span>
+                                    </button>
+                                    <button
+                                        class="btn btn-outline-danger"
+                                        type="button"
+                                        id="remove_coupon_btn"
+                                        onclick="removeCoupon()"
+                                        style="display: none; border: 2px solid #dc3545;"
+                                    >
+                                        <i class="fa-solid fa-times"></i> Remove
+                                    </button>
+                                </div>
+                                <small id="coupon_message" class="form-text"></small>
                             </div>
                             <div class="col-12 form-input">
                                 <div class="form-check form-check-box">
@@ -367,11 +404,8 @@
             <div class="col-lg-4 col-md-12 col-sm-12 order-first">
                 <div class="learn-sec">
                     <div class="row">
-
                         <div class="col-md-4 col-s-12 learn-image">
-
                             @if (Str::endsWith($gig->main_file, ['.mp4', '.avi', '.mov', '.webm']))
-                                <!-- Video Player -->
                                 <video autoplay loop muted style="height: 100%; width: 100%;">
                                     <source
                                         src="assets/teacher/listing/data_{{ $gig->user_id }}/media/{{$gig->main_file}}"
@@ -379,13 +413,9 @@
                                     Your browser does not support the video tag.
                                 </video>
                             @elseif (Str::endsWith($gig->main_file, ['.jpg', '.jpeg', '.png', '.gif']))
-                                <!-- Image Display -->
                                 <img src="assets/teacher/listing/data_{{ $gig->user_id }}/media/{{$gig->main_file}}">
                             @endif
-
-
                         </div>
-
 
                         <div class="col-md-8 col-sm-12 learn-style">
                             <h1>{{$gig->title}}</h1>
@@ -393,27 +423,47 @@
                             </p>
                         </div>
                     </div>
+
                     <div class="learning">
+                        <!-- Sub-Total -->
                         <div class="row">
                             <div class="col-md-12 total-desc">
-                                <h1>Sub-Total<span class="sub-total">${{$formData['price']}}</span></h1>
+                                <h1>Sub-Total<span class="sub-total"
+                                                   id="subtotal_display">${{number_format($formData['price'], 2)}}</span>
+                                </h1>
                             </div>
                         </div>
+
+                        <!-- Service Fee (Buyer Commission) -->
                         <div class="row">
                             <div class="col-md-12 total-desc">
-                                <h1>Coupon Discount<span class="coupon">$0</span></h1>
+                                <h1>Service Fee
+                                    <span class="text-muted" style="font-size: 12px;">({{$formData['buyer_commission']}}%)</span>
+                                    <span class="service-fee"
+                                          id="service_fee_display">${{number_format(($formData['price'] * $formData['buyer_commission']) / 100, 2)}}</span>
+                                </h1>
                             </div>
                         </div>
+
+                        <!-- Coupon Discount -->
+                        <div class="row" id="discount_row" style="display: none;">
+                            <div class="col-md-12 total-desc" style="color: #FFFFFF;">
+                                <h1>Coupon Discount
+                                    <span id="coupon_code_display" class="badge bg-success text-white"
+                                          style="font-size: 11px; margin-left: 5px;"></span>
+                                    <span class="coupon-discount" id="discount_display">-$0.00</span>
+                                </h1>
+                            </div>
+                        </div>
+
+                        <!-- Total -->
                         <div class="row">
                             <div class="col-md-12 total-desc">
-                                <h1>Service Fee<span class="coupon">{{$formData['buyer_commission']}} %</span></h1>
+                                <h1 class="total-payment">Total<span
+                                        id="total_display">${{number_format($formData['finel_price'], 2)}}</span></h1>
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="col-md-12 total-desc">
-                                <h1 class="total-payment">Total<span class="">${{$formData['finel_price']}}</span></h1>
-                            </div>
-                        </div>
+
                         <div class="row">
                             <div class="col-md-12">
                                 <p class="subscription">You can cancel your subscription at anytime</p>
@@ -468,7 +518,7 @@
     });
 
 
-    // Submit Payment By Ajax =============== Script start ==========
+    // ============ PAYMENT SUBMISSION (UPDATED) ============
     function SubmitPayment() {
         let holderName = document.getElementById("holder_name").value.trim();
         let cardNumber = document.getElementById("card_number").value.trim();
@@ -476,12 +526,12 @@
         let date = document.getElementById("date").value;
         let coupon = document.getElementById("coupon").value.trim();
         let discount = document.getElementById("discount").value.trim();
+        let couponValid = document.getElementById("coupon_valid").value;
         let checkbox = document.getElementById("gridCheck");
         let form_data = document.getElementById("form_data").value;
         let finalPrice = document.getElementById("finel_price").value;
 
-
-        // Cardholder Name Validation (Only Letters & Spaces)
+        // Cardholder Name Validation
         let nameRegex = /^[a-zA-Z\s]+$/;
         if (!nameRegex.test(holderName) || holderName === "") {
             alert("Please enter a valid Card Holder Name (letters only).");
@@ -502,17 +552,15 @@
             return;
         }
 
-        // Validate Expiry Date (MM/YY format and future date check)
+        // Validate Expiry Date
         if (!/^(0[1-9]|1[0-2])\/\d{2}$/.test(date)) {
             alert("Please enter a valid date in MM/YY format.");
             return;
         } else {
-            // Split the date into month and year
             var [month, year] = date.split('/');
             var expiry = new Date(`20${year}`, month - 1);
             var now = new Date();
 
-            // Check if expiry date is in the future
             if (expiry <= now) {
                 alert("Please enter a valid future expiry date.");
                 return;
@@ -533,25 +581,19 @@
             cvv: cvv,
             date: date,
             coupon: coupon,
+            coupon_valid: couponValid,
             discount: discount,
             form_data: form_data,
             finel_price: finalPrice
         };
 
-
         var btn_html = $('#pay_btn').text();
         const button = document.getElementById('pay_btn');
         const spinner = document.getElementById('BtnSpinner');
-        $(button).html('Waiting');
+
+        $(button).html('Processing Payment...');
         button.disabled = true;
         $(spinner).css('display', 'block');
-
-
-        $.ajaxSetup({
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            }
-        });
 
         $.ajax({
             type: "POST",
@@ -559,41 +601,162 @@
             data: formData,
             dataType: 'json',
             success: function (response) {
-
-
                 $(button).html(btn_html);
                 button.disabled = false;
                 spinner.style.display = 'none';
 
                 if (response.success) {
-                    $('#PaymentModel').modal('show'); // Corrected 'model' to 'modal'
+                    $('#PaymentModel').modal('show');
 
-                    // Redirect to /seller-listing on any click anywhere on the page
+                    // Redirect on click
                     $(document).on('click', function () {
                         window.location.href = "/seller-listing";
                     });
-
                 }
-
-
-                // You can redirect or update the UI based on the response
             },
             error: function (xhr, status, error) {
                 $(button).html(btn_html);
                 button.disabled = false;
                 spinner.style.display = 'none';
-                alert("Payment submission failed. Please try again.");
+
+                const errorMsg = xhr.responseJSON?.message || 'Payment submission failed. Please try again.';
+                alert(errorMsg);
                 console.error(xhr.responseText);
             }
         });
     }
-
 
     // Submit Payment By Ajax =============== Script END ==========
 
 
 </script>
 {{-- Card Validations Form ========script END --}}
+
+<script>
+    function applyCoupon() {
+        const couponCode = $('#coupon').val().trim().toUpperCase();
+        const originalPrice = parseFloat($('#original_price').val());
+        const buyerCommissionRate = parseFloat($('#buyer_commission_rate').val());
+        const sellerId = $('#seller_id').val();
+        const userId = {{ Auth::id() }};
+
+        if (!couponCode) {
+            showCouponMessage('Please enter a coupon code', 'error');
+            return;
+        }
+
+        // Show loading
+        $('#coupon_btn_text').text('Checking...');
+        $('#coupon_spinner').show();
+        $('#apply_coupon_btn').prop('disabled', true);
+
+        $.ajax({
+            url: '/api/validate-coupon',
+            method: 'POST',
+            data: {
+                _token: $('meta[name="csrf-token"]').attr('content'),
+                coupon_code: couponCode,
+                user_id: userId,
+                seller_id: sellerId,
+                amount: originalPrice
+            },
+            success: function (response) {
+                if (response.valid) {
+                    // Coupon is valid
+                    const discountAmount = parseFloat(response.discount_amount);
+                    const finalAmount = parseFloat(response.final_amount);
+
+                    // Calculate service fee on discounted amount
+                    const serviceFee = (finalAmount * buyerCommissionRate) / 100;
+                    const totalAmount = finalAmount + serviceFee;
+
+                    // Update hidden fields
+                    $('#discount').val(discountAmount.toFixed(2));
+                    $('#coupon_valid').val(1);
+                    $('#finel_price').val(totalAmount.toFixed(2));
+
+                    // Update display
+                    $('#discount_display').text('-$' + discountAmount.toFixed(2));
+                    $('#coupon_code_display').text(couponCode);
+                    $('#discount_row').slideDown();
+                    $('#subtotal_display').text('$' + originalPrice.toFixed(2));
+                    $('#service_fee_display').text('$' + serviceFee.toFixed(2));
+                    $('#total_display').text('$' + totalAmount.toFixed(2));
+
+                    // Update payment button
+                    $('#pay_btn').text('Pay Securely $' + totalAmount.toFixed(2));
+
+                    // Show success message
+                    showCouponMessage('✓ Coupon applied! You saved $' + discountAmount.toFixed(2), 'success');
+
+                    // Toggle buttons
+                    $('#apply_coupon_btn').hide();
+                    $('#remove_coupon_btn').show();
+                    $('#coupon').prop('disabled', true);
+
+                } else {
+                    showCouponMessage('✗ ' + response.message, 'error');
+                }
+            },
+            error: function (xhr) {
+                const errorMsg = xhr.responseJSON?.message || 'Failed to validate coupon';
+                showCouponMessage('✗ ' + errorMsg, 'error');
+            },
+            complete: function () {
+                $('#coupon_btn_text').text('Apply');
+                $('#coupon_spinner').hide();
+                $('#apply_coupon_btn').prop('disabled', false);
+            }
+        });
+    }
+
+    function removeCoupon() {
+        const originalPrice = parseFloat($('#original_price').val());
+        const buyerCommissionRate = parseFloat($('#buyer_commission_rate').val());
+
+        // Recalculate without discount
+        const serviceFee = (originalPrice * buyerCommissionRate) / 100;
+        const totalAmount = originalPrice + serviceFee;
+
+        // Reset fields
+        $('#discount').val(0);
+        $('#coupon_valid').val(0);
+        $('#coupon').val('').prop('disabled', false);
+        $('#finel_price').val(totalAmount.toFixed(2));
+
+        // Update display
+        $('#discount_row').slideUp();
+        $('#service_fee_display').text('$' + serviceFee.toFixed(2));
+        $('#total_display').text('$' + totalAmount.toFixed(2));
+        $('#pay_btn').text('Pay Securely $' + totalAmount.toFixed(2));
+
+        // Toggle buttons
+        $('#apply_coupon_btn').show();
+        $('#remove_coupon_btn').hide();
+
+        // Clear message
+        showCouponMessage('', '');
+    }
+
+    function showCouponMessage(message, type) {
+        const messageElement = $('#coupon_message');
+
+        if (type === 'success') {
+            messageElement.removeClass('text-danger').addClass('text-success');
+        } else if (type === 'error') {
+            messageElement.removeClass('text-success').addClass('text-danger');
+        } else {
+            messageElement.removeClass('text-success text-danger');
+        }
+
+        messageElement.text(message);
+    }
+
+    // Convert coupon input to uppercase
+    $('#coupon').on('input', function () {
+        this.value = this.value.toUpperCase();
+    });
+</script>
 
 
 </body>

@@ -264,48 +264,67 @@ class BookingController extends Controller
 
     public function ServiceBook(Request $request)
     {
-
         if (!$request->gig_id) {
-            return redirect('/')->with('error', 'Something rong');
+            return redirect('/')->with('error', 'Something wrong');
         }
 
-
-        if (!Auth::user() && Auth::user()->role != 0) {
-            return redirect('/')->with('error', 'Something rong');
+        if (!Auth::user() || Auth::user()->role != 0) {
+            return redirect('/')->with('error', 'Unauthorized access');
         }
-
 
         $gig = TeacherGig::find($request->gig_id);
-        $buyer_commission = TopSellerTag::first()->buyer_commission_rate;
-        $buyer_commission = $buyer_commission == null ? 0 : $buyer_commission;
+
+        // Get commission settings
+        $commissionSettings = \App\Models\TopSellerTag::first();
+        $buyer_commission = $commissionSettings->buyer_commission ?? 0;
+        $buyer_commission_rate = $commissionSettings->buyer_commission_rate ?? 0;
+
+        // Only apply buyer commission if enabled
+        if (!$buyer_commission) {
+            $buyer_commission_rate = 0;
+        }
 
         $profile = ExpertProfile::where(['user_id' => $gig->user_id, 'status' => 1])->first();
         $gigData = TeacherGigData::where(['gig_id' => $gig->id])->first();
         $gigPayment = TeacherGigPayment::where(['gig_id' => $request->id])->first();
         $repeatDays = TeacherReapetDays::where(['gig_id' => $request->id])->get();
         $bookedOrders = BookOrder::where(['gig_id' => $gig->id])->get();
-        $OrderIds = BookOrder::where('teacher_id', $gig->user_id)->pluck('id'); // Get order IDs
-        $bookedTime = ClassDate::whereIn('order_id', $OrderIds)->get(); // Get all booked dates
+        $OrderIds = BookOrder::where('teacher_id', $gig->user_id)->pluck('id');
+        $bookedTime = ClassDate::whereIn('order_id', $OrderIds)->get();
+
         $formData = $request->all();
-        $formData['buyer_commission'] = $buyer_commission;
-        $formData['extra_guests'] = $request->extra_guests == null ? 0 : $request->extra_guests;
-        $formData['freelance_type'] = $request->freelance_type != null ? $request->freelance_type : null;
-        $commission_amount = ($request->price * $buyer_commission) / 100;
-        $finel_price = $request->price + $commission_amount;
+        $formData['buyer_commission'] = $buyer_commission_rate;
+        $formData['extra_guests'] = $request->extra_guests ?? 0;
+        $formData['freelance_type'] = $request->freelance_type ?? null;
 
-        // Optional: round to 2 decimal places
+        // Calculate service fee (buyer commission)
+        $service_fee = ($request->price * $buyer_commission_rate) / 100;
+        $finel_price = $request->price + $service_fee;
+
+        // Round to 2 decimal places
         $finel_price = round($finel_price, 2);
+        $service_fee = round($service_fee, 2);
 
+        $formData['service_fee'] = $service_fee;
         $formData['finel_price'] = $finel_price;
+
         if (!$request->group_type) {
             $formData['group_type'] = '1-to-1';
         } else {
             $formData['group_type'] = $request->group_type . ' Group';
         }
 
-        return view('Public-site.payment', compact('gig', 'profile', 'gigData', 'gigPayment', 'repeatDays', 'formData', 'bookedOrders', 'bookedTime'));
+        return view('Public-site.payment', compact(
+            'gig',
+            'profile',
+            'gigData',
+            'gigPayment',
+            'repeatDays',
+            'formData',
+            'bookedOrders',
+            'bookedTime'
+        ));
     }
-
 
     // Payment Booking Of Class Function Start ----------
     public function ServicePayment(Request $request)
@@ -314,193 +333,368 @@ class BookingController extends Controller
         $formData = json_decode($request->form_data, true);
 
         if (empty($formData['gig_id']) || !Auth::check() || Auth::user()->role != 0) {
-            return response()->json(['error' => 'Something went wrong!'], 500);
+            return response()->json(['error' => 'Unauthorized access!'], 401);
         }
+
+        // Get commission settings
+        $commissionSettings = \App\Models\TopSellerTag::getCommissionSettings();
+
+        // Get gig details
+        $gig = TeacherGig::find($formData['gig_id']);
+        $gigData = TeacherGigData::where(['gig_id' => $formData['gig_id']])->first();
+        $gigPayment = TeacherGigPayment::where(['gig_id' => $formData['gig_id']])->first();
+
+        // ============ COUPON VALIDATION ============
+        $couponCode = $request->coupon;
+        $discountAmount = 0;
+        $couponUsed = false;
+        $validatedCoupon = null;
+
+        if (!empty($couponCode) && $request->coupon_valid == 1) {
+            // Validate coupon again (server-side security)
+            $couponValidation = \App\Models\Coupon::validateCode(
+                $couponCode,
+                Auth::id(),
+                $gig->user_id
+            );
+
+            if ($couponValidation['valid']) {
+                $validatedCoupon = $couponValidation['coupon'];
+                $discountAmount = $validatedCoupon->calculateDiscount($formData['price']);
+                $couponUsed = true;
+            } else {
+                return response()->json([
+                    'error' => 'Invalid coupon: ' . $couponValidation['message']
+                ], 422);
+            }
+        }
+
+        // ============ CALCULATE FINAL PRICING ============
+        $originalPrice = floatval($formData['price']);
+        $priceAfterDiscount = $originalPrice - $discountAmount;
+
+        // Calculate buyer commission on discounted price (if enabled)
+        $buyerCommissionAmount = 0;
+        if ($commissionSettings->buyer_commission) {
+            $buyerCommissionAmount = ($priceAfterDiscount * $commissionSettings->buyer_commission_rate) / 100;
+        }
+
+        // Final amount buyer pays
+        $finalPrice = $priceAfterDiscount + $buyerCommissionAmount;
+        $finalPrice = round($finalPrice, 2);
+
+        // Verify final price matches frontend calculation
+        if (abs($finalPrice - floatval($request->finel_price)) > 0.02) {
+            \Log::warning('Price mismatch detected', [
+                'calculated' => $finalPrice,
+                'received' => $request->finel_price
+            ]);
+        }
+
+        // ============ CALCULATE SELLER COMMISSION ============
+        // Get seller commission rate (custom or default)
+        $sellerCommissionRate = $commissionSettings->commission; // Default
+
+        if ($commissionSettings->enable_custom_seller_commission) {
+            $customRate = $commissionSettings->getSellerCommissionRate($gig->user_id);
+            if ($customRate) {
+                $sellerCommissionRate = $customRate;
+            }
+        }
+
+        if ($commissionSettings->enable_custom_service_commission) {
+            $customRate = $commissionSettings->getServiceCommissionRate($gig->id, 'service');
+            if ($customRate) {
+                $sellerCommissionRate = $customRate;
+            }
+        }
+
+        // Calculate seller commission from original price
+        $sellerCommissionAmount = ($originalPrice * $sellerCommissionRate) / 100;
+
+        // Admin absorbs the coupon discount
+        if ($couponUsed) {
+            $sellerCommissionAmount = max(0, $sellerCommissionAmount - $discountAmount);
+        }
+
+        // Total admin commission
+        $totalAdminCommission = $sellerCommissionAmount + $buyerCommissionAmount;
+
+        // Seller earnings (original price - seller commission)
+        $sellerEarnings = $originalPrice - $sellerCommissionAmount;
 
         // Set Stripe API secret key
         \Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
 
-
         try {
-
-            // Ensure `finel_price` is numeric
-            $finalPrice = floatval($request->finel_price);
-
+            // Create Stripe Payment Intent
             $paymentIntent = \Stripe\PaymentIntent::create([
-                'amount' => round($finalPrice * 100), // Convert dollars to cents properly
+                'amount' => round($finalPrice * 100), // Convert to cents
                 'currency' => 'usd',
                 'capture_method' => 'manual',
                 'automatic_payment_methods' => [
                     'enabled' => true,
-                    'allow_redirects' => 'never', // Prevent redirect-based payment methods
+                    'allow_redirects' => 'never',
                 ],
+                'metadata' => [
+                    'gig_id' => $gig->id,
+                    'buyer_id' => Auth::id(),
+                    'seller_id' => $gig->user_id,
+                    'coupon_code' => $couponCode ?? null,
+                    'discount_amount' => $discountAmount,
+                ]
             ]);
 
-
-            if ($paymentIntent) {
-
-                $gig = TeacherGig::find($formData['gig_id']);
-                $gigData = TeacherGigData::where(['gig_id' => $formData['gig_id']])->first();
-                $gigPayment = TeacherGigPayment::where(['gig_id' => $formData['gig_id']])->first();
-                if ($gig->service_role == 'Class') {
-
-
-                    $group_type = $formData['group_type'] == '1-to-1' ? '1-to-1' : str_replace(' Group', '', $formData['group_type']);
-                    $formData['email'] = isset($formData['email']) && $formData['email'] != '' ? $formData['email'] : Auth::user()->email;
-                    $formData['guests'] = isset($formData['guests']) && $formData['guests'] != '' ? $formData['guests'] : 1;
-                    $formData['childs'] = isset($formData['childs']) && $formData['childs'] != '' ? $formData['childs'] : 0;
-                    $formData['frequency'] = isset($formData['frequency']) && $formData['frequency'] != '' ? $formData['frequency'] : 1;
-
-
-                    $bookOrder = new BookOrder();
-                    $bookOrder->user_id = Auth::user()->id;
-                    $bookOrder->gig_id = $formData['gig_id'];
-                    $bookOrder->teacher_id = $gig->user_id;
-                    $bookOrder->payment_type = $gig->payment_type;
-                    $bookOrder->title = $gig->title;
-                    $bookOrder->frequency = $formData['frequency'];
-                    $bookOrder->group_type = $group_type;
-                    $bookOrder->emails = $formData['email'];
-                    if ($group_type == 'Private') {
-                        $bookOrder->extra_guests = 'Yes';
-                    } else {
-                        $bookOrder->extra_guests = $formData['extra_guests'];
-                    }
-
-                    $bookOrder->guests = $formData['guests'];
-                    $bookOrder->childs = $formData['childs'];
-                    $bookOrder->total_people = $formData['total_people'];
-                    if ($gig->service_type == 'Inperson') {
-                        $bookOrder->service_delivery = $formData['service_delivery'];
-                        $bookOrder->work_site = $formData['work_site'];
-                    }
-                    $bookOrder->price = $formData['price'];
-                    $bookOrder->buyer_commission = $formData['buyer_commission'];
-                    $bookOrder->coupen = $request->coupen;
-                    $bookOrder->discount = $request->discount;
-                    $bookOrder->finel_price = $request->finel_price;
-                    $bookOrder->payment_id = $paymentIntent->id;
-                    $bookOrder->holder_name = $request->holder_name;
-                    $bookOrder->card_number = $request->card_number;
-                    $bookOrder->cvv = $request->cvv;
-                    $bookOrder->date = $request->date;
-
-                    $bookOrder->save();
-
-                    $user_date_time = explode(',', $formData['class_time']);
-                    $teacher_date_time = explode(',', $formData['teacher_class_time']);
-
-                    // Step 1: Pair each user and teacher date
-                    $datePairs = [];
-
-                    foreach ($user_date_time as $key => $value) {
-                        if (!empty($value) && isset($teacher_date_time[$key])) {
-                            $datePairs[] = [
-                                'user_date' => $value,
-                                'teacher_date' => $teacher_date_time[$key],
-                            ];
-                        }
-                    }
-
-                    // Step 2: Sort the pairs by nearest teacher_date (ascending)
-                    usort($datePairs, function ($a, $b) {
-                        return strtotime($a['teacher_date']) <=> strtotime($b['teacher_date']);
-                    });
-
-                    // Step 3: Insert sorted class dates
-                    foreach ($datePairs as $pair) {
-                        ClassDate::create([
-                            'order_id' => $bookOrder->id,
-                            'teacher_date' => $pair['teacher_date'],
-                            'user_date' => $pair['user_date'],
-                            'teacher_time_zone' => $formData['teacher_time_zone'],
-                            'user_time_zone' => $formData['user_time_zone'],
-                            'duration' => $gigPayment->duration,
-                        ]);
-                    }
-
-                    // Then fill in the remaining frequency with 'Not Selected'
-                    $totalSelected = count($datePairs);
-                    $remaining = $formData['frequency'] - $totalSelected;
-
-                    for ($i = 0; $i < $remaining; $i++) {
-                        ClassDate::create([
-                            'order_id' => $bookOrder->id,
-                            'teacher_date' => null,
-                            'user_date' => null,
-                            'teacher_time_zone' => $formData['teacher_time_zone'],
-                            'user_time_zone' => $formData['user_time_zone'],
-                            'duration' => $gigPayment->duration,
-                        ]);
-                    }
-
-                } else {
-
-                    $formData['work_site'] = isset($formData['work_site']) && $formData['work_site'] != '' ? $formData['work_site'] : $gigData->work_site;
-
-                    if ($gigPayment->duration == null) {
-                        $duration = '00:00';
-                    } else {
-                        $duration = $gigPayment->duration;
-                    }
-
-                    $bookOrder = new BookOrder();
-                    $bookOrder->user_id = Auth::user()->id;
-                    $bookOrder->gig_id = $formData['gig_id'];
-                    $bookOrder->teacher_id = $gig->user_id;
-                    $bookOrder->title = $gig->title;
-                    $bookOrder->price = $formData['price'];
-                    $bookOrder->buyer_commission = $formData['buyer_commission'];
-                    $bookOrder->freelance_service = $formData['freelance_service'];
-                    $bookOrder->freelance_type = $formData['freelance_type'];
-                    if ($gig->service_type == 'Inperson') {
-                        $bookOrder->service_delivery = $formData['service_delivery'];
-                        $bookOrder->work_site = $formData['work_site'];
-                    }
-                    $bookOrder->coupen = $request->coupen;
-                    $bookOrder->discount = $request->discount;
-                    $bookOrder->finel_price = $request->finel_price;
-                    $bookOrder->payment_id = $paymentIntent->id;
-                    $bookOrder->holder_name = $request->holder_name;
-                    $bookOrder->card_number = $request->card_number;
-                    $bookOrder->cvv = $request->cvv;
-                    $bookOrder->date = $request->date;
-
-                    $bookOrder->save();
-
-                    $user_date_time = explode(',', $formData['class_time']);
-                    $teacher_date_time = explode(',', $formData['teacher_class_time']);
-
-                    foreach ($user_date_time as $key => $value) {
-                        if ($value != null) {
-                            ClassDate::create([
-                                'order_id' => $bookOrder->id,
-                                'teacher_date' => $teacher_date_time[$key],
-                                'user_date' => $value,
-                                'teacher_time_zone' => $formData['teacher_time_zone'],
-                                'user_time_zone' => $formData['user_time_zone'],
-                                'duration' => $duration,
-                            ]);
-                        }
-                    }
-
-
-                }
-
-                return response()->json(['success' => 'Order Booked Successfully!']);
-
-            } else {
-                return response()->json(['error' => 'Payment Not Submmitted!'], 500);
+            if (!$paymentIntent) {
+                return response()->json(['error' => 'Payment intent creation failed'], 500);
             }
 
+            // ============ CREATE BOOK ORDER ============
+            if ($gig->service_role == 'Class') {
+                $group_type = $formData['group_type'] == '1-to-1' ? '1-to-1' : str_replace(' Group', '', $formData['group_type']);
+                $formData['email'] = $formData['email'] ?? Auth::user()->email;
+                $formData['guests'] = $formData['guests'] ?? 1;
+                $formData['childs'] = $formData['childs'] ?? 0;
+                $formData['frequency'] = $formData['frequency'] ?? 1;
+
+                $bookOrder = new BookOrder();
+                $bookOrder->user_id = Auth::user()->id;
+                $bookOrder->gig_id = $formData['gig_id'];
+                $bookOrder->teacher_id = $gig->user_id;
+                $bookOrder->payment_type = $gig->payment_type;
+                $bookOrder->title = $gig->title;
+                $bookOrder->frequency = $formData['frequency'];
+                $bookOrder->group_type = $group_type;
+                $bookOrder->emails = $formData['email'];
+
+                if ($group_type == 'Private') {
+                    $bookOrder->extra_guests = 'Yes';
+                } else {
+                    $bookOrder->extra_guests = $formData['extra_guests'];
+                }
+
+                $bookOrder->guests = $formData['guests'];
+                $bookOrder->childs = $formData['childs'];
+                $bookOrder->total_people = $formData['total_people'];
+
+                if ($gig->service_type == 'Inperson') {
+                    $bookOrder->service_delivery = $formData['service_delivery'];
+                    $bookOrder->work_site = $formData['work_site'];
+                }
+
+                // Pricing details
+                $bookOrder->price = $originalPrice;
+                $bookOrder->buyer_commission_rate = $commissionSettings->buyer_commission_rate ?? 0;
+                $bookOrder->buyer_commission_amount = $buyerCommissionAmount;
+                $bookOrder->seller_commission_rate = $sellerCommissionRate;
+                $bookOrder->seller_commission_amount = $sellerCommissionAmount;
+                $bookOrder->total_admin_commission = $totalAdminCommission;
+                $bookOrder->seller_earnings = $sellerEarnings;
+
+                // Coupon details
+                $bookOrder->coupon = $couponCode;
+                $bookOrder->discount = $discountAmount;
+                $bookOrder->admin_absorbed_discount = $couponUsed ? 1 : 0;
+
+                // Final price
+                $bookOrder->finel_price = $finalPrice;
+
+                // Payment details
+                $bookOrder->payment_id = $paymentIntent->id;
+                $bookOrder->payment_status = 'pending';
+                $bookOrder->holder_name = $request->holder_name;
+                $bookOrder->card_number = substr($request->card_number, -4); // Store only last 4 digits
+                $bookOrder->cvv = null; // Never store CVV
+                $bookOrder->date = $request->date;
+
+                $bookOrder->save();
+
+                // ============ CREATE CLASS DATES ============
+                $user_date_time = explode(',', $formData['class_time']);
+                $teacher_date_time = explode(',', $formData['teacher_class_time']);
+
+                $datePairs = [];
+                foreach ($user_date_time as $key => $value) {
+                    if (!empty($value) && isset($teacher_date_time[$key])) {
+                        $datePairs[] = [
+                            'user_date' => $value,
+                            'teacher_date' => $teacher_date_time[$key],
+                        ];
+                    }
+                }
+
+                usort($datePairs, function ($a, $b) {
+                    return strtotime($a['teacher_date']) <=> strtotime($b['teacher_date']);
+                });
+
+                foreach ($datePairs as $pair) {
+                    ClassDate::create([
+                        'order_id' => $bookOrder->id,
+                        'teacher_date' => $pair['teacher_date'],
+                        'user_date' => $pair['user_date'],
+                        'teacher_time_zone' => $formData['teacher_time_zone'],
+                        'user_time_zone' => $formData['user_time_zone'],
+                        'duration' => $gigPayment->duration,
+                    ]);
+                }
+
+                $totalSelected = count($datePairs);
+                $remaining = $formData['frequency'] - $totalSelected;
+
+                for ($i = 0; $i < $remaining; $i++) {
+                    ClassDate::create([
+                        'order_id' => $bookOrder->id,
+                        'teacher_date' => null,
+                        'user_date' => null,
+                        'teacher_time_zone' => $formData['teacher_time_zone'],
+                        'user_time_zone' => $formData['user_time_zone'],
+                        'duration' => $gigPayment->duration,
+                    ]);
+                }
+
+            } else {
+                // ============ FREELANCE BOOKING ============
+                $formData['work_site'] = $formData['work_site'] ?? $gigData->work_site;
+                $duration = $gigPayment->duration ?? '00:00';
+
+                $bookOrder = new BookOrder();
+                $bookOrder->user_id = Auth::user()->id;
+                $bookOrder->gig_id = $formData['gig_id'];
+                $bookOrder->teacher_id = $gig->user_id;
+                $bookOrder->title = $gig->title;
+
+                // Pricing details
+                $bookOrder->price = $originalPrice;
+                $bookOrder->buyer_commission_rate = $commissionSettings->buyer_commission_rate ?? 0;
+                $bookOrder->buyer_commission_amount = $buyerCommissionAmount;
+                $bookOrder->seller_commission_rate = $sellerCommissionRate;
+                $bookOrder->seller_commission_amount = $sellerCommissionAmount;
+                $bookOrder->total_admin_commission = $totalAdminCommission;
+                $bookOrder->seller_earnings = $sellerEarnings;
+
+                $bookOrder->freelance_service = $formData['freelance_service'];
+                $bookOrder->freelance_type = $formData['freelance_type'];
+
+                if ($gig->service_type == 'Inperson') {
+                    $bookOrder->service_delivery = $formData['service_delivery'];
+                    $bookOrder->work_site = $formData['work_site'];
+                }
+
+                // Coupon details
+                $bookOrder->coupon = $couponCode;
+                $bookOrder->discount = $discountAmount;
+                $bookOrder->admin_absorbed_discount = $couponUsed ? 1 : 0;
+
+                // Final price
+                $bookOrder->finel_price = $finalPrice;
+
+                // Payment details
+                $bookOrder->payment_id = $paymentIntent->id;
+                $bookOrder->payment_status = 'pending';
+                $bookOrder->holder_name = $request->holder_name;
+                $bookOrder->card_number = substr($request->card_number, -4);
+                $bookOrder->cvv = null;
+                $bookOrder->date = $request->date;
+
+                $bookOrder->save();
+
+                // Create class dates for freelance
+                $user_date_time = explode(',', $formData['class_time']);
+                $teacher_date_time = explode(',', $formData['teacher_class_time']);
+
+                foreach ($user_date_time as $key => $value) {
+                    if ($value != null) {
+                        ClassDate::create([
+                            'order_id' => $bookOrder->id,
+                            'teacher_date' => $teacher_date_time[$key],
+                            'user_date' => $value,
+                            'teacher_time_zone' => $formData['teacher_time_zone'],
+                            'user_time_zone' => $formData['user_time_zone'],
+                            'duration' => $duration,
+                        ]);
+                    }
+                }
+            }
+
+            // ============ CREATE TRANSACTION RECORD ============
+            $transaction = \App\Models\Transaction::create([
+                'seller_id' => $gig->user_id,
+                'buyer_id' => Auth::id(),
+                'service_id' => $gig->id,
+                'service_type' => 'service', // or 'class' based on your logic
+                'total_amount' => $originalPrice,
+                'currency' => $commissionSettings->currency ?? 'USD',
+                'seller_commission_rate' => $sellerCommissionRate,
+                'seller_commission_amount' => $sellerCommissionAmount,
+                'buyer_commission_rate' => $commissionSettings->buyer_commission_rate ?? 0,
+                'buyer_commission_amount' => $buyerCommissionAmount,
+                'total_admin_commission' => $totalAdminCommission,
+                'seller_earnings' => $sellerEarnings,
+                'stripe_amount' => $finalPrice,
+                'stripe_currency' => $commissionSettings->stripe_currency ?? 'USD',
+                'stripe_transaction_id' => $paymentIntent->id,
+                'coupon_discount' => $discountAmount,
+                'admin_absorbed_discount' => $couponUsed ? 1 : 0,
+                'status' => 'pending',
+                'payout_status' => 'pending',
+                'notes' => 'Order #' . $bookOrder->id . ' - ' . $gig->title,
+            ]);
+
+            // ============ RECORD COUPON USAGE ============
+            if ($couponUsed && $validatedCoupon) {
+                $validatedCoupon->recordUsage(
+                    Auth::id(),
+                    $discountAmount,
+                    $originalPrice,
+                    $priceAfterDiscount,
+                    $gig->user_id,
+                    $transaction->id,
+                    $bookOrder->id
+                );
+            }
+
+            // ============ LOG SUCCESS ============
+            \Log::info('Order created successfully', [
+                'order_id' => $bookOrder->id,
+                'transaction_id' => $transaction->id,
+                'original_price' => $originalPrice,
+                'discount' => $discountAmount,
+                'buyer_commission' => $buyerCommissionAmount,
+                'seller_commission' => $sellerCommissionAmount,
+                'total_admin_commission' => $totalAdminCommission,
+                'seller_earnings' => $sellerEarnings,
+                'final_price' => $finalPrice,
+                'coupon_used' => $couponCode ?? 'None',
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Order booked successfully!',
+                'order_id' => $bookOrder->id,
+                'transaction_id' => $transaction->id,
+            ]);
+
+        } catch (\Stripe\Exception\CardException $e) {
+            \Log::error('Stripe card error: ' . $e->getMessage());
+            return response()->json([
+                'error' => 'Card declined: ' . $e->getError()->message
+            ], 422);
+
+        } catch (\Stripe\Exception\ApiErrorException $e) {
+            \Log::error('Stripe API error: ' . $e->getMessage());
+            return response()->json([
+                'error' => 'Payment processing failed. Please try again.'
+            ], 500);
 
         } catch (\Exception $e) {
-            return response()->json(['error' => 'Payment failed', 'message' => $e->getMessage()], 500);
+            \Log::error('Payment failed: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString()
+            ]);
+            return response()->json([
+                'error' => 'Payment failed: ' . $e->getMessage()
+            ], 500);
         }
-
-
     }
-
     // Payment Booking Of Class Function END ----------
 
 

@@ -1,5 +1,8 @@
 <?php
 
+use App\Http\Controllers\Admin\CommissionController;
+use App\Http\Controllers\Admin\CouponController;
+use App\Http\Controllers\StripeWebhookController;
 use App\Http\Controllers\ZoomController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PublicWebController;
@@ -254,6 +257,125 @@ Route::controller(DynamicManagementController::class)->group(function () {
 });
 
 
+
+// ============ MAIN COMMISSION SETTINGS ============
+Route::get('/admin/commission-settings', [CommissionController::class, 'AdminCommissionSet'])
+    ->name('admin.commission.settings');
+
+// Update default seller commission
+Route::post('/update-commission-re', [CommissionController::class, 'UpdateCommissionRate'])
+    ->name('admin.commission.update');
+
+// Update buyer commission
+Route::post('/update-buyer-commission-re', [CommissionController::class, 'UpdateBuyerCommissionRate'])
+    ->name('admin.buyer.commission.update');
+
+// Update currency settings
+Route::post('/update-currency-settings', [CommissionController::class, 'UpdateCurrencySettings'])
+    ->name('admin.currency.update');
+
+// ============ TOGGLE FEATURES ============
+Route::post('/admin/toggle-custom-seller-commission', [CommissionController::class, 'ToggleCustomSellerCommission'])
+    ->name('admin.toggle.seller.commission');
+
+Route::post('/admin/toggle-custom-service-commission', [CommissionController::class, 'ToggleCustomServiceCommission'])
+    ->name('admin.toggle.service.commission');
+
+// ============ MANAGE CUSTOM COMMISSIONS ============
+Route::get('/admin/manage-seller-commissions', [CommissionController::class, 'ManageSellerCommissions'])
+    ->name('admin.manage.seller.commissions');
+
+Route::get('/admin/manage-service-commissions', [CommissionController::class, 'ManageServiceCommissions'])
+    ->name('admin.manage.service.commissions');
+
+// CRUD operations for seller commissions
+Route::post('/admin/seller-commission/store', [CommissionController::class, 'StoreSellerCommission'])
+    ->name('admin.seller.commission.store');
+
+Route::post('/admin/seller-commission/update/{id}', [CommissionController::class, 'UpdateSellerCommission'])
+    ->name('admin.seller.commission.update');
+
+Route::delete('/admin/seller-commission/delete/{id}', [CommissionController::class, 'DeleteSellerCommission'])
+    ->name('admin.seller.commission.delete');
+
+// CRUD operations for service commissions
+Route::post('/admin/service-commission/store', [CommissionController::class, 'StoreServiceCommission'])
+    ->name('admin.service.commission.store');
+
+Route::post('/admin/service-commission/update/{id}', [CommissionController::class, 'UpdateServiceCommission'])
+    ->name('admin.service.commission.update');
+
+Route::delete('/admin/service-commission/delete/{id}', [CommissionController::class, 'DeleteServiceCommission'])
+    ->name('admin.service.commission.delete');
+
+// Commission Report/Dashboard
+Route::get('/admin/commission-report', [CommissionController::class, 'CommissionReport'])
+    ->name('admin.commission.report');
+
+// Export routes
+//Route::get('/admin/commission-report/export/csv', [CommissionController::class, 'ExportCSV'])
+//    ->name('admin.commission.export.csv');
+//
+//Route::get('/admin/commission-report/export/pdf', [CommissionController::class, 'ExportPDF'])
+//    ->name('admin.commission.export.pdf');
+//
+//Route::get('/admin/commission-report/export/excel', [CommissionController::class, 'ExportExcel'])
+//    ->name('admin.commission.export.excel');
+
+
+
+// Transaction Details & Actions
+Route::get('/admin/transaction/details/{id}', [CommissionController::class, 'TransactionDetails'])
+    ->name('admin.transaction.details');
+
+Route::post('/admin/transaction/mark-payout-completed/{id}', [CommissionController::class, 'MarkPayoutCompleted'])
+    ->name('admin.transaction.payout.complete');
+
+Route::post('/admin/transaction/refund/{id}', [CommissionController::class, 'ProcessRefund'])
+    ->name('admin.transaction.refund');
+
+// Export Routes (already added earlier, but here for reference)
+Route::get('/admin/commission-report/export/csv', [CommissionController::class, 'ExportCSV'])
+    ->name('admin.commission.export.csv');
+
+Route::get('/admin/commission-report/export/pdf', [CommissionController::class, 'ExportPDF'])
+    ->name('admin.commission.export.pdf');
+
+Route::get('/admin/commission-report/export/excel', [CommissionController::class, 'ExportExcel'])
+    ->name('admin.commission.export.excel');
+
+// Optional: Print receipt & Download invoice
+Route::get('/admin/commission-report/print/{id}', [CommissionController::class, 'PrintReceipt'])
+    ->name('admin.transaction.print');
+
+Route::get('/admin/commission-report/download-invoice/{id}', [CommissionController::class, 'DownloadInvoice'])
+    ->name('admin.transaction.invoice');
+
+
+Route::get('/admin/coupons', [CouponController::class, 'index'])->name('admin.coupons.index');
+Route::get('/admin/coupons/analytics', [CouponController::class, 'analytics'])->name('admin.coupons.analytics');
+
+// Create Coupon
+Route::get('/admin/coupons/create', [CouponController::class, 'create'])->name('admin.coupons.create');
+Route::post('/admin/coupons', [CouponController::class, 'store'])->name('admin.coupons.store');
+
+// View Coupon Details
+Route::get('/admin/coupons/{id}', [CouponController::class, 'show'])->name('admin.coupons.show');
+
+// Edit Coupon
+Route::get('/admin/coupons/{id}/edit', [CouponController::class, 'edit'])->name('admin.coupons.edit');
+Route::put('/admin/coupons/{id}', [CouponController::class, 'update'])->name('admin.coupons.update');
+
+// Delete Coupon
+Route::delete('/admin/coupons/{id}', [CouponController::class, 'destroy'])->name('admin.coupons.destroy');
+
+// Toggle Coupon Status
+Route::get('/admin/coupons/{id}/toggle', [CouponController::class, 'toggleStatus'])->name('admin.coupons.toggle');
+
+// AJAX Coupon Validation (for checkout)
+Route::post('/api/validate-coupon', [CouponController::class, 'validateCoupon'])->name('api.coupon.validate');
+
+
 Route::controller(TeacherController::class)->group(function () {
     Route::get('/teacher-dashboard', 'TeacherDashboard');
     Route::get('/teacher-faqs', 'TeacherFaqs');
@@ -332,10 +454,11 @@ Route::controller(OrderManagementController::class)->group(function () {
     Route::get('/order-management', 'OrderManagement');
     Route::get('/client-management', 'ClientManagement');
     // Order Actions Routes Start =========
-    Route::get('/active-order/{id}', 'ActiveOrder');
-    Route::post('/cancel-order', 'CancelOrder');
-    Route::get('/deliver-order/{id}', 'DeliverOrder');
-    Route::post('/freelance-order-deliver', 'FreelanceOrderDeliver');
+    Route::get('/active-order/{id}', 'ActiveOrder'); // transactions_update
+    Route::post('/cancel-order', 'CancelOrder'); // transactions_update
+    Route::get('/deliver-order/{id}', 'DeliverOrder'); // transactions_update
+    Route::post('/freelance-order-deliver', 'FreelanceOrderDeliver'); // transactions_update
+
     // User Reshedule Route =====
     Route::get('/user-reschedule/{id}', 'UserResheduleClass');
     Route::post('/user-update-classes', 'UpdateUserResheduleClass');
@@ -345,6 +468,7 @@ Route::controller(OrderManagementController::class)->group(function () {
     // Accept Reject Reschedule Route =====
     Route::get('/accept-reschedule/{id}', 'AcceptResheduleClass');
     Route::get('/reject-reschedule/{id}', 'RejectResheduleClass');
+
     // Dispute Order ==========
     Route::post('/dispute-order', 'DisputeOrder');
     Route::get('/back-to-active/{id}', 'BackToActive');
@@ -419,3 +543,4 @@ Route::controller(MessagesController::class)->group(function () {
 Route::get('/zoom/authorize', [ZoomController::class, 'redirectToZoom']);
 Route::get('/zoom/callback', [ZoomController::class, 'handleCallback']);
 Route::get('/zoom/create-meeting', [ZoomController::class, 'createMeeting']);
+Route::post('stripe/webhook', [StripeWebhookController::class, 'handleWebhook']);
