@@ -1,3 +1,5 @@
+
+@include('components.JSAndMetaTag')
 <div class="sidebar">
     <div class="logo-details">
         <i class="">

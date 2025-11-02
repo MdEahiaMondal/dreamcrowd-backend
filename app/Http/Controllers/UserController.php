@@ -16,6 +16,7 @@ use App\Models\CancelOrder;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use App\Services\NotificationService;
 
 class UserController extends Controller
 {
@@ -100,14 +101,14 @@ class UserController extends Controller
         return view("User-Dashboard.faq", compact('faqs'));
     }
 
-    
+
     public function profile()
     {
         $user = Auth::user();
         return view("common.profile", compact('user'));
     }
 
-     public function update(Request $request)
+    public function update(Request $request)
     {
         $user = Auth::user();
 

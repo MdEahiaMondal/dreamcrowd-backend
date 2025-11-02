@@ -28,6 +28,7 @@ use Stripe\PaymentIntent;
 use App\Models\WebSetting;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
+use App\Services\NotificationService;
 
 class AdminController extends Controller
 {
@@ -47,6 +48,16 @@ class AdminController extends Controller
 
     public function AdminDashboard()
     {
+        $notificationService = new NotificationService();
+
+        $notificationService->send(
+            userId: 4,
+            type: 'order',
+            title: 'Order Placed Successfully',
+            message: 'Your order #12345 has been placed successfully.',
+            data: ['order_id' => 12345, 'amount' => 150],
+            sendEmail: false // Send email notification too
+        );
 
         if ($redirect = $this->AdmincheckAuth()) {
             return $redirect;
@@ -99,7 +110,6 @@ class AdminController extends Controller
         $response['category'] = $category;
         $response['sub_cate'] = $sub_cate;
         return response()->json($response);
-
     }
 
 
@@ -115,7 +125,6 @@ class AdminController extends Controller
         } else {
             $cate = $app->category_freelance;
             $sub_cate = $app->sub_category_freelance;
-
         }
 
         $category = Category::where(['id' => $request->cate_id])->first();
@@ -153,7 +162,6 @@ class AdminController extends Controller
                 } else {
                     $app->sub_category_class = $sub_cate[0] . '|*|' . $result_sub;
                 }
-
             } else {
                 $app->category_freelance = $result;
                 if ($category->service_type == 'Online') {
@@ -161,9 +169,7 @@ class AdminController extends Controller
                 } else {
                     $app->sub_category_freelance = $sub_cate[0] . '|*|' . $result_sub;
                 }
-
             }
-
         }
 
 
@@ -182,8 +188,6 @@ class AdminController extends Controller
             $response['message'] = 'Something Wrong, Tryagain Later!';
             return response()->json($response);
         }
-
-
     }
 
 
@@ -229,8 +233,6 @@ class AdminController extends Controller
             $response['message'] = 'Something Wrong, Tryagain Later!';
             return response()->json($response);
         }
-
-
     }
 
     public function RejectAllCategories($id)
@@ -251,12 +253,9 @@ class AdminController extends Controller
 
         if ($category) {
             return redirect()->back()->with('success', 'All Categories Rejected Successfuly!');
-
         } else {
             return redirect()->back()->with('error', 'Something Error Please Try again Later!');
-
         }
-
     }
 
 
@@ -323,8 +322,6 @@ class AdminController extends Controller
             } else {
                 return redirect()->back()->with('error', 'Something Rong, Tryagain Later!');
             }
-
-
         } else {
             $user = User::find($expert->user_id);
 
@@ -357,8 +354,6 @@ class AdminController extends Controller
                 return redirect()->back()->with('error', 'Something Rong, Tryagain Later!');
             }
         }
-
-
     }
 
 
@@ -415,12 +410,9 @@ class AdminController extends Controller
 
         if ($request) {
             return redirect()->to('/seller-request')->with('success', 'Seller Request Rejected!');
-
         } else {
             return redirect()->back()->with('error', 'Something Error Please Try again Later!');
-
         }
-
     }
 
     // Fetch Sub Categories Function Start ======
@@ -439,7 +431,6 @@ class AdminController extends Controller
 
         $response['sub_cate'] = $sub_cate;
         return response()->json($response);
-
     }
 
 
@@ -478,8 +469,6 @@ class AdminController extends Controller
             $response['message'] = 'Something Wrong, Tryagain Later!';
             return response()->json($response);
         }
-
-
     }
 
 
@@ -535,8 +524,6 @@ class AdminController extends Controller
             } else {
                 $app->sub_category = $sub_cate[0] . '|*|' . $result_sub;
             }
-
-
         }
 
 
@@ -555,8 +542,6 @@ class AdminController extends Controller
             $response['message'] = 'Something Wrong, Tryagain Later!';
             return response()->json($response);
         }
-
-
     }
 
 
@@ -666,13 +651,9 @@ class AdminController extends Controller
 
             if ($expert) {
                 return redirect()->to('/seller-request')->with('success', 'Seller Request Approved!');
-
             } else {
                 return redirect()->back()->with('error', 'Something Error Please Try again Later!');
-
             }
-
-
         } elseif ($request->request_type == 'location') {
 
             $main = TeacherLocationRequest::find($request->request_id);
@@ -699,12 +680,9 @@ class AdminController extends Controller
 
             if ($expert) {
                 return redirect()->to('/seller-request')->with('success', 'Seller Request Approved!');
-
             } else {
                 return redirect()->back()->with('error', 'Something Error Please Try again Later!');
-
             }
-
         } else {
 
             $main = TeacherCategoryRequest::find($request->request_id);
@@ -768,8 +746,6 @@ class AdminController extends Controller
                 } else {
                     $expert->sub_category_freelance = $main->sub_category;
                 }
-
-
             } else {
 
                 if ($get_cate != null) {
@@ -782,7 +758,6 @@ class AdminController extends Controller
                 } else {
                     $expert->sub_category_class = $main->sub_category;
                 }
-
             }
 
 
@@ -792,14 +767,10 @@ class AdminController extends Controller
 
             if ($expert) {
                 return redirect()->to('/seller-request')->with('success', 'Seller Request Approved!');
-
             } else {
                 return redirect()->back()->with('error', 'Something Error Please Try again Later!');
-
             }
         }
-
-
     }
 
     //   Seller Request Functions  END==========
@@ -835,7 +806,6 @@ class AdminController extends Controller
 
         if (strlen($password) < 8) {
             return redirect()->back()->with('error', 'The password must be at least 8 characters long.');
-
         }
 
         if (!preg_match('/[A-Z]/', $password)) {
@@ -867,12 +837,10 @@ class AdminController extends Controller
 
         if (!empty($user)) {
             return redirect()->back()->with('error', 'This Email is Already Registered');
-
         }
 
         if ($request->role >= Auth::user()->admin_role) {
             return redirect()->back()->with('error', 'You are Not Allowed to Add Admin in Heigher Rank!');
-
         }
 
 
@@ -901,13 +869,9 @@ class AdminController extends Controller
 
         if ($user) {
             return redirect()->back()->with('success', 'New Admin Created Successfuly!');
-
         } else {
             return redirect()->back()->with('error', 'Something Error Please Try again Later!');
-
         }
-
-
     }
 
     public function UpdateAdmin(Request $request)
@@ -923,7 +887,6 @@ class AdminController extends Controller
 
         if ($request->role >= Auth::user()->admin_role) {
             return redirect()->back()->with('error', 'You are Not Allowed to Update Admin in Heigher Rank!');
-
         }
 
         $admin = User::find($request->id);
@@ -933,7 +896,6 @@ class AdminController extends Controller
             $user = User::where(['email' => $request->email])->first();
             if (!empty($user)) {
                 return redirect()->back()->with('error', 'This Email is Already Registered');
-
             }
             $admin->email = $request->email;
         }
@@ -946,7 +908,6 @@ class AdminController extends Controller
 
             if (strlen($password) < 8) {
                 return redirect()->back()->with('error', 'The password must be at least 8 characters long.');
-
             }
 
             if (!preg_match('/[A-Z]/', $password)) {
@@ -978,7 +939,6 @@ class AdminController extends Controller
         $admin->update();
 
         return redirect()->back()->with('success', 'Admin Details Updated Successfuly!');
-
     }
 
 
@@ -993,7 +953,6 @@ class AdminController extends Controller
         $admin = User::find($id);
         $admin->delete();
         return redirect()->back()->with('success', 'Admin Deleted Successfuly!');
-
     }
 
     // Block Admin ===========
@@ -1014,14 +973,12 @@ class AdminController extends Controller
             $admin->update();
             return redirect()->back()->with('success', 'Admin Blocked Successfuly!');
         }
-
-
     }
 
     // Admin Management End================
 
-// Admin Profile Functions Start ================
-// Account Setting Functions Start =================
+    // Admin Profile Functions Start ================
+    // Account Setting Functions Start =================
     public function AdminProfile()
     {
 
@@ -1033,7 +990,6 @@ class AdminController extends Controller
         $web_setting = WebSetting::first();
         $bank_details = BankDetails::where(['user_id' => Auth::user()->id])->first();
         return view("Admin-Dashboard.account-setting", compact('web_setting', 'bank_details'));
-
     }
 
 
@@ -1046,7 +1002,6 @@ class AdminController extends Controller
 
         if (strlen($password) < 8) {
             return redirect()->back()->with('error', 'The password must be at least 8 characters long.');
-
         }
 
         if (!preg_match('/[A-Z]/', $password)) {
@@ -1070,23 +1025,17 @@ class AdminController extends Controller
         if (Hash::check($request->password, $user->password)) {
             if ($request->new_password != $request->c_password) {
                 return redirect()->back()->with('error', "New Password and Confirm Password Didn't Matched!");
-
             }
             $user->password = Hash::make($request->new_password);
             $user->update();
             if ($user) {
                 return redirect()->back()->with('success', 'Password Changed Successfuly!');
-
             } else {
                 return redirect()->back()->with('error', 'Something Went Rong,Tryagain Later!');
-
             }
-
         } else {
             return redirect()->back()->with('error', 'You Entered an Incorrect Password!');
-
         }
-
     }
 
     public function ChangeEmailSendCode(Request $request)
@@ -1096,8 +1045,10 @@ class AdminController extends Controller
         $user = User::find(Auth::user()->id);
 
         if ($user->email != $request->email) {
-            return response()->json(['error' => true,
-                'message' => 'Crrunt Email is Invalid!']);
+            return response()->json([
+                'error' => true,
+                'message' => 'Crrunt Email is Invalid!'
+            ]);
         }
 
         $randomNumber = random_int(100000, 999999);
@@ -1114,14 +1065,16 @@ class AdminController extends Controller
 
         if ($email_send) {
             $user->update();
-            return response()->json(['success' => true,
-                'message' => 'Verification Code Send to Your Mail!']);
+            return response()->json([
+                'success' => true,
+                'message' => 'Verification Code Send to Your Mail!'
+            ]);
         } else {
-            return response()->json(['error' => true,
-                'message' => 'Something Went Rong, Tryagain!']);
+            return response()->json([
+                'error' => true,
+                'message' => 'Something Went Rong, Tryagain!'
+            ]);
         }
-
-
     }
 
 
@@ -1133,24 +1086,20 @@ class AdminController extends Controller
 
         if ($user->email != $request->email) {
             return redirect()->back()->with('error', "Crrunt Email is Invalid!");
-
         }
 
         if ($user->email == $request->new_email) {
             return redirect()->back()->with('error', "Please Use Different Email!");
-
         }
 
         $new_mail = User::where(['email' => $request->new_email])->first();
 
         if ($new_mail) {
             return redirect()->back()->with('error', "This Email Already in Use!");
-
         }
 
         if ($user->email_code != $request->code) {
             return redirect()->back()->with('error', "You Enterred an Incorrect Code!");
-
         }
 
         $user->email = $request->new_email;
@@ -1159,13 +1108,9 @@ class AdminController extends Controller
 
         if ($user) {
             return redirect()->back()->with('success', 'Email Updated Successfuly!');
-
         } else {
             return redirect()->back()->with('error', 'Something Went Rong,Tryagain Later!');
-
         }
-
-
     }
 
     public function UpdateBankDetails(Request $request)
@@ -1187,12 +1132,9 @@ class AdminController extends Controller
 
                 if ($bank_details) {
                     return redirect()->back()->with('success', 'Bank Details Updated Successfuly!');
-
                 } else {
                     return redirect()->back()->with('error', 'Something Went Rong,Tryagain Later!');
-
                 }
-
             } else {
 
                 $bank_details = BankDetails::create([
@@ -1204,16 +1146,10 @@ class AdminController extends Controller
 
                 if ($bank_details) {
                     return redirect()->back()->with('success', 'Bank Details Updated Successfuly!');
-
                 } else {
                     return redirect()->back()->with('error', 'Something Went Rong,Tryagain Later!');
-
                 }
-
-
             }
-
-
         } else {
 
 
@@ -1228,12 +1164,9 @@ class AdminController extends Controller
 
                 if ($bank_details) {
                     return redirect()->back()->with('success', 'Bank Details Updated Successfuly!');
-
                 } else {
                     return redirect()->back()->with('error', 'Something Went Rong,Tryagain Later!');
-
                 }
-
             } else {
 
                 $bank_details = BankDetails::create([
@@ -1246,18 +1179,11 @@ class AdminController extends Controller
 
                 if ($bank_details) {
                     return redirect()->back()->with('success', 'Bank Details Updated Successfuly!');
-
                 } else {
                     return redirect()->back()->with('error', 'Something Went Rong,Tryagain Later!');
-
                 }
-
-
             }
-
-
         }
-
     }
 
 
@@ -1269,10 +1195,8 @@ class AdminController extends Controller
         $bank_details->delete();
         if ($bank_details) {
             return redirect()->back()->with('success', 'Bank Details Deleted!');
-
         } else {
             return redirect()->back()->with('error', 'Something Went Rong,Tryagain Later!');
-
         }
     }
 
@@ -1297,12 +1221,9 @@ class AdminController extends Controller
 
             if ($web_setting) {
                 return redirect()->back()->with('success', 'Web Setting Updated Successfuly!');
-
             } else {
                 return redirect()->back()->with('error', 'Something Went Rong,Tryagain Later!');
-
             }
-
         } else {
 
             $web_setting = WebSetting::create([
@@ -1315,18 +1236,14 @@ class AdminController extends Controller
 
             if ($web_setting) {
                 return redirect()->back()->with('success', 'Web Setting Updated Successfuly!');
-
             } else {
                 return redirect()->back()->with('error', 'Something Went Rong,Tryagain Later!');
-
             }
         }
-
-
     }
 
 
-// Admin Profile Functions END ================
+    // Admin Profile Functions END ================
     // Account Setting Functions END =================
 
 
@@ -1339,7 +1256,6 @@ class AdminController extends Controller
         }
 
         return view("Admin-Dashboard.notes&calender");
-
     }
 
 
@@ -1451,7 +1367,6 @@ class AdminController extends Controller
             ]);
 
             return redirect()->back()->with('success', 'Payout marked as completed successfully');
-
         } catch (\Exception $e) {
             \Log::error('Payout completion failed: ' . $e->getMessage());
             return redirect()->back()->with('error', 'Failed to mark payout as completed');
@@ -1484,7 +1399,6 @@ class AdminController extends Controller
                     $transaction->markPayoutCompleted();
                     $processed++;
                 }
-
             } catch (\Exception $e) {
                 \Log::error('Batch payout failed for transaction ' . $id . ': ' . $e->getMessage());
                 $failed++;
@@ -1493,6 +1407,4 @@ class AdminController extends Controller
 
         return redirect()->back()->with('success', "Processed {$processed} payouts successfully. Failed: {$failed}");
     }
-
-
 }

@@ -16,6 +16,7 @@
         </div>
         <div class="col-md-4" style="padding: 0px 12px">
           <div class="nav-profile">
+            <div class="notificationSectionAz"></div>
             @if (Auth::user())
             @if (Auth::user()->profile == null)
            @php  $firstLetter = strtoupper(substr(Auth::user()->first_name, 0, 1));  @endphp
@@ -109,3 +110,5 @@
       </div>
     </div>
   </div>
+
+  @include('components.JSAndMetaTag')

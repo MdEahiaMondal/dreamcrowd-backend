@@ -22,6 +22,14 @@ use App\Http\Controllers\UserController;
 //     return view('welcome');
 // });
 
+Route::middleware('auth')->group(function () {
+    Route::get('/notifications', [NotificationController::class, 'index']);
+    Route::get('/notifications/unread-count', [NotificationController::class, 'unreadCount']);
+    Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead']);
+    Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllAsRead']);
+    Route::delete('/notifications/{id}', [NotificationController::class, 'delete']);
+});
+
 
 Route::controller(AuthController::class)->group(function () {
     Route::post('/create-account', 'CreateAccount');

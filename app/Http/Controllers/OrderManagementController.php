@@ -30,12 +30,21 @@ use Stripe\PaymentIntent;
 use Stripe\Stripe;
 use Stripe\Refund;
 use Stripe\Exception\InvalidRequestException;
+use App\Services\NotificationService;
+
 
 class OrderManagementController extends Controller
 {
     public $reschedule_hours;
     public $sorting = "book_orders.updated_at";
 
+    protected $notification;
+
+    public function __construct(NotificationService $notification)
+    {
+        // Laravel automatically inject করবে
+        $this->notification = $notification;
+    }
     // User Pannel Order Management ===================
 
     public function OrderManagement()
