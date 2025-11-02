@@ -1163,7 +1163,6 @@
 <div class="container-fluid card_wrapper">
     <div class="container">
         @if ($home2)
-
             <div class="row">
                 <div class="col-12">
                     <h1 class="page-title">{{$home2->review_heading}}</h1>
@@ -1217,58 +1216,6 @@
                                 <p class="card-text">{{$home2->review_review_4}} </p>
                             </div>
                         </div>
-
-
-                        {{-- <div class="card  card-slider">
-                            <div class="card-body">
-                                <div class="d-flex"><img src="assets/public-site/asset/img/slidercommentimg1.png" class="rounded-circle">
-                                    <div class="d-flex flex-column">
-                                        <div class="name">Thomas H.</div>
-                                        <p class="text-muted">Student</p>
-                                    </div>
-                                </div>
-                                <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Amet sollicitudin tristique ac praesent ullamcorper nisl eu accumsan.Lorem ipsum dolor sit amet, consectetur adipiscing elit. Amet sollicitudin tristique ac praesent
-                                    ullamcorper nisl eu accumsan. </p>
-                            </div>
-                        </div>
-                        <div class="card  card-slider">
-                            <div class="card-body">
-                                <div class="d-flex"><img src="assets/public-site/asset/img/IMG1.png" class="rounded-circle">
-                                    <div class="d-flex flex-column">
-                                        <div class="name">Thomas H.</div>
-                                        <p class="text-muted">Student</p>
-                                    </div>
-                                </div>
-                                <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Amet sollicitudin tristique ac praesent ullamcorper nisl eu accumsan.Lorem ipsum dolor sit amet, consectetur adipiscing elit. Amet sollicitudin tristique ac praesent
-                                    ullamcorper nisl eu accumsan. </p>
-                            </div>
-                        </div>
-                        <div class="card  card-slider">
-                            <div class="card-body">
-                                <div class="d-flex"><img src="assets/public-site/asset/img/slidercommentimg1.png" class="rounded-circle">
-                                    <div class="d-flex flex-column">
-                                        <div class="name">Thomas H.</div>
-                                        <p class="text-muted">Student</p>
-                                    </div>
-                                </div>
-                                <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Amet sollicitudin tristique ac praesent ullamcorper nisl eu accumsan.Lorem ipsum dolor sit amet, consectetur adipiscing elit. Amet sollicitudin tristique ac praesent
-                                    ullamcorper nisl eu accumsan. </p>
-                            </div>
-                        </div>
-                        <div class="card  card-slider">
-                            <div class="card-body">
-                                <div class="d-flex"><img src="assets/public-site/asset/img/IMG1.png" class="rounded-circle">
-                                    <div class="d-flex flex-column">
-                                        <div class="name">Thomas H.</div>
-                                        <p class="text-muted">Student</p>
-                                    </div>
-                                </div>
-                                <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Amet sollicitudin tristique ac praesent ullamcorper nisl eu accumsan.Lorem ipsum dolor sit amet, consectetur adipiscing elit. Amet sollicitudin tristique ac praesent
-                                    ullamcorper nisl eu accumsan. </p>
-                            </div>
-                        </div> --}}
-
-
                     </div>
                 </div>
             </div>
