@@ -27,8 +27,7 @@ class BookingController extends Controller
 
     public function QuickBooking($id)
     {
-        $gig = TeacherGig::find($id);
-
+        $gig = TeacherGig::with(['all_reviews', 'all_reviews.user','all_reviews.replies'])->where('id', $id)->firstOrFail();
 
         if (!$gig || $gig->status != 1) {
             return redirect('/')->with(['error' => 'Service not found!']);
@@ -98,7 +97,6 @@ class BookingController extends Controller
 
 // Convert available slots to JSON for frontend
             $bookedTimes = json_encode($availableSlots, JSON_UNESCAPED_SLASHES);
-
 
             // Pass gig availability details to the view
             return view("Seller-listing.quick-booking", compact('gig', 'profile', 'gigData', 'gigPayment', 'gigFaqs', 'repeatDays', 'bookedTime', 'allOrders', 'bookedTimes', 'admin_duration'));
@@ -696,6 +694,26 @@ class BookingController extends Controller
         }
     }
     // Payment Booking Of Class Function END ----------
+
+
+
+    public function BookingSuccess(Request $request)
+    {
+        if (!$request->order_id) {
+            return redirect('/')->with('error', 'Something went wrong');
+        }
+
+        $order = BookOrder::find($request->order_id);
+        if (!$order || $order->payment_status != 'pending') {
+            return redirect('/')->with('error', 'Order not found or already processed');
+        }
+
+        // Update order status to completed
+        $order->payment_status = 'completed';
+        $order->save();
+
+        return view('Public-site.booking-success', compact('order'));
+    }
 
 
 }

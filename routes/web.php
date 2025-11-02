@@ -540,6 +540,33 @@ Route::controller(MessagesController::class)->group(function () {
 });
 
 
+use App\Http\Controllers\TransactionController;
+
+// ============ SELLER/TEACHER TRANSACTION ROUTES ============
+Route::middleware(['auth'])->group(function () {
+
+    // Seller Dashboard
+    Route::get('/seller/transactions', [TransactionController::class, 'sellerTransactions'])
+        ->name('seller.transactions');
+
+    // Buyer Dashboard
+    Route::get('/user/transactions', [TransactionController::class, 'buyerTransactions'])
+        ->name('user.transactions');
+
+    // Shared Routes (both seller and buyer)
+    Route::get('/transaction/{id}', [TransactionController::class, 'viewTransaction'])
+        ->name('transaction.details');
+
+    // Buyer Invoice Download
+    Route::get('/transaction/{id}/invoice', [TransactionController::class, 'downloadInvoice'])
+        ->name('transaction.invoice');
+
+    // AJAX Filter
+    Route::post('/transactions/filter', [TransactionController::class, 'filterTransactions'])
+        ->name('transactions.filter');
+});
+
+
 Route::get('/zoom/authorize', [ZoomController::class, 'redirectToZoom']);
 Route::get('/zoom/callback', [ZoomController::class, 'handleCallback']);
 Route::get('/zoom/create-meeting', [ZoomController::class, 'createMeeting']);

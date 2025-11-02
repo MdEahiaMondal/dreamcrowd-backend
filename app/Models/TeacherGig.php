@@ -43,5 +43,9 @@ class TeacherGig extends Model
         return $this->hasMany(TeacherReapetDays::class, 'gig_id');
     }
 
-    
+   public function all_reviews() {
+        return $this->hasMany(ServiceReviews::class, 'gig_id')->with('replies');
+    }
+
+
 }

@@ -32,7 +32,7 @@
     {{-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css"> --}}
 
     {{-- =====Appointment-Calender CDN===== --}}
-    <!-- Owl carousel css -->
+<!-- Owl carousel css -->
     <link href="assets/public-site/libs/owl-carousel/css/owl.carousel.css" rel="stylesheet"/>
     <link href="assets/public-site/libs/owl-carousel/css/owl.theme.green.css" rel="stylesheet"/>
     <!-- Bootstrap css -->
@@ -41,7 +41,7 @@
     @if ($home)
         <link rel="shortcut icon" href="assets/public-site/asset/img/{{$home->fav_icon}}" type="image/x-icon">
     @endif
-    <!-- g js start -->
+<!-- g js start -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css">
     <!-- g js end -->
     <link
@@ -83,9 +83,9 @@
           href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
-    {{-- =======Toastr CDN ======== --}}
+{{-- =======Toastr CDN ======== --}}
 
-    <!-- Flatpickr CSS -->
+<!-- Flatpickr CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 
     <!-- Flatpickr JS -->
@@ -178,39 +178,45 @@
     ;
 
     .main {
-        .container {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            grid-gap: 1rem;
-            justify-content: center;
-            align-items: center;
-        }
 
-        .main .card {
-            color: color-black;
-            border-radius: 2px;
-            background: color-white;
-            box-shadow: box-shadow;
+    .container {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        grid-gap: 1rem;
+        justify-content: center;
+        align-items: center;
+    }
 
-        }
+    .main .card {
+        color: color-black;
+        border-radius: 2px;
+        background: color-white;
+        box-shadow: box-shadow;
 
-        .main & -image {
-            position: relative;
-            display: block;
-            width: 100%;
-            /* padding-top: 70%; */
-            /* background: $color-white; */
+    }
 
-            .main img {
-                display: block;
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                object-fit: cover;
-            }
-        }
+    .main
+
+    &
+    -image {
+        position: relative;
+        display: block;
+        width: 100%;
+
+    /* padding-top: 70%; */
+    /* background: $color-white; */
+
+    .main img {
+        display: block;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    }
     }
 
     /* mutiple email css */
@@ -272,12 +278,14 @@
 
     @media only screen and (max-width: 600px) {
         .main {
-            .container {
-                display: grid;
-                grid-template-columns: 1fr;
-                grid-gap: 1rem;
-            }
+
+        .container {
+            display: grid;
+            grid-template-columns: 1fr;
+            grid-gap: 1rem;
         }
+    }
+
     }
 
     #nearme_dropdown li:hover {
@@ -323,11 +331,7 @@
                                 <a style="text-decoration: none;"
                                    href="{{ url('professional-profile/'.$profile->id.'/'.$profile->first_name.$profile->last_name) }}">
                                     <h5 class="profile-title" style="color: var(--Colors-Logo-Color, #0072b1);">
-                                        @if ($profile->show_full_name == 0)
-                                            {{$profile->first_name}} {{strtoupper(substr($profile->last_name, 0, 1))}}.
-                                        @else
-                                            {{$profile->first_name}} {{$profile->last_name}}
-                                        @endif
+                                        {{$profile->first_name}} {{strtoupper(substr($profile->last_name, 0, 1))}}.
                                     </h5>
                                 </a>
                                 <div class="profile-rating d-flex align-items-center">
@@ -1400,16 +1404,16 @@
                         data-fancybox="gallery"
                         data-caption=""
                     >
-                        @if (Str::endsWith($gigData->main_file, ['.mp4', '.avi', '.mov', '.webm']))
-                            <!-- Video Player -->
+                    @if (Str::endsWith($gigData->main_file, ['.mp4', '.avi', '.mov', '.webm']))
+                        <!-- Video Player -->
                             <video autoplay loop muted style="height: 100%; width: 100%;">
                                 <source
                                     src="assets/teacher/listing/data_{{$gig->user_id}}/media/{{$gigData->main_file}}"
                                     type="video/mp4">
                                 Your browser does not support the video tag.
                             </video>
-                        @elseif (Str::endsWith($gigData->main_file, ['.jpg', '.jpeg', '.png', '.gif']))
-                            <!-- Image Display -->
+                    @elseif (Str::endsWith($gigData->main_file, ['.jpg', '.jpeg', '.png', '.gif']))
+                        <!-- Image Display -->
                             <img src="assets/teacher/listing/data_{{$gig->user_id}}/media/{{$gigData->main_file}}"
                                  style="height: 100%;" alt="Uploaded Image">
                         @endif

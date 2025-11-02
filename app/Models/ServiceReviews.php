@@ -30,6 +30,11 @@ class ServiceReviews extends Model
         return $this->belongsTo(User::class, 'teacher_id', 'id');
     }
 
+    public function user(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id', 'id');
+    }
+
     public function gig(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(TeacherGig::class, 'gig_id', 'id');

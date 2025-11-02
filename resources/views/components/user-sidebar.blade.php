@@ -42,7 +42,7 @@
           </li>
         </ul>
       </li>
-     
+
       <li>
         <a href="/order-management">
           <i class="bx bxs-graduation icon" title="Class Management"></i>
@@ -66,13 +66,13 @@
         </ul>
       </li>
       <li>
-        <a href="purchase-history.html">
+        <a href="/user/transactions">
           <i class="bx bx-history" title="Purchase History"></i>
-          <span class="link_name">Purchase History</span>
+          <span class="link_name">My Transactions</span>
         </a>
         <ul class="sub-menu blank">
           <li>
-            <a class="link_name" href="purchase-history.html">Purchase History</a>
+            <a class="link_name" href="/user/transactions">My Transactions</a>
           </li>
         </ul>
       </li>
@@ -108,11 +108,11 @@
           <li><a href="/change-password">Change Password</a></li>
           <li><a href="/change-email">Change Email</a></li>
           <li><a href="/change-card-detail">Update Card Detail</a></li>
-          <li><a href="#"  data-bs-target="#exampleModal7" 
+          <li><a href="#"  data-bs-target="#exampleModal7"
             data-bs-toggle="modal">Delete Account</a></li>
         </ul>
       </li>
-      <li> 
+      <li>
         <a href="/user-faqs">
           <i class="bx bx-chat icon" title="FAQ's"></i>
           <span class="link_name">FAQ’s</span>
