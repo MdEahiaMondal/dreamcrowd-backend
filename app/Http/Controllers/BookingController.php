@@ -27,7 +27,7 @@ class BookingController extends Controller
 
     public function QuickBooking($id)
     {
-        $gig = TeacherGig::with(['all_reviews', 'all_reviews.user','all_reviews.replies'])->where('id', $id)->firstOrFail();
+        $gig = TeacherGig::with(['all_reviews', 'all_reviews.user', 'all_reviews.replies'])->where('id', $id)->firstOrFail();
 
         if (!$gig || $gig->status != 1) {
             return redirect('/')->with(['error' => 'Service not found!']);
@@ -693,8 +693,8 @@ class BookingController extends Controller
             ], 500);
         }
     }
-    // Payment Booking Of Class Function END ----------
 
+    // Payment Booking Of Class Function END ----------
 
 
     public function BookingSuccess(Request $request)

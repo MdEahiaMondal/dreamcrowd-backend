@@ -32,7 +32,7 @@
     {{-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css"> --}}
 
     {{-- =====Appointment-Calender CDN===== --}}
-<!-- Owl carousel css -->
+    <!-- Owl carousel css -->
     <link href="assets/public-site/libs/owl-carousel/css/owl.carousel.css" rel="stylesheet"/>
     <link href="assets/public-site/libs/owl-carousel/css/owl.theme.green.css" rel="stylesheet"/>
     <!-- Bootstrap css -->
@@ -41,7 +41,7 @@
     @if ($home)
         <link rel="shortcut icon" href="assets/public-site/asset/img/{{$home->fav_icon}}" type="image/x-icon">
     @endif
-<!-- g js start -->
+    <!-- g js start -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css">
     <!-- g js end -->
     <link
@@ -83,9 +83,9 @@
           href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
-{{-- =======Toastr CDN ======== --}}
+    {{-- =======Toastr CDN ======== --}}
 
-<!-- Flatpickr CSS -->
+    <!-- Flatpickr CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 
     <!-- Flatpickr JS -->
@@ -179,44 +179,42 @@
 
     .main {
 
-    .container {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        grid-gap: 1rem;
-        justify-content: center;
-        align-items: center;
-    }
+        .container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-gap: 1rem;
+            justify-content: center;
+            align-items: center;
+        }
 
-    .main .card {
-        color: color-black;
-        border-radius: 2px;
-        background: color-white;
-        box-shadow: box-shadow;
+        .main .card {
+            color: color-black;
+            border-radius: 2px;
+            background: color-white;
+            box-shadow: box-shadow;
 
-    }
+        }
 
-    .main
+        .main&
+        -image {
+            position: relative;
+            display: block;
+            width: 100%;
 
-    &
-    -image {
-        position: relative;
-        display: block;
-        width: 100%;
+            /* padding-top: 70%; */
+            /* background: $color-white; */
 
-    /* padding-top: 70%; */
-    /* background: $color-white; */
+            .main img {
+                display: block;
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
 
-    .main img {
-        display: block;
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
-
-    }
+        }
     }
 
     /* mutiple email css */
@@ -279,12 +277,12 @@
     @media only screen and (max-width: 600px) {
         .main {
 
-        .container {
-            display: grid;
-            grid-template-columns: 1fr;
-            grid-gap: 1rem;
+            .container {
+                display: grid;
+                grid-template-columns: 1fr;
+                grid-gap: 1rem;
+            }
         }
-    }
 
     }
 
@@ -301,6 +299,170 @@
         cursor: pointer;
     }
 </style>
+
+<style>
+    /* Keep these in a global CSS file if you prefer */
+    .review-summary {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .review-summary .avg {
+        font-size: 1.5rem;
+        font-weight: 700;
+    }
+
+    .review-summary .count {
+        color: #6c757d;
+        font-size: .95rem;
+    }
+
+    .review-card {
+        border: 1px solid #eef1f5;
+        border-radius: .6rem;
+        padding: 1rem;
+        box-shadow: 0 6px 18px rgba(15, 23, 42, 0.03);
+    }
+
+    .reviewer-avatar {
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid #f1f5f9;
+    }
+
+    .reviewer-name {
+        font-weight: 600;
+        margin-bottom: 0;
+    }
+
+    .reviewer-meta {
+        color: #6c757d;
+        font-size: .9rem;
+    }
+
+    .rating-stars i {
+        margin-right: 4px;
+    }
+
+    .comment-text {
+        color: #212529;
+        line-height: 1.45;
+    }
+
+    .seller-reply {
+        background: #fbfcfe;
+        border-left: 3px solid #e6f0ff;
+        padding: .75rem;
+        border-radius: .4rem;
+        margin-top: .75rem;
+    }
+
+    .empty-state {
+        color: #6c757d;
+        padding: 2rem 0;
+        text-align: center;
+    }
+
+    @media (max-width: 576px) {
+        .review-summary {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: .5rem;
+        }
+    }
+</style>
+
+<style>
+    .review-header {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+        padding: 1rem 0 1.25rem;
+        border-bottom: 1px solid #eef1f5;
+        margin-bottom: 1rem;
+    }
+
+    .review-header .side-badge {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: .5rem;
+        min-width: 90px;
+    }
+
+    .review-header .side-badge img {
+        width: 80px;
+        height: 80px;
+        object-fit: contain;
+        border-radius: .5rem;
+        box-shadow: 0 6px 18px rgba(15, 23, 42, 0.04);
+        background: #fff;
+        padding: .35rem;
+    }
+
+    .review-header .title-wrap {
+        text-align: center;
+        max-width: 640px;
+    }
+
+    .review-header h3 {
+        margin: 0;
+        font-size: 1.25rem;
+        letter-spacing: .2px;
+        font-weight: 700;
+    }
+
+    .review-header .subtitle {
+        margin: .25rem 0 0;
+        color: #6c757d;
+        font-size: .95rem;
+        line-height: 1.35;
+    }
+
+    .review-header .ribbon {
+        display: inline-flex;
+        align-items: center;
+        gap: .5rem;
+        background: linear-gradient(90deg, #f0f7ff, #e9f3ff);
+        color: #0b5ed7;
+        border-radius: 999px;
+        padding: .35rem .6rem;
+        font-weight: 600;
+        font-size: .85rem;
+        box-shadow: 0 4px 14px rgba(11, 93, 215, 0.06);
+        margin-top: .5rem;
+    }
+
+    @media (max-width: 576px) {
+        .review-header {
+            flex-direction: column;
+            gap: .75rem;
+            padding: .75rem 0;
+        }
+
+        .review-header .side-badge {
+            flex-direction: row;
+            gap: .75rem;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .review-header .side-badge img {
+            width: 68px;
+            height: 68px;
+        }
+    }
+</style>
+
+
 <body style="background-color: #FFFFFF !important;">
 <!-- =========================================== NAVBAR START HERE ================================================= -->
 <!-- =========================================== NAVBAR START HERE ================================================= -->
@@ -336,7 +498,10 @@
                                 </a>
                                 <div class="profile-rating d-flex align-items-center">
                                     <i class="fa-solid fa-star"></i> &nbsp;
-                                    <p class="mb-0">4.9 ({{$gig->reviews}})</p>
+                                    <p class="mb-0">
+                                        {{ number_format($gig->all_reviews->avg('rating'), 1) }}
+                                        ({{ count($gig->all_reviews) }})
+                                    </p>
                                 </div>
                             </div>
                             <p class="profile-text">{{$profile->profession}}</p>
@@ -1069,324 +1234,342 @@
             <div class="col-12">
                 <h1 class="page-title">Buyer Reviews</h1>
                 <p class="page-title-2">Voice of Our Valued Buyers - LMS Buyer Reviews!</p>
-                <div class="owl-carousel card_carousel owl-loaded owl-drag">
+                @if(count($gig->all_reviews))
+                    <div class="owl-carousel card_carousel owl-loaded owl-drag">
+                        <div class="owl-stage-outer">
+                            <div class="owl-stage"
+                                 style="transform: translate3d(-7656px, 0px, 0px); transition: 0.25s; width: 11140px; padding-left: 2px; padding-right: 2px;">
 
-
-                    <div class="owl-stage-outer">
-                        <div class="owl-stage"
-                             style="transform: translate3d(-7656px, 0px, 0px); transition: 0.25s; width: 11140px; padding-left: 2px; padding-right: 2px;">
-                            <div class="owl-item cloned" style="width: 676px; margin-right: 20px;">
-                                <div class="card  card-slider">
-                                    <div class="card-body">
-                                        <div class="d-flex"><img
-                                                src="assets/public-site/asset/img/slidercommentimg1.png"
-                                                class="rounded-circle">
-                                            <div class="d-flex flex-column">
-                                                <div class="name">Thomas H.</div>
-                                                <p class="text-muted">Student</p>
+                                @foreach($gig->all_reviews as $review)
+                                    <div class="owl-item cloned" style="width: 676px; margin-right: 20px;">
+                                        <div class="card  card-slider">
+                                            <div class="card-body">
+                                                <div class="d-flex">
+                                                    <img
+                                                        src="assets/public-site/asset/img/slidercommentimg1.png"
+                                                        class="rounded-circle">
+                                                    <div class="d-flex flex-column">
+                                                        <div
+                                                            class="name">  {{@$review->user->first_name}} {{strtoupper(substr(@$review->user->last_name, 0, 1))}}
+                                                            .
+                                                        </div>
+                                                        <p class="text-muted">Student</p>
+                                                    </div>
+                                                </div>
+                                                <p class="card-text">{{ $review->cmnt }} </p>
                                             </div>
                                         </div>
-                                        <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                                            Amet sollicitudin tristique ac praesent ullamcorper nisl eu accumsan.Lorem
-                                            ipsum dolor sit amet, consectetur adipiscing elit. Amet sollicitudin
-                                            tristique ac praesent
-                                            ullamcorper nisl eu accumsan. </p>
                                     </div>
-                                </div>
-                            </div>
-                            <div class="owl-item cloned" style="width: 676px; margin-right: 20px;">
-                                <div class="card  card-slider">
-                                    <div class="card-body">
-                                        <div class="d-flex"><img src="assets/public-site/asset/img/IMG1.png"
-                                                                 class="rounded-circle">
-                                            <div class="d-flex flex-column">
-                                                <div class="name">Thomas H.</div>
-                                                <p class="text-muted">Student</p>
-                                            </div>
-                                        </div>
-                                        <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                                            Amet sollicitudin tristique ac praesent ullamcorper nisl eu accumsan.Lorem
-                                            ipsum dolor sit amet, consectetur adipiscing elit. Amet sollicitudin
-                                            tristique ac praesent
-                                            ullamcorper nisl eu accumsan. </p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="owl-item cloned" style="width: 676px; margin-right: 20px;">
-                                <div class="card  card-slider">
-                                    <div class="card-body">
-                                        <div class="d-flex"><img
-                                                src="assets/public-site/asset/img/slidercommentimg1.png"
-                                                class="rounded-circle">
-                                            <div class="d-flex flex-column">
-                                                <div class="name">Thomas H.</div>
-                                                <p class="text-muted">Student</p>
-                                            </div>
-                                        </div>
-                                        <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                                            Amet sollicitudin tristique ac praesent ullamcorper nisl eu accumsan.Lorem
-                                            ipsum dolor sit amet, consectetur adipiscing elit. Amet sollicitudin
-                                            tristique ac praesent
-                                            ullamcorper nisl eu accumsan. </p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="owl-item cloned" style="width: 676px; margin-right: 20px;">
-                                <div class="card  card-slider">
-                                    <div class="card-body">
-                                        <div class="d-flex"><img src="assets/public-site/asset/img/IMG1.png"
-                                                                 class="rounded-circle">
-                                            <div class="d-flex flex-column">
-                                                <div class="name">Thomas H.</div>
-                                                <p class="text-muted">Student</p>
-                                            </div>
-                                        </div>
-                                        <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                                            Amet sollicitudin tristique ac praesent ullamcorper nisl eu accumsan.Lorem
-                                            ipsum dolor sit amet, consectetur adipiscing elit. Amet sollicitudin
-                                            tristique ac praesent
-                                            ullamcorper nisl eu accumsan. </p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="owl-item" style="width: 676px; margin-right: 20px;">
-                                <div class="card card-slider">
-                                    <div class="card-body">
-                                        <div class="d-flex"><img
-                                                src="assets/public-site/asset/img/slidercommentimg1.png"
-                                                class="rounded-circle">
-                                            <div class="d-flex flex-column">
-                                                <div class="name">Thomas H.</div>
-                                                <p class="text-muted">Student</p>
-                                            </div>
-                                        </div>
-                                        <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                                            Amet sollicitudin tristique ac praesent ullamcorper nisl eu accumsan.Lorem
-                                            ipsum dolor sit amet, consectetur adipiscing elit. Amet sollicitudin
-                                            tristique ac praesent
-                                            ullamcorper nisl eu accumsan. </p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="owl-item" style="width: 676px; margin-right: 20px;">
-                                <div class="card card-slider">
-                                    <div class="card-body">
-                                        <div class="d-flex">
-                                            <div class="rounded-circle review-profile">
-                                                <h3>T</h3>
-                                            </div>
-                                            <div class="d-flex flex-column">
-                                                <div class="name">Thomas H.</div>
-                                                <p class="text-muted">Student</p>
-                                            </div>
-                                        </div>
-                                        <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                                            Amet sollicitudin tristique ac praesent ullamcorper nisl eu accumsan.Lorem
-                                            ipsum dolor sit amet, consectetur adipiscing elit. Amet sollicitudin
-                                            tristique ac praesent
-                                            ullamcorper nisl eu accumsan. </p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="owl-item" style="width: 676px; margin-right: 20px;">
-                                <div class="card  card-slider">
-                                    <div class="card-body">
-                                        <div class="d-flex"><img
-                                                src="assets/public-site/asset/img/slidercommentimg1.png"
-                                                class="rounded-circle">
-                                            <div class="d-flex flex-column">
-                                                <div class="name">Thomas H.</div>
-                                                <p class="text-muted">Student</p>
-                                            </div>
-                                        </div>
-                                        <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                                            Amet sollicitudin tristique ac praesent ullamcorper nisl eu accumsan.Lorem
-                                            ipsum dolor sit amet, consectetur adipiscing elit. Amet sollicitudin
-                                            tristique ac praesent
-                                            ullamcorper nisl eu accumsan. </p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="owl-item" style="width: 676px; margin-right: 20px;">
-                                <div class="card  card-slider">
-                                    <div class="card-body">
-                                        <div class="d-flex"><img src="assets/public-site/asset/img/IMG1.png"
-                                                                 class="rounded-circle">
-                                            <div class="d-flex flex-column">
-                                                <div class="name">Thomas H.</div>
-                                                <p class="text-muted">Student</p>
-                                            </div>
-                                        </div>
-                                        <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                                            Amet sollicitudin tristique ac praesent ullamcorper nisl eu accumsan.Lorem
-                                            ipsum dolor sit amet, consectetur adipiscing elit. Amet sollicitudin
-                                            tristique ac praesent
-                                            ullamcorper nisl eu accumsan. </p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="owl-item" style="width: 676px; margin-right: 20px;">
-                                <div class="card  card-slider">
-                                    <div class="card-body">
-                                        <div class="d-flex"><img
-                                                src="assets/public-site/asset/img/slidercommentimg1.png"
-                                                class="rounded-circle">
-                                            <div class="d-flex flex-column">
-                                                <div class="name">Thomas H.</div>
-                                                <p class="text-muted">Student</p>
-                                            </div>
-                                        </div>
-                                        <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                                            Amet sollicitudin tristique ac praesent ullamcorper nisl eu accumsan.Lorem
-                                            ipsum dolor sit amet, consectetur adipiscing elit. Amet sollicitudin
-                                            tristique ac praesent
-                                            ullamcorper nisl eu accumsan. </p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="owl-item" style="width: 676px; margin-right: 20px;">
-                                <div class="card  card-slider">
-                                    <div class="card-body">
-                                        <div class="d-flex"><img src="assets/public-site/asset/img/IMG1.png"
-                                                                 class="rounded-circle">
-                                            <div class="d-flex flex-column">
-                                                <div class="name">Thomas H.</div>
-                                                <p class="text-muted">Student</p>
-                                            </div>
-                                        </div>
-                                        <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                                            Amet sollicitudin tristique ac praesent ullamcorper nisl eu accumsan.Lorem
-                                            ipsum dolor sit amet, consectetur adipiscing elit. Amet sollicitudin
-                                            tristique ac praesent
-                                            ullamcorper nisl eu accumsan. </p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="owl-item" style="width: 676px; margin-right: 20px;">
-                                <div class="card  card-slider">
-                                    <div class="card-body">
-                                        <div class="d-flex"><img
-                                                src="assets/public-site/asset/img/slidercommentimg1.png"
-                                                class="rounded-circle">
-                                            <div class="d-flex flex-column">
-                                                <div class="name">Thomas H.</div>
-                                                <p class="text-muted">Student</p>
-                                            </div>
-                                        </div>
-                                        <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                                            Amet sollicitudin tristique ac praesent ullamcorper nisl eu accumsan.Lorem
-                                            ipsum dolor sit amet, consectetur adipiscing elit. Amet sollicitudin
-                                            tristique ac praesent
-                                            ullamcorper nisl eu accumsan. </p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="owl-item active" style="width: 676px; margin-right: 20px;">
-                                <div class="card  card-slider">
-                                    <div class="card-body">
-                                        <div class="d-flex"><img src="assets/public-site/asset/img/IMG1.png"
-                                                                 class="rounded-circle">
-                                            <div class="d-flex flex-column">
-                                                <div class="name">Thomas H.</div>
-                                                <p class="text-muted">Student</p>
-                                            </div>
-                                        </div>
-                                        <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                                            Amet sollicitudin tristique ac praesent ullamcorper nisl eu accumsan.Lorem
-                                            ipsum dolor sit amet, consectetur adipiscing elit. Amet sollicitudin
-                                            tristique ac praesent
-                                            ullamcorper nisl eu accumsan. </p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="owl-item cloned active" style="width: 676px; margin-right: 20px;">
-                                <div class="card card-slider">
-                                    <div class="card-body">
-                                        <div class="d-flex"><img
-                                                src="assets/public-site/asset/img/slidercommentimg1.png"
-                                                class="rounded-circle">
-                                            <div class="d-flex flex-column">
-                                                <div class="name">Thomas H.</div>
-                                                <p class="text-muted">Student</p>
-                                            </div>
-                                        </div>
-                                        <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                                            Amet sollicitudin tristique ac praesent ullamcorper nisl eu accumsan.Lorem
-                                            ipsum dolor sit amet, consectetur adipiscing elit. Amet sollicitudin
-                                            tristique ac praesent
-                                            ullamcorper nisl eu accumsan. </p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="owl-item cloned" style="width: 676px; margin-right: 20px;">
-                                <div class="card card-slider">
-                                    <div class="card-body">
-                                        <div class="d-flex">
-                                            <div class="rounded-circle review-profile">
-                                                <h3>T</h3>
-                                            </div>
-                                            <div class="d-flex flex-column">
-                                                <div class="name">Thomas H.</div>
-                                                <p class="text-muted">Student</p>
-                                            </div>
-                                        </div>
-                                        <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                                            Amet sollicitudin tristique ac praesent ullamcorper nisl eu accumsan.Lorem
-                                            ipsum dolor sit amet, consectetur adipiscing elit. Amet sollicitudin
-                                            tristique ac praesent
-                                            ullamcorper nisl eu accumsan. </p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="owl-item cloned" style="width: 676px; margin-right: 20px;">
-                                <div class="card  card-slider">
-                                    <div class="card-body">
-                                        <div class="d-flex"><img
-                                                src="assets/public-site/asset/img/slidercommentimg1.png"
-                                                class="rounded-circle">
-                                            <div class="d-flex flex-column">
-                                                <div class="name">Thomas H.</div>
-                                                <p class="text-muted">Student</p>
-                                            </div>
-                                        </div>
-                                        <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                                            Amet sollicitudin tristique ac praesent ullamcorper nisl eu accumsan.Lorem
-                                            ipsum dolor sit amet, consectetur adipiscing elit. Amet sollicitudin
-                                            tristique ac praesent
-                                            ullamcorper nisl eu accumsan. </p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="owl-item cloned" style="width: 676px; margin-right: 20px;">
-                                <div class="card  card-slider">
-                                    <div class="card-body">
-                                        <div class="d-flex"><img src="assets/public-site/asset/img/IMG1.png"
-                                                                 class="rounded-circle">
-                                            <div class="d-flex flex-column">
-                                                <div class="name">Thomas H.</div>
-                                                <p class="text-muted">Student</p>
-                                            </div>
-                                        </div>
-                                        <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                                            Amet sollicitudin tristique ac praesent ullamcorper nisl eu accumsan.Lorem
-                                            ipsum dolor sit amet, consectetur adipiscing elit. Amet sollicitudin
-                                            tristique ac praesent
-                                            ullamcorper nisl eu accumsan. </p>
-                                    </div>
-                                </div>
+                                @endforeach
+                                {{--                            <div class="owl-item cloned" style="width: 676px; margin-right: 20px;">--}}
+                                {{--                                <div class="card  card-slider">--}}
+                                {{--                                    <div class="card-body">--}}
+                                {{--                                        <div class="d-flex"><img src="assets/public-site/asset/img/IMG1.png"--}}
+                                {{--                                                                 class="rounded-circle">--}}
+                                {{--                                            <div class="d-flex flex-column">--}}
+                                {{--                                                <div class="name">Thomas H.</div>--}}
+                                {{--                                                <p class="text-muted">Student</p>--}}
+                                {{--                                            </div>--}}
+                                {{--                                        </div>--}}
+                                {{--                                        <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit.--}}
+                                {{--                                            Amet sollicitudin tristique ac praesent ullamcorper nisl eu accumsan.Lorem--}}
+                                {{--                                            ipsum dolor sit amet, consectetur adipiscing elit. Amet sollicitudin--}}
+                                {{--                                            tristique ac praesent--}}
+                                {{--                                            ullamcorper nisl eu accumsan. </p>--}}
+                                {{--                                    </div>--}}
+                                {{--                                </div>--}}
+                                {{--                            </div>--}}
+                                {{--                            <div class="owl-item cloned" style="width: 676px; margin-right: 20px;">--}}
+                                {{--                                <div class="card  card-slider">--}}
+                                {{--                                    <div class="card-body">--}}
+                                {{--                                        <div class="d-flex"><img--}}
+                                {{--                                                src="assets/public-site/asset/img/slidercommentimg1.png"--}}
+                                {{--                                                class="rounded-circle">--}}
+                                {{--                                            <div class="d-flex flex-column">--}}
+                                {{--                                                <div class="name">Thomas H.</div>--}}
+                                {{--                                                <p class="text-muted">Student</p>--}}
+                                {{--                                            </div>--}}
+                                {{--                                        </div>--}}
+                                {{--                                        <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit.--}}
+                                {{--                                            Amet sollicitudin tristique ac praesent ullamcorper nisl eu accumsan.Lorem--}}
+                                {{--                                            ipsum dolor sit amet, consectetur adipiscing elit. Amet sollicitudin--}}
+                                {{--                                            tristique ac praesent--}}
+                                {{--                                            ullamcorper nisl eu accumsan. </p>--}}
+                                {{--                                    </div>--}}
+                                {{--                                </div>--}}
+                                {{--                            </div>--}}
+                                {{--                            <div class="owl-item cloned" style="width: 676px; margin-right: 20px;">--}}
+                                {{--                                <div class="card  card-slider">--}}
+                                {{--                                    <div class="card-body">--}}
+                                {{--                                        <div class="d-flex"><img src="assets/public-site/asset/img/IMG1.png"--}}
+                                {{--                                                                 class="rounded-circle">--}}
+                                {{--                                            <div class="d-flex flex-column">--}}
+                                {{--                                                <div class="name">Thomas H.</div>--}}
+                                {{--                                                <p class="text-muted">Student</p>--}}
+                                {{--                                            </div>--}}
+                                {{--                                        </div>--}}
+                                {{--                                        <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit.--}}
+                                {{--                                            Amet sollicitudin tristique ac praesent ullamcorper nisl eu accumsan.Lorem--}}
+                                {{--                                            ipsum dolor sit amet, consectetur adipiscing elit. Amet sollicitudin--}}
+                                {{--                                            tristique ac praesent--}}
+                                {{--                                            ullamcorper nisl eu accumsan. </p>--}}
+                                {{--                                    </div>--}}
+                                {{--                                </div>--}}
+                                {{--                            </div>--}}
+                                {{--                            <div class="owl-item" style="width: 676px; margin-right: 20px;">--}}
+                                {{--                                <div class="card card-slider">--}}
+                                {{--                                    <div class="card-body">--}}
+                                {{--                                        <div class="d-flex"><img--}}
+                                {{--                                                src="assets/public-site/asset/img/slidercommentimg1.png"--}}
+                                {{--                                                class="rounded-circle">--}}
+                                {{--                                            <div class="d-flex flex-column">--}}
+                                {{--                                                <div class="name">Thomas H.</div>--}}
+                                {{--                                                <p class="text-muted">Student</p>--}}
+                                {{--                                            </div>--}}
+                                {{--                                        </div>--}}
+                                {{--                                        <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit.--}}
+                                {{--                                            Amet sollicitudin tristique ac praesent ullamcorper nisl eu accumsan.Lorem--}}
+                                {{--                                            ipsum dolor sit amet, consectetur adipiscing elit. Amet sollicitudin--}}
+                                {{--                                            tristique ac praesent--}}
+                                {{--                                            ullamcorper nisl eu accumsan. </p>--}}
+                                {{--                                    </div>--}}
+                                {{--                                </div>--}}
+                                {{--                            </div>--}}
+                                {{--                            <div class="owl-item" style="width: 676px; margin-right: 20px;">--}}
+                                {{--                                <div class="card card-slider">--}}
+                                {{--                                    <div class="card-body">--}}
+                                {{--                                        <div class="d-flex">--}}
+                                {{--                                            <div class="rounded-circle review-profile">--}}
+                                {{--                                                <h3>T</h3>--}}
+                                {{--                                            </div>--}}
+                                {{--                                            <div class="d-flex flex-column">--}}
+                                {{--                                                <div class="name">Thomas H.</div>--}}
+                                {{--                                                <p class="text-muted">Student</p>--}}
+                                {{--                                            </div>--}}
+                                {{--                                        </div>--}}
+                                {{--                                        <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit.--}}
+                                {{--                                            Amet sollicitudin tristique ac praesent ullamcorper nisl eu accumsan.Lorem--}}
+                                {{--                                            ipsum dolor sit amet, consectetur adipiscing elit. Amet sollicitudin--}}
+                                {{--                                            tristique ac praesent--}}
+                                {{--                                            ullamcorper nisl eu accumsan. </p>--}}
+                                {{--                                    </div>--}}
+                                {{--                                </div>--}}
+                                {{--                            </div>--}}
+                                {{--                            <div class="owl-item" style="width: 676px; margin-right: 20px;">--}}
+                                {{--                                <div class="card  card-slider">--}}
+                                {{--                                    <div class="card-body">--}}
+                                {{--                                        <div class="d-flex"><img--}}
+                                {{--                                                src="assets/public-site/asset/img/slidercommentimg1.png"--}}
+                                {{--                                                class="rounded-circle">--}}
+                                {{--                                            <div class="d-flex flex-column">--}}
+                                {{--                                                <div class="name">Thomas H.</div>--}}
+                                {{--                                                <p class="text-muted">Student</p>--}}
+                                {{--                                            </div>--}}
+                                {{--                                        </div>--}}
+                                {{--                                        <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit.--}}
+                                {{--                                            Amet sollicitudin tristique ac praesent ullamcorper nisl eu accumsan.Lorem--}}
+                                {{--                                            ipsum dolor sit amet, consectetur adipiscing elit. Amet sollicitudin--}}
+                                {{--                                            tristique ac praesent--}}
+                                {{--                                            ullamcorper nisl eu accumsan. </p>--}}
+                                {{--                                    </div>--}}
+                                {{--                                </div>--}}
+                                {{--                            </div>--}}
+                                {{--                            <div class="owl-item" style="width: 676px; margin-right: 20px;">--}}
+                                {{--                                <div class="card  card-slider">--}}
+                                {{--                                    <div class="card-body">--}}
+                                {{--                                        <div class="d-flex"><img src="assets/public-site/asset/img/IMG1.png"--}}
+                                {{--                                                                 class="rounded-circle">--}}
+                                {{--                                            <div class="d-flex flex-column">--}}
+                                {{--                                                <div class="name">Thomas H.</div>--}}
+                                {{--                                                <p class="text-muted">Student</p>--}}
+                                {{--                                            </div>--}}
+                                {{--                                        </div>--}}
+                                {{--                                        <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit.--}}
+                                {{--                                            Amet sollicitudin tristique ac praesent ullamcorper nisl eu accumsan.Lorem--}}
+                                {{--                                            ipsum dolor sit amet, consectetur adipiscing elit. Amet sollicitudin--}}
+                                {{--                                            tristique ac praesent--}}
+                                {{--                                            ullamcorper nisl eu accumsan. </p>--}}
+                                {{--                                    </div>--}}
+                                {{--                                </div>--}}
+                                {{--                            </div>--}}
+                                {{--                            <div class="owl-item" style="width: 676px; margin-right: 20px;">--}}
+                                {{--                                <div class="card  card-slider">--}}
+                                {{--                                    <div class="card-body">--}}
+                                {{--                                        <div class="d-flex"><img--}}
+                                {{--                                                src="assets/public-site/asset/img/slidercommentimg1.png"--}}
+                                {{--                                                class="rounded-circle">--}}
+                                {{--                                            <div class="d-flex flex-column">--}}
+                                {{--                                                <div class="name">Thomas H.</div>--}}
+                                {{--                                                <p class="text-muted">Student</p>--}}
+                                {{--                                            </div>--}}
+                                {{--                                        </div>--}}
+                                {{--                                        <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit.--}}
+                                {{--                                            Amet sollicitudin tristique ac praesent ullamcorper nisl eu accumsan.Lorem--}}
+                                {{--                                            ipsum dolor sit amet, consectetur adipiscing elit. Amet sollicitudin--}}
+                                {{--                                            tristique ac praesent--}}
+                                {{--                                            ullamcorper nisl eu accumsan. </p>--}}
+                                {{--                                    </div>--}}
+                                {{--                                </div>--}}
+                                {{--                            </div>--}}
+                                {{--                            <div class="owl-item" style="width: 676px; margin-right: 20px;">--}}
+                                {{--                                <div class="card  card-slider">--}}
+                                {{--                                    <div class="card-body">--}}
+                                {{--                                        <div class="d-flex"><img src="assets/public-site/asset/img/IMG1.png"--}}
+                                {{--                                                                 class="rounded-circle">--}}
+                                {{--                                            <div class="d-flex flex-column">--}}
+                                {{--                                                <div class="name">Thomas H.</div>--}}
+                                {{--                                                <p class="text-muted">Student</p>--}}
+                                {{--                                            </div>--}}
+                                {{--                                        </div>--}}
+                                {{--                                        <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit.--}}
+                                {{--                                            Amet sollicitudin tristique ac praesent ullamcorper nisl eu accumsan.Lorem--}}
+                                {{--                                            ipsum dolor sit amet, consectetur adipiscing elit. Amet sollicitudin--}}
+                                {{--                                            tristique ac praesent--}}
+                                {{--                                            ullamcorper nisl eu accumsan. </p>--}}
+                                {{--                                    </div>--}}
+                                {{--                                </div>--}}
+                                {{--                            </div>--}}
+                                {{--                            <div class="owl-item" style="width: 676px; margin-right: 20px;">--}}
+                                {{--                                <div class="card  card-slider">--}}
+                                {{--                                    <div class="card-body">--}}
+                                {{--                                        <div class="d-flex"><img--}}
+                                {{--                                                src="assets/public-site/asset/img/slidercommentimg1.png"--}}
+                                {{--                                                class="rounded-circle">--}}
+                                {{--                                            <div class="d-flex flex-column">--}}
+                                {{--                                                <div class="name">Thomas H.</div>--}}
+                                {{--                                                <p class="text-muted">Student</p>--}}
+                                {{--                                            </div>--}}
+                                {{--                                        </div>--}}
+                                {{--                                        <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit.--}}
+                                {{--                                            Amet sollicitudin tristique ac praesent ullamcorper nisl eu accumsan.Lorem--}}
+                                {{--                                            ipsum dolor sit amet, consectetur adipiscing elit. Amet sollicitudin--}}
+                                {{--                                            tristique ac praesent--}}
+                                {{--                                            ullamcorper nisl eu accumsan. </p>--}}
+                                {{--                                    </div>--}}
+                                {{--                                </div>--}}
+                                {{--                            </div>--}}
+                                {{--                            <div class="owl-item active" style="width: 676px; margin-right: 20px;">--}}
+                                {{--                                <div class="card  card-slider">--}}
+                                {{--                                    <div class="card-body">--}}
+                                {{--                                        <div class="d-flex"><img src="assets/public-site/asset/img/IMG1.png"--}}
+                                {{--                                                                 class="rounded-circle">--}}
+                                {{--                                            <div class="d-flex flex-column">--}}
+                                {{--                                                <div class="name">Thomas H.</div>--}}
+                                {{--                                                <p class="text-muted">Student</p>--}}
+                                {{--                                            </div>--}}
+                                {{--                                        </div>--}}
+                                {{--                                        <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit.--}}
+                                {{--                                            Amet sollicitudin tristique ac praesent ullamcorper nisl eu accumsan.Lorem--}}
+                                {{--                                            ipsum dolor sit amet, consectetur adipiscing elit. Amet sollicitudin--}}
+                                {{--                                            tristique ac praesent--}}
+                                {{--                                            ullamcorper nisl eu accumsan. </p>--}}
+                                {{--                                    </div>--}}
+                                {{--                                </div>--}}
+                                {{--                            </div>--}}
+                                {{--                            <div class="owl-item cloned active" style="width: 676px; margin-right: 20px;">--}}
+                                {{--                                <div class="card card-slider">--}}
+                                {{--                                    <div class="card-body">--}}
+                                {{--                                        <div class="d-flex"><img--}}
+                                {{--                                                src="assets/public-site/asset/img/slidercommentimg1.png"--}}
+                                {{--                                                class="rounded-circle">--}}
+                                {{--                                            <div class="d-flex flex-column">--}}
+                                {{--                                                <div class="name">Thomas H.</div>--}}
+                                {{--                                                <p class="text-muted">Student</p>--}}
+                                {{--                                            </div>--}}
+                                {{--                                        </div>--}}
+                                {{--                                        <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit.--}}
+                                {{--                                            Amet sollicitudin tristique ac praesent ullamcorper nisl eu accumsan.Lorem--}}
+                                {{--                                            ipsum dolor sit amet, consectetur adipiscing elit. Amet sollicitudin--}}
+                                {{--                                            tristique ac praesent--}}
+                                {{--                                            ullamcorper nisl eu accumsan. </p>--}}
+                                {{--                                    </div>--}}
+                                {{--                                </div>--}}
+                                {{--                            </div>--}}
+                                {{--                            <div class="owl-item cloned" style="width: 676px; margin-right: 20px;">--}}
+                                {{--                                <div class="card card-slider">--}}
+                                {{--                                    <div class="card-body">--}}
+                                {{--                                        <div class="d-flex">--}}
+                                {{--                                            <div class="rounded-circle review-profile">--}}
+                                {{--                                                <h3>T</h3>--}}
+                                {{--                                            </div>--}}
+                                {{--                                            <div class="d-flex flex-column">--}}
+                                {{--                                                <div class="name">Thomas H.</div>--}}
+                                {{--                                                <p class="text-muted">Student</p>--}}
+                                {{--                                            </div>--}}
+                                {{--                                        </div>--}}
+                                {{--                                        <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit.--}}
+                                {{--                                            Amet sollicitudin tristique ac praesent ullamcorper nisl eu accumsan.Lorem--}}
+                                {{--                                            ipsum dolor sit amet, consectetur adipiscing elit. Amet sollicitudin--}}
+                                {{--                                            tristique ac praesent--}}
+                                {{--                                            ullamcorper nisl eu accumsan. </p>--}}
+                                {{--                                    </div>--}}
+                                {{--                                </div>--}}
+                                {{--                            </div>--}}
+                                {{--                            <div class="owl-item cloned" style="width: 676px; margin-right: 20px;">--}}
+                                {{--                                <div class="card  card-slider">--}}
+                                {{--                                    <div class="card-body">--}}
+                                {{--                                        <div class="d-flex"><img--}}
+                                {{--                                                src="assets/public-site/asset/img/slidercommentimg1.png"--}}
+                                {{--                                                class="rounded-circle">--}}
+                                {{--                                            <div class="d-flex flex-column">--}}
+                                {{--                                                <div class="name">Thomas H.</div>--}}
+                                {{--                                                <p class="text-muted">Student</p>--}}
+                                {{--                                            </div>--}}
+                                {{--                                        </div>--}}
+                                {{--                                        <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit.--}}
+                                {{--                                            Amet sollicitudin tristique ac praesent ullamcorper nisl eu accumsan.Lorem--}}
+                                {{--                                            ipsum dolor sit amet, consectetur adipiscing elit. Amet sollicitudin--}}
+                                {{--                                            tristique ac praesent--}}
+                                {{--                                            ullamcorper nisl eu accumsan. </p>--}}
+                                {{--                                    </div>--}}
+                                {{--                                </div>--}}
+                                {{--                            </div>--}}
+                                {{--                            <div class="owl-item cloned" style="width: 676px; margin-right: 20px;">--}}
+                                {{--                                <div class="card  card-slider">--}}
+                                {{--                                    <div class="card-body">--}}
+                                {{--                                        <div class="d-flex"><img src="assets/public-site/asset/img/IMG1.png"--}}
+                                {{--                                                                 class="rounded-circle">--}}
+                                {{--                                            <div class="d-flex flex-column">--}}
+                                {{--                                                <div class="name">Thomas H.</div>--}}
+                                {{--                                                <p class="text-muted">Student</p>--}}
+                                {{--                                            </div>--}}
+                                {{--                                        </div>--}}
+                                {{--                                        <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit.--}}
+                                {{--                                            Amet sollicitudin tristique ac praesent ullamcorper nisl eu accumsan.Lorem--}}
+                                {{--                                            ipsum dolor sit amet, consectetur adipiscing elit. Amet sollicitudin--}}
+                                {{--                                            tristique ac praesent--}}
+                                {{--                                            ullamcorper nisl eu accumsan. </p>--}}
+                                {{--                                    </div>--}}
+                                {{--                                </div>--}}
+                                {{--                            </div>--}}
                             </div>
                         </div>
+                        <div class="owl-nav">
+                            <button type="button" role="presentation" class="owl-prev"><i class="fa-solid fa-angle-left"
+                                                                                          aria-hidden="true"></i>
+                            </button>
+                            <button type="button" role="presentation" class="owl-next"><i
+                                    class="fa-solid fa-chevron-right"
+                                    aria-hidden="true"></i></button>
+                        </div>
+                        <div class="owl-dots disabled"></div>
                     </div>
-                    <div class="owl-nav">
-                        <button type="button" role="presentation" class="owl-prev"><i class="fa-solid fa-angle-left"
-                                                                                      aria-hidden="true"></i></button>
-                        <button type="button" role="presentation" class="owl-next"><i class="fa-solid fa-chevron-right"
-                                                                                      aria-hidden="true"></i></button>
-                    </div>
-                    <div class="owl-dots disabled"></div>
-                </div>
+                @else
+                    <p class="text-center">No Review Yet</p>
+                @endif
             </div>
         </div>
+        @if(count($gig->all_reviews))
+            <div class="row">
+                <div class="col-md-12">
+                    <center>
+                        <button type="button" class="btn veiwbtn" data-bs-toggle="modal"
+                                data-bs-target="#all-review-modal">View All
+                        </button>
+                    </center>
+                </div>
+            </div>
+        @endif
     </div>
 </div>
 <!-- portfolio section here -->
@@ -1404,16 +1587,16 @@
                         data-fancybox="gallery"
                         data-caption=""
                     >
-                    @if (Str::endsWith($gigData->main_file, ['.mp4', '.avi', '.mov', '.webm']))
-                        <!-- Video Player -->
+                        @if (Str::endsWith($gigData->main_file, ['.mp4', '.avi', '.mov', '.webm']))
+                            <!-- Video Player -->
                             <video autoplay loop muted style="height: 100%; width: 100%;">
                                 <source
                                     src="assets/teacher/listing/data_{{$gig->user_id}}/media/{{$gigData->main_file}}"
                                     type="video/mp4">
                                 Your browser does not support the video tag.
                             </video>
-                    @elseif (Str::endsWith($gigData->main_file, ['.jpg', '.jpeg', '.png', '.gif']))
-                        <!-- Image Display -->
+                        @elseif (Str::endsWith($gigData->main_file, ['.jpg', '.jpeg', '.png', '.gif']))
+                            <!-- Image Display -->
                             <img src="assets/teacher/listing/data_{{$gig->user_id}}/media/{{$gigData->main_file}}"
                                  style="height: 100%;" alt="Uploaded Image">
                         @endif
@@ -1602,15 +1785,17 @@
             @endphp
             <p class="float-start">Total Amount: <span id="total_price">${{$rate}}</span></p>
             <div class="float-end">
-                <a
-                    href="#"
-                    type="button"
-                    class="btn contact-btn"
-                    data-bs-toggle="modal"
-                    id="contact-us"
-                    data-bs-target="#contact-me-modal"
-                >Contact Me</a
-                >
+                @if (Auth::user())
+                    <a
+                        href="#"
+                        type="button"
+                        class="btn contact-btn"
+                        data-bs-toggle="modal"
+                        id="contact-us"
+                        data-bs-target="#contact-me-modal"
+                    >Contact Me</a
+                    >
+                @endif
                 @if (Auth::user())
                     <button onclick="ServicePayemnt();" class="btn booking-btn">Complete Booking</button>
                 @else
@@ -1676,6 +1861,202 @@
         </div>
     </div>
 </div>
+
+
+<!-- All review modal start from here -->
+<!-- Modal -->
+<div class="modal fade" id="all-review-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content review-all-modal">
+
+            <div class="modal-body">
+                <div class="container-review">
+                    <div class="row">
+                        <!-- Scoped styles for the review header -->
+                        <!-- Professional review header (replace your old two blocks with this) -->
+                        <div class="col-12">
+                            <div class="review-header">
+                                {{-- Left badge/image --}}
+                                <div class="side-badge d-none d-sm-flex">
+                                    <img
+                                        src="https://a0.muscache.com/im/pictures/airbnb-platform-assets/AirbnbPlatformAssets-GuestFavorite/original/059619e1-1751-42dd-84e4-50881483571a.png"
+                                        alt="Guest favorite badge" decoding="async" loading="lazy">
+                                    <small class="text-muted">Verified</small>
+                                </div>
+
+                                {{-- Title and subtitle --}}
+                                <div class="title-wrap">
+                                    <h3 class="mb-0">All Reviews</h3>
+
+                                    <div class="d-flex align-items-center justify-content-center mt-2">
+                                        <div class="ribbon">
+                                            <i class="fa-solid fa-award"></i>
+                                            <span>Top 10%</span>
+                                        </div>
+                                    </div>
+
+                                    <p class="subtitle mt-2 mb-0">
+                                        This expert is in the top 10% of profiles based on ratings, review quality, and
+                                        reliability.
+                                    </p>
+                                </div>
+
+                                {{-- Right badge/image --}}
+                                <div class="side-badge d-none d-sm-flex">
+                                    <img
+                                        src="https://a0.muscache.com/im/pictures/airbnb-platform-assets/AirbnbPlatformAssets-GuestFavorite/original/33b80859-e87e-4c86-841c-645c786ba4c1.png"
+                                        alt="Trusted badge" decoding="async" loading="lazy">
+                                    <small class="text-muted">Trusted</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Reviews summary + list (replace your current .profile-reviews block with this) -->
+                        {{-- Scoped styles for professional review layout --}}
+
+                        {{-- Professional reviews block (drop-in replacement) --}}
+                        <div class="profile-reviews">
+
+                            {{-- Summary header --}}
+                            @php
+                                $count = $gig->all_reviews->count();
+                                $avg = $count ? round($gig->all_reviews->avg('rating'), 1) : 0.0;
+                                $avgInt = floor($avg);
+                                $avgHasHalf = ($avg - $avgInt) >= 0.5;
+                            @endphp
+
+                            <div class="review-summary">
+                                <div>
+                                    <h4 class="mb-0">All Reviews</h4>
+                                    <div class="d-flex align-items-center mt-1">
+                                        <div class="me-3">
+                                            <span class="avg">{{ number_format($avg, 1) }}</span>
+                                            <div class="d-inline-block ms-2 rating-stars"
+                                                 title="{{ number_format($avg, 1) }} out of 5">
+                                                {{-- Average stars (visual) --}}
+                                                @for ($i = 1; $i <= 5; $i++)
+                                                    @if ($i <= $avgInt)
+                                                        <i class="fa-solid fa-star"></i>
+                                                    @elseif ($i === $avgInt + 1 && $avgHasHalf)
+                                                        <i class="fa-solid fa-star-half-stroke"></i>
+                                                    @else
+                                                        <i class="fa-regular fa-star"></i>
+                                                    @endif
+                                                @endfor
+                                            </div>
+                                        </div>
+
+                                        <div class="count">
+                                            <small>{{ $count }} {{ Str::plural('review', $count) }}</small>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {{-- Optionally, a CTA or filter can go here --}}
+                                <div class="text-end">
+                                    <button class="btn btn-sm btn-outline-primary" data-bs-toggle="collapse"
+                                            data-bs-target="#reviewsFilter">Filter
+                                    </button>
+                                </div>
+                            </div>
+
+                            @if($count === 0)
+                                <div class="empty-state">
+                                    <p class="mb-0">No reviews yet. Be the first to leave feedback!</p>
+                                </div>
+                            @endif
+
+                            {{-- Reviews list --}}
+                            <div class="row g-3">
+                                @foreach($gig->all_reviews as $review)
+                                    @php
+                                        $user = $review->user;
+                                        $avatar = $user->avatar ?? asset('assets/public-site/asset/img/personal-profile.png');
+                                        $rating = (float) $review->rating;
+                                        $full = (int) floor($rating);
+                                        $half = ($rating - $full) >= 0.5;
+                                    @endphp
+
+                                    <div class="col-12">
+                                        <div class="review-card d-flex gap-3">
+                                            {{-- Avatar --}}
+                                            <div class="flex-shrink-0">
+                                                <img src="{{ $avatar }}" alt="{{ $user->name ?? 'Guest' }}"
+                                                     class="reviewer-avatar">
+                                            </div>
+
+                                            {{-- Content --}}
+                                            <div class="flex-grow-1">
+                                                <div class="d-flex justify-content-between align-items-start mb-1">
+                                                    <div>
+                                                        <p class="reviewer-name mb-0">{{ $user->name ?? 'Guest' }}</p>
+                                                        <p class="reviewer-meta mb-0">{{ $user->country ?? '' }}</p>
+                                                    </div>
+
+                                                    <div class="text-end">
+                                                        {{-- Rating stars per review --}}
+                                                        <div class="rating-stars mb-1">
+                                                            @for($s=1;$s<=5;$s++)
+                                                                @if($s <= $full)
+                                                                    <i class="fa-solid fa-star"></i>
+                                                                @elseif($s === $full + 1 && $half)
+                                                                    <i class="fa-solid fa-star-half-stroke"></i>
+                                                                @else
+                                                                    <i class="fa-regular fa-star"></i>
+                                                                @endif
+                                                            @endfor
+                                                        </div>
+                                                        <small
+                                                            class="text-muted">{{ optional($review->created_at)->diffForHumans() }}</small>
+                                                    </div>
+                                                </div>
+
+                                                {{-- Comment --}}
+                                                <div class="comment-text">
+                                                    <p class="mb-0">{{ $review->cmnt }}</p>
+                                                </div>
+
+                                                {{-- Seller replies (if any) --}}
+                                                @if($review->replies && $review->replies->count())
+                                                    @foreach($review->replies as $reply)
+                                                        <div class="seller-reply mt-3">
+                                                            <div class="d-flex justify-content-between">
+                                                                <div>
+                                                                    <strong>{{ $reply->user->name ?? 'Seller' }}</strong>
+                                                                    <div
+                                                                        class="small text-muted">{{ optional($reply->created_at)->diffForHumans() }}</div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="mt-2">
+                                                                <p class="mb-0">{{ $reply->cmnt }}</p>
+                                                            </div>
+                                                        </div>
+                                                    @endforeach
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+
+                            {{-- Optional: modal footer with close or load more --}}
+                            <div class="mt-3 d-flex justify-content-end">
+                                <button class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Close</button>
+                                {{-- If many reviews, consider toggling to show more via pagination/AJAX --}}
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+
+            </div>
+
+        </div>
+    </div>
+</div>
+<!-- All review modal ended here -->
+
 
 <!-- Send Message  Modal END =========-->
 
