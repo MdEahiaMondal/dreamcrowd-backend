@@ -17,10 +17,20 @@ use App\Http\Controllers\MessagesController;
 use App\Http\Controllers\OrderManagementController;
 use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\NotificationController;
+
 
 // Route::get('/', function () {
 //     return view('welcome');
 // });
+
+Route::middleware('auth')->group(function () {
+    Route::get('/notifications', [NotificationController::class, 'index']);
+    Route::get('/notifications/unread-count', [NotificationController::class, 'unreadCount']);
+    Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead']);
+    Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllAsRead']);
+    Route::delete('/notifications/{id}', [NotificationController::class, 'delete']);
+});
 
 
 Route::controller(AuthController::class)->group(function () {

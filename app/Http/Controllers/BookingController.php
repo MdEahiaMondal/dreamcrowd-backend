@@ -19,10 +19,21 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\DB;
 use Stripe\PaymentIntent;
+use App\Services\NotificationService;
+
 
 class BookingController extends Controller
 {
     // Quick Booking Service Page =========
+
+
+    protected $notificationService;
+
+    public function __construct(NotificationService $notification)
+    {
+        // Laravel automatically inject করবে
+        $this->notificationService = $notification;
+    }
 
 
     public function QuickBooking($id)
@@ -79,7 +90,7 @@ class BookingController extends Controller
                 });
 
 
-// Filter out fully reserved slots
+            // Filter out fully reserved slots
             $availableSlots = [];
             foreach ($bookedSlots as $slot) {
                 if ($gigData->lesson_type === 'One' || $gigData->group_type === 'Private') {
@@ -95,7 +106,7 @@ class BookingController extends Controller
                 $availableSlots[] = $slot;
             }
 
-// Convert available slots to JSON for frontend
+            // Convert available slots to JSON for frontend
             $bookedTimes = json_encode($availableSlots, JSON_UNESCAPED_SLASHES);
 
             // Pass gig availability details to the view
@@ -136,7 +147,7 @@ class BookingController extends Controller
         }
 
 
-    }
+    }   
 
 
     // Get Available Times ===========
@@ -664,6 +675,45 @@ class BookingController extends Controller
                 'final_price' => $finalPrice,
                 'coupon_used' => $couponCode ?? 'None',
             ]);
+
+            $sellerId = $gig->user_id;
+            $buyerId = Auth::id();
+            $buyerName = Auth::user()->name;
+            $serviceName = $gig->title;
+            $orderId = $bookOrder->id;
+            $amount = $finalPrice;
+
+            $adminIds = \App\Models\User::where('role', 2)->pluck('id')->toArray();
+
+            // To Seller
+            $this->notificationService->send(
+                userId: $sellerId,
+                type: 'order',
+                title: 'New Order Received',
+                message: 'You have received a new order from ' . $buyerName . ' for ' . $serviceName,
+                data: ['order_id' => $orderId, 'amount' => $amount, 'buyer_id' => $buyerId],
+                sendEmail: true // Seller gets email + notification
+            );
+
+            // To Buyer (Confirmation)
+            $this->notificationService->send(
+                userId: $buyerId,
+                type: 'order',
+                title: 'Order Placed Successfully',
+                message: 'Your order has been placed successfully. Awaiting seller confirmation.',
+                data: ['order_id' => $orderId, 'seller_id' => $sellerId],
+                sendEmail: true // Buyer gets email + notification
+            );
+
+            // To admin (Notify new order)
+            $this->notificationService->sendToMultipleUsers(
+                userIds: $adminIds,
+                type: 'order',
+                title: 'Order Placed Successfully',
+                message: 'A new order has been placed by ' . $buyerName . ' for ' . $serviceName,
+                data: ['order_id' => $orderId, 'seller_id' => $sellerId],
+                sendEmail: true // Admin gets email + notification
+            );
 
             return response()->json([
                 'success' => true,

@@ -1,3 +1,4 @@
+@include('components.JSAndMetaTag')
 <div class="container-fluid footer-section">
     <div class="container">
         <div class="row">

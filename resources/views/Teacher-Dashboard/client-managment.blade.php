@@ -1820,7 +1820,6 @@
                                                         </td>
                                                         <td>
                                                             <div class="action-sec">
-                                                                awiqugioqu
                                                                 <button class="btn action-btn"
                                                                         onclick="ActionModelShow(this.id)"
                                                                         data-values="{{ json_encode($order) }}"
