@@ -408,50 +408,10 @@
                     </div>
                 </div>
 
-                {{-- ✅ Schedule Section (OneDay or Trial) --}}
+                {{-- ✅ Duration Section --}}
                 <div class="col-md-12">
                     <div class="row payment-type mx-1 my-3">
                         <div class="col-md-12">
-                            @if ($gigData->recurring_type == 'OneDay' || $gigData->recurring_type == 'Trial')
-                                <h3 class="online-Class-Select-Heading" style="margin-top: 24px">
-                                    @if ($gigData->recurring_type == 'Trial')
-                                        Trial Class Schedule
-                                    @else
-                                        Class Schedule
-                                    @endif
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"
-                                         fill="none">
-                                        <path
-                                            d="M8 1.5C6.71442 1.5 5.45772 1.88122 4.3888 2.59545C3.31988 3.30968 2.48676 4.32484 1.99479 5.51256C1.50282 6.70028 1.37409 8.00721 1.6249 9.26809C1.8757 10.529 2.49477 11.6872 3.40381 12.5962C4.31285 13.5052 5.47104 14.1243 6.73192 14.3751C7.99279 14.6259 9.29973 14.4972 10.4874 14.0052C11.6752 13.5132 12.6903 12.6801 13.4046 11.6112C14.1188 10.5423 14.5 9.28558 14.5 8C14.4982 6.27665 13.8128 4.62441 12.5942 3.40582C11.3756 2.18722 9.72335 1.50182 8 1.5ZM8 13.5C6.91221 13.5 5.84884 13.1774 4.94437 12.5731C4.0399 11.9687 3.33495 11.1098 2.91867 10.1048C2.50238 9.09977 2.39347 7.9939 2.60568 6.927C2.8179 5.86011 3.34173 4.8801 4.11092 4.11091C4.8801 3.34172 5.86011 2.8179 6.92701 2.60568C7.9939 2.39346 9.09977 2.50238 10.1048 2.91866C11.1098 3.33494 11.9687 4.03989 12.5731 4.94436C13.1774 5.84883 13.5 6.9122 13.5 8C13.4983 9.45818 12.9184 10.8562 11.8873 11.8873C10.8562 12.9184 9.45819 13.4983 8 13.5ZM9 11C9 11.1326 8.94732 11.2598 8.85356 11.3536C8.75979 11.4473 8.63261 11.5 8.5 11.5C8.23479 11.5 7.98043 11.3946 7.7929 11.2071C7.60536 11.0196 7.5 10.7652 7.5 10.5V8C7.36739 8 7.24022 7.94732 7.14645 7.85355C7.05268 7.75979 7 7.63261 7 7.5C7 7.36739 7.05268 7.24021 7.14645 7.14645C7.24022 7.05268 7.36739 7 7.5 7C7.76522 7 8.01957 7.10536 8.20711 7.29289C8.39465 7.48043 8.5 7.73478 8.5 8V10.5C8.63261 10.5 8.75979 10.5527 8.85356 10.6464C8.94732 10.7402 9 10.8674 9 11ZM7 5.25C7 5.10166 7.04399 4.95666 7.1264 4.83332C7.20881 4.70999 7.32595 4.61386 7.46299 4.55709C7.60003 4.50032 7.75083 4.48547 7.89632 4.51441C8.04181 4.54335 8.17544 4.61478 8.28033 4.71967C8.38522 4.82456 8.45665 4.9582 8.48559 5.10368C8.51453 5.24917 8.49968 5.39997 8.44291 5.53701C8.38615 5.67406 8.29002 5.79119 8.16668 5.8736C8.04334 5.95601 7.89834 6 7.75 6C7.55109 6 7.36032 5.92098 7.21967 5.78033C7.07902 5.63968 7 5.44891 7 5.25Z"
-                                            fill="#0072B1"/>
-                                    </svg>
-                                </h3>
-
-                                <div class="row">
-                                    <div class="col-md-3 col-sm-12">
-                                        <h3 class="online-Class-Select-Heading" style="margin-top: 16px">
-                                            Start Date
-                                        </h3>
-                                        <input class="payment-input" placeholder="Select Date" type="date"
-                                               name="start_date" id="start_date"/>
-                                    </div>
-                                    <div class="col-md-3 col-sm-12">
-                                        <h3 class="online-Class-Select-Heading" style="margin-top: 16px">
-                                            Start Time
-                                        </h3>
-                                        <input class="payment-input timePickerFlatpickr" placeholder="00:00" type="time"
-                                               name="start_time" id="start_time"/>
-                                    </div>
-                                    <div class="col-md-3 col-sm-12">
-                                        <h3 class="online-Class-Select-Heading" style="margin-top: 16px">
-                                            End Time
-                                        </h3>
-                                        <input class="payment-input timePickerFlatpickr" placeholder="00:00" type="time"
-                                               name="end_time" id="end_time"/>
-                                    </div>
-                                </div>
-                            @endif
-
                             {{-- ✅ Duration Section --}}
                             <div class="row mt-3">
                                 <div class="col-md-12 col-sm-12">
@@ -503,7 +463,6 @@
                                                 @endfor
                                             </select>
                                             <span>Hr</span>
-
                                             <select name="durationM" id="durationM" class="fa">
                                                 <option value="00" class="fa">00</option>
                                                 <option value="30" class="fa">30</option>
@@ -531,13 +490,13 @@
                                 </div>
                             </div>
 
-                            {{-- ✅ Repeat On Section (Recurring or Inperson) --}}
-                            @if ($gigData->recurring_type == 'Recurring' || $gig->service_type == 'Inperson')
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <h3 class="online-Class-Select-Heading" style="margin-top: 24px">
-                                            Repeat on :
-                                        </h3>
+
+                            {{-- ✅ Repeat On Section (All Class Types) --}}
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <h3 class="online-Class-Select-Heading" style="margin-top: 24px">
+                                        Repeat on :
+                                    </h3>
                                         <div class="repeats-btn-section">
                                             <div>
                                                 <button type="button" class="repeat-btn" onclick="RepeatOn(this)"
@@ -584,7 +543,6 @@
                                         </div>
                                     </div>
                                 </div>
-                            @endif
 
                         </div>
                     </div>
@@ -713,45 +671,44 @@
                 }
             }
 
-            // Trial: Must have schedule
-            const startDateElement = document.getElementById('start_date');
-            const startTimeElement = document.getElementById('start_time');
-            const endTimeElement = document.getElementById('end_time');
+            // Trial: Must have at least one day selected in Repeat On section
+            const activeDayButtons = document.querySelectorAll('.repeat-btn.active');
 
-            if (!startDateElement || !startDateElement.value) {
-                showError("Start Date Required for Trial Class!");
-                if (startDateElement) startDateElement.focus();
+            if (activeDayButtons.length === 0) {
+                showError("Please select at least one day for your Trial Class!");
                 return false;
             }
 
-            if (!startTimeElement || !startTimeElement.value) {
-                showError("Start Time Required for Trial Class!");
-                if (startTimeElement) startTimeElement.focus();
-                return false;
-            }
+            // Validate that all selected days have start and end times
+            const startRepeatInputs = document.querySelectorAll('input[name="start_repeat[]"]');
+            const endRepeatInputs = document.querySelectorAll('input[name="end_repeat[]"]');
 
-            if (!endTimeElement || !endTimeElement.value) {
-                showError("End Time Required for Trial Class!");
-                if (endTimeElement) endTimeElement.focus();
-                return false;
-            }
-
-            // Validate times
-            if (startTimeElement.value && endTimeElement.value) {
-                let startTimeMoment = moment(startTimeElement.value, "HH:mm");
-                let endTimeMoment = moment(endTimeElement.value, "HH:mm");
-
-                if (endTimeMoment.isSameOrBefore(startTimeMoment)) {
-                    alert('End Time must be greater than Start Time.');
-                    endTimeElement.value = "";
-                    endTimeElement.focus();
+            for (let i = 0; i < startRepeatInputs.length; i++) {
+                if (!startRepeatInputs[i].value) {
+                    showError("Start Time Required for all selected days!");
+                    startRepeatInputs[i].focus();
                     return false;
                 }
 
-                if (endTimeElement.value === "00:00") {
-                    alert('End Time cannot be 00:00.');
-                    endTimeElement.value = "";
-                    endTimeElement.focus();
+                if (!endRepeatInputs[i].value) {
+                    showError("End Time Required for all selected days!");
+                    endRepeatInputs[i].focus();
+                    return false;
+                }
+
+                // Validate that end time is after start time
+                let startTimeMoment = moment(startRepeatInputs[i].value, "HH:mm");
+                let endTimeMoment = moment(endRepeatInputs[i].value, "HH:mm");
+
+                if (endTimeMoment.isSameOrBefore(startTimeMoment)) {
+                    showError('End Time must be greater than Start Time for all selected days!');
+                    endRepeatInputs[i].focus();
+                    return false;
+                }
+
+                if (endRepeatInputs[i].value === "00:00") {
+                    showError('End Time cannot be 00:00!');
+                    endRepeatInputs[i].focus();
                     return false;
                 }
             }
@@ -812,59 +769,62 @@
                     }
                 }
 
-                // OneDay Class Validation
+                // OneDay Class Validation - Check Repeat On section
                 if (recurringType === 'OneDay') {
-                    const startTimeInput = document.getElementById('start_time');
-                    const endTimeInput = document.getElementById('end_time');
-                    const start_date = document.getElementById('start_date');
-                    const start_time = startTimeInput ? startTimeInput.value : '';
-                    const end_time = endTimeInput ? endTimeInput.value : '';
+                    const activeDayButtons = document.querySelectorAll('.repeat-btn.active');
 
-                    if (!start_date || !start_date.value) {
-                        showError("Start Date Required!");
-                        return false;
-                    }
-                    if (!start_time) {
-                        showError("Start Time Required!");
-                        if (startTimeInput) startTimeInput.focus();
-                        return false;
-                    }
-                    if (!end_time) {
-                        showError("End Time Required!");
-                        if (endTimeInput) endTimeInput.focus();
+                    if (activeDayButtons.length === 0) {
+                        showError("Please select at least one day for your class!");
                         return false;
                     }
 
-                    if (start_time && end_time) {
+                    // Validate that all selected days have start and end times
+                    const startRepeatInputs = document.querySelectorAll('input[name="start_repeat[]"]');
+                    const endRepeatInputs = document.querySelectorAll('input[name="end_repeat[]"]');
+
+                    for (let i = 0; i < startRepeatInputs.length; i++) {
+                        if (!startRepeatInputs[i].value) {
+                            showError("Start Time Required for all selected days!");
+                            startRepeatInputs[i].focus();
+                            return false;
+                        }
+
+                        if (!endRepeatInputs[i].value) {
+                            showError("End Time Required for all selected days!");
+                            endRepeatInputs[i].focus();
+                            return false;
+                        }
+
+                        const start_time = startRepeatInputs[i].value;
+                        const end_time = endRepeatInputs[i].value;
+
+                        // Validate that end time is after start time
                         let startTimeMoment = moment(start_time, "HH:mm");
                         let endTimeMoment = moment(end_time, "HH:mm");
 
                         if (endTimeMoment.isSameOrBefore(startTimeMoment)) {
-                            alert('End Time must be greater than Start Time.');
-                            endTimeInput.value = "";
-                            endTimeInput.focus();
+                            showError('End Time must be greater than Start Time for all selected days!');
+                            endRepeatInputs[i].focus();
                             return false;
                         }
 
                         if (end_time === "00:00") {
-                            alert('End Time cannot be 00:00.');
-                            endTimeInput.value = "";
-                            endTimeInput.focus();
+                            showError('End Time cannot be 00:00!');
+                            endRepeatInputs[i].focus();
                             return false;
                         }
-                    }
 
-                    if (duration != '') {
-                        let duration_part = duration.split(':');
-                        const totalDurationMinutes = (parseInt(duration_part[0]) * 60) + parseInt(duration_part[1]);
+                        // Validate duration fits within time slot
+                        if (duration != '') {
+                            let duration_part = duration.split(':');
+                            const totalDurationMinutes = (parseInt(duration_part[0]) * 60) + parseInt(duration_part[1]);
 
-                        const startTimeMoment = moment(start_time, "HH:mm");
-                        const endTimeMoment = moment(end_time, "HH:mm");
-                        const availabilityMinutes = moment.duration(endTimeMoment.diff(startTimeMoment)).asMinutes();
+                            const availabilityMinutes = moment.duration(endTimeMoment.diff(startTimeMoment)).asMinutes();
 
-                        if (availabilityMinutes < totalDurationMinutes) {
-                            showError(`Availability time must be at least ${duration_part[0]} hours and ${duration_part[1]} minutes.`);
-                            return false;
+                            if (availabilityMinutes < totalDurationMinutes) {
+                                showError(`Availability time must be at least ${duration_part[0]} hours and ${duration_part[1]} minutes for all selected days.`);
+                                return false;
+                            }
                         }
                     }
                 } else {

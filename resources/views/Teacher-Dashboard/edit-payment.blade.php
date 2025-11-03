@@ -38,12 +38,12 @@
     />
        <!-- jQuery -->
        <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
-        
+
 
        {{-- =======Toastr CDN ======== --}}
-       <link rel="stylesheet" type="text/css" 
+       <link rel="stylesheet" type="text/css"
        href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
-   
+
        <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
        {{-- =======Toastr CDN ======== --}}
     <!-- Fontawesome CDN -->
@@ -72,11 +72,22 @@
       background-color: #0072b1;
       color: white;
     }
+
+    .trial-alert {
+      padding: 15px;
+      margin: 20px 0;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+
+    .trial-alert i {
+      margin-right: 8px;
+    }
   </style>
 
   <body>
 
-    
+
   @if (Session::has('error'))
   <script>
 
@@ -89,7 +100,7 @@
           }
                   toastr.error("{{ session('error') }}");
 
-                  
+
   </script>
   @endif
   @if (Session::has('success'))
@@ -104,10 +115,10 @@
           }
                   toastr.success("{{ session('success') }}");
 
-                  
+
   </script>
   @endif
-  
+
    {{-- ===========Teacher Sidebar Start==================== --}}
   <x-teacher-sidebar/>
   {{-- ===========Teacher Sidebar End==================== --}}
@@ -141,7 +152,7 @@
           </div>
 
           <form id="myForm" action="/class-gig-payment-update" method="POST" enctype="multipart/form-data"> @csrf
-            
+
           <div class="col-md-12">
             <div class="row payment-type mx-1 my-3">
               <div class="col-md-12">
@@ -151,20 +162,39 @@
                   <select name="payment_type" id=" sample " class="fa">
                     @if ($gigData->payment_type == 'OneOff')
                     <option value="OneOff" class="fa" selected>   One-Of Payment </option>
-                        
+
                     @else
                     <option value="Subscription" class="fa" selected>Subscription</option>
-                        
+
                     @endif
-                    
+
                   </select>
                 </div>
               </div>
 
+              {{-- ✅ Trial Class Alert Messages --}}
+              @if ($gigData->recurring_type == 'Trial')
+                  @if ($gigData->trial_type == 'Free')
+                      <div class="col-md-12">
+                          <div class="alert alert-success trial-alert">
+                              <i class="fas fa-gift"></i>
+                              <strong>Free Trial Class:</strong> This is a FREE trial session (30 minutes). No
+                              payment required from students.
+                          </div>
+                      </div>
+                  @else
+                      <div class="col-md-12">
+                          <div class="alert alert-info trial-alert">
+                              <i class="fas fa-dollar-sign"></i>
+                              <strong>Paid Trial Class:</strong> Set your pricing and duration below.
+                          </div>
+                      </div>
+                  @endif
+              @endif
 
-
+              {{-- ✅ Public Group Pricing (Hide for Free Trial) --}}
               @if (in_array($gigData->group_type, ['Public', 'Both']))
-                  
+                  @if ($gigData->recurring_type != 'Trial' || $gigData->trial_type != 'Free')
               <div class="row">
                 <h3
                   class="online-Class-Select-Heading"
@@ -221,10 +251,18 @@
                   <input class="payment-input" value="{{$gigPayment->public_earning}}" name="public_earning" id="public_estimated_earning" placeholder="$50" readonly type="text" />
                 </div>
               </div>
-
+                  @else
+                      {{-- Free Trial: Hidden inputs with $0 --}}
+                      <input type="hidden" name="public_rate" value="0">
+                      <input type="hidden" name="public_group_size" value="10">
+                      <input type="hidden" name="public_discount" value="0">
+                      <input type="hidden" name="public_earning" value="0">
+                  @endif
               @endif
+
+              {{-- ✅ Private Group Pricing (Hide for Free Trial) --}}
               @if(in_array($gigData->group_type, ['Private', 'Both']))
-                  
+                  @if ($gigData->recurring_type != 'Trial' || $gigData->trial_type != 'Free')
               <div class="row">
                 <h3
                   class="online-Class-Select-Heading"
@@ -281,8 +319,13 @@
                   <input class="payment-input" value="{{$gigPayment->private_earning}}" name="private_earning" id="private_estimated_earning" placeholder="$50" readonly type="text" />
                 </div>
               </div>
-              
-                  
+                  @else
+                      {{-- Free Trial: Hidden inputs with $0 --}}
+                      <input type="hidden" name="private_rate" value="0">
+                      <input type="hidden" name="private_group_size" value="10">
+                      <input type="hidden" name="private_discount" value="0">
+                      <input type="hidden" name="private_earning" value="0">
+                  @endif
               @endif
 
 
@@ -320,13 +363,13 @@
                   <span class="Yes">Yes</span>
                   <input class="radio-btn" name="minor_attend"  onclick="MinorAttend(this.id)" id="minor_attend_0"  value="0" type="radio" checked />
                   <span class="Yes">No</span>
-                      
+
                   @endif
-              
+
                 </div>
 
                 @if ($gigPayment->minor_attend == 1)
-               
+
                 <h3  class="online-Class-Select-Heading limit_show"
                 style="margin-top: 24px; margin-bottom: 16px"   >
                 Can minors attend your class?
@@ -345,14 +388,14 @@
                 <option value="{{$gigPayment->age_limit}}" class=" fa " selected>{{$gigPayment->age_limit}}</option>
                 @for ($i = 1; $i < 18; $i++)
                 <option value="{{$i}}" class=" fa ">{{$i}}</option>
-                    
-                @endfor 
-              
+
+                @endfor
+
             </select>
 
 
 
-             
+
             <h3  class="online-Class-Select-Heading limit_show"
             style="margin-top: 24px; margin-bottom: 16px"   >
             How much childs attend class?
@@ -368,12 +411,12 @@
             </svg>
           </h3>
           <input type="number" class="radio-input limit_show" name="childs" id="childs" value="{{$gigPayment->childs}}">
-           
+
 
                 @endif
 
-               
-                
+
+
               </div>
             </div>
           </div>
@@ -393,20 +436,20 @@
               />
 
               <input type="hidden" name="positive_term" id="positive_term" value="{{$gigPayment->positive_term}}">
-             
+
               <div id="positive_term_div" style="display: flex;gap: 10px;">
                @if ($gigPayment->positive_term)
                @php
                $positive_term = explode(',',$gigPayment->positive_term);
            @endphp
-               
+
                @foreach ($positive_term as $item)
                <span class="slice mt-2" style="background-color: rgb(0, 114, 177); color: rgb(255, 255, 255); padding: 0px 10px; border-radius: 4px; display: flex; align-items: center; gap: 10px; cursor: default; font-size: 16px; width: max-content;">{{$item}}<span class="remove" style="color: rgb(255, 255, 255); padding: 5px; cursor: pointer;">x</span></span>
                @endforeach
                @endif
-               
+
               </div>
-                
+
               </div>
             </div>
           </div>
@@ -420,16 +463,16 @@
                 <h3 class="online-Class-Select-Heading">
                   Services FAQ'S (Optional)
                 </h3>
-               
+
                 <button id="add_new_btn"  class="teacher-next-btn float-end mb-3" >Add</button>
 
 
                 <div class="row mt-3 mb-3" id="add_faqs_main_div" style="display: none">
-                 
+
                     <div class="col-12 form-sec">
                       <label for="inputAddress2" class="form-label online-Class-Select-Heading"
                         >Question</label
-                      > 
+                      >
                       <input type="hidden" value="{{$gig->id}}" name="faqs_gig_id" id="faqs_gig_id">
                       <input
                         type="text"
@@ -449,29 +492,29 @@
                     <div class="api-buttons">
                       <div class="row">
                         <div class="col-md-12">
-                        
+
                           <button type="button" id="add_faqs_btn" class="btn float-end update-btn teacher-next-btn">
                             Add New
                           </button>
                         </div>
                       </div>
                     </div>
-                    
+
                 </div>
 
-               
+
 
 
                 <div id="all_faqs" class="mb-3">
-                  
+
                 </div>
 
                 <div class="row mt-3 mb-3" id="edit_faqs_main_div" style="display: none">
-                 
+
                   <div class="col-12 form-sec">
                     <label for="inputAddress2" class="form-label online-Class-Select-Heading"
                       >Question</label
-                    > 
+                    >
                     <input type="hidden" name="faqs_id" id="faqs_id" >
                     <input
                       type="text"
@@ -491,19 +534,19 @@
                   <div class="api-buttons">
                     <div class="row">
                       <div class="col-md-12">
-                      
+
                         <button type="button" id="edit_faqs_btn" class="btn float-end update-btn teacher-next-btn">
                           Update
                         </button>
                       </div>
                     </div>
                   </div>
-                  
+
               </div>
 
-               
+
               </div>
-                
+
               </div>
             </div>
 
@@ -516,88 +559,6 @@
           <div class="col-md-12">
             <div class="row payment-type mx-1 my-3">
               <div class="col-md-12">
-                @if ($gigData->recurring_type == 'OneDay')
-                  <h3
-                    class="online-Class-Select-Heading"
-                    style="margin-top: 24px"
-                  >
-                    How much would you charge per class and per person?
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="16"
-                      height="16"
-                      viewBox="0 0 16 16"
-                      fill="none"
-                    >
-                      <path
-                        d="M8 1.5C6.71442 1.5 5.45772 1.88122 4.3888 2.59545C3.31988 3.30968 2.48676 4.32484 1.99479 5.51256C1.50282 6.70028 1.37409 8.00721 1.6249 9.26809C1.8757 10.529 2.49477 11.6872 3.40381 12.5962C4.31285 13.5052 5.47104 14.1243 6.73192 14.3751C7.99279 14.6259 9.29973 14.4972 10.4874 14.0052C11.6752 13.5132 12.6903 12.6801 13.4046 11.6112C14.1188 10.5423 14.5 9.28558 14.5 8C14.4982 6.27665 13.8128 4.62441 12.5942 3.40582C11.3756 2.18722 9.72335 1.50182 8 1.5ZM8 13.5C6.91221 13.5 5.84884 13.1774 4.94437 12.5731C4.0399 11.9687 3.33495 11.1098 2.91867 10.1048C2.50238 9.09977 2.39347 7.9939 2.60568 6.927C2.8179 5.86011 3.34173 4.8801 4.11092 4.11091C4.8801 3.34172 5.86011 2.8179 6.92701 2.60568C7.9939 2.39346 9.09977 2.50238 10.1048 2.91866C11.1098 3.33494 11.9687 4.03989 12.5731 4.94436C13.1774 5.84883 13.5 6.9122 13.5 8C13.4983 9.45818 12.9184 10.8562 11.8873 11.8873C10.8562 12.9184 9.45819 13.4983 8 13.5ZM9 11C9 11.1326 8.94732 11.2598 8.85356 11.3536C8.75979 11.4473 8.63261 11.5 8.5 11.5C8.23479 11.5 7.98043 11.3946 7.7929 11.2071C7.60536 11.0196 7.5 10.7652 7.5 10.5V8C7.36739 8 7.24022 7.94732 7.14645 7.85355C7.05268 7.75979 7 7.63261 7 7.5C7 7.36739 7.05268 7.24021 7.14645 7.14645C7.24022 7.05268 7.36739 7 7.5 7C7.76522 7 8.01957 7.10536 8.20711 7.29289C8.39465 7.48043 8.5 7.73478 8.5 8V10.5C8.63261 10.5 8.75979 10.5527 8.85356 10.6464C8.94732 10.7402 9 10.8674 9 11ZM7 5.25C7 5.10166 7.04399 4.95666 7.1264 4.83332C7.20881 4.70999 7.32595 4.61386 7.46299 4.55709C7.60003 4.50032 7.75083 4.48547 7.89632 4.51441C8.04181 4.54335 8.17544 4.61478 8.28033 4.71967C8.38522 4.82456 8.45665 4.9582 8.48559 5.10368C8.51453 5.24917 8.49968 5.39997 8.44291 5.53701C8.38615 5.67406 8.29002 5.79119 8.16668 5.8736C8.04334 5.95601 7.89834 6 7.75 6C7.55109 6 7.36032 5.92098 7.21967 5.78033C7.07902 5.63968 7 5.44891 7 5.25Z"
-                        fill="#0072B1"
-                      />
-                    </svg>
-                  </h3>
-                  <div class="row">
-                    <div class="col-md-3 col-sm-12">
-                      
-                      <h3
-                        class="online-Class-Select-Heading"
-                        style="margin-top: 16px"
-                      >
-                        Start Date
-                      </h3>
-                      <input
-                        class="payment-input"
-                        placeholder="00:00" value="{{$gigPayment->start_date}}"
-                        type="date" name="start_date" id="start_date"
-                      />
-                    </div>
-                    <div class="col-md-3 col-sm-12">
-                      <h3
-                        class="online-Class-Select-Heading"
-                        style="margin-top: 16px"
-                      >
-                        Start Time 
-                      </h3>
-                      <input
-                        class="payment-input timePickerFlatpickr"
-                        placeholder="00:00"   value="{{$gigPayment->start_time}}"
-                        type="text"   name="start_time" id="start_time"
-                      />
-                    </div>
-                    <div class="col-md-3 col-sm-12">
-                      <h3
-                        class="online-Class-Select-Heading"
-                        style="margin-top: 16px"
-                      >
-                        End Time
-                      </h3>
-                      <input
-                        class="payment-input timePickerFlatpickr"
-                        placeholder="00:00"  value="{{$gigPayment->end_time}}"
-                        type="text"  name="end_time" id="end_time"
-                      />
-                    </div>
-                 
-                   
-                  </div>
-                  @endif
-                {{-- <div class="row">
-                  <div class="col-md-3 col-sm-12">
-                    <h3
-                      class="online-Class-Select-Heading"
-                      style="margin-top: 16px"
-                    >
-                      Repeat on :
-                    </h3>
-                    <input
-                      class="payment-input"
-                      placeholder="Repeat after weeks"
-                      type="text"
-                    />
-                  </div>
-                  <div class="col-md-3 col-sm-12"></div>
-                  <div class="col-md-3 col-sm-12"></div>
-                  <div class="col-md-3 col-sm-12"></div>
-                </div> --}}
 
 
                 <div class="row mt-3">
@@ -608,11 +569,11 @@
                     >
                     Duration
                   </h3>
-  
-  
-               
-              @if ($gigData->class_type == 'Video' )
 
+
+
+              @if ($gigData->class_type == 'Video' )
+                  {{-- Video Course Duration --}}
               <div class="input-group mb-3" style="display: flex; flex-wrap: nowrap;">
                 <span class="input-group-text" id="basic-addon1">Hr:Mi</span>
                 <input
@@ -622,11 +583,58 @@
                 placeholder="HH:MM"  value="{{$gigPayment->duration}}"
                 class="payment-input fa"
                 maxlength="5"
-                aria-describedby="basic-addon1" 
+                aria-describedby="basic-addon1"
               />
               </div>
 
-              @else 
+              @elseif ($gigData->recurring_type == 'Trial')
+                  {{-- ✅ Trial Class Duration Logic --}}
+                  @if ($gigData->trial_type == 'Free')
+                      {{-- Free Trial: 30 minutes FIXED --}}
+                      <input type="hidden" name="durationH" value="00">
+                      <input type="hidden" name="durationM" value="30">
+                      <div class="alert alert-info trial-alert">
+                          <i class="fas fa-info-circle"></i>
+                          <strong>Free Trial:</strong> Duration is fixed at 30 minutes
+                      </div>
+                      <select name="durationH_display" id="durationH" class="fa" disabled style="background-color: #f0f0f0;">
+                          <option value="00" selected>00</option>
+                      </select>
+                      <span>Hr</span>
+                      <select name="durationM_display" id="durationM" class="fa" disabled style="background-color: #f0f0f0;">
+                          <option value="30" selected>30</option>
+                      </select>
+                      <span>Mi</span>
+
+                  @else
+                      {{-- Paid Trial: Flexible Duration --}}
+                      <div class="alert alert-success trial-alert">
+                          <i class="fas fa-check-circle"></i>
+                          <strong>Paid Trial:</strong> You can set custom duration
+                      </div>
+                      @php
+                          $duration = explode(':',$gigPayment->duration);
+                      @endphp
+                      <select name="durationH" id="durationH" class="fa">
+                          <option value="{{$duration[0]}}" class="fa" selected>{{$duration[0]}}</option>
+                          <option value="00" class="fa">00</option>
+                          @for ($i = 1; $i <= 10; $i++)
+                              <option value="{{ str_pad($i, 2, '0', STR_PAD_LEFT) }}" class="fa">{{ str_pad($i, 2, '0', STR_PAD_LEFT) }}</option>
+                          @endfor
+                      </select>
+                      <span>Hr</span>
+                      <select name="durationM" id="durationM" class="fa">
+                          @if (isset($duration[1]))
+                              <option value="{{$duration[1]}}" class="fa" selected>{{$duration[1]}}</option>
+                          @endif
+                          <option value="00" class="fa">00</option>
+                          <option value="30" class="fa">30</option>
+                      </select>
+                      <span>Mi</span>
+                  @endif
+
+              @else
+                  {{-- Normal Live Class Duration --}}
               @php
                   $duration = explode(':',$gigPayment->duration);
               @endphp
@@ -636,30 +644,30 @@
             <option  value="00" class="fa">00</option>
             @for ($i = 1; $i <= 10; $i++)
             <option  value="{{$i}}" class="fa">{{$i}}</option>
-                
-            @endfor 
+
+            @endfor
           </select>
           <span>Hr</span>
-       
-     
+
+
           <select name="durationM" id="durationM" class="fa">
             @if ($duration[1])
             <option  value="{{$duration[1]}}" class="fa">{{$duration[1]}}</option>
                @endif
             <option  value="00" class="fa">00</option>
             <option  value="30" class="fa">30</option>
-             
+
           </select>
           <span>Mi</span>
 
 
               @endif
-    
+
                 </div>
               </div>
 
 
-              @if ($gigData->recurring_type == 'Recurring' || $gig->service_type == 'Inperson')
+              @if ($gigData->recurring_type == 'Recurring' || $gigData->recurring_type == 'Trial' || $gig->service_type == 'Inperson')
               <div class="row">
                 <div class="col-md-12">
                   <h3
@@ -679,84 +687,84 @@
                       7 => 'Sunday'
                   ];
               @endphp
-              
-              
+
+
               <div class="repeats-btn-section">
 
-                 
+
 
                   @foreach ($daysOfWeek as $dayIndex => $dayName)
-              
+
                       @php
                           // Check if the current day is in the database results
                           $dayData = $gigDays->firstWhere('day', $dayName);
                           $isActive = $dayData ? 'active' : ''; // Add active class if the day is found in the database
                       @endphp
-              
+
                       <div>
-                          <button type="button" class="repeat-btn {{ $isActive }}"  
-                                  onclick="RepeatOn(this)" 
+                          <button type="button" class="repeat-btn {{ $isActive }}"
+                                  onclick="RepeatOn(this)"
                                   data-day='{{ $dayIndex }}'>
                               {{ $dayName }}
                           </button>
-              
+
                           <!-- Only show the inputs if there is data for this day -->
                           <div id="time_div_{{ $dayIndex }}" class="time_div">
                                 @if ($dayData)
-                                  <input type="hidden" name="day_repeat[]" value="{{ $dayData->day }}" class="payment-input mt-1">   
-                                  
+                                  <input type="hidden" name="day_repeat[]" value="{{ $dayData->day }}" class="payment-input mt-1">
+
                                   <div class="repeat-btn" style="color:#0072b1;font-weight:500;background:none;">
                                       Start Time:
-                                      <input type="text" value="{{ $dayData->start_time }}" 
-                                             style="width:120px;" 
-                                             onchange="validateDutyAndLectureTimes(this.id)" 
-                                             id="start_repeat_{{ $dayIndex }}" 
-                                             name="start_repeat[]" 
+                                      <input type="text" value="{{ $dayData->start_time }}"
+                                             style="width:120px;"
+                                             onchange="validateDutyAndLectureTimes(this.id)"
+                                             id="start_repeat_{{ $dayIndex }}"
+                                             name="start_repeat[]"
                                              class="payment-input mt-1 timePickerFlatpickr">
                                   </div>
-                                  
+
                                   <div class="repeat-btn" style="color:#0072b1;font-weight:500;background:none;">
                                       End Time:
-                                      <input type="text" value="{{ $dayData->end_time }}" 
-                                             style="width:120px;" 
-                                             onchange="validateDutyAndLectureTimes(this.id)" 
-                                             id="end_repeat_{{ $dayIndex }}" 
-                                             name="end_repeat[]" 
+                                      <input type="text" value="{{ $dayData->end_time }}"
+                                             style="width:120px;"
+                                             onchange="validateDutyAndLectureTimes(this.id)"
+                                             id="end_repeat_{{ $dayIndex }}"
+                                             name="end_repeat[]"
                                              class="payment-input mt-1 timePickerFlatpickr">
                                   </div>
                                   @endif
                               </div>
                       </div>
-              
+
                   @endforeach
               </div>
-              
+
                 {{-- <div >
                   <button  type="button" class="repeat-btn" onclick="RepeatOn(this)"  data-day='2'>Tuesday</button>
-                  <div id="time_div_2" class="time_div" ></div> 
-                </div> 
+                  <div id="time_div_2" class="time_div" ></div>
+                </div>
                 <div >
                   <button  type="button" class="repeat-btn" onclick="RepeatOn(this)"  data-day='3'>Wednesday</button>
-                  <div id="time_div_3" class="time_div" ></div> 
-                </div> 
+                  <div id="time_div_3" class="time_div" ></div>
+                </div>
                 <div >
                   <button  type="button" class="repeat-btn" onclick="RepeatOn(this)"  data-day='4'>Thursday</button>
-                  <div id="time_div_4" class="time_div" ></div> 
-                </div> 
+                  <div id="time_div_4" class="time_div" ></div>
+                </div>
                 <div >
                   <button  type="button" class="repeat-btn" onclick="RepeatOn(this)"  data-day='5'>Friday</button>
-                  <div id="time_div_5" class="time_div" ></div> 
-                </div> 
+                  <div id="time_div_5" class="time_div" ></div>
+                </div>
                 <div >
                   <button  type="button" class="repeat-btn" onclick="RepeatOn(this)"  data-day='6'>Saturday</button>
-                  <div id="time_div_6" class="time_div" ></div> 
-                </div> 
+                  <div id="time_div_6" class="time_div" ></div>
+                </div>
                 <div >
                   <button  type="button" class="repeat-btn" onclick="RepeatOn(this)" data-day='7' >Sunday</button>
-                  <div id="time_div_7" class="time_div" ></div> 
-                </div>   
+                  <div id="time_div_7" class="time_div" ></div>
+                </div>
                </div> --}}
-                  
+
                 </div>
                 @endif
                     </div>
@@ -766,9 +774,9 @@
               <div class="col-md-12">
                 <div class="Teacher-next-back-Section" style="margin: 16px 0px">
                   <a href="/teacher-service-edit/{{$gig_id}}/edit" class="teacher-back-btn">Back</a>
-                  
+
                   <button type="button" onclick="SubmitForm()" class="teacher-next-btn" >Update</button>
-                  
+
                 </div>
               </div>
             </form>
@@ -785,9 +793,9 @@
       src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
       integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
       crossorigin="anonymous"
-    ></script> 
+    ></script>
 
-    
+
 
     {{-- Positive Search Tearm Script Start --}}
     <script>
@@ -835,7 +843,7 @@ $(document).ready(function () {
     }
   });
 });
-           
+
 flatpickr(".timePickerFlatpickr", {
     enableTime: true,
     noCalendar: true,
@@ -889,15 +897,15 @@ flatpickr(".timePickerFlatpickr", {
       span.textContent = slice;
       span.className = 'slice mt-2';
       span.style.cssText = `
-        background-color: #0072b1; 
-        color: #fff; 
-        padding: 0px 10px; 
-        border-radius: 4px; 
-        display: flex; 
-        align-items: center; 
-        gap: 10px; 
-        cursor: default; 
-        font-size: 16px; 
+        background-color: #0072b1;
+        color: #fff;
+        padding: 0px 10px;
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        cursor: default;
+        font-size: 16px;
         width: max-content;
       `;
 
@@ -905,8 +913,8 @@ flatpickr(".timePickerFlatpickr", {
       removeButton.textContent = 'x';
       removeButton.className = 'remove';
       removeButton.style.cssText = `
-        color: #fff; 
-        padding: 5px; 
+        color: #fff;
+        padding: 5px;
         cursor: pointer;
       `;
 
@@ -936,65 +944,65 @@ flatpickr(".timePickerFlatpickr", {
 
 
     {{-- Time And Date Selection Script  Start ========--}}
-    <script> 
+    <script>
   // Start Date Selection Start====
     // Set the minimum date to tomorrow
     document.addEventListener('DOMContentLoaded', function() {
       const dateInput = document.getElementById('start_date');
-      
+
       let today = new Date();
       today.setDate(today.getDate() + 1);  // Set to tomorrow
-      
+
       // Format date as 'YYYY-MM-DD'
       let year = today.getFullYear();
       let month = (today.getMonth() + 1).toString().padStart(2, '0');  // Months are zero-indexed
       let day = today.getDate().toString().padStart(2, '0');
-      
+
       let minDate = `${year}-${month}-${day}`;
-      
+
       // Set the min attribute to tomorrow's date
       dateInput.setAttribute('min', minDate);
     });
-  
+
     // Optional: Ensure a future date is selected when the input value changes
     document.getElementById('start_date').addEventListener('change', function() {
       let selectedDate = new Date(this.value);
       let today = new Date();
-      
+
       today.setHours(0, 0, 0, 0); // Set time to 00:00:00 to only compare dates
       today.setDate(today.getDate() + 1);  // Move to tomorrow
-      
+
       if (selectedDate < today) {
         alert('Please select a future date!');
         this.value = '';  // Reset the input value
       }
-  
-       
-        
+
+
+
     });
-  
-     
-   
+
+
+
     // Start END Selection END====
-   
-   
+
+
       </script>
       {{-- Time And Date Selection Script  END ========--}}
-  
+
 
 
       {{-- //  Estimated Payment Set ======== --}}
-    
+
    {{-- On Check Show Hide Script Miner --}}
    <script>
-    function MinorAttend(Clicked) {  
+    function MinorAttend(Clicked) {
      var values = $('#'+Clicked).val();
      if (values == 1) {
        $('.limit_show').show();
       } else {
        $('.limit_show').hide();
       }
-      
+
     }
   </script>
   {{-- On Check Show Hide Script Miner --}}
@@ -1008,9 +1016,11 @@ flatpickr(".timePickerFlatpickr", {
 
 function SubmitForm() {
     let recurringType = '<?php echo $gigData->recurring_type ?>';
+    let trialType = '<?php echo $gigData->trial_type ?? '' ?>';
     let serviceType = '<?php echo $gig->service_type ?>';
     let groupType = '<?php echo $gigData->group_type ?>';
-    let duration = '' ;
+    let classType = '<?php echo $gig->class_type ?? '' ?>';
+    let duration = '';
     let valid = true;
 
     const showError = (message) => {
@@ -1032,21 +1042,159 @@ function SubmitForm() {
         return true;
     };
 
-    // Validate Group Type
-    if (groupType === 'Public' || groupType === 'Both') {
-        const publicRate = document.getElementById('public_rate').value;
-        const publicSize = document.getElementById('public_size').value;
+    // ✅ Trial Class Special Handling
+    if (recurringType === 'Trial') {
+        console.log('Trial Class Detected:', trialType);
 
-        if (!validateField(publicRate, "Individual Rate Required!")) return false;
-        if (!validateField(publicSize, "Group Size Required!")) return false;
-    }
+        if (trialType === 'Free') {
+            // Free Trial: Auto values
+            console.log('Free Trial: Duration = 30 min, Price = $0');
+            duration = '00:30';
 
-    if (groupType === 'Private' || groupType === 'Both') {
-        const privateRate = document.getElementById('private_rate').value;
-        const privateSize = document.getElementById('private_size').value;
+            // ✅ Group size validation - Check if elements exist first
+            if (groupType === 'Public' || groupType === 'Both') {
+                const publicSizeElement = document.getElementById('public_size');
+                // Skip if element doesn't exist (hidden for free trial)
+                if (publicSizeElement && publicSizeElement.offsetParent !== null) {
+                    if (!publicSizeElement.value) {
+                        showError("Group Size Required!");
+                        return false;
+                    }
+                }
+            }
 
-        if (!validateField(privateRate, "Individual Rate Required!")) return false;
-        if (!validateField(privateSize, "Group Size Required!")) return false;
+            if (groupType === 'Private' || groupType === 'Both') {
+                const privateSizeElement = document.getElementById('private_size');
+                // Skip if element doesn't exist (hidden for free trial)
+                if (privateSizeElement && privateSizeElement.offsetParent !== null) {
+                    if (!privateSizeElement.value) {
+                        showError("Group Size Required!");
+                        return false;
+                    }
+                }
+            }
+
+        } else if (trialType === 'Paid') {
+            // Paid Trial: Normal validation
+            const durationH = document.getElementById('durationH');
+            const durationM = document.getElementById('durationM');
+
+            if (durationH && durationM) {
+                duration = `${durationH.value}:${durationM.value}`;
+
+                if (duration === '00:00') {
+                    showError("Duration Required for Paid Trial!");
+                    return false;
+                }
+            }
+
+            // Validate pricing for Paid Trial
+            if (groupType === 'Public' || groupType === 'Both') {
+                const publicRateElement = document.getElementById('public_rate');
+                const publicSizeElement = document.getElementById('public_size');
+
+                if (publicRateElement && !publicRateElement.value) {
+                    showError("Price Required for Paid Trial!");
+                    return false;
+                }
+
+                if (publicSizeElement && !publicSizeElement.value) {
+                    showError("Group Size Required!");
+                    return false;
+                }
+            }
+
+            if (groupType === 'Private' || groupType === 'Both') {
+                const privateRateElement = document.getElementById('private_rate');
+                const privateSizeElement = document.getElementById('private_size');
+
+                if (privateRateElement && !privateRateElement.value) {
+                    showError("Price Required for Paid Trial!");
+                    return false;
+                }
+
+                if (privateSizeElement && !privateSizeElement.value) {
+                    showError("Group Size Required!");
+                    return false;
+                }
+            }
+        }
+
+        // Trial: Must have at least one day selected in Repeat On section
+        const activeDayButtons = document.querySelectorAll('.repeat-btn.active');
+
+        if (activeDayButtons.length === 0) {
+            showError("Please select at least one day for your Trial Class!");
+            return false;
+        }
+
+        // Validate that all selected days have start and end times
+        const startRepeatInputs = document.querySelectorAll('input[name="start_repeat[]"]');
+        const endRepeatInputs = document.querySelectorAll('input[name="end_repeat[]"]');
+
+        for (let i = 0; i < startRepeatInputs.length; i++) {
+            if (!startRepeatInputs[i].value) {
+                showError("Start Time Required for all selected days!");
+                startRepeatInputs[i].focus();
+                return false;
+            }
+
+            if (!endRepeatInputs[i].value) {
+                showError("End Time Required for all selected days!");
+                endRepeatInputs[i].focus();
+                return false;
+            }
+
+            // Validate that end time is after start time
+            let startTimeMoment = moment(startRepeatInputs[i].value, "HH:mm");
+            let endTimeMoment = moment(endRepeatInputs[i].value, "HH:mm");
+
+            if (endTimeMoment.isSameOrBefore(startTimeMoment)) {
+                showError('End Time must be greater than Start Time for all selected days!');
+                endRepeatInputs[i].focus();
+                return false;
+            }
+
+            if (endRepeatInputs[i].value === "00:00") {
+                showError('End Time cannot be 00:00!');
+                endRepeatInputs[i].focus();
+                return false;
+            }
+        }
+
+    } else {
+        // ✅ Normal Class Validation (Not Trial)
+
+        // Validate Group Type
+        if (groupType === 'Public' || groupType === 'Both') {
+            const publicRateElement = document.getElementById('public_rate');
+            const publicSizeElement = document.getElementById('public_size');
+
+            if (publicRateElement && !publicRateElement.value) {
+                showError("Individual Rate Required!");
+                return false;
+            }
+
+            if (publicSizeElement && !publicSizeElement.value) {
+                showError("Group Size Required!");
+                return false;
+            }
+        }
+
+        if (groupType === 'Private' || groupType === 'Both') {
+            const privateRateElement = document.getElementById('private_rate');
+            const privateSizeElement = document.getElementById('private_size');
+
+            if (privateRateElement && !privateRateElement.value) {
+                showError("Individual Rate Required!");
+                return false;
+            }
+
+            if (privateSizeElement && !privateSizeElement.value) {
+                showError("Group Size Required!");
+                return false;
+            }
+        }
     }
 
     // Validate Service Type
@@ -1065,7 +1213,7 @@ function SubmitForm() {
             }
         }
 
-         
+
           if (recurringType === 'OneDay') {
     const startTimeInput = document.getElementById('start_time');
     const endTimeInput = document.getElementById('end_time');
@@ -1086,7 +1234,7 @@ function SubmitForm() {
       return false ;
 
     };
- 
+
 
 
     if (start_time && end_time) {
@@ -1109,7 +1257,7 @@ function SubmitForm() {
     }
 
 
-    
+
     if (duration != '') {
       duration_part = duration.split(':');
       const totalDurationMinutes = (parseInt(duration_part[0]) * 60) + parseInt(duration_part[1]);
@@ -1130,7 +1278,7 @@ function SubmitForm() {
           showError(`Availability time must be at least ${duration[0]} hours and ${duration[1]} minutes.`);
           return false;
       }
-      
+
     }
 
         } else {
@@ -1190,7 +1338,7 @@ function SubmitForm() {
       duration_part = duration.split(':');
       const totalDurationMinutes = (parseInt(duration_part[0]) * 60) + parseInt(duration_part[1]);
 
-    
+
             // Retrieve start and end time inputs
       const start_time = start_repeat;
       const end_time = end_repeat;
@@ -1201,13 +1349,13 @@ function SubmitForm() {
 
       // Calculate availability time in minutes
       const availabilityMinutes = moment.duration(endTimeMoment.diff(startTimeMoment)).asMinutes();
-          
+
       // Compare availability time with duration
       if (availabilityMinutes < totalDurationMinutes) {
           showError(`Availability time must be at least ${duration[0]} hours and ${duration[1]} minutes.`);
           return false;
       }
-      
+
     }
 
 
@@ -1228,7 +1376,7 @@ function SubmitForm() {
 
 
 
-      // For recurring days 
+      // For recurring days
       const activeDays = [];
       const activeDivs = [];
       $('.repeat-btn.active').each(function () {
@@ -1282,7 +1430,7 @@ function SubmitForm() {
       duration_part = duration.split(':');
       const totalDurationMinutes = (parseInt(duration_part[0]) * 60) + parseInt(duration_part[1]);
 
-    
+
             // Retrieve start and end time inputs
       const start_time = start_repeat;
       const end_time = end_repeat;
@@ -1293,20 +1441,20 @@ function SubmitForm() {
 
       // Calculate availability time in minutes
       const availabilityMinutes = moment.duration(endTimeMoment.diff(startTimeMoment)).asMinutes();
-          
+
       // Compare availability time with duration
       if (availabilityMinutes < totalDurationMinutes) {
           showError(`Availability time must be at least ${duration[0]} hours and ${duration[1]} minutes.`);
           return false;
       }
-      
+
     }
 
     }
 }
-  
-      
-       
+
+
+
     }
 
 
@@ -1335,27 +1483,27 @@ if (childs < 0 || childs > maxAllowed) {
 
 
 
-        
+
       }
 
-      
+
     // Submit the form if everything is valid
     if (valid) {
         $('#myForm').submit();
     }
 }
-    
-        
-    
+
+
+
         </script>
         {{-- Form Validation Script END==== --}}
-  
+
   {{-- Load Page Confirmation --}}
   <script>
     window.addEventListener('beforeunload', function (e) {
 
       if ($('#myForm').submit()) {
-        return; 
+        return;
       }
   // Display a confirmation dialog
   var confirmationMessage = 'Are you sure you want to leave? Your changes might not be saved.';
@@ -1374,14 +1522,14 @@ if (childs < 0 || childs > maxAllowed) {
 
     {{-- Repeat On Script Start ======= --}}
     <script>
-           function RepeatOn(Clicked) { 
+           function RepeatOn(Clicked) {
 
 if ($(Clicked).hasClass('active')) {
   $(Clicked).removeClass('active');
 } else {
   $(Clicked).addClass('active');
   }
- 
+
 
   var activeDays = [];
   var activeDivs = [];
@@ -1402,15 +1550,15 @@ var html = ' <input type="hidden" name="day_repeat[]" value="'+day+'" class="pay
            '<div class="repeat-btn" style="color:#0072b1;font-weight:500;background:none;"> Start Time : <input type="text" style="width:120px;"   id="start_repeat_'+data+'" name="start_repeat[]" class="timePickerFlatpickr payment-input mt-1"> </div>'+
            '<div class="repeat-btn" style="color:#0072b1;font-weight:500;background:none;"> End Time : <input type="text" style="width:120px;"   id="end_repeat_'+data+'" name="end_repeat[]" class="timePickerFlatpickr payment-input mt-1"> </div>' ;
 
-           $('#time_div_'+data).html(html); 
-           
+           $('#time_div_'+data).html(html);
+
   flatpickr(".timePickerFlatpickr", {
     enableTime: true,
     noCalendar: true,
     dateFormat: "H:i",
     minuteIncrement: 30, // Only allow 00 and 30
   });
-          
+
 }
 
 }
@@ -1435,7 +1583,7 @@ var html = ' <input type="hidden" name="day_repeat[]" value="'+day+'" class="pay
       $('#size').on('keyup', function () {
       var size =  $('#size').val();
       if (size > 100) {
-        $('#size').val('') ; 
+        $('#size').val('') ;
         toastr.options =
           {
               "closeButton" : true,
@@ -1449,7 +1597,7 @@ var html = ' <input type="hidden" name="day_repeat[]" value="'+day+'" class="pay
 
 
       });
- 
+
 
       //  Estimated Payment Set ========
       $('#discount').on('keyup', function () {
@@ -1472,9 +1620,9 @@ var html = ' <input type="hidden" name="day_repeat[]" value="'+day+'" class="pay
        let netPercent = 100 - (12 + discount ); // Net percentage after tax
     let estimatedEarnings = (rate * netPercent) / 100;
     $('#estimated_earning').val(estimatedEarnings);
-   
-     
-       
+
+
+
       });
 
       // Normal Founction =========END
@@ -1482,7 +1630,7 @@ var html = ' <input type="hidden" name="day_repeat[]" value="'+day+'" class="pay
 
 
 
-      
+
    // Public Group Founction =========Start
       //  Estimated Payment Set ========
       $('#public_rate').on('keyup', function () {
@@ -1499,7 +1647,7 @@ var html = ' <input type="hidden" name="day_repeat[]" value="'+day+'" class="pay
       $('#public_size').on('keyup', function () {
       var size =  $('#public_size').val();
       if (size > 100) {
-        $('#public_size').val('') ; 
+        $('#public_size').val('') ;
         toastr.options =
           {
               "closeButton" : true,
@@ -1513,7 +1661,7 @@ var html = ' <input type="hidden" name="day_repeat[]" value="'+day+'" class="pay
 
 
       });
- 
+
 
       //  Estimated Payment Set ========
       $('#public_discount').on('keyup', function () {
@@ -1536,13 +1684,13 @@ var html = ' <input type="hidden" name="day_repeat[]" value="'+day+'" class="pay
        let netPercent = 100 - (12 + discount ); // Net percentage after tax
     let estimatedEarnings = (rate * netPercent) / 100;
     $('#public_estimated_earning').val(estimatedEarnings);
-   
-     
-       
+
+
+
       });
 
       // Public Group Founction =========END
-      
+
 
       function validateRatePrice(input) {
   var value = parseFloat(input.value);
@@ -1551,8 +1699,8 @@ var html = ' <input type="hidden" name="day_repeat[]" value="'+day+'" class="pay
     input.value = 10;
   }
 }
-      
-      
+
+
    // Private Group Founction =========Start
       //  Estimated Payment Set ========
       $('#private_rate').on('keyup', function () {
@@ -1569,7 +1717,7 @@ var html = ' <input type="hidden" name="day_repeat[]" value="'+day+'" class="pay
       $('#private_size').on('keyup', function () {
       var size =  $('#public_size').val();
       if (size > 100) {
-        $('#private_size').val('') ; 
+        $('#private_size').val('') ;
         toastr.options =
           {
               "closeButton" : true,
@@ -1583,7 +1731,7 @@ var html = ' <input type="hidden" name="day_repeat[]" value="'+day+'" class="pay
 
 
       });
- 
+
 
       //  Estimated Payment Set ========
       $('#private_discount').on('keyup', function () {
@@ -1606,13 +1754,13 @@ var html = ' <input type="hidden" name="day_repeat[]" value="'+day+'" class="pay
        let netPercent = 100 - (12 + discount ); // Net percentage after tax
     let estimatedEarnings = (rate * netPercent) / 100;
     $('#private_estimated_earning').val(estimatedEarnings);
-   
-     
-       
+
+
+
       });
 
       // Private Group Founction =========END
-      
+
     </script>
     {{-- Repeat On Script END ======= --}}
 
@@ -1655,7 +1803,7 @@ var html = ' <input type="hidden" name="day_repeat[]" value="'+day+'" class="pay
       });
     </script>
     <!-- ================ side js start End=============== -->
-   
+
   </body>
 </html>
 
@@ -1729,7 +1877,7 @@ var html = ' <input type="hidden" name="day_repeat[]" value="'+day+'" class="pay
 
     <!-- Tinymcs js link -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/6.4.1/tinymce.min.js"></script>
-  
+
     <!-- Tinymce js start -->
 <script>
   tinymce.init({
@@ -1882,19 +2030,19 @@ var html = ' <input type="hidden" name="day_repeat[]" value="'+day+'" class="pay
 
 {{-- Faqs By Ajax Script Start ======== --}}
 <script>
-$('#add_new_btn').click(function () { 
+$('#add_new_btn').click(function () {
   if ($('#add_faqs_main_div').is(':visible')) {
-    $('#add_faqs_main_div').css('display', 'none'); 
-    $('#edit_faqs_main_div').css('display', 'none'); 
+    $('#add_faqs_main_div').css('display', 'none');
+    $('#edit_faqs_main_div').css('display', 'none');
   } else {
-    $('#add_faqs_main_div').css('display', 'block'); 
-    $('#edit_faqs_main_div').css('display', 'none'); 
+    $('#add_faqs_main_div').css('display', 'block');
+    $('#edit_faqs_main_div').css('display', 'none');
   }
 });
 
 // On Page Load Get All Faqs
 $(document).ready(function () {
-  
+
   var gig_id = '<?php echo $gig->id ?>';
 
    // Set up CSRF token
@@ -1914,7 +2062,7 @@ $(document).ready(function () {
         },
         dataType: 'json',
         success: function (response) {
-            
+
           var faqs = response.faqs ;
 
           var len = 0 ;
@@ -1922,12 +2070,12 @@ $(document).ready(function () {
           $('#all_faqs').empty();
 
           if (len > 0 ) {
-    
+
     for (let i = 0; i < len; i++) {
 
       var id = faqs[i].id ;
       var question = faqs[i].question ;
-      var answer = faqs[i].answer ; 
+      var answer = faqs[i].answer ;
 
       var faqs_html = ` <div class="input-group  mb-3  main_faqs_${id}">
                     <input type="text" value="${question}" class="form-control payment-input" placeholder="Faqs" aria-label="Recipient's username" aria-describedby="button-addon1" readonly>
@@ -1943,9 +2091,9 @@ $(document).ready(function () {
 
       }
 
-               
 
- 
+
+
         },
         error: function (xhr, status, error) {
             toastr.error('An error occurred. Please try again.');
@@ -1956,7 +2104,7 @@ $(document).ready(function () {
 
 
 // Add New FAQs Script Start -------
-$('#add_faqs_btn').click(function () { 
+$('#add_faqs_btn').click(function () {
     var gig_id = $('#faqs_gig_id').val();
     var question = $('#question').val().trim();
     const answer = tinymce.get('answer').getContent().trim();
@@ -1972,7 +2120,7 @@ $('#add_faqs_btn').click(function () {
         toastr.error('Both question and answer are required.');
         return; // Stop further execution if validation fails
     }
-    
+
     // Set up CSRF token
     $.ajaxSetup({
         headers: {
@@ -2036,18 +2184,18 @@ $('#add_faqs_btn').click(function () {
     });
 });
 
-  
+
 // Add New Faqs Script END -------
 
 // Delete Faqs Script Start ----------
-function RemoveFaqs(Clicked) { 
+function RemoveFaqs(Clicked) {
 
   if (!confirm("Are You Sure, You Want to delete This Faqs ?")){
       return false;
     }
 
     var id = $('#'+Clicked).data('id');
-    
+
 
       // Set up CSRF token
       $.ajaxSetup({
@@ -2061,17 +2209,17 @@ function RemoveFaqs(Clicked) {
         type: "POST",
         url: '/delete-faqs-services',
         data: {
-            id: id, 
+            id: id,
             _token: '{{csrf_token()}}'
         },
         dataType: 'json',
         success: function (response) {
-            
+
 
             // Display success or error message
             if (response.success) {
-              
-              
+
+
               $('.main_faqs_'+id).remove();
 
                 toastr.options = {
@@ -2095,14 +2243,14 @@ function RemoveFaqs(Clicked) {
             toastr.error('An error occurred. Please try again.');
         }
     });
-    
+
 
  }
 // Delete Faqs Script END ----------
 
 
 // EDIT Faqs Script Start ----------
-function ViewFaqs(Clicked) { 
+function ViewFaqs(Clicked) {
   var id = $('#'+Clicked).data('id');
   var question = $('#'+Clicked).data('question');
   var answer = $('#'+Clicked).data('answer');
@@ -2118,8 +2266,8 @@ function ViewFaqs(Clicked) {
 
 
 // Update Faqs Script Start ----------
-$('#edit_faqs_btn').click(function () { 
-   
+$('#edit_faqs_btn').click(function () {
+
   var id = $('#faqs_id').val();
     var question = $('#question_upd').val().trim();
     const answer = tinymce.get('answer_upd').getContent().trim();
@@ -2135,7 +2283,7 @@ $('#edit_faqs_btn').click(function () {
         toastr.error('Both question and answer are required.');
         return; // Stop further execution if validation fails
     }
-    
+
     // Set up CSRF token
     $.ajaxSetup({
         headers: {
@@ -2199,7 +2347,7 @@ $('#edit_faqs_btn').click(function () {
         }
     });
 
-  
+
 });
 // Update Faqs Script END ----------
 

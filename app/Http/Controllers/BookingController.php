@@ -12,6 +12,7 @@ use App\Models\TeacherGigData;
 use App\Models\TeacherGigPayment;
 use App\Models\TeacherReapetDays;
 use App\Models\TopSellerTag;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Stripe;
@@ -99,7 +100,18 @@ class BookingController extends Controller
             $bookedTimes = json_encode($availableSlots, JSON_UNESCAPED_SLASHES);
 
             // Pass gig availability details to the view
-            return view("Seller-listing.quick-booking", compact('gig', 'profile', 'gigData', 'gigPayment', 'gigFaqs', 'repeatDays', 'bookedTime', 'allOrders', 'bookedTimes', 'admin_duration'));
+            return view("Seller-listing.quick-booking", compact(
+                'gig',
+                'profile',
+                'gigData',
+                'gigPayment',
+                'gigFaqs',
+                'repeatDays',
+                'bookedTime',
+                'allOrders',
+                'bookedTimes',
+                'admin_duration'
+            ));
         } else {
 
 
@@ -421,31 +433,61 @@ class BookingController extends Controller
         // Seller earnings (original price - seller commission)
         $sellerEarnings = $originalPrice - $sellerCommissionAmount;
 
-        // Set Stripe API secret key
-        \Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
+        // ============ CHECK IF FREE TRIAL ============
+        $isFreeTrialClass = ($gigData->recurring_type == 'Trial' && $gig->trial_type == 'Free');
+        $paymentIntent = null;
+
+        if ($isFreeTrialClass) {
+            // Free trial - skip Stripe payment
+            // Ensure price is zero
+            $originalPrice = 0;
+            $priceAfterDiscount = 0;
+            $finalPrice = 0;
+            $buyerCommissionAmount = 0;
+            $sellerCommissionAmount = 0;
+            $totalAdminCommission = 0;
+            $sellerEarnings = 0;
+            $discountAmount = 0;
+        } else {
+            // Set Stripe API secret key
+            \Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
+
+            try {
+                // Create Stripe Payment Intent
+                $paymentIntent = \Stripe\PaymentIntent::create([
+                    'amount' => round($finalPrice * 100), // Convert to cents
+                    'currency' => 'usd',
+                    'capture_method' => 'manual',
+                    'automatic_payment_methods' => [
+                        'enabled' => true,
+                        'allow_redirects' => 'never',
+                    ],
+                    'metadata' => [
+                        'gig_id' => $gig->id,
+                        'buyer_id' => Auth::id(),
+                        'seller_id' => $gig->user_id,
+                        'coupon_code' => $couponCode ?? null,
+                        'discount_amount' => $discountAmount,
+                    ]
+                ]);
+
+                if (!$paymentIntent) {
+                    return response()->json(['error' => 'Payment intent creation failed'], 500);
+                }
+            } catch (\Stripe\Exception\CardException $e) {
+                \Log::error('Stripe card error: ' . $e->getMessage());
+                return response()->json([
+                    'error' => 'Card declined: ' . $e->getError()->message
+                ], 422);
+            } catch (\Stripe\Exception\ApiErrorException $e) {
+                \Log::error('Stripe API error: ' . $e->getMessage());
+                return response()->json([
+                    'error' => 'Payment processing failed. Please try again.'
+                ], 500);
+            }
+        }
 
         try {
-            // Create Stripe Payment Intent
-            $paymentIntent = \Stripe\PaymentIntent::create([
-                'amount' => round($finalPrice * 100), // Convert to cents
-                'currency' => 'usd',
-                'capture_method' => 'manual',
-                'automatic_payment_methods' => [
-                    'enabled' => true,
-                    'allow_redirects' => 'never',
-                ],
-                'metadata' => [
-                    'gig_id' => $gig->id,
-                    'buyer_id' => Auth::id(),
-                    'seller_id' => $gig->user_id,
-                    'coupon_code' => $couponCode ?? null,
-                    'discount_amount' => $discountAmount,
-                ]
-            ]);
-
-            if (!$paymentIntent) {
-                return response()->json(['error' => 'Payment intent creation failed'], 500);
-            }
 
             // ============ CREATE BOOK ORDER ============
             if ($gig->service_role == 'Class') {
@@ -498,12 +540,13 @@ class BookingController extends Controller
                 $bookOrder->finel_price = $finalPrice;
 
                 // Payment details
-                $bookOrder->payment_id = $paymentIntent->id;
-                $bookOrder->payment_status = 'pending';
-                $bookOrder->holder_name = $request->holder_name;
-                $bookOrder->card_number = substr($request->card_number, -4); // Store only last 4 digits
+                $bookOrder->payment_id = $paymentIntent ? $paymentIntent->id : null;
+                $bookOrder->payment_status = $isFreeTrialClass ? 'completed' : 'pending';
+                $bookOrder->holder_name = $request->holder_name ?? null;
+                $bookOrder->card_number = $request->card_number ? substr($request->card_number, -4) : null; // Store only last 4 digits
                 $bookOrder->cvv = null; // Never store CVV
-                $bookOrder->date = $request->date;
+                $bookOrder->date = $request->date ?? null;
+                $bookOrder->status = $isFreeTrialClass ? 1 : 0; // Free trials are immediately active
 
                 $bookOrder->save();
 
@@ -587,12 +630,13 @@ class BookingController extends Controller
                 $bookOrder->finel_price = $finalPrice;
 
                 // Payment details
-                $bookOrder->payment_id = $paymentIntent->id;
-                $bookOrder->payment_status = 'pending';
-                $bookOrder->holder_name = $request->holder_name;
-                $bookOrder->card_number = substr($request->card_number, -4);
+                $bookOrder->payment_id = $paymentIntent ? $paymentIntent->id : null;
+                $bookOrder->payment_status = $isFreeTrialClass ? 'completed' : 'pending';
+                $bookOrder->holder_name = $request->holder_name ?? null;
+                $bookOrder->card_number = $request->card_number ? substr($request->card_number, -4) : null;
                 $bookOrder->cvv = null;
-                $bookOrder->date = $request->date;
+                $bookOrder->date = $request->date ?? null;
+                $bookOrder->status = $isFreeTrialClass ? 1 : 0; // Free trials are immediately active
 
                 $bookOrder->save();
 
@@ -630,12 +674,12 @@ class BookingController extends Controller
                 'seller_earnings' => $sellerEarnings,
                 'stripe_amount' => $finalPrice,
                 'stripe_currency' => $commissionSettings->stripe_currency ?? 'USD',
-                'stripe_transaction_id' => $paymentIntent->id,
+                'stripe_transaction_id' => $paymentIntent ? $paymentIntent->id : null,
                 'coupon_discount' => $discountAmount,
                 'admin_absorbed_discount' => $couponUsed ? 1 : 0,
-                'status' => 'pending',
+                'status' => $isFreeTrialClass ? 'completed' : 'pending',
                 'payout_status' => 'pending',
-                'notes' => 'Order #' . $bookOrder->id . ' - ' . $gig->title,
+                'notes' => ($isFreeTrialClass ? 'Free Trial - ' : '') . 'Order #' . $bookOrder->id . ' - ' . $gig->title,
             ]);
 
             // ============ RECORD COUPON USAGE ============
@@ -649,6 +693,11 @@ class BookingController extends Controller
                     $transaction->id,
                     $bookOrder->id
                 );
+            }
+
+            // ============ SEND TRIAL CONFIRMATION EMAIL ============
+            if ($gigData->recurring_type == 'Trial') {
+                $this->sendTrialConfirmationEmail($bookOrder, $gig, $gigData);
             }
 
             // ============ LOG SUCCESS ============
@@ -667,22 +716,11 @@ class BookingController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Order booked successfully!',
+                'message' => $isFreeTrialClass ? 'Free trial booked successfully!' : 'Order booked successfully!',
                 'order_id' => $bookOrder->id,
                 'transaction_id' => $transaction->id,
+                'is_free_trial' => $isFreeTrialClass,
             ]);
-
-        } catch (\Stripe\Exception\CardException $e) {
-            \Log::error('Stripe card error: ' . $e->getMessage());
-            return response()->json([
-                'error' => 'Card declined: ' . $e->getError()->message
-            ], 422);
-
-        } catch (\Stripe\Exception\ApiErrorException $e) {
-            \Log::error('Stripe API error: ' . $e->getMessage());
-            return response()->json([
-                'error' => 'Payment processing failed. Please try again.'
-            ], 500);
 
         } catch (\Exception $e) {
             \Log::error('Payment failed: ' . $e->getMessage(), [
@@ -696,6 +734,84 @@ class BookingController extends Controller
 
     // Payment Booking Of Class Function END ----------
 
+    /**
+     * Send trial class booking confirmation email
+     *
+     * @param BookOrder $order
+     * @param TeacherGig $gig
+     * @param TeacherGigData $gigData
+     */
+    private function sendTrialConfirmationEmail(BookOrder $order, TeacherGig $gig, TeacherGigData $gigData)
+    {
+        try {
+            $user = User::find($order->user_id);
+            $teacher = User::find($order->teacher_id);
+            $gigPayment = TeacherGigPayment::where('gig_id', $gig->id)->first();
+
+            if (!$user || !$teacher || !$gigPayment) {
+                return;
+            }
+
+            // Get first class date
+            $classDate = ClassDate::where('order_id', $order->id)
+                ->whereNotNull('user_date')
+                ->orderBy('user_date', 'asc')
+                ->first();
+
+            if (!$classDate) {
+                return;
+            }
+
+            $bookingData = [
+                'userName' => $user->name,
+                'classTitle' => $gig->title,
+                'teacherName' => $teacher->name,
+                'classDateTime' => \Carbon\Carbon::parse($classDate->user_date)->format('F j, Y \a\t g:i A'),
+                'duration' => $this->formatDuration($classDate->duration),
+                'timezone' => $classDate->user_time_zone ?? 'UTC',
+                'amount' => $order->finel_price,
+                'isFree' => ($gig->trial_type == 'Free'),
+            ];
+
+            \Mail::to($user->email)->send(new \App\Mail\TrialBookingConfirmation($bookingData));
+
+            \Log::info('Trial confirmation email sent', [
+                'user_email' => $user->email,
+                'order_id' => $order->id,
+            ]);
+
+        } catch (\Exception $e) {
+            \Log::error('Failed to send trial confirmation email', [
+                'error' => $e->getMessage(),
+                'order_id' => $order->id,
+            ]);
+        }
+    }
+
+    /**
+     * Format duration from HH:MM to readable format
+     *
+     * @param string $duration
+     * @return string
+     */
+    private function formatDuration($duration)
+    {
+        if (!$duration) {
+            return '30 minutes';
+        }
+
+        $parts = explode(':', $duration);
+        $hours = (int)$parts[0];
+        $minutes = (int)$parts[1];
+
+        if ($hours > 0 && $minutes > 0) {
+            return "{$hours} hour" . ($hours > 1 ? 's' : '') . " {$minutes} minutes";
+        } elseif ($hours > 0) {
+            return "{$hours} hour" . ($hours > 1 ? 's' : '');
+        } else {
+            return "{$minutes} minutes";
+        }
+    }
 
     public function BookingSuccess(Request $request)
     {

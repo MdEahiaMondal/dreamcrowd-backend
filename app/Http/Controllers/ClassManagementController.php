@@ -397,6 +397,8 @@ class ClassManagementController extends Controller
 
                 if ($request->freelance_service == 'Consultation') {
                     $gigData->video_call = $request->video_call;
+                    $gigData->meeting_platform = $request->meeting_platform;
+                    $gig->meeting_platform = $request->meeting_platform;
                 }
 
             } else {
@@ -542,52 +544,55 @@ class ClassManagementController extends Controller
                 }
             }
 
-            if ($gigData->recurring_type == 'OneDay' || $gigData->recurring_type == 'Trial') {
-
+            // Save schedule data for all class types (OneDay, Trial, and Recurring)
+            if ($request->start_date && $request->start_time && $request->end_time) {
                 $gig->start_date = $request->start_date;
                 $gig->start_time = $request->start_time;
 
                 $payment->start_date = $request->start_date;
                 $payment->start_time = $request->start_time;
                 $payment->end_time = $request->end_time;
+            }
 
-                if ($gigData->recurring_type == 'Trial') {
-                    $payment->is_trial = 1;
-                    $payment->trial_type = $gigData->trial_type;
+            // Trial-specific logic
+            if ($gigData->recurring_type == 'Trial') {
+                $payment->is_trial = 1;
+                $payment->trial_type = $gigData->trial_type;
 
-                    if ($gigData->trial_type == 'Free') {
-                        if (in_array($gigData->group_type, ['Public', 'Both'])) {
-                            $gig->public_rate = 0;
-                            $payment->public_rate = 0;
-                            $payment->public_earning = 0;
-                            $payment->public_discount = 0;
-                        }
-
-                        if (in_array($gigData->group_type, ['Private', 'Both'])) {
-                            $gig->private_rate = 0;
-                            $payment->private_rate = 0;
-                            $payment->private_earning = 0;
-                            $payment->private_discount = 0;
-                        }
+                if ($gigData->trial_type == 'Free') {
+                    if (in_array($gigData->group_type, ['Public', 'Both'])) {
+                        $gig->public_rate = 0;
+                        $payment->public_rate = 0;
+                        $payment->public_earning = 0;
+                        $payment->public_discount = 0;
                     }
-                }
 
-                $gig->status = 1;
-
-            } else {
-                $gig->status = 1;
-
-                if ($request->day_repeat != null) {
-                    foreach ($request->day_repeat as $key => $value) {
-                        TeacherReapetDays::create([
-                            'gig_id' => $request->gig_id,
-                            'day' => $value,
-                            'start_time' => $request->start_repeat[$key],
-                            'end_time' => $request->end_repeat[$key],
-                        ]);
+                    if (in_array($gigData->group_type, ['Private', 'Both'])) {
+                        $gig->private_rate = 0;
+                        $payment->private_rate = 0;
+                        $payment->private_earning = 0;
+                        $payment->private_discount = 0;
                     }
                 }
             }
+
+            // Save repeat days for ALL class types (OneDay, Trial, Recurring)
+            if ($request->day_repeat != null) {
+                // Delete existing repeat days first (in case of update)
+                TeacherReapetDays::where('gig_id', $request->gig_id)->delete();
+
+                // Insert new repeat days
+                foreach ($request->day_repeat as $key => $value) {
+                    TeacherReapetDays::create([
+                        'gig_id' => $request->gig_id,
+                        'day' => $value,
+                        'start_time' => $request->start_repeat[$key],
+                        'end_time' => $request->end_repeat[$key],
+                    ]);
+                }
+            }
+
+            $gig->status = 1;
 
         } else {
             if ($gigData->freelance_type == 'Both') {
@@ -874,7 +879,6 @@ class ClassManagementController extends Controller
             if ($gig->service_type == 'Online') {
                 $categories = Category::whereIn('id', $categoryIds)->where('service_type', 'Online')->pluck('category')->toArray();
                 $categoryIds = Category::whereIn('id', $categoryIds)->where('service_type', 'Online')->pluck('id')->toArray();
-
                 return view("Teacher-Dashboard.edit-Learn-How-5", compact('categories', 'sub_categories', 'categoryIds', 'banner', 'selectedCate', 'gig', 'gigData'));
             } else {
                 $categories = Category::whereIn('id', $categoryIds)->where('service_type', 'Inperson')->pluck('category')->toArray();
@@ -947,6 +951,21 @@ class ClassManagementController extends Controller
                         $gig->lesson_type = $request->lesson_type;
                         $gigData->recurring_type = $request->recurring_type;
 
+                        // Update meeting platform for Live classes
+                        if ($request->has('meeting_platform')) {
+                            $gigData->meeting_platform = $request->meeting_platform;
+                            $gig->meeting_platform = $request->meeting_platform;
+                        }
+
+                        // Update trial type if recurring type is Trial
+                        if ($request->recurring_type == 'Trial' && $request->has('trial_type')) {
+                            $gigData->trial_type = $request->trial_type;
+                            $gig->trial_type = $request->trial_type;
+                        } else {
+                            $gigData->trial_type = null;
+                            $gig->trial_type = null;
+                        }
+
                         if ($request->lesson_type == 'Group') {
                             $gigData->group_type = $request->group_type;
                         } else {
@@ -1008,8 +1027,12 @@ class ClassManagementController extends Controller
 
                     if ($request->freelance_service == 'Consultation') {
                         $gigData->video_call = $request->video_call;
+                        $gigData->meeting_platform = $request->meeting_platform;
+                        $gig->meeting_platform = $request->meeting_platform;
                     } else {
                         $gigData->video_call = null;
+                        $gigData->meeting_platform = null;
+                        $gig->meeting_platform = null;
                     }
 
                 } else {
@@ -1284,10 +1307,42 @@ class ClassManagementController extends Controller
             if ($gig->class_type == 'Video') {
                 $payment->duration = $request->duration;
             } else {
-                $payment->duration = $request->durationH . ':' . $request->durationM;
+                if ($gigData->recurring_type == 'Trial') {
+                    if ($gigData->trial_type == 'Free') {
+                        $payment->duration = '00:30';
+                        $gig->duration = '00:30';
+                    } else {
+                        $payment->duration = $request->durationH . ':' . $request->durationM;
+                        $gig->duration = $request->durationH . ':' . $request->durationM;
+                    }
+                } else {
+                    $payment->duration = $request->durationH . ':' . $request->durationM;
+                }
             }
 
+            // Trial-specific logic
+            if ($gigData->recurring_type == 'Trial') {
+                $payment->is_trial = 1;
+                $payment->trial_type = $gigData->trial_type;
 
+                if ($gigData->trial_type == 'Free') {
+                    if (in_array($gigData->group_type, ['Public', 'Both'])) {
+                        $gig->public_rate = 0;
+                        $payment->public_rate = 0;
+                        $payment->public_earning = 0;
+                        $payment->public_discount = 0;
+                    }
+
+                    if (in_array($gigData->group_type, ['Private', 'Both'])) {
+                        $gig->private_rate = 0;
+                        $payment->private_rate = 0;
+                        $payment->private_earning = 0;
+                        $payment->private_discount = 0;
+                    }
+                }
+            }
+
+            // Delete existing repeat days first
             $gigDays = TeacherReapetDays::where(['gig_id' => $gig->id])->get();
             if ($gigDays) {
                 foreach ($gigDays as $key => $value) {
@@ -1295,40 +1350,19 @@ class ClassManagementController extends Controller
                 }
             }
 
-
-            if ($gigData->recurring_type == 'OneDay') {
-
-                $gig->start_date = $request->start_date;
-                $gig->start_time = $request->start_time;
-
-                $payment->start_date = $request->start_date;
-                $payment->start_time = $request->start_time;
-                $payment->end_time = $request->end_time;
-                $gig->status = 1;
-            } else {
-
-                $gig->start_date = null;
-                $gig->start_time = null;
-
-                $payment->start_date = null;
-                $payment->start_time = null;
-                $payment->end_time = null;
-
-
-                if ($request->day_repeat != null) {
-
-                    foreach ($request->day_repeat as $key => $value) {
-                        $day = TeacherReapetDays::create([
-                            'gig_id' => $request->gig_id,
-                            'day' => $value,
-                            'start_time' => $request->start_repeat[$key],
-                            'end_time' => $request->end_repeat[$key],
-                        ]);
-                    }
+            // Save repeat days for ALL class types (Trial, Recurring, etc.)
+            if ($request->day_repeat != null) {
+                foreach ($request->day_repeat as $key => $value) {
+                    TeacherReapetDays::create([
+                        'gig_id' => $request->gig_id,
+                        'day' => $value,
+                        'start_time' => $request->start_repeat[$key],
+                        'end_time' => $request->end_repeat[$key],
+                    ]);
                 }
-
             }
 
+            $gig->status = 1;
 
         } else {
 

@@ -27,7 +27,7 @@ class TeacherGigPayment extends Model
         'childs',
         'full_available',
         // 'group_size',
-        // 'discount', 
+        // 'discount',
         'positive_term',
         'delivery_time',
         'revision',
@@ -35,5 +35,7 @@ class TeacherGigPayment extends Model
         'end_date',
         'start_time',
         'end_time',
+        'is_trial',
+        'trial_type',
     ];
 }

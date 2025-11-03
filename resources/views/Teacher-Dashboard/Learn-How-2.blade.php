@@ -31,10 +31,10 @@
     <script src="https://kit.fontawesome.com/be69b59144.js" crossorigin="anonymous"></script>
 <!-- jQuery -->
 <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
-        
+
 
 {{-- =======Toastr CDN ======== --}}
-<link rel="stylesheet" type="text/css" 
+<link rel="stylesheet" type="text/css"
 href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
@@ -91,9 +91,9 @@ href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
                                         <p>{{$item->description}}</p>
                                     </div>
                                 </div>
-                                    
+
                                 @endforeach
-                                    
+
                                 @endif
                             </div>
                         </div>
@@ -122,9 +122,9 @@ href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
                                     <option value="{{$categoryIds[$i]}}" class="fa">{{$item}}</option>
                                     @php $i++; @endphp
                                     @endforeach
-                                        
+
                                     @endif
-                                    
+
                                  </select>
                             </div>
                             {{-- <h3 class=" Select-Heading mt-2 ">Class type <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
@@ -132,17 +132,17 @@ href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
                               </svg> </h3>
                               <div class=" select-box ">
                                 <select name="class_type" id="class_type" class=" fa ">
-                                           
-                                       
+
+
                                             <option value="Live" class=" fa ">Live</option>
                                             <option value="Recorded" class=" fa ">Recorded</option>
                                          </select>
                             </div> --}}
                             <h3 class=" Select-Heading mt-2 ">Class type lesson </h3>
                             <div class=" select-box ">
-                                <select name="lesson_type" id="lesson_type" class=" fa "> 
+                                <select name="lesson_type" id="lesson_type" class=" fa ">
                                             <option value="One" class=" fa ">1-to-1 Lesson</option>
-                                            <option value="Group" class=" fa ">Group Lesson</option> 
+                                            <option value="Group" class=" fa ">Group Lesson</option>
                                         </select>
                             </div>
                         </div>
@@ -151,16 +151,16 @@ href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
                             <div class=" select-box ">
                                 <select name="sub_category" id="sub_category" class="fa">
                                     <option value="" class="fa">--Select Sub-Category--</option>
-                                    
-                                    
+
+
                                  </select>
                             </div>
-                            
+
 
                             <div class=" col-md-6 col-sm-12 mt-2">
                                 <h3 class=" Select-Heading ">Max. Travel Distance</h3>
                                 <input class=" Class-Title " placeholder="10 Miles " type=" text ">
-    
+
                             </div>
                         </div>
                         {{-- <div class=" col-md-6 col-sm-12 mt-2">
@@ -198,7 +198,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
                                     <p class="upload-area__paragraph">
 
                                         <strong class="upload-area__tooltip">
-            
+
                                                     <span class="upload-area__tooltip-data"></span> </strong>
                                     </p>
                                 </div>
@@ -256,7 +256,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
                                     <p class="upload-area__paragraph">
 
                                         <strong class="upload-area__tooltip">
-            
+
                                                     <span class="upload-area__tooltip-data"></span> </strong>
                                     </p>
                                 </div>
@@ -314,7 +314,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
                                     <p class="upload-area__paragraph">
 
                                         <strong class="upload-area__tooltip">
-            
+
                                                     <span class="upload-area__tooltip-data"></span> </strong>
                                     </p>
                                 </div>
@@ -353,14 +353,14 @@ href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
                                     </div>
                                     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/brands.min.css"></script>
                                 </div>
-                                <!-- End File Details 
+                                <!-- End File Details
                                                     </div>
                                                       End Upload Area -->
                             </div>
                         </div>
                     </div>
                     <!-- Upload Section End -->
-                   
+
 
                 </div>
 
@@ -407,12 +407,12 @@ href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
     document.addEventListener('DOMContentLoaded', function() {
       // Get the Cancel button by its ID
       var cancelButton = document.getElementById('cancelButton');
-  
+
       // Add a click event listener to the Cancel button
       cancelButton.addEventListener('click', function() {
         // Find the modal by its ID
         var modal = document.getElementById('exampleModal6');
-        
+
         // Use Bootstrap's modal method to hide the modal
         $(modal).modal('hide');
       });
@@ -435,13 +435,13 @@ href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
 
 
 <script>
-        
+
 
     $('#category').on('change', function () {
       var category =  $('#category').val();
       var role =  $('#role').val();
       var type =  $('#type').val();
-       
+
       $.ajaxSetup({
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -468,15 +468,15 @@ href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
                     for (let i = 0; i < len; i++) {
                         const element = sub_cates[i];
                         $('#sub_category').append('<option value="'+element+'" class="fa" aria-hidden="true">'+element+'</option>');
-                        
+
                     }
-                    
+
                   }
-                 
+
             },
-          
+
         });
-      
+
     });
 
 
@@ -489,8 +489,8 @@ href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
         loop:true,
         margin:10,
         autoplay:true,
-        autoplayTimeout:2000, 
-        autoplaySpeed: 500, 
+        autoplayTimeout:2000,
+        autoplaySpeed: 500,
         responsive:{
             0:{
                 items:1
@@ -624,7 +624,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
     // Loading Text
     const loadingText = document.querySelector('#loadingText');
 
-    // Slect File Input 
+    // Slect File Input
     const fileInput = document.querySelector('#fileInput');
 
     // Select Preview Image
@@ -662,24 +662,24 @@ href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
     // Append Images Types Array Inisde Tooltip Data
     toolTipData.innerHTML = [...imagesTypes].join(', .');
 
-    // When (drop-zoon) has (dragover) Event 
+    // When (drop-zoon) has (dragover) Event
     dropZoon.addEventListener('dragover', function(event) {
-        // Prevent Default Behavior 
+        // Prevent Default Behavior
         event.preventDefault();
 
         // Add Class (drop-zoon--over) On (drop-zoon)
         dropZoon.classList.add('drop-zoon--over');
     });
 
-    // When (drop-zoon) has (dragleave) Event 
+    // When (drop-zoon) has (dragleave) Event
     dropZoon.addEventListener('dragleave', function(event) {
         // Remove Class (drop-zoon--over) from (drop-zoon)
         dropZoon.classList.remove('drop-zoon--over');
     });
 
-    // When (drop-zoon) has (drop) Event 
+    // When (drop-zoon) has (drop) Event
     dropZoon.addEventListener('drop', function(event) {
-        // Prevent Default Behavior 
+        // Prevent Default Behavior
         event.preventDefault();
 
         // Remove Class (drop-zoon--over) from (drop-zoon)
@@ -692,13 +692,13 @@ href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
         uploadFile(file);
     });
 
-    // When (drop-zoon) has (click) Event 
+    // When (drop-zoon) has (click) Event
     dropZoon.addEventListener('click', function(event) {
         // Click The (fileInput)
         fileInput.click();
     });
 
-    // When (fileInput) has (change) Event 
+    // When (fileInput) has (change) Event
     fileInput.addEventListener('change', function(event) {
         // Select The Chosen File
         const file = event.target.files[0];
@@ -711,9 +711,9 @@ href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
     function uploadFile(file) {
         // FileReader()
         const fileReader = new FileReader();
-        // File Type 
+        // File Type
         const fileType = file.type;
-        // File Size 
+        // File Size
         const fileSize = file.size;
 
         // If File Is Passed from the (File Validation) Function
@@ -731,9 +731,9 @@ href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
             // Remove Class (uploaded-file__info--active) from (uploadedFileInfo)
             uploadedFileInfo.classList.remove('uploaded-file__info--active');
 
-            // After File Reader Loaded 
+            // After File Reader Loaded
             fileReader.addEventListener('load', function() {
-                // After Half Second 
+                // After Half Second
                 setTimeout(function() {
                     // Add Class (upload-area--open) On (uploadArea)
                     uploadArea.classList.add('upload-area--open');
@@ -761,7 +761,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
                 progressMove();
             });
 
-            // Read (file) As Data Url 
+            // Read (file) As Data Url
             fileReader.readAsDataURL(file);
         } else { // Else
 
@@ -775,11 +775,11 @@ href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
         // Counter Start
         let counter = 0;
 
-        // After 600ms 
+        // After 600ms
         setTimeout(() => {
             // Every 100ms
             let counterIncrease = setInterval(() => {
-                // If (counter) is equle 100 
+                // If (counter) is equle 100
                 if (counter === 100) {
                     // Stop (Counter Increase)
                     clearInterval(counterIncrease);
@@ -804,7 +804,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
             // Add Inisde (uploadedFileIconText) The (jpg) Value
             uploadedFileIconText.innerHTML = 'jpg';
         } else { // else
-            // Add Inisde (uploadedFileIconText) The Uploaded File Type 
+            // Add Inisde (uploadedFileIconText) The Uploaded File Type
             uploadedFileIconText.innerHTML = isImage[0];
         };
 
@@ -816,7 +816,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
             } else { // Else File Size
                 return alert('Please Your File Should be 2 Megabytes or Less');
             };
-        } else { // Else File Type 
+        } else { // Else File Type
             return alert('Please make sure to upload An Image File Type');
         };
     };
@@ -835,14 +835,14 @@ href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
         arrowParent.classList.toggle("showMenu");
       });
     }
-  
+
     let sidebar = document.querySelector(".sidebar");
     let sidebarBtn = document.querySelector(".bx-menu");
-  
+
     sidebarBtn.addEventListener("click", function() {
       sidebar.classList.toggle("close");
     });
-  
+
     // Function to toggle sidebar based on screen size
     function toggleSidebar() {
       let screenWidth = window.innerWidth;
@@ -852,16 +852,16 @@ href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
         sidebar.classList.remove("close");
       }
     }
-  
+
     // Call the function initially
     toggleSidebar();
-  
+
     // Listen for resize events to adjust sidebar
     window.addEventListener("resize", function() {
       toggleSidebar();
     });
   });
-  
+
   </script>
   <!-- ================ side js start End=============== -->
 
