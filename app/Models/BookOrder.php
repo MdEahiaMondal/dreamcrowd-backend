@@ -56,14 +56,23 @@ class BookOrder extends Model
         'payment_status',
     ];
 
-    public function gig()
+    public function gig(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(TeacherGig::class, 'gig_id');
     }
 
-    public function booker()
+    public function booker(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function user(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+    public function teacher(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(User::class, 'teacher_id');
     }
 
     protected $casts = [
@@ -75,4 +84,12 @@ class BookOrder extends Model
         'seller_earnings' => 'decimal:2',
         'admin_absorbed_discount' => 'boolean',
     ];
+
+    /**
+     * Get the transaction associated with this order
+     */
+    public function transaction(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(Transaction::class, 'stripe_transaction_id', 'payment_id');
+    }
 }

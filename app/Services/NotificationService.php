@@ -36,7 +36,7 @@ class NotificationService
             }
         }
 
-        return $notification;
+        // return $notification;
     }
 
     public function sendToMultipleUsers(array $userIds, $type, $title, $message, $data = [], $sendEmail = false)

@@ -32,6 +32,13 @@ use App\Services\NotificationService;
 
 class AdminController extends Controller
 {
+    protected $notificationService;
+
+    public function __construct(NotificationService $notification)
+    {
+        // Laravel automatically inject করবে
+        $this->notificationService = $notification;
+    }
 
     public function AdmincheckAuth()
     {
@@ -48,16 +55,6 @@ class AdminController extends Controller
 
     public function AdminDashboard()
     {
-        $notificationService = new NotificationService();
-
-        $notificationService->send(
-            userId: 4,
-            type: 'order',
-            title: 'Order Placed Successfully',
-            message: 'Your order #12345 has been placed successfully.',
-            data: ['order_id' => 12345, 'amount' => 150],
-            sendEmail: false // Send email notification too
-        );
 
         if ($redirect = $this->AdmincheckAuth()) {
             return $redirect;
@@ -317,6 +314,16 @@ class AdminController extends Controller
 
             $user->update();
             $expert->update();
+            // If approved
+            $this->notificationService->send(
+                userId: $expert->user_id,
+                type: 'account',
+                title: 'Seller Application Approved',
+                message: 'Congratulations! Your seller application has been approved.',
+                data: ['approved_at' => now()],
+                sendEmail: true
+            );
+            
             if ($expert) {
                 return redirect()->to('/all-application')->with('success', 'Application Rejected Successfuly!');
             } else {
@@ -348,10 +355,22 @@ class AdminController extends Controller
                 $payment->update();
             }
 
+
+            // If rejected
+            $this->notificationService->send(
+                userId: $expert->user_id,
+                type: 'account',
+                title: 'Seller Application Rejected',
+                message: 'Unfortunately, your seller application was not approved. Reason: ' . $request->reason,
+                data: ['rejection_reason' => $request->reason],
+                sendEmail: true
+            );
+
+
             if ($expert) {
-                return redirect()->to('/all-application')->with('success', 'Application Approved Successfuly!');
+                return redirect()->to('/all-application')->with('success', 'Application Approved Successfully!');
             } else {
-                return redirect()->back()->with('error', 'Something Rong, Tryagain Later!');
+                return redirect()->back()->with('error', 'Something wrong, Try again Later!');
             }
         }
     }

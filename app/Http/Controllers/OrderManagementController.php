@@ -38,12 +38,12 @@ class OrderManagementController extends Controller
     public $reschedule_hours;
     public $sorting = "book_orders.updated_at";
 
-    protected $notification;
+    protected $notificationService;
 
     public function __construct(NotificationService $notification)
     {
         // Laravel automatically inject করবে
-        $this->notification = $notification;
+        $this->notificationService = $notification;
     }
     // User Pannel Order Management ===================
 
@@ -136,7 +136,7 @@ class OrderManagementController extends Controller
             )->orderBy($this->sorting, 'desc')
             ->paginate($perPage);
 
-// Attach all_classes and new_all_classes
+        // Attach all_classes and new_all_classes
         foreach ($pendingOrders as $order) {
             // Get all class_dates for this order
             $order->all_classes = DB::table('class_dates')
@@ -319,7 +319,7 @@ class OrderManagementController extends Controller
             ->paginate($perPage);
 
 
-// Attach all_classes and new_all_classes
+        // Attach all_classes and new_all_classes
         foreach ($deliveredOrders as $order) {
             // Get all class_dates for this order
             $order->all_classes = DB::table('class_dates')
@@ -392,7 +392,7 @@ class OrderManagementController extends Controller
             ->paginate($perPage);
 
 
-// Attach all_classes and new_all_classes
+        // Attach all_classes and new_all_classes
         foreach ($completedOrders as $order) {
 
             $order->review = DB::table('service_reviews')
@@ -479,7 +479,7 @@ class OrderManagementController extends Controller
             ->paginate($perPage);
 
 
-// Attach all_classes and new_all_classes
+        // Attach all_classes and new_all_classes
         foreach ($cancelledOrders as $order) {
 
             $order->review = DB::table('service_reviews')
@@ -609,7 +609,7 @@ class OrderManagementController extends Controller
             ->paginate($perPage);
 
 
-// Attach all_classes and new_all_classes
+        // Attach all_classes and new_all_classes
         foreach ($pendingOrders as $order) {
             // Get all class_dates for this order
             $order->all_classes = DB::table('class_dates')
@@ -1192,7 +1192,24 @@ class OrderManagementController extends Controller
             $order->teacher_reschedule_time = 0;
             $order->user_reschedule = 0;
             $order->update();
-        }
+
+            $buyerId = $order->user_id;
+            $sellerName = Auth::user()->first_name . ' ' . Auth::user()->last_name;
+            $serviceName = $order->title;
+            $orderId = $order->id;
+            $startDate = ClassDate::where('order_id', $orderId)->min('user_date');
+
+            // To Buyer
+            $this->notificationService->send(
+                userId: $buyerId,
+                type: 'order',
+                title: 'Order Accepted',
+                message: $sellerName . ' has accepted your order for ' . $serviceName,
+                data: ['order_id' => $orderId, 'start_date' => $startDate],
+                sendEmail: true // Email + notification
+            );
+            
+        } 
 
         if ($order) {
             return redirect()->back()->with('success', 'Order Activated Successfully!');
@@ -1479,6 +1496,64 @@ class OrderManagementController extends Controller
         $order->action_date = Carbon::now()->format('Y-m-d H:i');
         $order->update();
 
+        $buyerId = $order->user_id;
+        $sellerId = $order->teacher_id;
+        $buyerName = DB::table('users')->where('id', $buyerId)->value(DB::raw("CONCAT(first_name, ' ', last_name)"));
+        $sellerName = DB::table('users')->where('id', $sellerId)->value(DB::raw("CONCAT(first_name, ' ', last_name)"));
+        $serviceName = $order->title;
+        $orderId = $order->id;
+        $reason = $request->reason;
+
+        $authId = Auth::user()->id;
+        $adminIds = \App\Models\User::where('role', 2)->pluck('id')->toArray();
+
+
+        if($authId == $buyerId){
+            // To Seller
+            $this->notificationService->send(
+                userId: $sellerId,
+                type: 'cancellation',
+                title: 'Order Cancelled by Buyer',
+                message: $buyerName . ' has cancelled the order for ' . $serviceName . ' scheduled on ' . $date,
+                data: ['order_id' => $orderId, 'cancellation_reason' => $reason],
+                sendEmail: true // Important - seller needs to know
+            );
+
+            // to admin
+            // To admin (Notify new order)
+            $this->notificationService->sendToMultipleUsers(
+                userIds: $adminIds,
+                type: 'order',
+                title: 'Order Cancelled',
+                message: 'Order cancelled by ' . $sellerName . ' for ' . $serviceName,
+                data: ['order_id' => $orderId, 'seller_id' => $sellerId, 'buyer_id' => $buyerId],
+                sendEmail: true // Admin gets email + notification
+            );
+            
+        }else{
+            // To Buyer (Confirmation)
+            $this->notificationService->send(
+                userId: $buyerId,
+                type: 'cancellation',
+                title: 'Order Cancelled Successfully',
+                message: 'Your order has been cancelled. Refund has been initiated for eligible classes.',
+                data: ['order_id' => $orderId, 'refund_amount' => $refundAmount],
+                sendEmail: true
+            );
+
+            // to admin
+            // To admin (Notify new order)
+            $this->notificationService->sendToMultipleUsers(
+                userIds: $adminIds,
+                type: 'order',
+                title: 'Order Cancelled',
+                message: 'Order cancelled by ' . $buyerName . ' for ' . $serviceName,
+                data: ['order_id' => $orderId, 'seller_id' => $sellerId, 'buyer_id' => $buyerId],
+                sendEmail: true // Admin gets email + notification
+            );
+        }
+        
+
         if ($order) {
             return redirect()->back()->with('success', 'Order canceled successfully' . ($refundAmount > 0 ? ' and refund initiated.' : '.'));
         } else {
@@ -1514,6 +1589,18 @@ class OrderManagementController extends Controller
                 'seller_id' => $order->teacher_id
             ]);
         }
+
+        // To Buyer
+        $this->notificationService->send(
+            userId: $order->user_id,
+            type: 'delivery',
+            title: 'Order Delivered',
+            message: 'Your order has been marked as delivered. Please review if satisfied.',
+            data: ['order_id' => $order->id],
+            sendEmail: false // Just notification
+        );
+
+        
         if ($order) {
             return redirect()->back()->with('success', 'Order Delivered Successfully!');
         } else {
@@ -1585,6 +1672,54 @@ class OrderManagementController extends Controller
                 'filed_by' => Auth::user()->role == 1 ? 'seller' : 'buyer'
             ]);
         }
+
+
+        // If buyer filed dispute
+        if (Auth::user()->role == 0) {
+            // To Seller
+            $this->notificationService->send(
+                userId: $order->teacher_id,
+                type: 'dispute',
+                title: 'Refund Request Received',
+                message: Auth::user()->first_name . ' has requested a refund. You have 48 hours to respond.',
+                data: ['order_id' => $order->id, 'refund_amount' => $dispute->amount, 'dispute_id' => $dispute->id],
+                sendEmail: true
+            );
+
+            // To Buyer (Confirmation)
+            $this->notificationService->send(
+                userId: Auth::id(),
+                type: 'dispute',
+                title: 'Refund Request Submitted',
+                message: 'Your refund request has been submitted. The seller has 48 hours to respond.',
+                data: ['order_id' => $order->id, 'refund_amount' => $dispute->amount],
+                sendEmail: true
+            );
+        }
+
+        // If seller filed dispute (rejecting buyer's refund)
+        if (Auth::user()->role == 1) {
+            // To Buyer
+            $this->notificationService->send(
+                userId: $order->user_id,
+                type: 'dispute',
+                title: 'Refund Disputed by Seller',
+                message: 'The seller has disputed your refund request. An admin will review your case.',
+                data: ['dispute_id' => $dispute->id, 'order_id' => $order->id],
+                sendEmail: true
+            );
+        }
+
+        // To Admin (for all disputes)
+        $adminIds = User::where('role', 2)->pluck('id')->toArray();
+        $this->notificationService->sendToMultipleUsers(
+            userIds: $adminIds,
+            type: 'dispute',
+            title: 'Dispute Requires Review',
+            message: 'Order #' . $order->id . ' has a dispute that requires admin review.',
+            data: ['dispute_id' => $dispute->id, 'order_id' => $order->id],
+            sendEmail: true
+        );
 
         if ($order) {
             return redirect()->back()->with('success', 'Dispute Order Request Refund Submitted Successfully');
@@ -1685,6 +1820,26 @@ class OrderManagementController extends Controller
             $order->refund = 1;
             $order->payment_status = 'refunded';
             $order->save();
+
+            // To Buyer (if approved)
+            $this->notificationService->send(
+                userId: $order->user_id,
+                type: 'refund',
+                title: 'Refund Approved',
+                message: 'Your refund request has been approved. Amount: $' . $dispute->amount,
+                data: ['order_id' => $order->id, 'refund_amount' => $dispute->amount],
+                sendEmail: true
+            );
+
+            // To Seller (if rejected)
+            $this->notificationService->send(
+                userId: $order->teacher_id,
+                type: 'refund',
+                title: 'Dispute Resolved in Your Favor',
+                message: 'The refund dispute has been resolved. Payment will be released.',
+                data: ['order_id' => $order->id, 'amount' => $order->finel_price],
+                sendEmail: true
+            );
 
             \Log::info('Dispute resolved', [
                 'order_id' => $order->id,
@@ -2575,10 +2730,39 @@ class OrderManagementController extends Controller
         $order->user_reschedule = 0;
         $order->update();
 
+        $buyerName = User::find($order->user_id)->first_name . ' ' . User::find($order->user_id)->last_name;
+        $sellerName = User::find($order->teacher_id)->first_name . ' ' . User::find($order->teacher_id)->last_name;
+
+        // If buyer accepted seller's reschedule
+        if (Auth::user()->role == 0) {
+            // To Seller
+            $this->notificationService->send(
+                userId: $order->teacher_id,
+                type: 'reschedule',
+                title: 'Reschedule Accepted',
+                message: $buyerName . ' has accepted your reschedule request.',
+                data: ['order_id' => $order->id],
+                sendEmail: false
+            );
+        }
+
+        // If seller accepted buyer's reschedule
+        if (Auth::user()->role == 1) {
+            // To Buyer
+            $this->notificationService->send(
+                userId: $order->user_id,
+                type: 'reschedule',
+                title: 'Reschedule Accepted',
+                message: $sellerName . ' has accepted your reschedule request.',
+                data: ['order_id' => $order->id],
+                sendEmail: false
+            );
+        }
+
         if ($classes) {
-            return redirect()->back()->with('success', 'Reschedule Accepted Successfuly');
+            return redirect()->back()->with('success', 'Reschedule Accepted Successfully');
         } else {
-            return redirect()->back()->with('error', 'Something went rong,tryagain later!');
+            return redirect()->back()->with('error', 'Something went wrong,try again later!');
         }
 
 
@@ -2609,10 +2793,24 @@ class OrderManagementController extends Controller
         $order->user_reschedule = 0;
         $order->update();
 
+        // $requesterId = 
+
+
+        // // Similar to accept, but with rejection message
+        // // To the person who requested reschedule
+        // $this->notificationService->send(
+        //     userId: $requesterId, // Determine who requested
+        //     type: 'reschedule',
+        //     title: 'Reschedule Rejected',
+        //     message: 'Your reschedule request has been rejected.',
+        //     data: ['order_id' => $order->id],
+        //     sendEmail: false
+        // );
+
         if ($reschedule) {
-            return redirect()->back()->with('success', 'Reschedule Rejected Successfuly');
+            return redirect()->back()->with('success', 'Reschedule Rejected Successfully');
         } else {
-            return redirect()->back()->with('error', 'Something went rong,tryagain later!');
+            return redirect()->back()->with('error', 'Something went wrong, try again later!');
         }
 
 
@@ -2690,6 +2888,17 @@ class OrderManagementController extends Controller
                 ]);
             }
         }
+
+
+        // To Seller (optional)
+        $this->notificationService->send(
+            userId: $order->teacher_id,
+            type: 'review',
+            title: 'New Review Received',
+            message: 'You received a ' . $request->rating . '-star review from ' . Auth::user()->first_name,
+            data: ['order_id' => $order->id, 'rating' => $request->rating],
+            sendEmail: false
+        );
 
         return redirect()->back()->with('success', 'Thank you for your review!');
     }

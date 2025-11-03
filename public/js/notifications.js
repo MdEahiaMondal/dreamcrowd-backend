@@ -17,6 +17,8 @@
     // Notification Manager Class
     class NotificationManager {
         constructor() {
+            console.log(document.querySelector('.authUserId')?.getAttribute('data-user-id'));
+            
             this.userId = document.querySelector('.authUserId')?.getAttribute('data-user-id');
             this.notifications = [];
             this.unreadCount = 0;

@@ -140,6 +140,15 @@
                 </ul>
             </li>
             <li>
+                <a href="/seller/transactions">
+                    <i class='bx bx-id-card icon' title="Contact us"></i>
+                    <span class="link_name">Transactions</span>
+                </a>
+                <ul class="sub-menu blank">
+                    <li><a class="link_name" href="/seller/transactions">Transactions</a></li>
+                </ul>
+            </li>
+        <li>
                 <a href="/teacher-contact-us">
                     <i class='bx bx-id-card icon' title="Contact us"></i>
                     <span class="link_name">Contact us</span>

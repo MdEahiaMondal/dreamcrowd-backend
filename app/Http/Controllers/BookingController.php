@@ -19,16 +19,26 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\DB;
 use Stripe\PaymentIntent;
+use App\Services\NotificationService;
+
 
 class BookingController extends Controller
 {
     // Quick Booking Service Page =========
 
 
+    protected $notificationService;
+
+    public function __construct(NotificationService $notification)
+    {
+        // Laravel automatically inject করবে
+        $this->notificationService = $notification;
+    }
+
+
     public function QuickBooking($id)
     {
-        $gig = TeacherGig::find($id);
-
+        $gig = TeacherGig::with(['all_reviews', 'all_reviews.user','all_reviews.replies'])->where('id', $id)->firstOrFail();
 
         if (!$gig || $gig->status != 1) {
             return redirect('/')->with(['error' => 'Service not found!']);
@@ -80,7 +90,7 @@ class BookingController extends Controller
                 });
 
 
-// Filter out fully reserved slots
+            // Filter out fully reserved slots
             $availableSlots = [];
             foreach ($bookedSlots as $slot) {
                 if ($gigData->lesson_type === 'One' || $gigData->group_type === 'Private') {
@@ -96,9 +106,8 @@ class BookingController extends Controller
                 $availableSlots[] = $slot;
             }
 
-// Convert available slots to JSON for frontend
+            // Convert available slots to JSON for frontend
             $bookedTimes = json_encode($availableSlots, JSON_UNESCAPED_SLASHES);
-
 
             // Pass gig availability details to the view
             return view("Seller-listing.quick-booking", compact('gig', 'profile', 'gigData', 'gigPayment', 'gigFaqs', 'repeatDays', 'bookedTime', 'allOrders', 'bookedTimes', 'admin_duration'));
@@ -138,7 +147,7 @@ class BookingController extends Controller
         }
 
 
-    }
+    }   
 
 
     // Get Available Times ===========
@@ -667,6 +676,45 @@ class BookingController extends Controller
                 'coupon_used' => $couponCode ?? 'None',
             ]);
 
+            $sellerId = $gig->user_id;
+            $buyerId = Auth::id();
+            $buyerName = Auth::user()->name;
+            $serviceName = $gig->title;
+            $orderId = $bookOrder->id;
+            $amount = $finalPrice;
+
+            $adminIds = \App\Models\User::where('role', 2)->pluck('id')->toArray();
+
+            // To Seller
+            $this->notificationService->send(
+                userId: $sellerId,
+                type: 'order',
+                title: 'New Order Received',
+                message: 'You have received a new order from ' . $buyerName . ' for ' . $serviceName,
+                data: ['order_id' => $orderId, 'amount' => $amount, 'buyer_id' => $buyerId],
+                sendEmail: true // Seller gets email + notification
+            );
+
+            // To Buyer (Confirmation)
+            $this->notificationService->send(
+                userId: $buyerId,
+                type: 'order',
+                title: 'Order Placed Successfully',
+                message: 'Your order has been placed successfully. Awaiting seller confirmation.',
+                data: ['order_id' => $orderId, 'seller_id' => $sellerId],
+                sendEmail: true // Buyer gets email + notification
+            );
+
+            // To admin (Notify new order)
+            $this->notificationService->sendToMultipleUsers(
+                userIds: $adminIds,
+                type: 'order',
+                title: 'Order Placed Successfully',
+                message: 'A new order has been placed by ' . $buyerName . ' for ' . $serviceName,
+                data: ['order_id' => $orderId, 'seller_id' => $sellerId],
+                sendEmail: true // Admin gets email + notification
+            );
+
             return response()->json([
                 'success' => true,
                 'message' => 'Order booked successfully!',
@@ -696,6 +744,26 @@ class BookingController extends Controller
         }
     }
     // Payment Booking Of Class Function END ----------
+
+
+
+    public function BookingSuccess(Request $request)
+    {
+        if (!$request->order_id) {
+            return redirect('/')->with('error', 'Something went wrong');
+        }
+
+        $order = BookOrder::find($request->order_id);
+        if (!$order || $order->payment_status != 'pending') {
+            return redirect('/')->with('error', 'Order not found or already processed');
+        }
+
+        // Update order status to completed
+        $order->payment_status = 'completed';
+        $order->save();
+
+        return view('Public-site.booking-success', compact('order'));
+    }
 
 
 }

@@ -19,8 +19,6 @@ class NotificationSent implements ShouldBroadcast
 
     public function __construct($notification, $userId)
     {
-        info("📢 NotificationSent broadcastOn triggered for user {$this->userId}");
-
         $this->notification = $notification;
         $this->userId = $userId;
     }

@@ -19,9 +19,21 @@ class Kernel extends ConsoleKernel
             ->withoutOverlapping()
             ->runInBackground()
             ->appendOutputTo(storage_path('logs/auto-cancel.log'));
-        $schedule->command('orders:auto-deliver')->hourly();
-        $schedule->command('orders:auto-complete')->hourly();
-        $schedule->command('disputes:process')->hourly(); // Or every 30 minutes
+        $schedule->command('orders:auto-deliver')
+            ->hourly()
+            ->withoutOverlapping()
+            ->runInBackground()
+            ->appendOutputTo(storage_path('logs/auto-deliver.log'));
+        $schedule->command('orders:auto-complete')
+            ->everySixHours()
+            ->withoutOverlapping()
+            ->runInBackground()
+            ->appendOutputTo(storage_path('logs/auto-complete.log'));
+        $schedule->command('disputes:process')
+            ->dailyAt('03:00')
+            ->withoutOverlapping()
+            ->runInBackground()
+            ->appendOutputTo(storage_path('logs/disputes.log'));
     }
 
 

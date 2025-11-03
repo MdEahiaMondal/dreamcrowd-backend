@@ -15,7 +15,7 @@
     @if ($home)
         <link rel="shortcut icon" href="assets/public-site/asset/img/{{$home->fav_icon}}" type="image/x-icon">
     @endif
-    <!-- Datatable css  -->
+<!-- Datatable css  -->
     <link rel="stylesheet" href="assets/public-site/libs/datatable/css/datatable.css"/>
     <!-- Select2 css -->
     <link href="assets/public-site/libs/select2/css/select2.min.css" rel="stylesheet"/>
@@ -42,9 +42,9 @@
           href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
-    {{-- =======Toastr CDN ======== --}}
+{{-- =======Toastr CDN ======== --}}
 
-    <!-- Defualt css -->
+<!-- Defualt css -->
     <link rel="stylesheet" type="text/css" href="assets/public-site/asset/css/style.css"/>
     <link rel="stylesheet" href="assets/public-site/asset/css/navbar.css">
     <link rel="stylesheet" href="assets/public-site/asset/css/Drop.css">
@@ -164,8 +164,8 @@
 
                                     <h1>{{$home->hero_text}}</h1>
                                     <p>{{$home->hero_discription}}</p>
-                                @endif
-                                <!--~~~~~~Hero-Search~~~~~~-->
+                            @endif
+                            <!--~~~~~~Hero-Search~~~~~~-->
 
                                 <div class="Hero-Search-Bar">
                                     <div class="Hero-Search-Site">
@@ -516,11 +516,7 @@
                         @php
                             $item = ${'gig_' . $i} ;
                             $user = ${'profile_' . $i} ;
-                            if ($user->show_full_name){
-                                $full_name = $user->first_name . ' ' . $user->last_name;
-                            }else{
-                                 $full_name = $user->first_name . '' . strtoupper(substr($user->last_name, 0, 1));
-                            }
+                            $full_name = $user->first_name . ' ' . strtoupper(substr($user->last_name, 0, 1));
                             $firstLetter = strtoupper(substr($user->first_name, 0, 1));
                         @endphp
                         <div class="col-xl-3 col-lg-4 col-md-6 col-12">
@@ -528,16 +524,16 @@
                                 <div class="card dream-Card">
                                     <div class="dream-card-upper-section">
                                         <div style="height: 180px;">
-                                            @if (Str::endsWith($item->main_file, ['.mp4', '.avi', '.mov', '.webm']))
-                                                <!-- Video Player -->
+                                        @if (Str::endsWith($item->main_file, ['.mp4', '.avi', '.mov', '.webm']))
+                                            <!-- Video Player -->
                                                 <video autoplay loop muted style="height: 100%; width: 100%;">
                                                     <source
                                                         src="assets/teacher/listing/data_{{ $item->user_id }}/media/{{$item->main_file}}"
                                                         type="video/mp4">
                                                     Your browser does not support the video tag.
                                                 </video>
-                                            @elseif (Str::endsWith($item->main_file, ['.jpg', '.jpeg', '.png', '.gif']))
-                                                <!-- Image Display -->
+                                        @elseif (Str::endsWith($item->main_file, ['.jpg', '.jpeg', '.png', '.gif']))
+                                            <!-- Image Display -->
                                                 <img
                                                     src="assets/teacher/listing/data_{{ $item->user_id }}/media/{{$item->main_file}}"
                                                     style="height: 100%;" alt="Uploaded Image">
@@ -627,8 +623,8 @@
                                                         </svg>
                                                         {{-- <i  data-toggle="tooltip" title="In Person-Service" class="fa-solid fa-house"></i> --}}
                                                     </a>
-                                                @endif
-                                                <!-- <i class="fa-solid fa-globe"></i> -->
+                                            @endif
+                                            <!-- <i class="fa-solid fa-globe"></i> -->
                                             </div>
                                         </div>
                                     </a>
@@ -694,8 +690,8 @@
 
 
             </div>
-        @endif
-        <!-- CARD SECTION END HERE -->
+    @endif
+    <!-- CARD SECTION END HERE -->
 
         <!-- ======================= VIEW ALL BTN START HERE ================ -->
         <div class="row">
@@ -1016,8 +1012,8 @@
                     </div>
                 </div>
             </div>
-        @endif
-        <!-- CARD SECTION END HERE -->
+    @endif
+    <!-- CARD SECTION END HERE -->
 
         <!-- ======================= VIEW ALL BTN START HERE ================ -->
         <div class="row">
@@ -1088,9 +1084,9 @@
                     </div>
                 </div>
             </div>
-        @endif
+    @endif
 
-        <!-- ======================= VIEW ALL BTN START HERE ================ -->
+    <!-- ======================= VIEW ALL BTN START HERE ================ -->
         <div class="row">
             <div class="col-md-12">
                 <center>
