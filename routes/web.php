@@ -2,8 +2,12 @@
 
 use App\Http\Controllers\Admin\CommissionController;
 use App\Http\Controllers\Admin\CouponController;
+use App\Http\Controllers\Admin\ZoomSettingsController;
 use App\Http\Controllers\StripeWebhookController;
 use App\Http\Controllers\ZoomController;
+use App\Http\Controllers\ZoomOAuthController;
+use App\Http\Controllers\ZoomJoinController;
+use App\Http\Controllers\ZoomWebhookController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PublicWebController;
 use App\Http\Controllers\SellerListingController;
@@ -567,7 +571,71 @@ Route::middleware(['auth'])->group(function () {
 });
 
 
-Route::get('/zoom/authorize', [ZoomController::class, 'redirectToZoom']);
-Route::get('/zoom/callback', [ZoomController::class, 'handleCallback']);
-Route::get('/zoom/create-meeting', [ZoomController::class, 'createMeeting']);
+// =====================================================
+// ZOOM INTEGRATION ROUTES
+// =====================================================
+
+// Admin Zoom Settings Routes
+Route::prefix('admin/zoom')->middleware('auth')->group(function () {
+    Route::get('/settings', [ZoomSettingsController::class, 'index'])->name('admin.zoom.settings');
+    Route::post('/settings/update', [ZoomSettingsController::class, 'update'])->name('admin.zoom.settings.update');
+    Route::post('/settings/test-connection', [ZoomSettingsController::class, 'testConnection'])->name('admin.zoom.test');
+    Route::get('/live-classes', [ZoomSettingsController::class, 'liveClasses'])->name('admin.zoom.live');
+    Route::get('/live-classes/data', [ZoomSettingsController::class, 'liveClassesData'])->name('admin.zoom.live.data');
+    Route::get('/audit-logs', [ZoomSettingsController::class, 'auditLogs'])->name('admin.zoom.audit');
+    Route::get('/security-logs', [ZoomSettingsController::class, 'securityLogs'])->name('admin.zoom.security');
+});
+
+// Teacher/Seller Zoom OAuth Routes
+Route::prefix('teacher/zoom')->middleware('auth')->group(function () {
+    Route::get('/', [ZoomOAuthController::class, 'index'])->name('teacher.zoom.index');
+    Route::get('/connect', [ZoomOAuthController::class, 'connect'])->name('teacher.zoom.connect');
+    Route::get('/callback', [ZoomOAuthController::class, 'callback'])->name('teacher.zoom.callback');
+    Route::post('/disconnect', [ZoomOAuthController::class, 'disconnect'])->name('teacher.zoom.disconnect');
+    Route::post('/refresh', [ZoomOAuthController::class, 'refreshToken'])->name('teacher.zoom.refresh');
+    Route::get('/status', [ZoomOAuthController::class, 'status'])->name('teacher.zoom.status');
+});
+
+// Zoom Join Routes (Public with token validation)
+Route::prefix('join/class')->group(function () {
+    Route::get('/{classDateId}', [ZoomJoinController::class, 'joinClass'])->name('zoom.join');
+    Route::get('/{classDateId}/guest', [ZoomJoinController::class, 'guestJoin'])->name('zoom.join.guest');
+    Route::get('/{classDateId}/page', [ZoomJoinController::class, 'joinPage'])->name('zoom.join.page');
+});
+
+// Teacher Meeting Start Route
+Route::get('/teacher/meeting/{meetingId}/start', [ZoomJoinController::class, 'teacherStart'])
+    ->middleware('auth')
+    ->name('teacher.meeting.start');
+
+// Zoom Webhook Route (No auth - signature verified in controller)
+Route::post('/api/zoom/webhook', [ZoomWebhookController::class, 'handle'])->name('zoom.webhook');
+
+// Zoom Webhook Test Route (Development only)
+Route::post('/api/zoom/webhook/test', [ZoomWebhookController::class, 'test'])->name('zoom.webhook.test');
+
+// Legacy Zoom Routes (Keep for backward compatibility if needed, or remove later)
+// Route::get('/zoom/authorize', [ZoomController::class, 'redirectToZoom']);
+// Route::get('/zoom/callback', [ZoomController::class, 'handleCallback']);
+// Route::get('/zoom/create-meeting', [ZoomController::class, 'createMeeting']);
+
+// =====================================================
+// END ZOOM INTEGRATION ROUTES
+// =====================================================
+
 Route::post('stripe/webhook', [StripeWebhookController::class, 'handleWebhook']);
+
+
+Route::get('/test-token', function() {
+    $classDate = \App\Models\ClassDate::find(45);
+    $user = \App\Models\User::find(2);
+
+    $tokenRecord = $classDate->generateSecureToken($user->id, $user->email);
+    $joinUrl = url("/join/class/{$classDate->id}?token={$tokenRecord->plain_token}");
+
+    return response()->json([
+        'plain_token' => $tokenRecord->plain_token,
+        'hashed_token_in_db' => $tokenRecord->token,
+        'join_url' => $joinUrl,
+    ]);
+});
