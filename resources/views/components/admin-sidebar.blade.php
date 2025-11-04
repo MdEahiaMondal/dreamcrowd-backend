@@ -248,12 +248,19 @@
                 </ul>
             </li>
             <li>
-                <a href="zoom-setting.html">
-                    <i class='bx bx-tv icon' title="Zoom Setting"></i>
-                    <span class="link_name">Zoom Setting</span>
-                </a>
-                <ul class="sub-menu blank">
-                    <li><a class="link_name" href="zoom-setting.html">Zoom Setting</a></li>
+                <div class="iocn-link">
+                    <a href="#">
+                        <i class='bx bx-video icon' title="Zoom Integration"></i>
+                        <span class="link_name">Zoom Integration</span>
+                    </a>
+                    <i class='bx bxs-chevron-down arrow'></i>
+                </div>
+                <ul class="sub-menu">
+                    <li><a class="link_name" href="#">Zoom Integration</a></li>
+                    <li><a href="/admin/zoom/settings">Zoom Settings</a></li>
+                    <li><a href="/admin/zoom/live-classes">Live Classes</a></li>
+                    <li><a href="/admin/zoom/audit-logs">Audit Logs</a></li>
+                    <li><a href="/admin/zoom/security-logs">Security Logs</a></li>
                 </ul>
             </li>
         @endif

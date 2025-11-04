@@ -34,6 +34,40 @@ class Kernel extends ConsoleKernel
             ->withoutOverlapping()
             ->runInBackground()
             ->appendOutputTo(storage_path('logs/disputes.log'));
+        $schedule->command('trials:generate-meeting-links')
+            ->everyFiveMinutes()
+            ->withoutOverlapping()
+            ->runInBackground()
+            ->appendOutputTo(storage_path('logs/trial-meetings.log'));
+
+        // =====================================================
+        // ZOOM INTEGRATION SCHEDULED COMMANDS
+        // =====================================================
+
+        // Generate Zoom meetings and secure tokens for classes starting in 30 minutes
+        $schedule->command('zoom:generate-meetings')
+            ->everyFiveMinutes()
+            ->withoutOverlapping()
+            ->runInBackground()
+            ->appendOutputTo(storage_path('logs/zoom-meetings.log'));
+
+        // Refresh Zoom OAuth tokens for all connected teachers (prevents token expiry)
+        $schedule->command('zoom:refresh-tokens')
+            ->hourly()
+            ->withoutOverlapping()
+            ->runInBackground()
+            ->appendOutputTo(storage_path('logs/zoom-token-refresh.log'));
+
+        // Optional: Clean up expired secure tokens (older than 7 days)
+        $schedule->call(function () {
+            \App\Models\ZoomSecureToken::cleanupExpired();
+        })
+            ->daily()
+            ->runInBackground();
+
+        // =====================================================
+        // END ZOOM INTEGRATION SCHEDULED COMMANDS
+        // =====================================================
     }
 
 

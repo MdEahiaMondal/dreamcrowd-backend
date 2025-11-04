@@ -1,5 +1,5 @@
 {{--this is my current edit page need to update this page depend on the create page--}}
-<!DOCTYPE html>
+    <!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -313,6 +313,30 @@
                             </div>
                         @endif
 
+                        <div class="col-md-6 col-sm-12" id="meeting_platform_main"
+                             @if($gigData->class_type != 'Live') style="display: none;" @endif>
+                            <h3 class="Select-Heading mt-2">
+                                Meeting Platform
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"
+                                     fill="none">
+                                    <path
+                                        d="M8 1.5C6.71442 1.5 5.45772 1.88122 4.3888 2.59545C3.31988 3.30968 2.48676 4.32484 1.99479 5.51256C1.50282 6.70028 1.37409 8.00721 1.6249 9.26809C1.8757 10.529 2.49477 11.6872 3.40381 12.5962C4.31285 13.5052 5.47104 14.1243 6.73192 14.3751C7.99279 14.6259 9.29973 14.4972 10.4874 14.0052C11.6752 13.5132 12.6903 12.6801 13.4046 11.6112C14.1188 10.5423 14.5 9.28558 14.5 8C14.4982 6.27665 13.8128 4.62441 12.5942 3.40582C11.3756 2.18722 9.72335 1.50182 8 1.5ZM8 13.5C6.91221 13.5 5.84884 13.1774 4.94437 12.5731C4.0399 11.9687 3.33495 11.1098 2.91867 10.1048C2.50238 9.09977 2.39347 7.9939 2.60568 6.927C2.8179 5.86011 3.34173 4.8801 4.11092 4.11091C4.8801 3.34172 5.86011 2.8179 6.92701 2.60568C7.9939 2.39346 9.09977 2.50238 10.1048 2.91866C11.1098 3.33494 11.9687 4.03989 12.5731 4.94436C13.1774 5.84883 13.5 6.9122 13.5 8C13.4983 9.45818 12.9184 10.8562 11.8873 11.8873C10.8562 12.9184 9.45819 13.4983 8 13.5ZM9 11C9 11.1326 8.94732 11.2598 8.85356 11.3536C8.75979 11.4473 8.63261 11.5 8.5 11.5C8.23479 11.5 7.98043 11.3946 7.7929 11.2071C7.60536 11.0196 7.5 10.7652 7.5 10.5V8C7.36739 8 7.24022 7.94732 7.14645 7.85355C7.05268 7.75979 7 7.63261 7 7.5C7 7.36739 7.05268 7.24021 7.14645 7.14645C7.24022 7.05268 7.36739 7 7.5 7C7.76522 7 8.01957 7.10536 8.20711 7.29289C8.39465 7.48043 8.5 7.73478 8.5 8V10.5C8.63261 10.5 8.75979 10.5527 8.85356 10.6464C8.94732 10.7402 9 10.8674 9 11ZM7 5.25C7 5.10166 7.04399 4.95666 7.1264 4.83332C7.20881 4.70999 7.32595 4.61386 7.46299 4.55709C7.60003 4.50032 7.75083 4.48547 7.89632 4.51441C8.04181 4.54335 8.17544 4.61478 8.28033 4.71967C8.38522 4.82456 8.45665 4.9582 8.48559 5.10368C8.51453 5.24917 8.49968 5.39997 8.44291 5.53701C8.38615 5.67406 8.29002 5.79119 8.16668 5.8736C8.04334 5.95601 7.89834 6 7.75 6C7.55109 6 7.36032 5.92098 7.21967 5.78033C7.07902 5.63968 7 5.44891 7 5.25Z"
+                                        fill="#0072B1"/>
+                                </svg>
+                            </h3>
+                            <div class="select-box">
+                                <select name="meeting_platform" class="form-control" id="meeting_platform">
+                                    <option>--Select Platform--</option>
+                                    <option value="Zoom" @if($gigData->meeting_platform == 'Zoom')  selected @endif>
+                                        Zoom
+                                    </option>
+                                    <option
+                                        value="Google" @if($gigData->meeting_platform == 'Google')  selected @endif>
+                                        Google Meet
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
 
                         <div class=" col-md-6 col-sm-12 " id="lesson_type_main_div"
                              @if ($gigData->class_type == 'Video') style="display: none" @endif>
@@ -358,15 +382,36 @@
                                         @if ($gigData->recurring_type == 'OneDay')
                                             <option value="OneDay" class="fa" selected>One-Day Class</option>
                                             <option value="Recurring" class="fa">Recurring</option>
+                                            <option value="Trial" class="fa">Trial Class</option>
+                                        @elseif ($gigData->recurring_type == 'Trial')
+                                            <option value="OneDay" class="fa">One-Day Class</option>
+                                            <option value="Recurring" class="fa">Recurring</option>
+                                            <option value="Trial" class="fa" selected>Trial Class</option>
                                         @else
                                             <option value="OneDay" class="fa">One-Day Class</option>
                                             <option value="Recurring" class="fa" selected>Recurring</option>
+                                            <option value="Trial" class="fa">Trial Class</option>
                                         @endif
 
                                     </select>
                                 </div>
                             </div>
 
+                            <div class="col-md-6 col-sm-12" id="trial_type_main"
+                                 @if($gigData->recurring_type != 'Trial') style="display: none;" @endif>
+                                <h3 class="Select-Heading mt-2">Trial Class Type</h3>
+                                <div class="select-box">
+                                    <select name="trial_type" id="trial_type" class="fa">
+                                        @if (isset($gigData->trial_type) && $gigData->trial_type == 'Free')
+                                            <option value="Free" class="fa" selected>Free Trial (30 min)</option>
+                                            <option value="Paid" class="fa">Paid Trial (Flexible)</option>
+                                        @else
+                                            <option value="Free" class="fa">Free Trial (30 min)</option>
+                                            <option value="Paid" class="fa" selected>Paid Trial (Flexible)</option>
+                                        @endif
+                                    </select>
+                                </div>
+                            </div>
 
                             <div class="col-md-6 col-sm-12 " id="group_type_main"
                                  @if ($gigData->group_type == null) style="display: none" @endif >
@@ -1019,7 +1064,39 @@
 
         if (type == 'Online') {
             const class_type = document.getElementById('class_type').value;
+            const recurring_type = document.getElementById('recurring_type') ? document.getElementById('recurring_type').value : '';
 
+            // Meeting Platform Validation for Live Classes
+            if (class_type == 'Live') {
+                const meeting_platform = document.getElementById('meeting_platform').value;
+
+                if (!meeting_platform) {
+                    toastr.options = {
+                        "closeButton": true,
+                        "progressBar": true,
+                        "timeOut": "10000",
+                        "extendedTimeOut": "4410000"
+                    }
+                    toastr.error("Please select a meeting platform!");
+                    valid = false;
+                    return false;
+                }
+            }
+
+            // Trial Class Validation
+            if (recurring_type == 'Trial') {
+                if (class_type != 'Live') {
+                    toastr.options = {
+                        "closeButton": true,
+                        "progressBar": true,
+                        "timeOut": "10000",
+                        "extendedTimeOut": "4410000"
+                    }
+                    toastr.error("Trial class must be Live class!");
+                    valid = false;
+                    return false;
+                }
+            }
 
             if (class_type == 'Video') {
 
@@ -1272,9 +1349,9 @@
             $('#recurring_type').empty();
             if (payment_type == 'Subscription') {
                 $('#recurring_type').append('<option value="Recurring" class="fa" aria-hidden="true">Recurring</option>');
-
+                $('#trial_type_main').hide();
             } else {
-                $('#recurring_type').append('<option value="OneDay" class="fa" aria-hidden="true">One-Day Class</option> <option value="Recurring" class="fa" aria-hidden="true">Recurring</option>');
+                $('#recurring_type').append('<option value="OneDay" class="fa" aria-hidden="true">One-Day Class</option> <option value="Recurring" class="fa" aria-hidden="true">Recurring</option> <option value="Trial" class="fa" aria-hidden="true">Trial Class</option>');
 
             }
             GroupShow();
@@ -1284,10 +1361,12 @@
             if (class_type == 'Video') {
                 $('#recurring_type_main').hide();
                 $('#lesson_type_main_div').hide();
+                $('#meeting_platform_main').hide();
 
             } else {
                 $('#recurring_type_main').show();
                 $('#lesson_type_main_div').show();
+                checkMeetingPlatformVisibility();
 
             }
             GroupShow();
@@ -1306,6 +1385,14 @@
         });
 
         $('#recurring_type').on('change', function () {
+            var recurring_type = $('#recurring_type').val();
+
+            // Show/hide trial type selector
+            if (recurring_type == 'Trial') {
+                $('#trial_type_main').show();
+            } else {
+                $('#trial_type_main').hide();
+            }
 
             GroupShow();
         });
@@ -1317,6 +1404,15 @@
             var lesson_type = $('#lesson_type').val();
             var payment_type = $('#payment_type').val();
             var recurring_type = $('#recurring_type').val();
+
+            // Trial Class Validation
+            if (recurring_type == 'Trial') {
+                if (class_type != 'Live') {
+                    toastr.error('Trial class must be Live class');
+                    $('#recurring_type').val('Recurring');
+                    return;
+                }
+            }
 
             if (class_type == 'Live' && lesson_type == 'Group') {
                 $('#group_type_main').show();
@@ -1334,6 +1430,19 @@
             } else {
                 $('#group_type_main').css('display', 'none');
                 $('#group_type_main').hide();
+            }
+        }
+
+        function checkMeetingPlatformVisibility() {
+            var class_type = $('#class_type').val();
+
+            if (class_type == 'Live') {
+                $('#meeting_platform_main').show();
+                $('#meeting_platform_main').css('display', 'block');
+            } else {
+                $('#meeting_platform_main').hide();
+                $('#meeting_platform_main').css('display', 'none');
+                $('#meeting_platform').val(''); // Clear selection
             }
         }
 

@@ -554,6 +554,37 @@
 
                     @if ($gig->service_role == 'Class' )
                         <div class="service-payment-sec">
+                            {{-- Trial Class Badge --}}
+                            @if ($gigData->recurring_type == 'Trial')
+                                <div class="row mb-3">
+                                    <div class="col-md-12">
+                                        @if ($gig->trial_type == 'Free')
+                                            <div class="alert alert-success"
+                                                 style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px; padding: 12px 20px; border-radius: 8px; background-color: #d4edda; border: 1px solid #c3e6cb;">
+                                                <i class="fas fa-gift" style="font-size: 24px; color: #28a745;"></i>
+                                                <div>
+                                                    <strong style="font-size: 16px; color: #155724;">🎉 FREE TRIAL
+                                                        CLASS</strong>
+                                                    <p style="margin: 0; font-size: 14px; color: #155724;">No payment
+                                                        required • 30 minutes session • Perfect to get started!</p>
+                                                </div>
+                                            </div>
+                                        @else
+                                            <div class="alert alert-info"
+                                                 style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px; padding: 12px 20px; border-radius: 8px; background-color: #d1ecf1; border: 1px solid #bee5eb;">
+                                                <i class="fas fa-star" style="font-size: 24px; color: #0c5460;"></i>
+                                                <div>
+                                                    <strong style="font-size: 16px; color: #0c5460;">⭐ PAID TRIAL
+                                                        CLASS</strong>
+                                                    <p style="margin: 0; font-size: 14px; color: #0c5460;">Try before
+                                                        committing • {{$totalMinutes}} minutes session</p>
+                                                </div>
+                                            </div>
+                                        @endif
+                                    </div>
+                                </div>
+                            @endif
+
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="service-pay">
@@ -563,9 +594,14 @@
                                             $rate = ($gig->lesson_type == 'Group') ? (($gigData->group_type == 'Both' || $gigData->group_type == 'Public') ? $gig->public_rate : $gig->private_rate ) : $gig->rate ;
                                             $payment_type = ($gig->payment_type == 'OneOff') ? 'One-off' : 'Subscription' ;
                                             $minors = ($gigPayment->minor_attend == 1) ? 'Suitable for minors & adults  ('.$gigPayment->age_limit.'+)  ' : 'Only suitable for adults (18+)' ;
-
                                         @endphp
-                                        <p>From ${{$rate}}   </p>
+                                        @if ($gigData->recurring_type == 'Trial' && $gig->trial_type == 'Free')
+                                            <p style="font-size: 24px; font-weight: bold; color: #28a745;">FREE <small
+                                                    style="font-size: 14px; color: #666;">(No payment required)</small>
+                                            </p>
+                                        @else
+                                            <p>From ${{$rate}}   </p>
+                                        @endif
                                     </div>
                                 </div>
                                 <div class="col-md-6">
@@ -576,9 +612,18 @@
                                             list($hours, $minutes) = explode(':', $duration);
                                             $totalMinutes = ($hours * 60) + $minutes;
                                         @endphp
-                                        <p>{{$gig->service_type}} {{$gig->service_role}} | {{$lesson_type}} Booking
-                                            | {{$payment_type}} Payment | {{$totalMinutes }} mins
-                                        </p>
+                                        @if ($gigData->recurring_type == 'Trial')
+                                            <p>
+                                                <span
+                                                    style="background-color: #ffc107; color: #000; padding: 3px 8px; border-radius: 4px; font-weight: 600; font-size: 12px;">TRIAL CLASS</span>
+                                                {{$gig->service_type}} {{$gig->service_role}} | {{$lesson_type}} Booking
+                                                | {{$totalMinutes}} mins
+                                            </p>
+                                        @else
+                                            <p>{{$gig->service_type}} {{$gig->service_role}} | {{$lesson_type}} Booking
+                                                | {{$payment_type}} Payment | {{$totalMinutes }} mins
+                                            </p>
+                                        @endif
                                     </div>
                                 </div>
                             </div>
@@ -959,12 +1004,8 @@
 
                                 <div class="services-tabs-section">
                                     <div class="tabs">
-
-
                                         <div class="tab-panel" role="tabpanel" id="panel-1" aria-labelledby="tab-1"
                                              aria-hidden="false">
-
-
                                             <h2>Description:</h2>
                                             <div class="description-sec">
                                                 <p> {!! $gigData->description !!} </p>
@@ -1049,21 +1090,14 @@
                                                                         </div>
                                                                     </div>
                                                                 @endif
-
-
                                                             </div>
                                                         </div>
-
                                                     </div>
                                                 </div>
                                             </div>
-
                                         </div>
-
-
                                     </div>
                                 </div>
-
                             @endif
 
                             @if (Auth::user())
@@ -1078,11 +1112,50 @@
                                 </a>
                             @endif
                             @if (Auth::user())
-                                <button onclick="ServicePayemnt();" class="btn booking-btn">Complete Booking</button>
+                                <a
+                                    href="#"
+                                    type="button"
+                                    class="btn contact-btn"
+                                    data-bs-toggle="modal"
+                                    id="contact-us"
+                                    data-bs-target="#contact-me-modal"
+                                >Contact Me
+                                </a>
+                            @endif
+                            @if (Auth::user())
+                                @if ($gigData->recurring_type == 'Trial' && $gig->trial_type == 'Free')
+                                    <button onclick="ServicePayemnt();" class="btn booking-btn"
+                                            style="background-color: #28a745; border-color: #28a745;">
+                                        <i class="fas fa-gift"></i> Book Free Trial - No Payment Required
+                                    </button>
+                                @elseif ($gigData->recurring_type == 'Trial' && $gig->trial_type == 'Paid')
+                                    <button onclick="ServicePayemnt();" class="btn booking-btn"
+                                            style="background-color: #17a2b8; border-color: #17a2b8;">
+                                        <i class="fas fa-star"></i> Book Paid Trial - ${{$rate}}
+                                    </button>
+                                @else
+                                    <button onclick="ServicePayemnt();" class="btn booking-btn">Complete Booking
+                                    </button>
+                                @endif
                             @else
-                                <button data-bs-toggle="modal" data-bs-target="#exampleModal" class="btn booking-btn">
-                                    Complete Booking
-                                </button>
+                                @if ($gigData->recurring_type == 'Trial' && $gig->trial_type == 'Free')
+                                    <button data-bs-toggle="modal" data-bs-target="#exampleModal"
+                                            class="btn booking-btn"
+                                            style="background-color: #28a745; border-color: #28a745;">
+                                        <i class="fas fa-gift"></i> Book Free Trial - No Payment Required
+                                    </button>
+                                @elseif ($gigData->recurring_type == 'Trial' && $gig->trial_type == 'Paid')
+                                    <button data-bs-toggle="modal" data-bs-target="#exampleModal"
+                                            class="btn booking-btn"
+                                            style="background-color: #17a2b8; border-color: #17a2b8;">
+                                        <i class="fas fa-star"></i> Book Paid Trial - ${{$rate}}
+                                    </button>
+                                @else
+                                    <button data-bs-toggle="modal" data-bs-target="#exampleModal"
+                                            class="btn booking-btn">
+                                        Complete Booking
+                                    </button>
+                                @endif
                             @endif
                         </div>
                     </div>
@@ -1107,7 +1180,6 @@
                         <div class="owl-stage-outer">
                             <div class="owl-stage"
                                  style="transform: translate3d(-7656px, 0px, 0px); transition: 0.25s; width: 11140px; padding-left: 2px; padding-right: 2px;">
-
                                 @foreach($gig->all_reviews as $review)
                                     <div class="owl-item cloned" style="width: 676px; margin-right: 20px;">
                                         <div class="card  card-slider">
@@ -1129,287 +1201,6 @@
                                         </div>
                                     </div>
                                 @endforeach
-                                {{--                            <div class="owl-item cloned" style="width: 676px; margin-right: 20px;">--}}
-                                {{--                                <div class="card  card-slider">--}}
-                                {{--                                    <div class="card-body">--}}
-                                {{--                                        <div class="d-flex"><img src="assets/public-site/asset/img/IMG1.png"--}}
-                                {{--                                                                 class="rounded-circle">--}}
-                                {{--                                            <div class="d-flex flex-column">--}}
-                                {{--                                                <div class="name">Thomas H.</div>--}}
-                                {{--                                                <p class="text-muted">Student</p>--}}
-                                {{--                                            </div>--}}
-                                {{--                                        </div>--}}
-                                {{--                                        <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit.--}}
-                                {{--                                            Amet sollicitudin tristique ac praesent ullamcorper nisl eu accumsan.Lorem--}}
-                                {{--                                            ipsum dolor sit amet, consectetur adipiscing elit. Amet sollicitudin--}}
-                                {{--                                            tristique ac praesent--}}
-                                {{--                                            ullamcorper nisl eu accumsan. </p>--}}
-                                {{--                                    </div>--}}
-                                {{--                                </div>--}}
-                                {{--                            </div>--}}
-                                {{--                            <div class="owl-item cloned" style="width: 676px; margin-right: 20px;">--}}
-                                {{--                                <div class="card  card-slider">--}}
-                                {{--                                    <div class="card-body">--}}
-                                {{--                                        <div class="d-flex"><img--}}
-                                {{--                                                src="assets/public-site/asset/img/slidercommentimg1.png"--}}
-                                {{--                                                class="rounded-circle">--}}
-                                {{--                                            <div class="d-flex flex-column">--}}
-                                {{--                                                <div class="name">Thomas H.</div>--}}
-                                {{--                                                <p class="text-muted">Student</p>--}}
-                                {{--                                            </div>--}}
-                                {{--                                        </div>--}}
-                                {{--                                        <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit.--}}
-                                {{--                                            Amet sollicitudin tristique ac praesent ullamcorper nisl eu accumsan.Lorem--}}
-                                {{--                                            ipsum dolor sit amet, consectetur adipiscing elit. Amet sollicitudin--}}
-                                {{--                                            tristique ac praesent--}}
-                                {{--                                            ullamcorper nisl eu accumsan. </p>--}}
-                                {{--                                    </div>--}}
-                                {{--                                </div>--}}
-                                {{--                            </div>--}}
-                                {{--                            <div class="owl-item cloned" style="width: 676px; margin-right: 20px;">--}}
-                                {{--                                <div class="card  card-slider">--}}
-                                {{--                                    <div class="card-body">--}}
-                                {{--                                        <div class="d-flex"><img src="assets/public-site/asset/img/IMG1.png"--}}
-                                {{--                                                                 class="rounded-circle">--}}
-                                {{--                                            <div class="d-flex flex-column">--}}
-                                {{--                                                <div class="name">Thomas H.</div>--}}
-                                {{--                                                <p class="text-muted">Student</p>--}}
-                                {{--                                            </div>--}}
-                                {{--                                        </div>--}}
-                                {{--                                        <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit.--}}
-                                {{--                                            Amet sollicitudin tristique ac praesent ullamcorper nisl eu accumsan.Lorem--}}
-                                {{--                                            ipsum dolor sit amet, consectetur adipiscing elit. Amet sollicitudin--}}
-                                {{--                                            tristique ac praesent--}}
-                                {{--                                            ullamcorper nisl eu accumsan. </p>--}}
-                                {{--                                    </div>--}}
-                                {{--                                </div>--}}
-                                {{--                            </div>--}}
-                                {{--                            <div class="owl-item" style="width: 676px; margin-right: 20px;">--}}
-                                {{--                                <div class="card card-slider">--}}
-                                {{--                                    <div class="card-body">--}}
-                                {{--                                        <div class="d-flex"><img--}}
-                                {{--                                                src="assets/public-site/asset/img/slidercommentimg1.png"--}}
-                                {{--                                                class="rounded-circle">--}}
-                                {{--                                            <div class="d-flex flex-column">--}}
-                                {{--                                                <div class="name">Thomas H.</div>--}}
-                                {{--                                                <p class="text-muted">Student</p>--}}
-                                {{--                                            </div>--}}
-                                {{--                                        </div>--}}
-                                {{--                                        <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit.--}}
-                                {{--                                            Amet sollicitudin tristique ac praesent ullamcorper nisl eu accumsan.Lorem--}}
-                                {{--                                            ipsum dolor sit amet, consectetur adipiscing elit. Amet sollicitudin--}}
-                                {{--                                            tristique ac praesent--}}
-                                {{--                                            ullamcorper nisl eu accumsan. </p>--}}
-                                {{--                                    </div>--}}
-                                {{--                                </div>--}}
-                                {{--                            </div>--}}
-                                {{--                            <div class="owl-item" style="width: 676px; margin-right: 20px;">--}}
-                                {{--                                <div class="card card-slider">--}}
-                                {{--                                    <div class="card-body">--}}
-                                {{--                                        <div class="d-flex">--}}
-                                {{--                                            <div class="rounded-circle review-profile">--}}
-                                {{--                                                <h3>T</h3>--}}
-                                {{--                                            </div>--}}
-                                {{--                                            <div class="d-flex flex-column">--}}
-                                {{--                                                <div class="name">Thomas H.</div>--}}
-                                {{--                                                <p class="text-muted">Student</p>--}}
-                                {{--                                            </div>--}}
-                                {{--                                        </div>--}}
-                                {{--                                        <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit.--}}
-                                {{--                                            Amet sollicitudin tristique ac praesent ullamcorper nisl eu accumsan.Lorem--}}
-                                {{--                                            ipsum dolor sit amet, consectetur adipiscing elit. Amet sollicitudin--}}
-                                {{--                                            tristique ac praesent--}}
-                                {{--                                            ullamcorper nisl eu accumsan. </p>--}}
-                                {{--                                    </div>--}}
-                                {{--                                </div>--}}
-                                {{--                            </div>--}}
-                                {{--                            <div class="owl-item" style="width: 676px; margin-right: 20px;">--}}
-                                {{--                                <div class="card  card-slider">--}}
-                                {{--                                    <div class="card-body">--}}
-                                {{--                                        <div class="d-flex"><img--}}
-                                {{--                                                src="assets/public-site/asset/img/slidercommentimg1.png"--}}
-                                {{--                                                class="rounded-circle">--}}
-                                {{--                                            <div class="d-flex flex-column">--}}
-                                {{--                                                <div class="name">Thomas H.</div>--}}
-                                {{--                                                <p class="text-muted">Student</p>--}}
-                                {{--                                            </div>--}}
-                                {{--                                        </div>--}}
-                                {{--                                        <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit.--}}
-                                {{--                                            Amet sollicitudin tristique ac praesent ullamcorper nisl eu accumsan.Lorem--}}
-                                {{--                                            ipsum dolor sit amet, consectetur adipiscing elit. Amet sollicitudin--}}
-                                {{--                                            tristique ac praesent--}}
-                                {{--                                            ullamcorper nisl eu accumsan. </p>--}}
-                                {{--                                    </div>--}}
-                                {{--                                </div>--}}
-                                {{--                            </div>--}}
-                                {{--                            <div class="owl-item" style="width: 676px; margin-right: 20px;">--}}
-                                {{--                                <div class="card  card-slider">--}}
-                                {{--                                    <div class="card-body">--}}
-                                {{--                                        <div class="d-flex"><img src="assets/public-site/asset/img/IMG1.png"--}}
-                                {{--                                                                 class="rounded-circle">--}}
-                                {{--                                            <div class="d-flex flex-column">--}}
-                                {{--                                                <div class="name">Thomas H.</div>--}}
-                                {{--                                                <p class="text-muted">Student</p>--}}
-                                {{--                                            </div>--}}
-                                {{--                                        </div>--}}
-                                {{--                                        <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit.--}}
-                                {{--                                            Amet sollicitudin tristique ac praesent ullamcorper nisl eu accumsan.Lorem--}}
-                                {{--                                            ipsum dolor sit amet, consectetur adipiscing elit. Amet sollicitudin--}}
-                                {{--                                            tristique ac praesent--}}
-                                {{--                                            ullamcorper nisl eu accumsan. </p>--}}
-                                {{--                                    </div>--}}
-                                {{--                                </div>--}}
-                                {{--                            </div>--}}
-                                {{--                            <div class="owl-item" style="width: 676px; margin-right: 20px;">--}}
-                                {{--                                <div class="card  card-slider">--}}
-                                {{--                                    <div class="card-body">--}}
-                                {{--                                        <div class="d-flex"><img--}}
-                                {{--                                                src="assets/public-site/asset/img/slidercommentimg1.png"--}}
-                                {{--                                                class="rounded-circle">--}}
-                                {{--                                            <div class="d-flex flex-column">--}}
-                                {{--                                                <div class="name">Thomas H.</div>--}}
-                                {{--                                                <p class="text-muted">Student</p>--}}
-                                {{--                                            </div>--}}
-                                {{--                                        </div>--}}
-                                {{--                                        <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit.--}}
-                                {{--                                            Amet sollicitudin tristique ac praesent ullamcorper nisl eu accumsan.Lorem--}}
-                                {{--                                            ipsum dolor sit amet, consectetur adipiscing elit. Amet sollicitudin--}}
-                                {{--                                            tristique ac praesent--}}
-                                {{--                                            ullamcorper nisl eu accumsan. </p>--}}
-                                {{--                                    </div>--}}
-                                {{--                                </div>--}}
-                                {{--                            </div>--}}
-                                {{--                            <div class="owl-item" style="width: 676px; margin-right: 20px;">--}}
-                                {{--                                <div class="card  card-slider">--}}
-                                {{--                                    <div class="card-body">--}}
-                                {{--                                        <div class="d-flex"><img src="assets/public-site/asset/img/IMG1.png"--}}
-                                {{--                                                                 class="rounded-circle">--}}
-                                {{--                                            <div class="d-flex flex-column">--}}
-                                {{--                                                <div class="name">Thomas H.</div>--}}
-                                {{--                                                <p class="text-muted">Student</p>--}}
-                                {{--                                            </div>--}}
-                                {{--                                        </div>--}}
-                                {{--                                        <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit.--}}
-                                {{--                                            Amet sollicitudin tristique ac praesent ullamcorper nisl eu accumsan.Lorem--}}
-                                {{--                                            ipsum dolor sit amet, consectetur adipiscing elit. Amet sollicitudin--}}
-                                {{--                                            tristique ac praesent--}}
-                                {{--                                            ullamcorper nisl eu accumsan. </p>--}}
-                                {{--                                    </div>--}}
-                                {{--                                </div>--}}
-                                {{--                            </div>--}}
-                                {{--                            <div class="owl-item" style="width: 676px; margin-right: 20px;">--}}
-                                {{--                                <div class="card  card-slider">--}}
-                                {{--                                    <div class="card-body">--}}
-                                {{--                                        <div class="d-flex"><img--}}
-                                {{--                                                src="assets/public-site/asset/img/slidercommentimg1.png"--}}
-                                {{--                                                class="rounded-circle">--}}
-                                {{--                                            <div class="d-flex flex-column">--}}
-                                {{--                                                <div class="name">Thomas H.</div>--}}
-                                {{--                                                <p class="text-muted">Student</p>--}}
-                                {{--                                            </div>--}}
-                                {{--                                        </div>--}}
-                                {{--                                        <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit.--}}
-                                {{--                                            Amet sollicitudin tristique ac praesent ullamcorper nisl eu accumsan.Lorem--}}
-                                {{--                                            ipsum dolor sit amet, consectetur adipiscing elit. Amet sollicitudin--}}
-                                {{--                                            tristique ac praesent--}}
-                                {{--                                            ullamcorper nisl eu accumsan. </p>--}}
-                                {{--                                    </div>--}}
-                                {{--                                </div>--}}
-                                {{--                            </div>--}}
-                                {{--                            <div class="owl-item active" style="width: 676px; margin-right: 20px;">--}}
-                                {{--                                <div class="card  card-slider">--}}
-                                {{--                                    <div class="card-body">--}}
-                                {{--                                        <div class="d-flex"><img src="assets/public-site/asset/img/IMG1.png"--}}
-                                {{--                                                                 class="rounded-circle">--}}
-                                {{--                                            <div class="d-flex flex-column">--}}
-                                {{--                                                <div class="name">Thomas H.</div>--}}
-                                {{--                                                <p class="text-muted">Student</p>--}}
-                                {{--                                            </div>--}}
-                                {{--                                        </div>--}}
-                                {{--                                        <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit.--}}
-                                {{--                                            Amet sollicitudin tristique ac praesent ullamcorper nisl eu accumsan.Lorem--}}
-                                {{--                                            ipsum dolor sit amet, consectetur adipiscing elit. Amet sollicitudin--}}
-                                {{--                                            tristique ac praesent--}}
-                                {{--                                            ullamcorper nisl eu accumsan. </p>--}}
-                                {{--                                    </div>--}}
-                                {{--                                </div>--}}
-                                {{--                            </div>--}}
-                                {{--                            <div class="owl-item cloned active" style="width: 676px; margin-right: 20px;">--}}
-                                {{--                                <div class="card card-slider">--}}
-                                {{--                                    <div class="card-body">--}}
-                                {{--                                        <div class="d-flex"><img--}}
-                                {{--                                                src="assets/public-site/asset/img/slidercommentimg1.png"--}}
-                                {{--                                                class="rounded-circle">--}}
-                                {{--                                            <div class="d-flex flex-column">--}}
-                                {{--                                                <div class="name">Thomas H.</div>--}}
-                                {{--                                                <p class="text-muted">Student</p>--}}
-                                {{--                                            </div>--}}
-                                {{--                                        </div>--}}
-                                {{--                                        <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit.--}}
-                                {{--                                            Amet sollicitudin tristique ac praesent ullamcorper nisl eu accumsan.Lorem--}}
-                                {{--                                            ipsum dolor sit amet, consectetur adipiscing elit. Amet sollicitudin--}}
-                                {{--                                            tristique ac praesent--}}
-                                {{--                                            ullamcorper nisl eu accumsan. </p>--}}
-                                {{--                                    </div>--}}
-                                {{--                                </div>--}}
-                                {{--                            </div>--}}
-                                {{--                            <div class="owl-item cloned" style="width: 676px; margin-right: 20px;">--}}
-                                {{--                                <div class="card card-slider">--}}
-                                {{--                                    <div class="card-body">--}}
-                                {{--                                        <div class="d-flex">--}}
-                                {{--                                            <div class="rounded-circle review-profile">--}}
-                                {{--                                                <h3>T</h3>--}}
-                                {{--                                            </div>--}}
-                                {{--                                            <div class="d-flex flex-column">--}}
-                                {{--                                                <div class="name">Thomas H.</div>--}}
-                                {{--                                                <p class="text-muted">Student</p>--}}
-                                {{--                                            </div>--}}
-                                {{--                                        </div>--}}
-                                {{--                                        <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit.--}}
-                                {{--                                            Amet sollicitudin tristique ac praesent ullamcorper nisl eu accumsan.Lorem--}}
-                                {{--                                            ipsum dolor sit amet, consectetur adipiscing elit. Amet sollicitudin--}}
-                                {{--                                            tristique ac praesent--}}
-                                {{--                                            ullamcorper nisl eu accumsan. </p>--}}
-                                {{--                                    </div>--}}
-                                {{--                                </div>--}}
-                                {{--                            </div>--}}
-                                {{--                            <div class="owl-item cloned" style="width: 676px; margin-right: 20px;">--}}
-                                {{--                                <div class="card  card-slider">--}}
-                                {{--                                    <div class="card-body">--}}
-                                {{--                                        <div class="d-flex"><img--}}
-                                {{--                                                src="assets/public-site/asset/img/slidercommentimg1.png"--}}
-                                {{--                                                class="rounded-circle">--}}
-                                {{--                                            <div class="d-flex flex-column">--}}
-                                {{--                                                <div class="name">Thomas H.</div>--}}
-                                {{--                                                <p class="text-muted">Student</p>--}}
-                                {{--                                            </div>--}}
-                                {{--                                        </div>--}}
-                                {{--                                        <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit.--}}
-                                {{--                                            Amet sollicitudin tristique ac praesent ullamcorper nisl eu accumsan.Lorem--}}
-                                {{--                                            ipsum dolor sit amet, consectetur adipiscing elit. Amet sollicitudin--}}
-                                {{--                                            tristique ac praesent--}}
-                                {{--                                            ullamcorper nisl eu accumsan. </p>--}}
-                                {{--                                    </div>--}}
-                                {{--                                </div>--}}
-                                {{--                            </div>--}}
-                                {{--                            <div class="owl-item cloned" style="width: 676px; margin-right: 20px;">--}}
-                                {{--                                <div class="card  card-slider">--}}
-                                {{--                                    <div class="card-body">--}}
-                                {{--                                        <div class="d-flex"><img src="assets/public-site/asset/img/IMG1.png"--}}
-                                {{--                                                                 class="rounded-circle">--}}
-                                {{--                                            <div class="d-flex flex-column">--}}
-                                {{--                                                <div class="name">Thomas H.</div>--}}
-                                {{--                                                <p class="text-muted">Student</p>--}}
-                                {{--                                            </div>--}}
-                                {{--                                        </div>--}}
-                                {{--                                        <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit.--}}
-                                {{--                                            Amet sollicitudin tristique ac praesent ullamcorper nisl eu accumsan.Lorem--}}
-                                {{--                                            ipsum dolor sit amet, consectetur adipiscing elit. Amet sollicitudin--}}
-                                {{--                                            tristique ac praesent--}}
-                                {{--                                            ullamcorper nisl eu accumsan. </p>--}}
-                                {{--                                    </div>--}}
-                                {{--                                </div>--}}
-                                {{--                            </div>--}}
                             </div>
                         </div>
                         <div class="owl-nav">
@@ -1668,8 +1459,40 @@
 
                         </div>
                     </div>
+                </div>
+            </div>
         </form>
     </div>
+
+    {{-- Trial Class Information Box --}}
+    @if ($gigData->recurring_type == 'Trial')
+        <div class="row mt-3">
+            <div class="col-md-12">
+                <div class="alert"
+                     style="background-color: #e7f3ff; border-left: 4px solid #2196f3; padding: 15px; border-radius: 6px;">
+                    <h6 style="margin: 0 0 10px 0; color: #0d47a1; font-weight: 600;">
+                        <i class="fas fa-info-circle"></i> Trial Class Information
+                    </h6>
+                    <ul style="margin: 0; padding-left: 20px; color: #1565c0; font-size: 14px;">
+                        @if ($gig->trial_type == 'Free')
+                            <li>This is a <strong>FREE trial class</strong> - no payment required!</li>
+                            <li>Duration: <strong>30 minutes</strong></li>
+                        @else
+                            <li>This is a <strong>paid trial class</strong> at a special introductory price</li>
+                            <li>Duration: <strong>{{$totalMinutes}} minutes</strong></li>
+                        @endif
+                        <li>Meeting platform: <strong>Zoom</strong></li>
+                        <li>You'll receive a <strong>confirmation email</strong> immediately after booking</li>
+                        <li><strong>Zoom meeting link</strong> will be sent <strong>30 minutes before</strong> your
+                            class starts
+                        </li>
+                        <li>Make sure to check your email inbox and spam folder</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    @endif
+
     <div class="row">
         <div class="col-md-12 booking-notes service-notes">
             <h5>Notes</h5>
@@ -1705,13 +1528,19 @@
         </div>
     </div>
 </div>
-<div class="amount-sec amount-section">
+<div class="amount-sec amount-section container">
     <div class="row">
         <div class="col-md-12">
             @php
                 $rate = ($gig->lesson_type == 'Group') ? (($gigData->group_type == 'Both' || $gigData->group_type == 'Public') ? $gig->public_rate : $gig->private_rate ) : $gig->rate ;
             @endphp
-            <p class="float-start">Total Amount <span id="total_price">${{$rate}}</span></p>
+            @if ($gigData->recurring_type == 'Trial' && $gig->trial_type == 'Free')
+                <p class="float-start">Total Amount <span id="total_price"
+                                                          style="color: #28a745; font-weight: bold; font-size: 20px;">FREE</span>
+                </p>
+            @else
+                <p class="float-start">Total Amount <span id="total_price">${{$rate}}</span></p>
+            @endif
             <div class="float-end">
                 @if (Auth::user())
                     <a
@@ -1726,11 +1555,35 @@
                 @endif
 
                 @if (Auth::user())
-                    <button onclick="ServicePayemnt();" class="btn booking-btn">Complete Booking</button>
+                    @if ($gigData->recurring_type == 'Trial' && $gig->trial_type == 'Free')
+                        <button onclick="ServicePayemnt();" class="btn booking-btn"
+                                style="background-color: #28a745; border-color: #28a745;">
+                            <i class="fas fa-gift"></i> Book Free Trial
+                        </button>
+                    @elseif ($gigData->recurring_type == 'Trial' && $gig->trial_type == 'Paid')
+                        <button onclick="ServicePayemnt();" class="btn booking-btn"
+                                style="background-color: #17a2b8; border-color: #17a2b8;">
+                            <i class="fas fa-star"></i> Book Paid Trial
+                        </button>
+                    @else
+                        <button onclick="ServicePayemnt();" class="btn booking-btn">Complete Booking</button>
+                    @endif
                 @else
-                    <button data-bs-toggle="modal" data-bs-target="#exampleModal" class="btn booking-btn">Complete
-                        Booking
-                    </button>
+                    @if ($gigData->recurring_type == 'Trial' && $gig->trial_type == 'Free')
+                        <button data-bs-toggle="modal" data-bs-target="#exampleModal" class="btn booking-btn"
+                                style="background-color: #28a745; border-color: #28a745;">
+                            <i class="fas fa-gift"></i> Book Free Trial
+                        </button>
+                    @elseif ($gigData->recurring_type == 'Trial' && $gig->trial_type == 'Paid')
+                        <button data-bs-toggle="modal" data-bs-target="#exampleModal" class="btn booking-btn"
+                                style="background-color: #17a2b8; border-color: #17a2b8;">
+                            <i class="fas fa-star"></i> Book Paid Trial
+                        </button>
+                    @else
+                        <button data-bs-toggle="modal" data-bs-target="#exampleModal" class="btn booking-btn">Complete
+                            Booking
+                        </button>
+                    @endif
                 @endif
             </div>
         </div>
@@ -2100,6 +1953,8 @@
         let frequency = parseInt($("#frequency").val()) || 1;
         let duration = parseInt('<?= $gigPayment->duration; ?>') || 120; // Duration in minutes (2 hours)
         let groupType = $("#group_type").val() || null;
+        let recurring_type = @json($gigData->recurring_type);
+        let is_trial = (recurring_type == 'Trial');
 
         if (lesson_type == 'Group') {
             let guests = parseInt($("#guests").val()) || 0;
@@ -2147,7 +2002,6 @@
                     alert("Guests minimmum equal to childs are allowed!");
                     return;
                 }
-                console.log(emails.length);
 
                 if (emails.length !== totalPeople) {
                     alert(`You must enter exactly ${totalPeople} email addresses!`);
@@ -2172,10 +2026,42 @@
 
         var class_time = $('#teacher_class_time').val();
 
+        // For trial classes, check if user has selected a time slot from available repeat days
+        if (is_trial) {
+            // Check if pre-scheduled date/time exists (legacy support)
+            @if($gigPayment->start_date && $gigPayment->start_time)
+            // If teacher has set a specific pre-scheduled time, use it
+            if (!class_time || class_time === '') {
+                let teacher_scheduled_time = '{{ $gigPayment->start_date }} {{ $gigPayment->start_time }}';
+                let teacher_timezone = '{{ $gig->user->timezone ?? "UTC" }}';
+                let user_timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
-        if (class_time == '') {
-            alert(`Minimum 1 time slot is required.`);
-            return false;
+                // Set the hidden fields with the scheduled time
+                $('#teacher_class_time').val(teacher_scheduled_time);
+                $('#class_time').val(teacher_scheduled_time);
+                $('#teacher_time_zone').val(teacher_timezone);
+                $('#user_time_zone').val(user_timezone);
+
+                class_time = teacher_scheduled_time;
+            }
+            @else
+            // No pre-scheduled time, user must select from calendar
+            @endif
+
+            // Re-check the value after potential pre-scheduling
+            class_time = $('#teacher_class_time').val();
+
+            // If still no time selected, show error
+            if (!class_time || class_time === '') {
+                alert('Please select a date & time for your trial class from the calendar below.');
+                return false;
+            }
+        } else {
+            // For regular classes, validate time slot selection
+            if (class_time == '') {
+                alert(`Minimum 1 time slot is required.`);
+                return false;
+            }
         }
 
 
@@ -2285,6 +2171,16 @@
 
 
         function GroupSize(Clicked) {
+            // Check if this is a free trial class
+            var isFreeTrialClass = '<?php echo ($gigData->recurring_type == "Trial" && $gig->trial_type == "Free") ? "true" : "false"; ?>';
+
+            if (isFreeTrialClass === 'true') {
+                // For free trials, always show FREE and return early
+                $('#total_price').html('<span style="color: #28a745; font-weight: bold; font-size: 20px;">FREE</span>');
+                $('#price').val(0);
+                return;
+            }
+
             var minors = parseInt('<?php echo $gigPayment->minor_attend; ?>');  // 1 = Allow Children, 0 = No Children
             var minors_limit = parseInt('<?php echo $gigPayment->childs; ?>');  // Max children allowed
             var group_type = $('#group_type').val();  // Public or Private
@@ -2347,6 +2243,15 @@
 
         // On Frequency Changes ============
         $('#frequency').on('change', function () {
+            // Check if this is a free trial class
+            var isFreeTrialClass = '<?php echo ($gigData->recurring_type == "Trial" && $gig->trial_type == "Free") ? "true" : "false"; ?>';
+
+            if (isFreeTrialClass === 'true') {
+                // For free trials, always show FREE and return early
+                $('#total_price').html('<span style="color: #28a745; font-weight: bold; font-size: 20px;">FREE</span>');
+                $('#price').val(0);
+                return;
+            }
 
             var minors = parseInt('<?php echo $gigPayment->minor_attend; ?>');  // 1 = Allow Children, 0 = No Children
             var minors_limit = parseInt('<?php echo $gigPayment->childs; ?>');  // Max children allowed
@@ -2658,8 +2563,6 @@
 
                 var maxDistance = parseInt("{{ $gigData->max_distance }}") || 100;
                 if (maxDistance === 30) maxDistance = 100; // 30+ miles means 100 miles max
-                console.log('Max Distance in service :' + maxDistance);
-                console.log('From My Location Distance in service :' + distance);
 
                 if (distance <= maxDistance) {
                     $('#my_location').val('Yes');
@@ -3255,10 +3158,12 @@
 
     (function ($) {
 
-        function generateTimeSlots(startTime, endTime, teacherTimeZone, userTimeZone, minStartTime = null) {
+        function generateTimeSlots(startTime, endTime, teacherTimeZone, userTimeZone, currentDate, minStartTime = null) {
             let slots = [];
-            let start = moment.tz(startTime, "HH:mm", teacherTimeZone);
-            let end = moment.tz(endTime, "HH:mm", teacherTimeZone);
+            // Create a full datetime by combining the date with the time in teacher's timezone
+            let dateStr = moment(currentDate).format("YYYY-MM-DD");
+            let start = moment.tz(`${dateStr} ${startTime}`, "YYYY-MM-DD HH:mm", teacherTimeZone);
+            let end = moment.tz(`${dateStr} ${endTime}`, "YYYY-MM-DD HH:mm", teacherTimeZone);
 
             while (start.isBefore(end)) {
                 let convertedTime = start.clone().tz(userTimeZone);
@@ -3280,6 +3185,7 @@
         let bookedTimes = @json($bookedTimes) ||
         [];
         let repeatDays = @json($repeatDays);
+
         let group_type = $('#group_type').val();
         let today = moment();
         let selectedDates = {};
@@ -3373,6 +3279,7 @@
                             repeatDay.end_time,
                             teacherTimeZone,
                             userTimeZone,
+                            currentDate,
                             currentDate.isSame(now, 'day') ? minStartTime : null
                         );
 
@@ -3431,6 +3338,7 @@
                 gigPayment.end_time,
                 teacherTimeZone,
                 userTimeZone,
+                startDate,
                 startDate.isSame(now, 'day') ? minStartTime : null
             );
 
@@ -3479,13 +3387,13 @@
             $("#myc-next-week").toggle(!(isSubscription && isAtMaxAllowedDate));
         }
 
-
         $("#picker").markyourcalendar({
             availability: availability,
             isMultiple: true,
             startDate: startDate.toDate(),
             onClick: function (ev, data) {
                 var frequency = $('#frequency').val() || 1; // Maximum allowed selections
+
                 var duration = gigPayment.duration; // Example: "2:30" or "00:30"
                 var durationParts = duration.split(":"); // Split into ["HH", "mm"]
 
@@ -3508,9 +3416,6 @@
                 let lastClickedDateTime = `${lastClickedParts[0]} ${lastClickedParts[1]}`; // Full date and time
                 let lastClickedMoment = moment(lastClickedDateTime, "YYYY-MM-DD HH:mm");
 
-                console.log("Last Clicked Date:", lastClickedMoment);
-                console.log("Last Clicked Time:", lastClickedDateTime);
-
                 if (!selectedDates[selectedDate]) {
                     selectedDates[selectedDate] = [];
                 }
@@ -3530,7 +3435,6 @@
 
 
                     if (diff < durationMinutes) {
-                        console.log(`Slot ${lastClickedDateTime} is too close to ${slotDateTime}. Removing selection.`);
                         isInvalid = true;
                         break; // Stop checking once we find an invalid slot
                     }
@@ -3596,6 +3500,7 @@
                         data.pop(); // Remove last clicked slot
                         return; // Stop execution if any error occurred
                     }
+
                     $("#selected-dates").html(html);
                     $("#selected_slots").val(selectedSlots.join("|*|"));
                     $("#class_time").val(selectedValues.join(","));
@@ -3640,8 +3545,6 @@
 
                 // Reapply the selected class to slots for the current date
                 setTimeout(() => {
-                    console.log(selectedDates);
-
                     $.each(selectedDates, function (date, times) {
                         $.each(times, function (index, time) {
                             selected_t_d = time.split(' ');
@@ -3732,8 +3635,6 @@
                             if (selectedDates[selectedDate]) {
                                 selectedDates[selectedDate] = selectedDates[selectedDate].filter(slot => !slotsToRemove.includes(slot));
                             }
-                            console.log(slotsToRemove);
-
 
 // Remove class from UI (deselect slots)
                             slotsToRemove.forEach(slot => {
@@ -3745,9 +3646,6 @@
 
                                 if (slotElement.length > 0) {
                                     slotElement.remove();  // Remove the slot from the UI
-                                    console.log("Removed slot:", slot);
-                                } else {
-                                    console.warn("Slot not found in UI:", slot);
                                 }
                             });
 
@@ -3761,12 +3659,8 @@
                             let slotParts = slot.split(" ");
                             let slotElement = $(`[data-date="${slotParts[0]}"][data-time="${slotParts[1]}"]`);
 
-
                             if (slotElement.length > 0) {
                                 slotElement.remove();  // Remove the slot from the UI
-                                console.log("Removed slot:", slot);
-                            } else {
-                                console.warn("Slot not found in UI:", slot);
                             }
 
                             alert(response.booked);
