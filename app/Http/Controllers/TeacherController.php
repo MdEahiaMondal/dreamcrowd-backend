@@ -859,10 +859,18 @@ class TeacherController extends Controller
             ->where('teacher_id', Auth::id())
             ->findOrFail($id);
 
+        // Check if reply can be edited/deleted (within 7 days)
+        $canEditReply = false;
+        if ($review->replies->isNotEmpty()) {
+            $reply = $review->replies->first();
+            $canEditReply = $reply->canEditOrDelete();
+        }
+
         return response()->json([
             'success' => true,
             'review' => $review,
             'can_edit' => $review->replies->isEmpty(),
+            'can_edit_reply' => $canEditReply,
             'service_title' => $this->getServiceTitle($review),
             'service_type' => $this->getServiceType($review),
             'service_image' => $this->getServiceImage($review)
@@ -988,6 +996,14 @@ class TeacherController extends Controller
             ], 404);
         }
 
+        // Check if reply is within 7-day edit window
+        if (!$reply->canEditOrDelete()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'You can only edit your reply within 7 days of posting it.'
+            ], 403);
+        }
+
         $request->validate([
             'cmnt' => 'required|string|max:1000'
         ]);
@@ -1025,6 +1041,14 @@ class TeacherController extends Controller
                 'success' => false,
                 'message' => 'Reply not found or unauthorized.'
             ], 404);
+        }
+
+        // Check if reply is within 7-day delete window
+        if (!$reply->canEditOrDelete()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'You can only delete your reply within 7 days of posting it.'
+            ], 403);
         }
 
         $reply->delete();

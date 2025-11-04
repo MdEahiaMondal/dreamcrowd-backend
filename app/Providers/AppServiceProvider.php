@@ -15,6 +15,11 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(\App\Services\NotificationService::class, function ($app) {
             return new \App\Services\NotificationService();
         });
+
+        // MessageService-কে singleton হিসেবে bind করছি
+        $this->app->singleton(\App\Services\MessageService::class, function ($app) {
+            return new \App\Services\MessageService();
+        });
     }
 
     /**

@@ -13,9 +13,29 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use App\Services\MessageService;
+
 
 class MessagesController extends Controller
 {
+    protected $messageService;
+
+    public function __construct(MessageService $messageService)
+    {
+        // Laravel automatically inject করবে
+        $this->messageService = $messageService;
+    }
+
+    public function getUnreadMessageCount($userId)
+    {
+        info($userId);
+        // Count unread messages for the given user ID
+        $unreadCount = Chat::where('receiver_id', $userId)
+            ->where('status', 0)
+            ->count();
+
+        return response()->json(['count' => $unreadCount]);
+    }
 
     public function UserMessagesHome()
     {
@@ -37,8 +57,8 @@ class MessagesController extends Controller
         // Fetch Chat List --------Start
 
         $chatList = ChatList::where('user', $userId) // Fetch only where user is the authenticated user
-        ->orderBy('updated_at', 'desc') // Sort by last message update time
-        ->get()
+            ->orderBy('updated_at', 'desc') // Sort by last message update time
+            ->get()
             ->map(function ($chat) use ($userId) {
                 // Check if this chat is with an Admin
                 if ($chat->admin == 1) {
@@ -51,7 +71,6 @@ class MessagesController extends Controller
                         ->where('status', 0)
                         ->count();
                     $teacher_id = 'A';
-
                 } else {
                     $teacher_id = $chat->teacher;
                     // Otherwise, fetch teacher details
@@ -84,7 +103,7 @@ class MessagesController extends Controller
             ->values();
 
 
-// Fetch Chat List --------------END
+        // Fetch Chat List --------------END
 
 
         // Get the first chat record for the user
@@ -109,10 +128,10 @@ class MessagesController extends Controller
                 $completeChat = Chat::where(function ($query) use ($userId) {
                     $query->where(function ($subQuery) use ($userId) {
                         $subQuery->where('receiver_role', 2) // Admin role
-                        ->where('sender_id', $userId); // Auth user as sender
+                            ->where('sender_id', $userId); // Auth user as sender
                     })->orWhere(function ($subQuery) use ($userId) {
                         $subQuery->where('sender_role', 2) // Admin as sender
-                        ->where('receiver_id', $userId); // Auth user as receiver
+                            ->where('receiver_id', $userId); // Auth user as receiver
                     });
                 })
                     ->latest()
@@ -224,11 +243,11 @@ class MessagesController extends Controller
         $searchName = $request->search_name; // Get the search name from request
 
 
-// Fetch Chat List --------Start
+        // Fetch Chat List --------Start
 
         $Chatlist = ChatList::where('user', $userId) // Fetch only where user is the authenticated user
-        ->orderBy('updated_at', 'desc') // Sort by last message update time
-        ->get()
+            ->orderBy('updated_at', 'desc') // Sort by last message update time
+            ->get()
             ->map(function ($chat) use ($userId) {
                 // Check if this chat is with an Admin
                 if ($chat->admin == 1) {
@@ -241,7 +260,6 @@ class MessagesController extends Controller
                         ->where('status', 0)
                         ->count();
                     $teacher_id = 'A';
-
                 } else {
                     $teacher_id = $chat->teacher;
                     // Otherwise, fetch teacher details
@@ -307,10 +325,10 @@ class MessagesController extends Controller
             $completeChat = Chat::where(function ($query) use ($userId) {
                 $query->where(function ($subQuery) use ($userId) {
                     $subQuery->where('receiver_role', 2) // Admin role
-                    ->where('sender_id', $userId); // Auth user as sender
+                        ->where('sender_id', $userId); // Auth user as sender
                 })->orWhere(function ($subQuery) use ($userId) {
                     $subQuery->where('sender_role', 2) // Admin as sender
-                    ->where('receiver_id', $userId); // Auth user as receiver
+                        ->where('receiver_id', $userId); // Auth user as receiver
                 });
             })
                 ->latest()
@@ -392,7 +410,6 @@ class MessagesController extends Controller
         $response['notes'] = $notes;
 
         return response()->json($response);
-
     }
     // Fetch Messages By Ajax Function END ========
 
@@ -403,7 +420,6 @@ class MessagesController extends Controller
 
         if (!Auth::user()) {
             return response()->json(['error' => 'Please LoginIn to Your Account!']);
-
         }
 
         $fileNames = [];
@@ -419,7 +435,6 @@ class MessagesController extends Controller
                 $fileName = time() . '_' . $file->getClientOriginalName();
                 $file->move(public_path() . '/assets/chat_media/' . $senderId . '_chat_files_' . $receiverId . '', $fileName);
                 $fileNames[] = $fileName;
-
             }
         }
 
@@ -466,9 +481,7 @@ class MessagesController extends Controller
         ];
 
 
-        return response()->json(['success' => 'Your Message Delivered Successfuly!']);
-
-
+        return response()->json(['success' => 'Your Message Delivered Successfully!']);
     }
 
     // Send Single Message Function Ajax END ====
@@ -478,7 +491,6 @@ class MessagesController extends Controller
 
         if (!Auth::user()) {
             return response()->json(['error' => 'Please LoginIn to Your Account!']);
-
         }
 
         $fileNames = [];
@@ -494,7 +506,6 @@ class MessagesController extends Controller
                 $fileName = time() . '_' . $file->getClientOriginalName();
                 $file->move(public_path() . '/assets/chat_media/' . $senderId . '_chat_files_' . $receiverId . '', $fileName);
                 $fileNames[] = $fileName;
-
             }
         }
 
@@ -540,8 +551,6 @@ class MessagesController extends Controller
 
 
         return response()->json(['success' => 'Your Message Delivered Successfuly!']);
-
-
     }
 
 
@@ -551,7 +560,6 @@ class MessagesController extends Controller
 
         if (!Auth::user()) {
             return response()->json(['error' => 'Please LoginIn to Your Account!']);
-
         }
 
         $fileNames = [];
@@ -567,7 +575,6 @@ class MessagesController extends Controller
                 $fileName = time() . '_' . $file->getClientOriginalName();
                 $file->move(public_path() . '/assets/chat_media/' . $senderId . '_chat_files_' . $receiverId . '', $fileName);
                 $fileNames[] = $fileName;
-
             }
         }
 
@@ -612,9 +619,13 @@ class MessagesController extends Controller
         ];
 
 
+        $this->messageService->send(
+            userId: $request->reciver_id,
+            count: 1,
+            message: ''
+        );
+        
         return response()->json($response);
-
-
     }
 
 
@@ -656,10 +667,10 @@ class MessagesController extends Controller
             $completeChat = Chat::where(function ($query) use ($userId) {
                 $query->where(function ($subQuery) use ($userId) {
                     $subQuery->where('receiver_role', 2) // Admin role
-                    ->where('sender_id', $userId); // Auth user as sender
+                        ->where('sender_id', $userId); // Auth user as sender
                 })->orWhere(function ($subQuery) use ($userId) {
                     $subQuery->where('sender_role', 2) // Admin as sender
-                    ->where('receiver_id', $userId); // Auth user as receiver
+                        ->where('receiver_id', $userId); // Auth user as receiver
                 });
             })
                 ->latest()
@@ -741,15 +752,13 @@ class MessagesController extends Controller
         $response['notes'] = $notes;
 
         return response()->json($response);
-
-
     }
 
 
-// User Chat All Functions END =======================
+    // User Chat All Functions END =======================
 
 
-// Teacher Chat All Functions Start =======================
+    // Teacher Chat All Functions Start =======================
 
 
     public function TeacherMessagesHome()
@@ -772,8 +781,8 @@ class MessagesController extends Controller
         // Fetch Chat List --------Start
 
         $chatList = ChatList::where('teacher', $userId) // Fetch only where user is the authenticated user
-        ->orderBy('updated_at', 'desc') // Sort by last message update time
-        ->get()
+            ->orderBy('updated_at', 'desc') // Sort by last message update time
+            ->get()
             ->map(function ($chat) use ($userId) {
                 // Check if this chat is with an Admin
                 if ($chat->admin == 1) {
@@ -786,7 +795,6 @@ class MessagesController extends Controller
                         ->where('status', 0)
                         ->count();
                     $teacher_id = 'A';
-
                 } else {
                     $teacher_id = $chat->user;
                     // Otherwise, fetch teacher details
@@ -819,7 +827,7 @@ class MessagesController extends Controller
             ->values();
 
 
-// Fetch Chat List --------------END
+        // Fetch Chat List --------------END
 
 
         // Get the first chat record for the user
@@ -844,10 +852,10 @@ class MessagesController extends Controller
                 $completeChat = Chat::where(function ($query) use ($userId) {
                     $query->where(function ($subQuery) use ($userId) {
                         $subQuery->where('receiver_role', 2) // Admin role
-                        ->where('sender_id', $userId); // Auth user as sender
+                            ->where('sender_id', $userId); // Auth user as sender
                     })->orWhere(function ($subQuery) use ($userId) {
                         $subQuery->where('sender_role', 2) // Admin as sender
-                        ->where('receiver_id', $userId); // Auth user as receiver
+                            ->where('receiver_id', $userId); // Auth user as receiver
                     });
                 })
                     ->latest()
@@ -935,7 +943,7 @@ class MessagesController extends Controller
     }
 
 
-// Fetch Messages By Ajax Function Start ========
+    // Fetch Messages By Ajax Function Start ========
     public function TeacherFetchMessages(Request $request)
     {
 
@@ -949,11 +957,11 @@ class MessagesController extends Controller
         $searchName = $request->search_name; // Get the search name from request
 
 
-// Fetch Chat List --------Start
+        // Fetch Chat List --------Start
 
         $Chatlist = ChatList::where('teacher', $userId) // Fetch only where user is the authenticated user
-        ->orderBy('updated_at', 'desc') // Sort by last message update time
-        ->get()
+            ->orderBy('updated_at', 'desc') // Sort by last message update time
+            ->get()
             ->map(function ($chat) use ($userId) {
                 // Check if this chat is with an Admin
                 if ($chat->admin == 1) {
@@ -966,7 +974,6 @@ class MessagesController extends Controller
                         ->where('status', 0)
                         ->count();
                     $teacher_id = 'A';
-
                 } else {
                     $teacher_id = $chat->user;
                     // Otherwise, fetch teacher details
@@ -1032,10 +1039,10 @@ class MessagesController extends Controller
             $completeChat = Chat::where(function ($query) use ($userId) {
                 $query->where(function ($subQuery) use ($userId) {
                     $subQuery->where('receiver_role', 2) // Admin role
-                    ->where('sender_id', $userId); // Auth user as sender
+                        ->where('sender_id', $userId); // Auth user as sender
                 })->orWhere(function ($subQuery) use ($userId) {
                     $subQuery->where('sender_role', 2) // Admin as sender
-                    ->where('receiver_id', $userId); // Auth user as receiver
+                        ->where('receiver_id', $userId); // Auth user as receiver
                 });
             })
                 ->latest()
@@ -1116,19 +1123,17 @@ class MessagesController extends Controller
         $response['notes'] = $notes;
 
         return response()->json($response);
-
-
     }
-// Fetch Messages By Ajax Function END ========
+    // Fetch Messages By Ajax Function END ========
 
 
     // Send Message from Dashboard Function ====
     public function TeacherSendMessage(Request $request)
     {
+        info('TeacherSendMessage called with request:');
 
         if (!Auth::user()) {
             return response()->json(['error' => 'Please LoginIn to Your Account!']);
-
         }
 
 
@@ -1145,7 +1150,6 @@ class MessagesController extends Controller
                 $fileName = time() . '_' . $file->getClientOriginalName();
                 $file->move(public_path() . '/assets/chat_media/' . $receiverId . '_chat_files_' . $senderId . '', $fileName);
                 $fileNames[] = $fileName;
-
             }
         }
 
@@ -1175,7 +1179,6 @@ class MessagesController extends Controller
         $chat->files = implode(',', $fileNames);
         $chat->save();
 
-
         $response['chat'] = [
             'id' => $chat->id,
             'sender_id' => $chat->sender_id,
@@ -1188,6 +1191,12 @@ class MessagesController extends Controller
             'created_at' => $chat->created_at->toDateTimeString(),
             'time_ago' => $chat->created_at->diffForHumans(), // Add the time ago field
         ];
+
+        $this->messageService->send(
+            userId: $request->reciver_id,
+            count: 1,
+            message: ''
+        );
 
 
         return response()->json($response);
@@ -1206,7 +1215,6 @@ class MessagesController extends Controller
                 $fileName = time() . '_' . $file->getClientOriginalName();
                 $file->move(public_path() . '/assets/chat_media/' . $receiverId . '_chat_files_' . $senderId . '', $fileName);
                 $fileNames[] = $fileName;
-
             }
         }
 
@@ -1253,8 +1261,6 @@ class MessagesController extends Controller
 
 
         return response()->json($response);
-
-
     }
 
 
@@ -1296,10 +1302,10 @@ class MessagesController extends Controller
             $completeChat = Chat::where(function ($query) use ($userId) {
                 $query->where(function ($subQuery) use ($userId) {
                     $subQuery->where('receiver_role', 2) // Admin role
-                    ->where('sender_id', $userId); // Auth user as sender
+                        ->where('sender_id', $userId); // Auth user as sender
                 })->orWhere(function ($subQuery) use ($userId) {
                     $subQuery->where('sender_role', 2) // Admin as sender
-                    ->where('receiver_id', $userId); // Auth user as receiver
+                        ->where('receiver_id', $userId); // Auth user as receiver
                 });
             })
                 ->latest()
@@ -1387,7 +1393,7 @@ class MessagesController extends Controller
         $otherUserId = $request->id; // The other user's ID
         $otherUserRole = $request->role; // The other user's role
 
-// Fetch chats between the authenticated user and the specified other user
+        // Fetch chats between the authenticated user and the specified other user
         $chats = Chat::where(function ($query) use ($userId, $userRole, $otherUserId, $otherUserRole) {
             $query->where(function ($innerQuery) use ($userId, $userRole, $otherUserId, $otherUserRole) {
                 $innerQuery->where('sender_id', $userId)
@@ -1407,18 +1413,18 @@ class MessagesController extends Controller
             }
         }
 
-// Format and sort chat messages
+        // Format and sort chat messages
         $completeChat = $chats->sortBy('created_at') // Sort by creation time (oldest to latest)
-        ->map(function ($chat) {
-            return [
-                'sender_id' => $chat->sender_id,
-                'receiver_id' => $chat->receiver_id,
-                'sms' => $chat->sms,
-                'files' => $chat->files,
-                'created_at' => $chat->created_at->toDateTimeString(),
-                'time_ago' => $chat->created_at->diffForHumans(), // Relative time like '5 minutes ago'
-            ];
-        });
+            ->map(function ($chat) {
+                return [
+                    'sender_id' => $chat->sender_id,
+                    'receiver_id' => $chat->receiver_id,
+                    'sms' => $chat->sms,
+                    'files' => $chat->files,
+                    'created_at' => $chat->created_at->toDateTimeString(),
+                    'time_ago' => $chat->created_at->diffForHumans(), // Relative time like '5 minutes ago'
+                ];
+            });
 
         $user = User::find($otherUserId);
 
@@ -1430,15 +1436,13 @@ class MessagesController extends Controller
 
 
         return response()->json($response);
-
-
     }
 
 
-// Teacher Chat All Functions END =======================
+    // Teacher Chat All Functions END =======================
 
 
-// Admin Chat All Functions Start =======================
+    // Admin Chat All Functions Start =======================
 
     public function AdminMessagesHome()
     {
@@ -1585,7 +1589,7 @@ class MessagesController extends Controller
     }
 
 
-// Fetch Messages By Ajax Function Start ========
+    // Fetch Messages By Ajax Function Start ========
     public function AdminFetchMessages(Request $request)
     {
         // Check if the user is authenticated and is an admin
@@ -1721,7 +1725,7 @@ class MessagesController extends Controller
         $block_by = $firstChat['block_by']; // Fetch the first chat user/teacher ID
 
 
-//   $otherUserRole = $otherUser->role; // 0 = User, 1 = Teacher, 2 = Admin
+        //   $otherUserRole = $otherUser->role; // 0 = User, 1 = Teacher, 2 = Admin
         // Set Full Name and Profile Image
         $fullName = $otherUserRole == 2 ? 'Admin' : $otherUser->first_name . ' ' . ucfirst(substr($otherUser->last_name, 0, 1)) . '';
         $profileName = $otherUser->first_name . $otherUser->last_name;
@@ -1791,11 +1795,9 @@ class MessagesController extends Controller
         $response['notes'] = $notes;
 
         return response()->json($response);
-
-
     }
 
-// Fetch Messages By Ajax Function END ========
+    // Fetch Messages By Ajax Function END ========
 
 
     // Send Message from Dashboard Function ====
@@ -1804,7 +1806,6 @@ class MessagesController extends Controller
 
         if (!Auth::user()) {
             return response()->json(['error' => 'Please LoginIn to Your Account!']);
-
         }
 
 
@@ -1827,7 +1828,6 @@ class MessagesController extends Controller
 
                 // $file->move(public_path().'/assets/chat_media/'.$senderId.'_chat_files_'.$receiverId.'', $fileName);
                 $fileNames[] = $fileName;
-
             }
         }
 
@@ -1872,10 +1872,14 @@ class MessagesController extends Controller
             'time_ago' => $chat->created_at->diffForHumans(), // Add the time ago field
         ];
 
+        $this->messageService->send(
+            userId: $request->reciver_id,
+            count: 1,
+            message: ''
+        );
+
 
         return response()->json($response);
-
-
     }
 
 
@@ -1891,7 +1895,7 @@ class MessagesController extends Controller
         $otheruserRole = User::find($otheruserId)->role;
 
 
-// Fetch Chat Status Block List --------------Start
+        // Fetch Chat Status Block List --------------Start
         $usertype = ($otheruserRole === 1) ? 'teacher' : 'user';
         $usertypevalue = $otheruserId;
         $authusertypevalue = (Auth::user()->role === 2) ? 'admin' : ((Auth::user()->role === 1) ? 'teacher' : 'user');
@@ -1908,7 +1912,7 @@ class MessagesController extends Controller
 
         $response['block'] = $block;
         $response['block_by'] = $block_by;
-// Fetch Chat Status Block List --------------END
+        // Fetch Chat Status Block List --------------END
 
 
         // Fetch First Person Complete Chat ------------ Start
@@ -1928,10 +1932,10 @@ class MessagesController extends Controller
         $completeChat = Chat::where(function ($query) use ($otheruserId) {
             $query->where(function ($subQuery) use ($otheruserId) {
                 $subQuery->where('sender_role', 2) // Admin role
-                ->where('receiver_id', $otheruserId); // Auth user as sender
+                    ->where('receiver_id', $otheruserId); // Auth user as sender
             })->orWhere(function ($subQuery) use ($otheruserId) {
                 $subQuery->where('sender_role', 2) // Admin as sender
-                ->where('receiver_id', $otheruserId); // Auth user as receiver
+                    ->where('receiver_id', $otheruserId); // Auth user as receiver
             });
         })
             ->latest()
@@ -1993,7 +1997,7 @@ class MessagesController extends Controller
         $otherUserId = $request->id; // The other user's ID
         $otherUserRole = $request->role; // The other user's role
 
-// Fetch chats between the authenticated user and the specified other user
+        // Fetch chats between the authenticated user and the specified other user
         $chats = Chat::where(function ($query) use ($userId, $userRole, $otherUserId, $otherUserRole) {
             $query->where(function ($innerQuery) use ($userId, $userRole, $otherUserId, $otherUserRole) {
                 $innerQuery->where('sender_id', $userId)
@@ -2013,18 +2017,18 @@ class MessagesController extends Controller
             }
         }
 
-// Format and sort chat messages
+        // Format and sort chat messages
         $completeChat = $chats->sortBy('created_at') // Sort by creation time (oldest to latest)
-        ->map(function ($chat) {
-            return [
-                'sender_id' => $chat->sender_id,
-                'receiver_id' => $chat->receiver_id,
-                'sms' => $chat->sms,
-                'files' => $chat->files,
-                'created_at' => $chat->created_at->toDateTimeString(),
-                'time_ago' => $chat->created_at->diffForHumans(), // Relative time like '5 minutes ago'
-            ];
-        });
+            ->map(function ($chat) {
+                return [
+                    'sender_id' => $chat->sender_id,
+                    'receiver_id' => $chat->receiver_id,
+                    'sms' => $chat->sms,
+                    'files' => $chat->files,
+                    'created_at' => $chat->created_at->toDateTimeString(),
+                    'time_ago' => $chat->created_at->diffForHumans(), // Relative time like '5 minutes ago'
+                ];
+            });
 
         $user = User::find($otherUserId);
 
@@ -2033,16 +2037,14 @@ class MessagesController extends Controller
         $response['user'] = $user;
 
         return response()->json($response);
-
-
     }
 
 
 
-// Admin Chat All Functions END =======================
+    // Admin Chat All Functions END =======================
 
 
-// Notes All Functions Start =======================
+    // Notes All Functions Start =======================
     public function AddNotes(Request $request)
     {
 
@@ -2059,10 +2061,9 @@ class MessagesController extends Controller
         $response['notes'] = $notes;
 
         return response()->json($response);
-
     }
 
-// Delete Notes Function =====
+    // Delete Notes Function =====
     public function DeleteNotes(Request $request)
     {
 
@@ -2076,11 +2077,9 @@ class MessagesController extends Controller
             $response['message'] = 'Something Went Rong, Tryagain Later!';
             return response()->json($response);
         }
-
-
     }
 
-// Update Notes Function =====
+    // Update Notes Function =====
     public function UpdateNotes(Request $request)
     {
 
@@ -2097,13 +2096,11 @@ class MessagesController extends Controller
             $response['message'] = 'Something Went Rong, Tryagain Later!';
             return response()->json($response);
         }
-
-
     }
-// Notes All Functions END =======================
+    // Notes All Functions END =======================
 
 
-// Block User Functions Start =======================
+    // Block User Functions Start =======================
     public function BlockUser(Request $request)
     {
         $blockId = $request->block_id;
@@ -2158,13 +2155,11 @@ class MessagesController extends Controller
         $chatRecord->update(['block' => $blockStatus, 'block_by' => $blockByValue]);
 
         return response()->json(['success' => 'You blocked this user!', 'block' => $blockStatus, 'block_by' => $blockByValue]);
-
-
     }
-// Block User Functions END =======================
+    // Block User Functions END =======================
 
 
-// Search Messsage Functions Start =======================
+    // Search Messsage Functions Start =======================
     public function SearchMessage(Request $request)
     {
 
@@ -2221,16 +2216,15 @@ class MessagesController extends Controller
         ]);
     }
 
-// Search Messsage Functions END =======================
+    // Search Messsage Functions END =======================
 
 
-// Custom Offer in Messsage Functions Start  =======================
+    // Custom Offer in Messsage Functions Start  =======================
     public function GetServicesForCustom(Request $request)
     {
 
         if (!Auth::user()) {
             return response()->json(['error' => 'Please LoginIn to Your Account!']);
-
         }
 
 
@@ -2245,7 +2239,7 @@ class MessagesController extends Controller
 
         return response()->json(['services' => $services]);
     }
-// Custom Offer in Messsage Functions END =======================
+    // Custom Offer in Messsage Functions END =======================
 
 
 }

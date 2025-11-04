@@ -1,5 +1,11 @@
 <meta name="csrf-token" content="{{ csrf_token() }}">
-<span class="authUserId" data-user-id="{{ auth()->id() }}"></span>
+@php
+    
+    $userRole = Auth::user()->role ?? null;
+    
+@endphp
+
+<span class="authUserId" data-user-id="{{ auth()->id() }}" data-user-role="{{ $userRole }}"></span>
 <!-- Include Pusher JS -->
 <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
 

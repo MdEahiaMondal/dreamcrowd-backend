@@ -165,10 +165,12 @@
                                     <div class="col-md-2">
                                         <select name="service_type" class="form-control">
                                             <option value="">All Services</option>
-                                            <option value="gig" {{ request('service_type') == 'gig' ? 'selected' : '' }}>
+                                            <option
+                                                value="gig" {{ request('service_type') == 'gig' ? 'selected' : '' }}>
                                                 Freelance Service
                                             </option>
-                                            <option value="order" {{ request('service_type') == 'order' ? 'selected' : '' }}>
+                                            <option
+                                                value="order" {{ request('service_type') == 'order' ? 'selected' : '' }}>
                                                 Order Service
                                             </option>
                                         </select>
@@ -177,7 +179,8 @@
                                         <select name="rating" class="form-control">
                                             <option value="">All Ratings</option>
                                             @for($i = 5; $i >= 1; $i--)
-                                                <option value="{{ $i }}" {{ request('rating') == $i ? 'selected' : '' }}>
+                                                <option
+                                                    value="{{ $i }}" {{ request('rating') == $i ? 'selected' : '' }}>
                                                     {{ $i }} Stars
                                                 </option>
                                             @endfor
@@ -504,6 +507,15 @@
 
                             // Store reply ID for edit/delete
                             $('#existing-reply').data('reply-id', reply.id);
+
+                            // Show/hide edit and delete buttons based on 7-day limit
+                            if (response.can_edit_reply) {
+                                $('#edit-reply-btn').show();
+                                $('#delete-reply-btn').show();
+                            } else {
+                                $('#edit-reply-btn').hide();
+                                $('#delete-reply-btn').hide();
+                            }
                         } else {
                             $('#existing-reply').hide();
                         }
@@ -528,7 +540,12 @@
             $('#reply-customer-comment').text(reviewData.review.cmnt || 'No comment provided');
 
             if (reviewData.review.replies && reviewData.review.replies.length > 0) {
-                // Edit mode
+                // Edit mode - check if reply can be edited (within 7 days)
+                if (!reviewData.can_edit_reply) {
+                    alert('You can only edit your reply within 7 days of posting it.');
+                    return;
+                }
+
                 let reply = reviewData.review.replies[0];
                 $('#reply-modal-title').text('Edit Reply');
                 $('#reply_id').val(reply.id);

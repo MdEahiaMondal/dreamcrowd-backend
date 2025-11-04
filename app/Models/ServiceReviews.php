@@ -44,4 +44,20 @@ class ServiceReviews extends Model
     {
         return $this->belongsTo(BookOrder::class, 'order_id', 'id');
     }
+
+    /**
+     * Check if reply can be edited or deleted (within 7 days)
+     */
+    public function canEditOrDelete(): bool
+    {
+        // Only replies (not parent reviews) can be checked
+        if (!$this->parent_id) {
+            return false;
+        }
+
+        // Calculate the difference in days
+        $daysSinceCreation = $this->created_at->diffInDays(now());
+
+        return $daysSinceCreation < 7;
+    }
 }

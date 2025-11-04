@@ -19,3 +19,8 @@ use Illuminate\Support\Facades\Broadcast;
 Broadcast::channel('user.{userId}', function ($user, $userId) {
     return (int) $user->id === (int) $userId;
 });
+
+// User-specific message channel
+Broadcast::channel('message.{userId}', function ($user, $userId) {
+    return (int) $user->id === (int) $userId;
+});

@@ -318,8 +318,8 @@
                     </li>
 
                     <!--MAIL SVG START  -->
-                    <li class="nav-item dropdown dropdown-mega position-static">
-                        <a style="padding-left:10px !important ;" class="nav-link dropdown-toggle p-0" href="#"
+                    <li class="nav-item dropdown dropdown-mega position-static messageSectionAz">
+                        {{-- <a style="padding-left:10px !important ;" class="nav-link dropdown-toggle p-0" href="#"
                            data-bs-toggle="dropdown" data-bs-auto-close="outside">
                             <svg class="me-2" width="40" height="32" viewBox="0 0 40 32" fill="none"
                                  xmlns="http://www.w3.org/2000/svg">
@@ -441,7 +441,7 @@
                                     <span> See All in Inbox</span>
                                 </div>
                             </div>
-                        </div>
+                        </div> --}}
                     </li>
                     <!-- PROFILE SECTION START HERE -->
 
