@@ -34,6 +34,11 @@ class Kernel extends ConsoleKernel
             ->withoutOverlapping()
             ->runInBackground()
             ->appendOutputTo(storage_path('logs/disputes.log'));
+        $schedule->command('trials:generate-meeting-links')
+            ->everyFiveMinutes()
+            ->withoutOverlapping()
+            ->runInBackground()
+            ->appendOutputTo(storage_path('logs/trial-meetings.log'));
     }
 
 

@@ -31,7 +31,8 @@ class TeacherGigData extends Model
         'recurring_type',
         'group_type',
         'service_delivery',
-        'work_site', 
-        
+        'work_site',
+        'meeting_platform',
+        'trial_type',
     ];
 }
