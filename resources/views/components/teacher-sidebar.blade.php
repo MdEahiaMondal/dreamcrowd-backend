@@ -62,6 +62,15 @@
                 </ul>
             </li>
             <li>
+                <a href="/teacher/zoom">
+                    <i class='bx bx-video icon' title="Zoom Integration"></i>
+                    <span class="link_name">Zoom Integration</span>
+                </a>
+                <ul class="sub-menu blank">
+                    <li><a class="link_name" href="/teacher/zoom">Zoom Integration</a></li>
+                </ul>
+            </li>
+            <li>
                 <a href="/teacher-profile">
                     <i class='bx bx-user' title="Manage Profile"></i>
                     <span class="link_name">Manage Profile</span>

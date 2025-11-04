@@ -92,4 +92,44 @@ class BookOrder extends Model
     {
         return $this->hasOne(Transaction::class, 'stripe_transaction_id', 'payment_id');
     }
+
+    /**
+     * Get Zoom meetings for this order
+     */
+    public function zoomMeetings()
+    {
+        return $this->hasMany(ZoomMeeting::class, 'order_id');
+    }
+
+    /**
+     * Get the latest Zoom meeting for this order
+     */
+    public function latestZoomMeeting()
+    {
+        return $this->hasOne(ZoomMeeting::class, 'order_id')->latestOfMany();
+    }
+
+    /**
+     * Get class dates for this order
+     */
+    public function classDates()
+    {
+        return $this->hasMany(ClassDate::class, 'order_id');
+    }
+
+    /**
+     * Check if order has an active Zoom meeting
+     */
+    public function hasActiveZoomMeeting()
+    {
+        return $this->zoomMeetings()->where('status', 'started')->exists();
+    }
+
+    /**
+     * Get active Zoom meeting
+     */
+    public function getActiveZoomMeeting()
+    {
+        return $this->zoomMeetings()->where('status', 'started')->first();
+    }
 }
