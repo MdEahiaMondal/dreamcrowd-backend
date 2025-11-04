@@ -12,14 +12,15 @@
         userId: null, // Will be set from data attribute
         autoMarkReadDelay: 5000, // Auto mark as read after 5 seconds
         notificationDuration: 5000, // Show notification for 5 seconds
+        userRole: null,
     };
 
     // Notification Manager Class
     class NotificationManager {
         constructor() {
-            console.log(document.querySelector('.authUserId')?.getAttribute('data-user-id'));
-            
+
             this.userId = document.querySelector('.authUserId')?.getAttribute('data-user-id');
+            this.userRole = document.querySelector('.authUserId')?.getAttribute('data-user-role');
             this.notifications = [];
             this.unreadCount = 0;
             this.pusher = null;
@@ -37,6 +38,17 @@
             this.loadRecentNotifications();
             this.attachEventListeners();
             this.requestNotificationPermission();
+            this.loadMessageCount();
+        }
+
+        async loadMessageCount() {
+            try {
+                const response = await fetch(`/messages/unread-count/${this.userId}`);
+                const data = await response.json();
+                this.updateMessageCount(data.count);
+            } catch (error) {
+                console.error('Error loading message count:', error);
+            }
         }
 
         // Setup Pusher Connection
@@ -48,9 +60,18 @@
                 });
 
                 this.channel = this.pusher.subscribe('user.' + this.userId);
+                // Message Channel Subscribe
+                this.messageChannel = this.pusher.subscribe('message.' + this.userId);
+
+
 
                 this.channel.bind('notification', (data) => {
                     this.handleNewNotification(data);
+                });
+
+                this.messageChannel.bind('message', (data) => {
+
+                    this.updateMessageCount(data.count);
                 });
 
                 console.log('Pusher connected successfully');
@@ -91,6 +112,7 @@
                                 top: 0px;
                                 text-align: center;">0</span>
                     </div>
+
 
                     <!-- Notification Dropdown -->
                     <div id="notification-dropdown" style="z-index: 99999; display: none; position: absolute; top: 60px; right: 0; width: 350px; max-height: 500px; background: white; border-radius: 8px; box-shadow: 0 8px 16px rgba(0,0,0,0.15); overflow: hidden;">
@@ -164,7 +186,32 @@
                     }
                 </style>
             `;
+            // Message Icon + Count
+            const messageHTML = `
+                    <div id="message-container" style="position: relative; cursor: pointer; width: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 10px;">
+                         <svg class="me-2" width="40" height="32" viewBox="0 0 40 32" fill="none"
+                                 xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M30.5 13.9218V13.0474L29.7464 13.4908L16.2548 21.4306C16.2547 21.4306 16.2547 21.4307 16.2546 21.4307C16.1909 21.4681 16.1197 21.4909 16.0461 21.4974C15.978 21.5035 15.9095 21.4955 15.8447 21.4741L15.7244 21.4184L2.2535 13.4948L1.5 13.0516V13.9258V26.9998C1.5 27.928 1.86875 28.8183 2.52513 29.4746C3.1815 30.131 4.07174 30.4998 5 30.4998H27C27.9283 30.4998 28.8185 30.131 29.4749 29.4746C30.1312 28.8183 30.5 27.928 30.5 26.9998V13.9218ZM1.5 11.6038V11.8897L1.74647 12.0347L15.7465 20.2707L16.0001 20.4199L16.2536 20.2707L30.2536 12.0307L30.5 11.8856V11.5998V10.9998C30.5 10.0715 30.1312 9.18126 29.4749 8.52488C28.8185 7.8685 27.9283 7.49976 27 7.49976H5C4.07174 7.49976 3.1815 7.8685 2.52513 8.52488C1.86875 9.18126 1.5 10.0715 1.5 10.9998V11.6038ZM27 6.49976C28.1935 6.49976 29.3381 6.97386 30.182 7.81778C31.0259 8.66169 31.5 9.80628 31.5 10.9998V26.9998C31.5 28.1932 31.0259 29.3378 30.182 30.1817C29.3381 31.0257 28.1935 31.4998 27 31.4998H5C3.80653 31.4998 2.66193 31.0257 1.81802 30.1817C0.974106 29.3378 0.5 28.1932 0.5 26.9998V10.9998C0.5 9.80628 0.974106 8.66169 1.81802 7.81778C2.66193 6.97386 3.80653 6.49976 5 6.49976H27Z"
+                                    stroke="#181818"/>
+                           
+                            </svg>
+                        <span id="message-badge" style="position: absolute;
+                            right: 7px;
+                            color: #fff;
+                            font-size: 10px;
+                            background: #0072B1;
+                            min-width: 18px;
+                            height: 19px;
+                            padding: 2px;
+                            border-radius: 50%;
+                            top: 0px;
+                            text-align: center;
+                            display: none;">0</span>
+                    </div>
+                `;
             document.getElementsByClassName('notificationSectionAz')[0].innerHTML = notificationHTML;
+            document.getElementsByClassName('messageSectionAz')[0].innerHTML = messageHTML;
 
             // document.body.insertAdjacentHTML('beforeend', notificationHTML);
         }
@@ -175,6 +222,8 @@
             const dropdown = document.getElementById('notification-dropdown');
             const markAllRead = document.getElementById('mark-all-read');
             const toastClose = document.getElementById('toast-close');
+            const messageIcon = document.getElementById('message-container');
+
 
             // Toggle dropdown
             bell.addEventListener('click', () => {
@@ -197,6 +246,13 @@
             toastClose.addEventListener('click', () => {
                 this.hideToast();
             });
+
+            messageIcon.addEventListener('click', () => {
+                const role = String(this.userRole);
+                const messageUrl = role === '2' ? '/admin-messages' : (role === '1' ? '/teacher-messages' : '/user-messages');
+                window.location.href = messageUrl;
+            });
+
         }
 
         // Request Browser Notification Permission
@@ -421,7 +477,7 @@
             const badge = document.getElementById('notification-badge');
             if (this.unreadCount > 0) {
                 badge.textContent = this.unreadCount > 99 ? '99+' : this.unreadCount;
-                 badge.style.display = 'block';
+                badge.style.display = 'block';
             } else {
                 badge.style.display = 'none';
             }
@@ -461,15 +517,47 @@
             // This would be called from your backend
             console.log('Use NotificationService in your controller to send notifications');
         }
+
+        updateMessageCount(count) {
+            const badge = document.getElementById('message-badge');
+            if (!badge) return;
+
+            if (count > 0) {
+
+                const current = parseInt(String(badge.textContent).replace(/\D/g, ''), 10) || 0;
+                let finalCount = current + count;
+
+                if (window.location.pathname.includes('user-messages') || 
+                    window.location.pathname.includes('teacher-messages') || 
+                    window.location.pathname.includes('admin-messages')) {
+                    finalCount = 0;
+                    badge.style.display = 'none';
+
+                } else {
+                    finalCount = current + count;
+                    badge.textContent = finalCount > 99 ? '99+' : String(finalCount);
+                    badge.style.display = 'block';
+                }
+                
+          
+            } else {
+                badge.style.display = 'none';
+            }
+        }
     }
 
-    // Initialize when DOM is ready
+
+    // 🧩 Prevent multiple initialization globally
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', () => {
-            window.notificationManager = new NotificationManager();
+            if (!window.notificationManager) {
+                window.notificationManager = new NotificationManager();
+            }
         });
     } else {
-        window.notificationManager = new NotificationManager();
+        if (!window.notificationManager) {
+            window.notificationManager = new NotificationManager();
+        }
     }
 
     // Make NotificationManager globally accessible

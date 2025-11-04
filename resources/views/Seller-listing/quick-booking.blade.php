@@ -1099,6 +1099,18 @@
                                     </div>
                                 </div>
                             @endif
+
+                            @if (Auth::user())
+                                <a
+                                    href="#"
+                                    type="button"
+                                    class="btn contact-btn"
+                                    data-bs-toggle="modal"
+                                    id="contact-us"
+                                    data-bs-target="#contact-me-modal"
+                                >Contact Me
+                                </a>
+                            @endif
                             @if (Auth::user())
                                 <a
                                     href="#"

@@ -551,6 +551,8 @@ Route::controller(MessagesController::class)->group(function () {
     // Custom Offer Routes ======
     Route::post('/get-services-for-custom', 'GetServicesForCustom');
 
+    Route::get('/messages/unread-count/{userId}', 'getUnreadMessageCount');
+
 });
 
 
