@@ -37,7 +37,8 @@
             this.loadUnreadCount();
             this.loadRecentNotifications();
             this.attachEventListeners();
-            this.requestNotificationPermission();
+            // Don't request permission automatically - let user trigger it
+            // this.requestNotificationPermission();
             this.loadMessageCount();
         }
 
@@ -228,6 +229,11 @@
             // Toggle dropdown
             bell.addEventListener('click', () => {
                 dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+
+                // Request notification permission on first interaction
+                if ('Notification' in window && Notification.permission === 'default') {
+                    Notification.requestPermission();
+                }
             });
 
             // Close dropdown when clicking outside

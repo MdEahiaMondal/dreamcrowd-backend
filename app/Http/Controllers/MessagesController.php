@@ -466,6 +466,19 @@ class MessagesController extends Controller
         $chat->files = implode(',', $fileNames);
         $chat->save();
 
+        // Send notification to receiver
+        $sender = User::find($chat->sender_id);
+        $senderName = $sender ? $sender->first_name . ' ' . $sender->last_name : 'Someone';
+        $messagePreview = Str::limit($chat->sms, 50);
+
+        app(\App\Services\NotificationService::class)->send(
+            userId: $chat->receiver_id,
+            type: 'message',
+            title: 'New Message from ' . $senderName,
+            message: $messagePreview,
+            data: ['chat_id' => $chat->id, 'sender_id' => $chat->sender_id],
+            sendEmail: false
+        );
 
         $response['chat'] = [
             'id' => $chat->id,
@@ -535,6 +548,22 @@ class MessagesController extends Controller
         $chat->files = implode(',', $fileNames);
         $chat->save();
 
+        // Send notification to receiver
+        $sender = User::find($chat->sender_id);
+        $senderName = $sender ? $sender->first_name . ' ' . $sender->last_name : 'Someone';
+        $messagePreview = Str::limit($chat->sms, 50);
+
+        // Only send if receiver is not Admin (receiver_role != 2)
+        if ($chat->receiver_role != 2) {
+            app(\App\Services\NotificationService::class)->send(
+                userId: $chat->receiver_id,
+                type: 'message',
+                title: 'New Message from ' . $senderName,
+                message: $messagePreview,
+                data: ['chat_id' => $chat->id, 'sender_id' => $chat->sender_id],
+                sendEmail: false
+            );
+        }
 
         $response['chat'] = [
             'id' => $chat->id,

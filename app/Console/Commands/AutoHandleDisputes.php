@@ -7,6 +7,8 @@ use Illuminate\Support\Carbon;
 use App\Models\BookOrder;
 use App\Models\DisputeOrder;
 use App\Models\Transaction;
+use App\Models\User;
+use App\Services\NotificationService;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 use Stripe\PaymentIntent;
@@ -18,6 +20,14 @@ class AutoHandleDisputes extends Command
 {
     protected $signature = 'disputes:process {--dry-run : Run without making actual changes}';
     protected $description = 'Automatically refund to user if only user disputed after 48 hours of cancellation';
+
+    protected $notificationService;
+
+    public function __construct(NotificationService $notificationService)
+    {
+        parent::__construct();
+        $this->notificationService = $notificationService;
+    }
 
     public function handle()
     {
@@ -42,7 +52,7 @@ class AutoHandleDisputes extends Command
             ->where('teacher_dispute', 0)
             ->where('auto_dispute_processed', 0)
             ->where('refund', 0)
-            ->with(['user', 'teacher'])
+            ->with(['user', 'teacher', 'gig'])
             ->get()
             ->filter(function($order) use ($now) {
                 // Parse action_date safely
@@ -169,6 +179,9 @@ class AutoHandleDisputes extends Command
             $order->refund = 1;
             $order->payment_status = 'refunded';
             $order->save();
+
+            // Send notifications
+            $this->sendDisputeResolutionNotifications($order, $dispute);
 
             DB::commit();
 
@@ -324,6 +337,76 @@ class AutoHandleDisputes extends Command
         } catch (\Exception $e) {
             Log::error("Failed to update transaction for order #{$order->id}: " . $e->getMessage());
             // Don't throw - continue with dispute processing
+        }
+    }
+
+    /**
+     * Send dispute resolution notifications
+     */
+    private function sendDisputeResolutionNotifications(BookOrder $order, DisputeOrder $dispute): void
+    {
+        try {
+            $serviceName = $order->title ?? ($order->gig ? $order->gig->name : 'Service');
+            $refundAmount = $dispute->amount;
+            $refundType = $dispute->refund_type == 0 ? 'Full' : 'Partial';
+
+            // Notify buyer (who filed the dispute)
+            $this->notificationService->send(
+                userId: $order->user_id,
+                type: 'dispute_resolved',
+                title: 'Refund Processed',
+                message: "Your dispute was resolved. {$refundType} refund of $" . number_format($refundAmount, 2) . " has been processed.",
+                data: [
+                    'dispute_id' => $dispute->id,
+                    'order_id' => $order->id,
+                    'service_name' => $serviceName,
+                    'refund_amount' => $refundAmount,
+                    'refund_type' => $refundType,
+                    'resolved_at' => now()->toDateTimeString()
+                ],
+                sendEmail: true
+            );
+
+            // Notify seller
+            $this->notificationService->send(
+                userId: $order->teacher_id,
+                type: 'dispute_resolved',
+                title: 'Dispute Resolved',
+                message: "Dispute for order #{$order->id} resolved. {$refundType} refund issued to buyer.",
+                data: [
+                    'dispute_id' => $dispute->id,
+                    'order_id' => $order->id,
+                    'service_name' => $serviceName,
+                    'refund_amount' => $refundAmount,
+                    'refund_type' => $refundType,
+                    'resolved_at' => now()->toDateTimeString()
+                ],
+                sendEmail: true
+            );
+
+            // Notify admins
+            $adminIds = User::where('role', 'admin')->pluck('id')->toArray();
+            if (!empty($adminIds)) {
+                $this->notificationService->sendToMultipleUsers(
+                    userIds: $adminIds,
+                    type: 'dispute_resolved',
+                    title: 'Dispute Resolved',
+                    message: "Dispute #{$dispute->id} auto-resolved. {$refundType} refund processed.",
+                    data: [
+                        'dispute_id' => $dispute->id,
+                        'order_id' => $order->id,
+                        'refund_amount' => $refundAmount,
+                        'resolved_at' => now()->toDateTimeString()
+                    ],
+                    sendEmail: false
+                );
+            }
+
+            Log::info("Dispute resolution notifications sent for order #{$order->id}");
+
+        } catch (\Exception $e) {
+            Log::error("Failed to send dispute resolution notifications for order #{$order->id}: " . $e->getMessage());
+            // Don't throw - not critical
         }
     }
 }

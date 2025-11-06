@@ -1,2566 +1,831 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <!-- Required meta tags -->
-    <meta charset="UTF-8" />
-    <!-- View Point scale to 1.0 -->
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <!-- Animate css -->
-    <link rel="stylesheet" href="assets/admin/libs/animate/css/animate.css" />
-    <!-- AOS Animation css-->
-    <link rel="stylesheet" href="assets/admin/libs/aos/css/aos.css" />
-    <!-- Datatable css  -->
-    <link rel="stylesheet" href="assets/admin/libs/datatable/css/datatable.css" />
-     {{-- Fav Icon --}}
-     @php  $home = \App\Models\HomeDynamic::first(); @endphp
-     @if ($home)
-         <link rel="shortcut icon" href="assets/public-site/asset/img/{{$home->fav_icon}}" type="image/x-icon">
-     @endif
-     <!-- Select2 css -->
-    <link href="assets/admin/libs/select2/css/select2.min.css" rel="stylesheet" />
-    <!-- Owl carousel css -->
-    <link href="assets/admin/libs/owl-carousel/css/owl.carousel.css" rel="stylesheet" />
-    <link href="assets/admin/libs/owl-carousel/css/owl.theme.green.css" rel="stylesheet" />
-    <!-- fontawsome -->
-    <link rel="stylesheet" href="path/to/bootstrap/css/bootstrap.min.css" />
-    <link
-      rel="stylesheet"
-      href="path/to/font-awesome/css/font-awesome.min.css"
-    />
-    <!-- Bootstrap css -->
-    <link
-      rel="stylesheet"
-      type="text/css"
-      href="assets/admin/asset/css/bootstrap.min.css"
-    />
-    <link
-      href="https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css"
-      rel="stylesheet"
-    />
-    <link
-      rel="stylesheet"
-      href="https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css"
-    />
-    <!-- Fontawesome CDN -->
-    <script
-      src="https://kit.fontawesome.com/55bd3bbc70.js"
-      crossorigin="anonymous"
-    ></script>
-    <!-- Defualt css -->
-    <link rel="stylesheet" type="text/css" href="assets/admin/asset/css/sidebar.css" />
-    <link rel="stylesheet" href="assets/admin/asset/css/style.css" />
-    <link rel="stylesheet" href="assets/user/asset/css/style.css" />
-    <link rel="stylesheet" href="assets/admin/asset/css/buyer.css" />
-    <title>Super Admin Dashboard | Dashboard</title>
-  </head>
-  <body>
-   {{-- ===========Admin Sidebar Start==================== --}}
-   <x-admin-sidebar/>
-   {{-- ===========Admin Sidebar End==================== --}}
-   <section class="home-section">
-      {{-- ===========Admin NavBar Start==================== --}}
-      <x-admin-nav/>
-      {{-- ===========Admin NavBar End==================== --}}
-      <!-- =============================== MAIN CONTENT START HERE =========================== -->
-      <div class="container-fluid">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>Admin Dashboard | DreamCrowd</title>
+
+    <!-- CSS Libraries -->
+    <link rel="stylesheet" href="/assets/admin/asset/css/bootstrap.min.css"/>
+    <link href="https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="/assets/admin/asset/css/sidebar.css"/>
+    <link rel="stylesheet" href="/assets/admin/asset/css/style.css">
+    <link rel="stylesheet" href="/assets/admin/asset/css/Dashboard.css">
+
+    {{-- Fav Icon --}}
+    @php $home = \App\Models\HomeDynamic::first(); @endphp
+    @if ($home)
+        <link rel="shortcut icon" href="/assets/public-site/asset/img/{{$home->fav_icon}}" type="image/x-icon">
+    @endif
+
+    <!-- Flatpickr for Date Picker -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
+    <style>
+        .dashboard-loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.9);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .dashboard-loading.active {
+            display: flex;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #007bff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .stat-card {
+            background: #fff;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 28px;
+        }
+
+        .stat-content {
+            flex: 1;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: #6c757d;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 26px;
+            font-weight: 700;
+            margin: 0;
+            color: #212529;
+        }
+
+        .stat-sublabel {
+            font-size: 11px;
+            color: #6c757d;
+        }
+
+        .stat-card-small {
+            background: #fff;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+            text-align: center;
+            transition: transform 0.3s ease;
+            margin-bottom: 15px;
+        }
+
+        .stat-card-small:hover {
+            transform: translateY(-3px);
+        }
+
+        .stat-card-small .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .stat-card-small .stat-label {
+            font-size: 12px;
+            color: #6c757d;
+        }
+
+        .alert-card {
+            background: #fff;
+            border-left: 4px solid #dc3545;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .alert-card.critical {
+            border-left-color: #dc3545;
+            background: #fff5f5;
+        }
+
+        .alert-card.warning {
+            border-left-color: #ffc107;
+            background: #fffbf0;
+        }
+
+        .alert-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .alert-header i {
+            font-size: 24px;
+            margin-right: 10px;
+            color: #dc3545;
+        }
+
+        .alert-header h6 {
+            margin: 0;
+            flex: 1;
+            font-weight: 600;
+        }
+
+        .filter-panel {
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .filter-preset {
+            margin: 3px;
+            font-size: 13px;
+        }
+
+        .filter-preset.active {
+            background: #007bff;
+            border-color: #007bff;
+            color: #fff;
+        }
+
+        .section-header {
+            margin-top: 30px;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .section-header h5 {
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .chart-card {
+            background: #fff;
+            border: none;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border-radius: 10px;
+        }
+
+        .chart-card .card-title {
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 20px;
+        }
+
+        .input-group {
+            margin-bottom: 10px;
+        }
+
+        .management-panel {
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .management-panel h6 {
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+<!-- Loading Overlay -->
+<div class="dashboard-loading" id="dashboardLoading">
+    <div class="spinner"></div>
+</div>
+
+<!-- Sidebar -->
+<x-admin-sidebar/>
+
+<section class="home-section">
+    <!-- Navigation -->
+    <x-admin-nav/>
+
+    <!-- Main Content -->
+    <div class="container-fluid py-4">
         <div class="row dash-notification">
-          <div class="col-md-12">
-            <div class="dash">
-              <div class="row">
-                <div class="col-md-12">
-                  <div class="dash-top">
-                    <h1 class="dash-title">Dashboard</h1>
-                  </div>
-                </div>
-              </div>
-              <!-- Blue MASSEGES section -->
-              <div class="user-notification">
-                <div class="row">
-                  <div class="col-md-12">
-                    <div class="notify">
-                      <i class="bx bx-grid-alt" title="Dashboard"></i>
 
-                      <h2>Dashboard</h2>
-                    </div>
-                  </div>
+            <!-- Page Header -->
+            <div class="row mb-4">
+                <div class="col-md-8">
+                    <h2><i class='bx bx-shield-alt'></i> Admin Dashboard</h2>
+                    <p class="text-muted">Platform management and analytics center</p>
                 </div>
-              </div>
-              <!-- Filter Date Section -->
-              <div class="date-section">
-                <div class="row">
-                  <div class="col-md-12">
-                    <div class="user-all-seller-drop seller-drop">
-                      <!-- first drop dawon  -->
-                      <form>
-                        <div class="row align-items-center calendar-sec">
-                          <div class="col-auto date-selection">
-                            <div class="date-sec">
-                              <i class="fa-solid fa-calendar-days"></i>
-                              <select class="form-select" id="dateFilter">
-                                <option value="today">Today</option>
-                                <option value="yesterday">Yesterday</option>
-                                <option value="today">Last Week</option>
-                                <option value="today">Last 7 days</option>
-                                <option value="today">Lifetime</option>
-                                <option value="lastMonth">Last Month</option>
-                                <option value="custom">Any Date</option>
-                              </select>
-                            </div>
-                          </div>
-                          <div
-                            class="col-auto"
-                            id="fromDateFields"
-                            style="display: none"
-                          >
-                            <div class="row">
-                              <label
-                                for="inputEmail3"
-                                class="col-sm-3 col-form-label"
-                                >From:</label
-                              >
-                              <div class="col-sm-9">
-                                <input
-                                  type="date"
-                                  class="form-control"
-                                  id="fromDate"
-                                />
-                              </div>
-                            </div>
-                          </div>
-                          <div
-                            class="col-auto"
-                            id="toDateFields"
-                            style="display: none"
-                          >
-                            <div class="row">
-                              <label
-                                for="inputEmail3"
-                                class="col-sm-2 col-form-label"
-                                >To:</label
-                              >
-                              <div class="col-sm-10">
-                                <input
-                                  type="date"
-                                  class="form-control"
-                                  id="fromDate"
-                                />
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </form>
-                    </div>
-                  </div>
+                <div class="col-md-4 text-end d-none">
+                    <button class="btn btn-primary" onclick="exportDashboard()">
+                        <i class="bx bx-download"></i> Export Report
+                    </button>
                 </div>
-              </div>
-              <!-- <div class="col-md-12"> -->
-              <div class="row">
-                <div class="col-xl-3 col-lg-4 col-md-6 col-12">
-                  <div class="card super-panel-card">
-                    <div class="title">
-                      <p class="mb-0">Total Seller</p>
-                      <h1 class="mb-0">19,500</h1>
-                    </div>
-                    <div class="d-flex">
-                      <div class="d-flex percentag">
-                        <p class="mb-0">
-                          - 22 %
-                          <span
-                            ><img
-                              src="assets/admin/asset/img/streamline_money-graph-arrow-increase-ascend-growth-up-arrow-stats-graph-right-grow.svg"
-                              alt=""
-                          /></span>
-                        </p>
-                      </div>
-                      <p class="mb-0 last">then last month</p>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-xl-3 col-lg-4 col-md-6 col-12">
-                  <div class="card super-panel-card">
-                    <div class="title">
-                      <p class="mb-0">Total Buyers</p>
-                      <h1 class="mb-0">19,500</h1>
-                    </div>
-                    <div class="d-flex">
-                      <div class="d-flex percentag-green">
-                        <p class="mb-0">
-                          - 22 %
-                          <span
-                            ><img
-                              src="assets/admin/asset/img/streamline_money-graph-arrow-increase-ascend-growth-up-arrow-stats-graph-right-grow (1).svg"
-                              alt=""
-                          /></span>
-                        </p>
-                      </div>
-                      <p class="mb-0 last">then last month</p>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-xl-3 col-lg-4 col-md-6 col-12">
-                  <div class="card super-panel-card">
-                    <div class="title">
-                      <p class="mb-0">Total Orders</p>
-                      <h1 class="mb-0">19,500</h1>
-                    </div>
-                    <div class="d-flex">
-                      <div class="d-flex percentag">
-                        <p class="mb-0">
-                          - 22 %
-                          <span
-                            ><img
-                              src="assets/admin/asset/img/streamline_money-graph-arrow-increase-ascend-growth-up-arrow-stats-graph-right-grow.svg"
-                              alt=""
-                          /></span>
-                        </p>
-                      </div>
-                      <p class="mb-0 last">then last month</p>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-xl-3 col-lg-4 col-md-6 col-12">
-                  <div class="card super-panel-card">
-                    <div class="title">
-                      <p class="mb-0">Total Applications</p>
-                      <h1 class="mb-0">19,500</h1>
-                    </div>
-                    <div class="d-flex">
-                      <div class="d-flex percentag-green">
-                        <p class="mb-0">
-                          - 22 %
-                          <span
-                            ><img
-                              src="assets/admin/asset/img/streamline_money-graph-arrow-increase-ascend-growth-up-arrow-stats-graph-right-grow (1).svg"
-                              alt=""
-                          /></span>
-                        </p>
-                      </div>
-                      <p class="mb-0 last">then last month</p>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-xl-3 col-lg-4 col-md-6 col-12">
-                  <div class="card super-panel-card">
-                    <div class="title">
-                      <p class="mb-0">Total Visitors</p>
-                      <h1 class="mb-0">19,500</h1>
-                    </div>
-                    <div class="d-flex">
-                      <div class="d-flex percentag">
-                        <p class="mb-0">
-                          - 22 %
-                          <span
-                            ><img
-                              src="assets/admin/asset/img/streamline_money-graph-arrow-increase-ascend-growth-up-arrow-stats-graph-right-grow.svg"
-                              alt=""
-                          /></span>
-                        </p>
-                      </div>
-                      <p class="mb-0 last">then last month</p>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-xl-3 col-lg-4 col-md-6 col-12">
-                  <div class="card super-panel-card">
-                    <div class="title">
-                      <p class="mb-0">Total Appointments</p>
-                      <h1 class="mb-0">19,500</h1>
-                    </div>
-                    <div class="d-flex">
-                      <div class="d-flex percentag-green">
-                        <p class="mb-0">
-                          - 22 %
-                          <span
-                            ><img
-                              src="assets/admin/asset/img/streamline_money-graph-arrow-increase-ascend-growth-up-arrow-stats-graph-right-grow (1).svg"
-                              alt=""
-                          /></span>
-                        </p>
-                      </div>
-                      <p class="mb-0 last">then last month</p>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-xl-3 col-lg-4 col-md-6 col-12">
-                  <div class="card super-panel-card">
-                    <div class="title">
-                      <p class="mb-0">Total Sellers online</p>
-                      <h1 class="mb-0">19,500</h1>
-                    </div>
-                    <div class="d-flex">
-                      <div class="d-flex percentag">
-                        <p class="mb-0">
-                          - 22 %
-                          <span
-                            ><img
-                              src="assets/admin/asset/img/streamline_money-graph-arrow-increase-ascend-growth-up-arrow-stats-graph-right-grow.svg"
-                              alt=""
-                          /></span>
-                        </p>
-                      </div>
-                      <p class="mb-0 last">then last month</p>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-xl-3 col-lg-4 col-md-6 col-12">
-                  <div class="card super-panel-card">
-                    <div class="title">
-                      <p class="mb-0">Total buyers online</p>
-                      <h1 class="mb-0">19,500</h1>
-                    </div>
-                    <div class="d-flex">
-                      <div class="d-flex percentag-green">
-                        <p class="mb-0">
-                          - 22 %
-                          <span
-                            ><img
-                              src="assets/admin/asset/img/streamline_money-graph-arrow-increase-ascend-growth-up-arrow-stats-graph-right-grow (1).svg"
-                              alt=""
-                          /></span>
-                        </p>
-                      </div>
-                      <p class="mb-0 last">then last month</p>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-xl-3 col-lg-4 col-md-6 col-12">
-                  <div class="card super-panel-card">
-                    <div class="title">
-                      <p class="mb-0">Pending Applications</p>
-                      <h1 class="mb-0">19,500</h1>
-                    </div>
-                    <div class="d-flex">
-                      <div class="d-flex percentag">
-                        <p class="mb-0">
-                          - 22 %
-                          <span
-                            ><img
-                              src="assets/admin/asset/img/streamline_money-graph-arrow-increase-ascend-growth-up-arrow-stats-graph-right-grow.svg"
-                              alt=""
-                          /></span>
-                        </p>
-                      </div>
-                      <p class="mb-0 last">then last month</p>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-xl-3 col-lg-4 col-md-6 col-12">
-                  <div class="card super-panel-card">
-                    <div class="title">
-                      <p class="mb-0">Approved Applications</p>
-                      <h1 class="mb-0">19,500</h1>
-                    </div>
-                    <div class="d-flex">
-                      <div class="d-flex percentag-green">
-                        <p class="mb-0">
-                          - 22 %
-                          <span
-                            ><img
-                              src="assets/admin/asset/img/streamline_money-graph-arrow-increase-ascend-growth-up-arrow-stats-graph-right-grow (1).svg"
-                              alt=""
-                          /></span>
-                        </p>
-                      </div>
-                      <p class="mb-0 last">then last month</p>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-xl-3 col-lg-4 col-md-6 col-12">
-                  <div class="card super-panel-card">
-                    <div class="title">
-                      <p class="mb-0">Rejected Applications</p>
-                      <h1 class="mb-0">19,500</h1>
-                    </div>
-                    <div class="d-flex">
-                      <div class="d-flex percentag">
-                        <p class="mb-0">
-                          - 22 %
-                          <span
-                            ><img
-                              src="assets/admin/asset/img/streamline_money-graph-arrow-increase-ascend-growth-up-arrow-stats-graph-right-grow.svg"
-                              alt=""
-                          /></span>
-                        </p>
-                      </div>
-                      <p class="mb-0 last">then last month</p>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-xl-3 col-lg-4 col-md-6 col-12">
-                  <div class="card super-panel-card">
-                    <div class="title">
-                      <p class="mb-0">Deleted Accounts</p>
-                      <h1 class="mb-0">19,500</h1>
-                    </div>
-                    <div class="d-flex">
-                      <div class="d-flex percentag-green">
-                        <p class="mb-0">
-                          - 22 %
-                          <span
-                            ><img
-                              src="assets/admin/asset/img/streamline_money-graph-arrow-increase-ascend-growth-up-arrow-stats-graph-right-grow (1).svg"
-                              alt=""
-                          /></span>
-                        </p>
-                      </div>
-                      <p class="mb-0 last">then last month</p>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-xl-3 col-lg-4 col-md-6 col-12">
-                  <div class="card super-panel-card">
-                    <div class="title">
-                      <p class="mb-0">New Sign ups</p>
-                      <h1 class="mb-0">19,500</h1>
-                    </div>
-                    <div class="d-flex">
-                      <div class="d-flex percentag">
-                        <p class="mb-0">
-                          - 22 %
-                          <span
-                            ><img
-                              src="assets/admin/asset/img/streamline_money-graph-arrow-increase-ascend-growth-up-arrow-stats-graph-right-grow.svg"
-                              alt=""
-                          /></span>
-                        </p>
-                      </div>
-                      <p class="mb-0 last">then last month</p>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-xl-3 col-lg-4 col-md-6 col-12">
-                  <div class="card super-panel-card">
-                    <div class="title">
-                      <p class="mb-0">Payout Requests</p>
-                      <h1 class="mb-0">19,500</h1>
-                    </div>
-                    <div class="d-flex">
-                      <div class="d-flex percentag-green">
-                        <p class="mb-0">
-                          - 22 %
-                          <span
-                            ><img
-                              src="assets/admin/asset/img/streamline_money-graph-arrow-increase-ascend-growth-up-arrow-stats-graph-right-grow (1).svg"
-                              alt=""
-                          /></span>
-                        </p>
-                      </div>
-                      <p class="mb-0 last">then last month</p>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-xl-3 col-lg-4 col-md-6 col-12">
-                  <div class="card super-panel-card">
-                    <div class="title">
-                      <p class="mb-0">Refund Requests</p>
-                      <h1 class="mb-0">19,500</h1>
-                    </div>
-                    <div class="d-flex">
-                      <div class="d-flex percentag">
-                        <p class="mb-0">
-                          - 22 %
-                          <span
-                            ><img
-                              src="assets/admin/asset/img/streamline_money-graph-arrow-increase-ascend-growth-up-arrow-stats-graph-right-grow.svg"
-                              alt=""
-                          /></span>
-                        </p>
-                      </div>
-                      <p class="mb-0 last">then last month</p>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-xl-3 col-lg-4 col-md-6 col-12">
-                  <div class="card super-panel-card">
-                    <div class="title">
-                      <p class="mb-0">Online Class Seller</p>
-                      <h1 class="mb-0">19,500</h1>
-                    </div>
-                    <div class="d-flex">
-                      <div class="d-flex percentag-green">
-                        <p class="mb-0">
-                          - 22 %
-                          <span
-                            ><img
-                              src="assets/admin/asset/img/streamline_money-graph-arrow-increase-ascend-growth-up-arrow-stats-graph-right-grow (1).svg"
-                              alt=""
-                          /></span>
-                        </p>
-                      </div>
-                      <p class="mb-0 last">then last month</p>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-xl-3 col-lg-4 col-md-6 col-12">
-                  <div class="card super-panel-card">
-                    <div class="title">
-                      <p class="mb-0">In-person Class Seller</p>
-                      <h1 class="mb-0">19,500</h1>
-                    </div>
-                    <div class="d-flex">
-                      <div class="d-flex percentag">
-                        <p class="mb-0">
-                          - 22 %
-                          <span
-                            ><img
-                              src="assets/admin/asset/img/streamline_money-graph-arrow-increase-ascend-growth-up-arrow-stats-graph-right-grow.svg"
-                              alt=""
-                          /></span>
-                        </p>
-                      </div>
-                      <p class="mb-0 last">then last month</p>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-xl-3 col-lg-4 col-md-6 col-12">
-                  <div class="card super-panel-card">
-                    <div class="title">
-                      <p class="mb-0">Freelance Service Seller</p>
-                      <h1 class="mb-0">19,500</h1>
-                    </div>
-                    <div class="d-flex">
-                      <div class="d-flex percentag-green">
-                        <p class="mb-0">
-                          - 22 %
-                          <span
-                            ><img
-                              src="assets/admin/asset/img/streamline_money-graph-arrow-increase-ascend-growth-up-arrow-stats-graph-right-grow (1).svg"
-                              alt=""
-                          /></span>
-                        </p>
-                      </div>
-                      <p class="mb-0 last">then last month</p>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-xl-3 col-lg-4 col-md-6 col-12">
-                  <div class="card super-panel-card">
-                    <div class="title">
-                      <p class="mb-0">In-person Freelance Seller</p>
-                      <h1 class="mb-0">19,500</h1>
-                    </div>
-                    <div class="d-flex">
-                      <div class="d-flex percentag">
-                        <p class="mb-0">
-                          - 22 %
-                          <span
-                            ><img
-                              src="assets/admin/asset/img/streamline_money-graph-arrow-increase-ascend-growth-up-arrow-stats-graph-right-grow.svg"
-                              alt=""
-                          /></span>
-                        </p>
-                      </div>
-                      <p class="mb-0 last">then last month</p>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-xl-3 col-lg-4 col-md-6 col-12">
-                  <div class="card super-panel-card">
-                    <div class="title">
-                      <p class="mb-0">New Sign ups</p>
-                      <h1 class="mb-0">19,500</h1>
-                    </div>
-                    <div class="d-flex">
-                      <div class="d-flex percentag-green">
-                        <p class="mb-0">
-                          - 22 %
-                          <span
-                            ><img
-                              src="assets/admin/asset/img/streamline_money-graph-arrow-increase-ascend-growth-up-arrow-stats-graph-right-grow (1).svg"
-                              alt=""
-                          /></span>
-                        </p>
-                      </div>
-                      <p class="mb-0 last">then last month</p>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-xl-3 col-lg-4 col-md-6 col-12">
-                  <div class="card super-panel-card">
-                    <div class="title">
-                      <p class="mb-0">Payout Requests</p>
-                      <h1 class="mb-0">19,500</h1>
-                    </div>
-                    <div class="d-flex">
-                      <div class="d-flex percentag-green">
-                        <p class="mb-0">
-                          - 22 %
-                          <span
-                            ><img
-                              src="assets/admin/asset/img/streamline_money-graph-arrow-increase-ascend-growth-up-arrow-stats-graph-right-grow (1).svg"
-                              alt=""
-                          /></span>
-                        </p>
-                      </div>
-                      <p class="mb-0 last">then last month</p>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-xl-3 col-lg-4 col-md-6 col-12">
-                  <div class="card super-panel-card">
-                    <div class="title">
-                      <p class="mb-0">Messages</p>
-                      <h1 class="mb-0">19,500</h1>
-                    </div>
-                    <div class="d-flex">
-                      <div class="d-flex percentag-green">
-                        <p class="mb-0">
-                          - 22 %
-                          <span
-                            ><img
-                              src="assets/admin/asset/img/streamline_money-graph-arrow-increase-ascend-growth-up-arrow-stats-graph-right-grow (1).svg"
-                              alt=""
-                          /></span>
-                        </p>
-                      </div>
-                      <p class="mb-0 last">then last month</p>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-xl-3 col-lg-4 col-md-6 col-12">
-                  <div class="card super-panel-card">
-                    <div class="title">
-                      <p class="mb-0">Refund Requests</p>
-                      <h1 class="mb-0">19,500</h1>
-                    </div>
-                    <div class="d-flex">
-                      <div class="d-flex percentag-green">
-                        <p class="mb-0">
-                          - 22 %
-                          <span
-                            ><img
-                              src="assets/admin/asset/img/streamline_money-graph-arrow-increase-ascend-growth-up-arrow-stats-graph-right-grow (1).svg"
-                              alt=""
-                          /></span>
-                        </p>
-                      </div>
-                      <p class="mb-0 last">then last month</p>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-xl-3 col-lg-4 col-md-6 col-12">
-                  <div class="card super-panel-card">
-                    <div class="title">
-                      <p class="mb-0">Refund Requests</p>
-                      <h1 class="mb-0">19,500</h1>
-                    </div>
-                    <div class="d-flex">
-                      <div class="d-flex percentag-green">
-                        <p class="mb-0">
-                          - 22 %
-                          <span
-                            ><img
-                              src="assets/admin/asset/img/streamline_money-graph-arrow-increase-ascend-growth-up-arrow-stats-graph-right-grow (1).svg"
-                              alt=""
-                          /></span>
-                        </p>
-                      </div>
-                      <p class="mb-0 last">then last month</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="date-section top-table-sec">
-                <div class="row">
-                  <div class="col-md-12">
-                    <div class="user-all-seller-drop seller-drop">
-                      <!-- sceond drop -->
-                      <form>
-                        <div class="row align-items-center calendar-sec">
-                          <div class="col-auto date-selection">
-                            <div class="date-sec filter-drop filter-top-drop">
-                              <select class="form-select" id="dateFilter">
-                                <option value="">Top Sellers</option>
-                                <option value="">Top Buyers</option>
-                                <option value="">Top Ratings $ Reviews</option>
-                                <option value="">
-                                  Top Categories &S ub Categories
-                                </option>
-                              </select>
-                            </div>
-                          </div>
-                        </div>
-                      </form>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <!-- top sellers table -->
-              <div class="top-sellers-table">
-                <!-- top sellers tabele -->
-                <div class="row installment-table">
-                  <div class="col-md-12">
-                    <div class="table-responsive table-desc">
-                      <div class="hack1">
-                        <div class="hack2">
-                          <table class="table">
-                            <thead>
-                              <tr class="text-nowrap">
-                                <th>Seller</th>
-                                <th>Seller ID</th>
-                                <th>Reg. Date</th>
-                                <th>Service Type</th>
-                                <th>Category</th>
-                                <th>Location</th>
-                                <th>Rating</th>
-                                <th>Total Order</th>
-                                <th>Total Amount</th>
-                                <th>Refunds</th>
-                                <th>Action</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              <tr>
-                                <td>
-                                  <img
-                                    class="Buyer-img"
-                                    src="assets/admin/asset/img/profile.png"
-                                  /><span class="para-1">Usama A.</span>
-                                </td>
-                                <td>#7906108</td>
-                                <td>October 23, 2023</td>
-                                <td>Freelance Service</td>
-                                <td>Graphic Design</td>
-                                <td>London, US</td>
-                                <td>4.5 (400+ reviews)</td>
-                                <td>400</td>
-                                <td>$ 14,840</td>
-                                <td>$ 14,840</td>
-                                <td>
-                                  <div class="expert-dropdown">
-                                    <button
-                                      class="btn action-btn"
-                                      type="button"
-                                      id="dropdownMenuButton1"
-                                      data-bs-toggle="dropdown"
-                                      aria-expanded="false"
-                                    >
-                                      ...
-                                    </button>
-                                    <ul
-                                      class="dropdown-menu"
-                                      aria-labelledby="dropdownMenuButton1"
-                                    >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>View dashboard</li></a
-                                      >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>view profile</li></a
-                                      >
-                                      <a
-                                        class="dropdown-item"
-                                        href="#"
-                                        type="button"
-                                        class="btn btn-primary"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#cancel-service-modal"
-                                        ><li>view page</li></a
-                                      >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>edit commission</li></a
-                                      >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>add to home page</li></a
-                                      >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>add to trending page</li></a
-                                      >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>hide seller</li></a
-                                      >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>pause account</li></a
-                                      >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>delete account</li></a
-                                      >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>ban account</li></a
-                                      >
-                                    </ul>
-                                  </div>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td>
-                                  <img
-                                    class="Buyer-img"
-                                    src="assets/admin/asset/img/profile.png"
-                                  /><span class="para-1">Usama A.</span>
-                                </td>
-                                <td>#7906108</td>
-                                <td>October 23, 2023</td>
-                                <td>Freelance Service</td>
-                                <td>Graphic Design</td>
-                                <td>London, US</td>
-                                <td>4.5 (400+ reviews)</td>
-                                <td>400</td>
-                                <td>$ 14,840</td>
-                                <td>$ 14,840</td>
-                                <td>
-                                  <div class="expert-dropdown">
-                                    <button
-                                      class="btn action-btn"
-                                      type="button"
-                                      id="dropdownMenuButton1"
-                                      data-bs-toggle="dropdown"
-                                      aria-expanded="false"
-                                    >
-                                      ...
-                                    </button>
-                                    <ul
-                                      class="dropdown-menu"
-                                      aria-labelledby="dropdownMenuButton1"
-                                    >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>View dashboard</li></a
-                                      >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>view profile</li></a
-                                      >
-                                      <a
-                                        class="dropdown-item"
-                                        href="#"
-                                        type="button"
-                                        class="btn btn-primary"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#cancel-service-modal"
-                                        ><li>view page</li></a
-                                      >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>edit commission</li></a
-                                      >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>add to home page</li></a
-                                      >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>add to trending page</li></a
-                                      >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>hide seller</li></a
-                                      >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>pause account</li></a
-                                      >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>delete account</li></a
-                                      >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>ban account</li></a
-                                      >
-                                    </ul>
-                                  </div>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td>
-                                  <img
-                                    class="Buyer-img"
-                                    src="assets/admin/asset/img/profile.png"
-                                  /><span class="para-1">Usama A.</span>
-                                </td>
-                                <td>#7906108</td>
-                                <td>October 23, 2023</td>
-                                <td>Freelance Service</td>
-                                <td>Graphic Design</td>
-                                <td>London, US</td>
-                                <td>4.5 (400+ reviews)</td>
-                                <td>400</td>
-                                <td>$ 14,840</td>
-                                <td>$ 14,840</td>
-                                <td>
-                                  <div class="expert-dropdown">
-                                    <button
-                                      class="btn action-btn"
-                                      type="button"
-                                      id="dropdownMenuButton1"
-                                      data-bs-toggle="dropdown"
-                                      aria-expanded="false"
-                                    >
-                                      ...
-                                    </button>
-                                    <ul
-                                      class="dropdown-menu"
-                                      aria-labelledby="dropdownMenuButton1"
-                                    >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>View dashboard</li></a
-                                      >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>view profile</li></a
-                                      >
-                                      <a
-                                        class="dropdown-item"
-                                        href="#"
-                                        type="button"
-                                        class="btn btn-primary"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#cancel-service-modal"
-                                        ><li>view page</li></a
-                                      >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>edit commission</li></a
-                                      >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>add to home page</li></a
-                                      >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>add to trending page</li></a
-                                      >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>hide seller</li></a
-                                      >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>pause account</li></a
-                                      >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>delete account</li></a
-                                      >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>ban account</li></a
-                                      >
-                                    </ul>
-                                  </div>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td>
-                                  <img
-                                    class="Buyer-img"
-                                    src="assets/admin/asset/img/profile.png"
-                                  /><span class="para-1">Usama A.</span>
-                                </td>
-                                <td>#7906108</td>
-                                <td>October 23, 2023</td>
-                                <td>Freelance Service</td>
-                                <td>Graphic Design</td>
-                                <td>London, US</td>
-                                <td>4.5 (400+ reviews)</td>
-                                <td>400</td>
-                                <td>$ 14,840</td>
-                                <td>$ 14,840</td>
-                                <td>
-                                  <div class="expert-dropdown">
-                                    <button
-                                      class="btn action-btn"
-                                      type="button"
-                                      id="dropdownMenuButton1"
-                                      data-bs-toggle="dropdown"
-                                      aria-expanded="false"
-                                    >
-                                      ...
-                                    </button>
-                                    <ul
-                                      class="dropdown-menu"
-                                      aria-labelledby="dropdownMenuButton1"
-                                    >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>View dashboard</li></a
-                                      >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>view profile</li></a
-                                      >
-                                      <a
-                                        class="dropdown-item"
-                                        href="#"
-                                        type="button"
-                                        class="btn btn-primary"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#cancel-service-modal"
-                                        ><li>view page</li></a
-                                      >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>edit commission</li></a
-                                      >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>add to home page</li></a
-                                      >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>add to trending page</li></a
-                                      >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>hide seller</li></a
-                                      >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>pause account</li></a
-                                      >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>delete account</li></a
-                                      >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>ban account</li></a
-                                      >
-                                    </ul>
-                                  </div>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td>
-                                  <img
-                                    class="Buyer-img"
-                                    src="assets/admin/asset/img/profile.png"
-                                  /><span class="para-1">Usama A.</span>
-                                </td>
-                                <td>#7906108</td>
-                                <td>October 23, 2023</td>
-                                <td>Freelance Service</td>
-                                <td>Graphic Design</td>
-                                <td>London, US</td>
-                                <td>4.5 (400+ reviews)</td>
-                                <td>400</td>
-                                <td>$ 14,840</td>
-                                <td>$ 14,840</td>
-                                <td>
-                                  <div class="expert-dropdown">
-                                    <button
-                                      class="btn action-btn"
-                                      type="button"
-                                      id="dropdownMenuButton1"
-                                      data-bs-toggle="dropdown"
-                                      aria-expanded="false"
-                                    >
-                                      ...
-                                    </button>
-                                    <ul
-                                      class="dropdown-menu"
-                                      aria-labelledby="dropdownMenuButton1"
-                                    >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>View dashboard</li></a
-                                      >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>view profile</li></a
-                                      >
-                                      <a
-                                        class="dropdown-item"
-                                        href="#"
-                                        type="button"
-                                        class="btn btn-primary"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#cancel-service-modal"
-                                        ><li>view page</li></a
-                                      >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>edit commission</li></a
-                                      >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>add to home page</li></a
-                                      >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>add to trending page</li></a
-                                      >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>hide seller</li></a
-                                      >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>pause account</li></a
-                                      >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>delete account</li></a
-                                      >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>ban account</li></a
-                                      >
-                                    </ul>
-                                  </div>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td>
-                                  <img
-                                    class="Buyer-img"
-                                    src="assets/admin/asset/img/profile.png"
-                                  /><span class="para-1">Usama A.</span>
-                                </td>
-                                <td>#7906108</td>
-                                <td>October 23, 2023</td>
-                                <td>Freelance Service</td>
-                                <td>Graphic Design</td>
-                                <td>London, US</td>
-                                <td>4.5 (400+ reviews)</td>
-                                <td>400</td>
-                                <td>$ 14,840</td>
-                                <td>$ 14,840</td>
-                                <td>
-                                  <div class="expert-dropdown">
-                                    <button
-                                      class="btn action-btn"
-                                      type="button"
-                                      id="dropdownMenuButton1"
-                                      data-bs-toggle="dropdown"
-                                      aria-expanded="false"
-                                    >
-                                      ...
-                                    </button>
-                                    <ul
-                                      class="dropdown-menu"
-                                      aria-labelledby="dropdownMenuButton1"
-                                    >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>View dashboard</li></a
-                                      >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>view profile</li></a
-                                      >
-                                      <a
-                                        class="dropdown-item"
-                                        href="#"
-                                        type="button"
-                                        class="btn btn-primary"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#cancel-service-modal"
-                                        ><li>view page</li></a
-                                      >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>edit commission</li></a
-                                      >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>add to home page</li></a
-                                      >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>add to trending page</li></a
-                                      >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>hide seller</li></a
-                                      >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>pause account</li></a
-                                      >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>delete account</li></a
-                                      >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>ban account</li></a
-                                      >
-                                    </ul>
-                                  </div>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td>
-                                  <img
-                                    class="Buyer-img"
-                                    src="assets/admin/asset/img/profile.png"
-                                  /><span class="para-1">Usama A.</span>
-                                </td>
-                                <td>#7906108</td>
-                                <td>October 23, 2023</td>
-                                <td>Freelance Service</td>
-                                <td>Graphic Design</td>
-                                <td>London, US</td>
-                                <td>4.5 (400+ reviews)</td>
-                                <td>400</td>
-                                <td>$ 14,840</td>
-                                <td>$ 14,840</td>
-                                <td>
-                                  <div class="expert-dropdown">
-                                    <button
-                                      class="btn action-btn"
-                                      type="button"
-                                      id="dropdownMenuButton1"
-                                      data-bs-toggle="dropdown"
-                                      aria-expanded="false"
-                                    >
-                                      ...
-                                    </button>
-                                    <ul
-                                      class="dropdown-menu"
-                                      aria-labelledby="dropdownMenuButton1"
-                                    >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>View dashboard</li></a
-                                      >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>view profile</li></a
-                                      >
-                                      <a
-                                        class="dropdown-item"
-                                        href="#"
-                                        type="button"
-                                        class="btn btn-primary"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#cancel-service-modal"
-                                        ><li>view page</li></a
-                                      >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>edit commission</li></a
-                                      >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>add to home page</li></a
-                                      >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>add to trending page</li></a
-                                      >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>hide seller</li></a
-                                      >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>pause account</li></a
-                                      >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>delete account</li></a
-                                      >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>ban account</li></a
-                                      >
-                                    </ul>
-                                  </div>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td>
-                                  <img
-                                    class="Buyer-img"
-                                    src="assets/admin/asset/img/profile.png"
-                                  /><span class="para-1">Usama A.</span>
-                                </td>
-                                <td>#7906108</td>
-                                <td>October 23, 2023</td>
-                                <td>Freelance Service</td>
-                                <td>Graphic Design</td>
-                                <td>London, US</td>
-                                <td>4.5 (400+ reviews)</td>
-                                <td>400</td>
-                                <td>$ 14,840</td>
-                                <td>$ 14,840</td>
-                                <td>
-                                  <div class="expert-dropdown">
-                                    <button
-                                      class="btn action-btn"
-                                      type="button"
-                                      id="dropdownMenuButton1"
-                                      data-bs-toggle="dropdown"
-                                      aria-expanded="false"
-                                    >
-                                      ...
-                                    </button>
-                                    <ul
-                                      class="dropdown-menu"
-                                      aria-labelledby="dropdownMenuButton1"
-                                    >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>View dashboard</li></a
-                                      >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>view profile</li></a
-                                      >
-                                      <a
-                                        class="dropdown-item"
-                                        href="#"
-                                        type="button"
-                                        class="btn btn-primary"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#cancel-service-modal"
-                                        ><li>view page</li></a
-                                      >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>edit commission</li></a
-                                      >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>add to home page</li></a
-                                      >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>add to trending page</li></a
-                                      >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>hide seller</li></a
-                                      >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>pause account</li></a
-                                      >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>delete account</li></a
-                                      >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>ban account</li></a
-                                      >
-                                    </ul>
-                                  </div>
-                                </td>
-                              </tr>
-                            </tbody>
-                          </table>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <!-- top buyers table -->
-              <div class="top-buyers-table">
-                <div class="row installment-table">
-                  <div class="col-md-12">
-                    <div class="table-responsive table-desc">
-                      <div class="hack1">
-                        <div class="hack2">
-                          <table class="table">
-                            <thead>
-                              <tr class="text-nowrap">
-                                <th>Applicant</th>
-                                <th>Email</th>
-                                <th>Registration Date</th>
-                                <th>Total Order</th>
-                                <th>Total Amount</th>
-                                <th>Status</th>
-                                <th>Last Active</th>
-                                <th>Action</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              <tr>
-                                <td>
-                                  <img
-                                    class="Buyer-img"
-                                    src="assets/admin/asset/img/profile.png"
-                                  /><span class="para-1">Usama A.</span>
-                                </td>
-                                <td>example@company.com</td>
-                                <td>October 23, 2023</td>
-                                <td>400</td>
-                                <td>$ 14,840</td>
-                                <td>
-                                  <span class="badge servce-class-badge"
-                                    >Active</span
-                                  >
-                                </td>
-                                <td>Last month ago</td>
-                                <td>
-                                  <div class="expert-dropdown">
-                                    <button
-                                      class="btn action-btn"
-                                      type="button"
-                                      id="dropdownMenuButton1"
-                                      data-bs-toggle="dropdown"
-                                      aria-expanded="false"
-                                    >
-                                      ...
-                                    </button>
-                                    <ul
-                                      class="dropdown-menu"
-                                      aria-labelledby="dropdownMenuButton1"
-                                    >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>View dashboard</li></a
-                                      >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>delete account</li></a
-                                      >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>ban account</li></a
-                                      >
-                                    </ul>
-                                  </div>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td>
-                                  <img
-                                    class="Buyer-img"
-                                    src="assets/admin/asset/img/profile.png"
-                                  /><span class="para-1">Usama A.</span>
-                                </td>
-                                <td>example@company.com</td>
-                                <td>October 23, 2023</td>
-                                <td>400</td>
-                                <td>$ 14,840</td>
-                                <td>
-                                  <span class="badge servce-class-badge"
-                                    >Active</span
-                                  >
-                                </td>
-                                <td>Last month ago</td>
-                                <td>
-                                  <div class="expert-dropdown">
-                                    <button
-                                      class="btn action-btn"
-                                      type="button"
-                                      id="dropdownMenuButton1"
-                                      data-bs-toggle="dropdown"
-                                      aria-expanded="false"
-                                    >
-                                      ...
-                                    </button>
-                                    <ul
-                                      class="dropdown-menu"
-                                      aria-labelledby="dropdownMenuButton1"
-                                    >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>View dashboard</li></a
-                                      >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>delete account</li></a
-                                      >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>ban account</li></a
-                                      >
-                                    </ul>
-                                  </div>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td>
-                                  <img
-                                    class="Buyer-img"
-                                    src="assets/admin/asset/img/profile.png"
-                                  /><span class="para-1">Usama A.</span>
-                                </td>
-                                <td>example@company.com</td>
-                                <td>October 23, 2023</td>
-                                <td>400</td>
-                                <td>$ 14,840</td>
-                                <td>
-                                  <span class="badge servce-class-badge"
-                                    >Active</span
-                                  >
-                                </td>
-                                <td>Last month ago</td>
-                                <td>
-                                  <div class="expert-dropdown">
-                                    <button
-                                      class="btn action-btn"
-                                      type="button"
-                                      id="dropdownMenuButton1"
-                                      data-bs-toggle="dropdown"
-                                      aria-expanded="false"
-                                    >
-                                      ...
-                                    </button>
-                                    <ul
-                                      class="dropdown-menu"
-                                      aria-labelledby="dropdownMenuButton1"
-                                    >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>View dashboard</li></a
-                                      >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>delete account</li></a
-                                      >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>ban account</li></a
-                                      >
-                                    </ul>
-                                  </div>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td>
-                                  <img
-                                    class="Buyer-img"
-                                    src="assets/admin/asset/img/profile.png"
-                                  /><span class="para-1">Usama A.</span>
-                                </td>
-                                <td>example@company.com</td>
-                                <td>October 23, 2023</td>
-                                <td>400</td>
-                                <td>$ 14,840</td>
-                                <td>
-                                  <span class="badge servce-class-badge"
-                                    >Active</span
-                                  >
-                                </td>
-                                <td>Last month ago</td>
-                                <td>
-                                  <div class="expert-dropdown">
-                                    <button
-                                      class="btn action-btn"
-                                      type="button"
-                                      id="dropdownMenuButton1"
-                                      data-bs-toggle="dropdown"
-                                      aria-expanded="false"
-                                    >
-                                      ...
-                                    </button>
-                                    <ul
-                                      class="dropdown-menu"
-                                      aria-labelledby="dropdownMenuButton1"
-                                    >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>View dashboard</li></a
-                                      >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>delete account</li></a
-                                      >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>ban account</li></a
-                                      >
-                                    </ul>
-                                  </div>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td>
-                                  <img
-                                    class="Buyer-img"
-                                    src="assets/admin/asset/img/profile.png"
-                                  /><span class="para-1">Usama A.</span>
-                                </td>
-                                <td>example@company.com</td>
-                                <td>October 23, 2023</td>
-                                <td>400</td>
-                                <td>$ 14,840</td>
-                                <td>
-                                  <span class="badge servce-class-badge"
-                                    >Active</span
-                                  >
-                                </td>
-                                <td>Last month ago</td>
-                                <td>
-                                  <div class="expert-dropdown">
-                                    <button
-                                      class="btn action-btn"
-                                      type="button"
-                                      id="dropdownMenuButton1"
-                                      data-bs-toggle="dropdown"
-                                      aria-expanded="false"
-                                    >
-                                      ...
-                                    </button>
-                                    <ul
-                                      class="dropdown-menu"
-                                      aria-labelledby="dropdownMenuButton1"
-                                    >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>View dashboard</li></a
-                                      >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>delete account</li></a
-                                      >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>ban account</li></a
-                                      >
-                                    </ul>
-                                  </div>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td>
-                                  <img
-                                    class="Buyer-img"
-                                    src="assets/admin/asset/img/profile.png"
-                                  /><span class="para-1">Usama A.</span>
-                                </td>
-                                <td>example@company.com</td>
-                                <td>October 23, 2023</td>
-                                <td>400</td>
-                                <td>$ 14,840</td>
-                                <td>
-                                  <span class="badge servce-class-badge"
-                                    >Active</span
-                                  >
-                                </td>
-                                <td>Last month ago</td>
-                                <td>
-                                  <div class="expert-dropdown">
-                                    <button
-                                      class="btn action-btn"
-                                      type="button"
-                                      id="dropdownMenuButton1"
-                                      data-bs-toggle="dropdown"
-                                      aria-expanded="false"
-                                    >
-                                      ...
-                                    </button>
-                                    <ul
-                                      class="dropdown-menu"
-                                      aria-labelledby="dropdownMenuButton1"
-                                    >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>View dashboard</li></a
-                                      >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>delete account</li></a
-                                      >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>ban account</li></a
-                                      >
-                                    </ul>
-                                  </div>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td>
-                                  <img
-                                    class="Buyer-img"
-                                    src="assets/admin/asset/img/profile.png"
-                                  /><span class="para-1">Usama A.</span>
-                                </td>
-                                <td>example@company.com</td>
-                                <td>October 23, 2023</td>
-                                <td>400</td>
-                                <td>$ 14,840</td>
-                                <td>
-                                  <span class="badge servce-class-badge"
-                                    >Active</span
-                                  >
-                                </td>
-                                <td>Last month ago</td>
-                                <td>
-                                  <div class="expert-dropdown">
-                                    <button
-                                      class="btn action-btn"
-                                      type="button"
-                                      id="dropdownMenuButton1"
-                                      data-bs-toggle="dropdown"
-                                      aria-expanded="false"
-                                    >
-                                      ...
-                                    </button>
-                                    <ul
-                                      class="dropdown-menu"
-                                      aria-labelledby="dropdownMenuButton1"
-                                    >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>View dashboard</li></a
-                                      >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>delete account</li></a
-                                      >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>ban account</li></a
-                                      >
-                                    </ul>
-                                  </div>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td>
-                                  <img
-                                    class="Buyer-img"
-                                    src="assets/admin/asset/img/profile.png"
-                                  /><span class="para-1">Usama A.</span>
-                                </td>
-                                <td>example@company.com</td>
-                                <td>October 23, 2023</td>
-                                <td>400</td>
-                                <td>$ 14,840</td>
-                                <td>
-                                  <span class="badge servce-class-badge"
-                                    >Active</span
-                                  >
-                                </td>
-                                <td>Last month ago</td>
-                                <td>
-                                  <div class="expert-dropdown">
-                                    <button
-                                      class="btn action-btn"
-                                      type="button"
-                                      id="dropdownMenuButton1"
-                                      data-bs-toggle="dropdown"
-                                      aria-expanded="false"
-                                    >
-                                      ...
-                                    </button>
-                                    <ul
-                                      class="dropdown-menu"
-                                      aria-labelledby="dropdownMenuButton1"
-                                    >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>View dashboard</li></a
-                                      >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>delete account</li></a
-                                      >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>ban account</li></a
-                                      >
-                                    </ul>
-                                  </div>
-                                </td>
-                              </tr>
-                            </tbody>
-                          </table>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <!-- top reviews and ratings table -->
-              <div class="top-reviews-rating-table">
-                <div class="row" id="main-contant-AI">
-                  <div class="col-md-12 installment-table">
-                    <div class="table-responsive">
-                      <div class="hack1">
-                        <div class="hack2">
-                          <table class="table">
-                            <thead>
-                              <tr class="text-nowrap">
-                                <th>Seller</th>
-                                <th>Buyers</th>
-                                <th>Service Title</th>
-                                <th>Service Type</th>
-                                <th>Review</th>
-                                <th>Rating</th>
-                                <th>Date</th>
-                                <th>Action</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              <tr>
-                                <td>Usama A.</td>
-                                <td>Orhan Khan</td>
-                                <td>
-                                  <img
-                                    class="table-img"
-                                    src="assets/admin/asset/img/table img.jpeg"
-                                  /><span class="para-1"
-                                    >Learn How to design</span
-                                  >
-                                  <p class="para-2">
-                                    attractive UI for clients....
-                                  </p>
-                                </td>
-                                <td>Freelance Service</td>
-                                <td>
-                                  <p class="review-text">
-                                    This Course is very helpful for Beginners I
-                                    learn ......
-                                  </p>
-                                </td>
-                                <td>
-                                  <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    width="116"
-                                    height="20"
-                                    viewBox="0 0 116 20"
-                                    fill="none"
-                                  >
-                                    <path
-                                      d="M9.723 1.96796C9.82548 1.72157 10.1745 1.72157 10.277 1.96796L11.9957 6.10027C12.1829 6.55038 12.6062 6.85792 13.0922 6.89687L17.5533 7.25452C17.8193 7.27585 17.9272 7.6078 17.7245 7.7814L14.3256 10.693C13.9554 11.0101 13.7937 11.5077 13.9068 11.9819L14.9452 16.3352C15.0071 16.5948 14.7247 16.8 14.497 16.6609L10.6776 14.328C10.2616 14.0739 9.73839 14.0739 9.32237 14.328L5.50298 16.6609C5.27525 16.8 4.99287 16.5948 5.05479 16.3352L6.09322 11.9819C6.20633 11.5077 6.04465 11.0101 5.67443 10.693L2.27548 7.7814C2.07282 7.6078 2.18068 7.27585 2.44667 7.25452L6.90785 6.89687C7.39378 6.85792 7.81707 6.55038 8.00428 6.10027L9.723 1.96796Z"
-                                      fill="#FFAF06"
-                                      stroke="#FFAF06"
-                                    />
-                                    <path
-                                      d="M33.723 1.96796C33.8255 1.72157 34.1745 1.72157 34.277 1.96796L35.9957 6.10027C36.1829 6.55038 36.6062 6.85792 37.0922 6.89687L41.5533 7.25452C41.8193 7.27585 41.9272 7.6078 41.7245 7.7814L38.3256 10.693C37.9554 11.0101 37.7937 11.5077 37.9068 11.9819L38.9452 16.3352C39.0071 16.5948 38.7247 16.8 38.497 16.6609L34.6776 14.328C34.2616 14.0739 33.7384 14.0739 33.3224 14.328L29.503 16.6609C29.2752 16.8 28.9929 16.5948 29.0548 16.3352L30.0932 11.9819C30.2063 11.5077 30.0447 11.0101 29.6744 10.693L26.2755 7.7814C26.0728 7.6078 26.1807 7.27585 26.4467 7.25452L30.9078 6.89687C31.3938 6.85792 31.8171 6.55038 32.0043 6.10027L33.723 1.96796Z"
-                                      fill="#FFAF06"
-                                      stroke="#FFAF06"
-                                    />
-                                    <path
-                                      d="M57.723 1.96796C57.8255 1.72157 58.1745 1.72157 58.277 1.96796L59.9957 6.10027C60.1829 6.55038 60.6062 6.85792 61.0922 6.89687L65.5533 7.25452C65.8193 7.27585 65.9272 7.6078 65.7245 7.7814L62.3256 10.693C61.9554 11.0101 61.7937 11.5077 61.9068 11.9819L62.9452 16.3352C63.0071 16.5948 62.7247 16.8 62.497 16.6609L58.6776 14.328C58.2616 14.0739 57.7384 14.0739 57.3224 14.328L53.503 16.6609C53.2752 16.8 52.9929 16.5948 53.0548 16.3352L54.0932 11.9819C54.2063 11.5077 54.0447 11.0101 53.6744 10.693L50.2755 7.7814C50.0728 7.6078 50.1807 7.27585 50.4467 7.25452L54.9078 6.89687C55.3938 6.85792 55.8171 6.55038 56.0043 6.10027L57.723 1.96796Z"
-                                      fill="#FFAF06"
-                                      stroke="#FFAF06"
-                                    />
-                                    <path
-                                      d="M81.723 1.96796C81.8255 1.72157 82.1745 1.72157 82.277 1.96796L83.9957 6.10027C84.1829 6.55038 84.6062 6.85792 85.0922 6.89687L89.5533 7.25452C89.8193 7.27585 89.9272 7.6078 89.7245 7.7814L86.3256 10.693C85.9554 11.0101 85.7937 11.5077 85.9068 11.9819L86.9452 16.3352C87.0071 16.5948 86.7247 16.8 86.497 16.6609L82.6776 14.328C82.2616 14.0739 81.7384 14.0739 81.3224 14.328L77.503 16.6609C77.2752 16.8 76.9929 16.5948 77.0548 16.3352L78.0932 11.9819C78.2063 11.5077 78.0447 11.0101 77.6744 10.693L74.2755 7.7814C74.0728 7.6078 74.1807 7.27585 74.4467 7.25452L78.9078 6.89687C79.3938 6.85792 79.8171 6.55038 80.0043 6.10027L81.723 1.96796Z"
-                                      stroke="#FFAF06"
-                                    />
-                                    <path
-                                      d="M105.723 1.96796C105.825 1.72157 106.175 1.72157 106.277 1.96796L107.996 6.10027C108.183 6.55038 108.606 6.85792 109.092 6.89687L113.553 7.25452C113.819 7.27585 113.927 7.6078 113.725 7.7814L110.326 10.693C109.955 11.0101 109.794 11.5077 109.907 11.9819L110.945 16.3352C111.007 16.5948 110.725 16.8 110.497 16.6609L106.678 14.328C106.262 14.0739 105.738 14.0739 105.322 14.328L101.503 16.6609C101.275 16.8 100.993 16.5948 101.055 16.3352L102.093 11.9819C102.206 11.5077 102.045 11.0101 101.674 10.693L98.2755 7.7814C98.0728 7.6078 98.1807 7.27585 98.4467 7.25452L102.908 6.89687C103.394 6.85792 103.817 6.55038 104.004 6.10027L105.723 1.96796Z"
-                                      stroke="#FFAF06"
-                                    />
-                                  </svg>
-                                </td>
-                                <td>June 15, 2023</td>
-                                <td>
-                                  <div class="expert-dropdown">
-                                    <button
-                                      class="btn action-btn"
-                                      type="button"
-                                      id="dropdownMenuButton1"
-                                      data-bs-toggle="dropdown"
-                                      aria-expanded="false"
-                                    >
-                                      ...
-                                    </button>
-                                    <ul
-                                      class="dropdown-menu"
-                                      aria-labelledby="dropdownMenuButton1"
-                                    >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>View</li></a
-                                      >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>Delete</li></a
-                                      >
-                                    </ul>
-                                  </div>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td>Usama A.</td>
-                                <td>Orhan Khan</td>
-                                <td>
-                                  <img
-                                    class="table-img"
-                                    src="assets/admin/asset/img/table img.jpeg"
-                                  /><span class="para-1"
-                                    >Learn How to design</span
-                                  >
-                                  <p class="para-2">
-                                    attractive UI for clients....
-                                  </p>
-                                </td>
-                                <td>Freelance Service</td>
-                                <td>
-                                  This Course is very helpful for Beginners I
-                                  learn ......
-                                </td>
-                                <td>
-                                  <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    width="116"
-                                    height="20"
-                                    viewBox="0 0 116 20"
-                                    fill="none"
-                                  >
-                                    <path
-                                      d="M9.723 1.96796C9.82548 1.72157 10.1745 1.72157 10.277 1.96796L11.9957 6.10027C12.1829 6.55038 12.6062 6.85792 13.0922 6.89687L17.5533 7.25452C17.8193 7.27585 17.9272 7.6078 17.7245 7.7814L14.3256 10.693C13.9554 11.0101 13.7937 11.5077 13.9068 11.9819L14.9452 16.3352C15.0071 16.5948 14.7247 16.8 14.497 16.6609L10.6776 14.328C10.2616 14.0739 9.73839 14.0739 9.32237 14.328L5.50298 16.6609C5.27525 16.8 4.99287 16.5948 5.05479 16.3352L6.09322 11.9819C6.20633 11.5077 6.04465 11.0101 5.67443 10.693L2.27548 7.7814C2.07282 7.6078 2.18068 7.27585 2.44667 7.25452L6.90785 6.89687C7.39378 6.85792 7.81707 6.55038 8.00428 6.10027L9.723 1.96796Z"
-                                      fill="#FFAF06"
-                                      stroke="#FFAF06"
-                                    />
-                                    <path
-                                      d="M33.723 1.96796C33.8255 1.72157 34.1745 1.72157 34.277 1.96796L35.9957 6.10027C36.1829 6.55038 36.6062 6.85792 37.0922 6.89687L41.5533 7.25452C41.8193 7.27585 41.9272 7.6078 41.7245 7.7814L38.3256 10.693C37.9554 11.0101 37.7937 11.5077 37.9068 11.9819L38.9452 16.3352C39.0071 16.5948 38.7247 16.8 38.497 16.6609L34.6776 14.328C34.2616 14.0739 33.7384 14.0739 33.3224 14.328L29.503 16.6609C29.2752 16.8 28.9929 16.5948 29.0548 16.3352L30.0932 11.9819C30.2063 11.5077 30.0447 11.0101 29.6744 10.693L26.2755 7.7814C26.0728 7.6078 26.1807 7.27585 26.4467 7.25452L30.9078 6.89687C31.3938 6.85792 31.8171 6.55038 32.0043 6.10027L33.723 1.96796Z"
-                                      fill="#FFAF06"
-                                      stroke="#FFAF06"
-                                    />
-                                    <path
-                                      d="M57.723 1.96796C57.8255 1.72157 58.1745 1.72157 58.277 1.96796L59.9957 6.10027C60.1829 6.55038 60.6062 6.85792 61.0922 6.89687L65.5533 7.25452C65.8193 7.27585 65.9272 7.6078 65.7245 7.7814L62.3256 10.693C61.9554 11.0101 61.7937 11.5077 61.9068 11.9819L62.9452 16.3352C63.0071 16.5948 62.7247 16.8 62.497 16.6609L58.6776 14.328C58.2616 14.0739 57.7384 14.0739 57.3224 14.328L53.503 16.6609C53.2752 16.8 52.9929 16.5948 53.0548 16.3352L54.0932 11.9819C54.2063 11.5077 54.0447 11.0101 53.6744 10.693L50.2755 7.7814C50.0728 7.6078 50.1807 7.27585 50.4467 7.25452L54.9078 6.89687C55.3938 6.85792 55.8171 6.55038 56.0043 6.10027L57.723 1.96796Z"
-                                      fill="#FFAF06"
-                                      stroke="#FFAF06"
-                                    />
-                                    <path
-                                      d="M81.723 1.96796C81.8255 1.72157 82.1745 1.72157 82.277 1.96796L83.9957 6.10027C84.1829 6.55038 84.6062 6.85792 85.0922 6.89687L89.5533 7.25452C89.8193 7.27585 89.9272 7.6078 89.7245 7.7814L86.3256 10.693C85.9554 11.0101 85.7937 11.5077 85.9068 11.9819L86.9452 16.3352C87.0071 16.5948 86.7247 16.8 86.497 16.6609L82.6776 14.328C82.2616 14.0739 81.7384 14.0739 81.3224 14.328L77.503 16.6609C77.2752 16.8 76.9929 16.5948 77.0548 16.3352L78.0932 11.9819C78.2063 11.5077 78.0447 11.0101 77.6744 10.693L74.2755 7.7814C74.0728 7.6078 74.1807 7.27585 74.4467 7.25452L78.9078 6.89687C79.3938 6.85792 79.8171 6.55038 80.0043 6.10027L81.723 1.96796Z"
-                                      stroke="#FFAF06"
-                                    />
-                                    <path
-                                      d="M105.723 1.96796C105.825 1.72157 106.175 1.72157 106.277 1.96796L107.996 6.10027C108.183 6.55038 108.606 6.85792 109.092 6.89687L113.553 7.25452C113.819 7.27585 113.927 7.6078 113.725 7.7814L110.326 10.693C109.955 11.0101 109.794 11.5077 109.907 11.9819L110.945 16.3352C111.007 16.5948 110.725 16.8 110.497 16.6609L106.678 14.328C106.262 14.0739 105.738 14.0739 105.322 14.328L101.503 16.6609C101.275 16.8 100.993 16.5948 101.055 16.3352L102.093 11.9819C102.206 11.5077 102.045 11.0101 101.674 10.693L98.2755 7.7814C98.0728 7.6078 98.1807 7.27585 98.4467 7.25452L102.908 6.89687C103.394 6.85792 103.817 6.55038 104.004 6.10027L105.723 1.96796Z"
-                                      stroke="#FFAF06"
-                                    />
-                                  </svg>
-                                </td>
-                                <td>June 15, 2023</td>
-                                <td>
-                                  <div class="expert-dropdown">
-                                    <button
-                                      class="btn action-btn"
-                                      type="button"
-                                      id="dropdownMenuButton1"
-                                      data-bs-toggle="dropdown"
-                                      aria-expanded="false"
-                                    >
-                                      ...
-                                    </button>
-                                    <ul
-                                      class="dropdown-menu"
-                                      aria-labelledby="dropdownMenuButton1"
-                                    >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>View</li></a
-                                      >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>Delete</li></a
-                                      >
-                                    </ul>
-                                  </div>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td>Usama A.</td>
-                                <td>Orhan Khan</td>
-                                <td>
-                                  <img
-                                    class="table-img"
-                                    src="assets/admin/asset/img/table img.jpeg"
-                                  /><span class="para-1"
-                                    >Learn How to design</span
-                                  >
-                                  <p class="para-2">
-                                    attractive UI for clients....
-                                  </p>
-                                </td>
-                                <td>Freelance Service</td>
-                                <td>
-                                  This Course is very helpful for Beginners I
-                                  learn ......
-                                </td>
-                                <td>
-                                  <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    width="116"
-                                    height="20"
-                                    viewBox="0 0 116 20"
-                                    fill="none"
-                                  >
-                                    <path
-                                      d="M9.723 1.96796C9.82548 1.72157 10.1745 1.72157 10.277 1.96796L11.9957 6.10027C12.1829 6.55038 12.6062 6.85792 13.0922 6.89687L17.5533 7.25452C17.8193 7.27585 17.9272 7.6078 17.7245 7.7814L14.3256 10.693C13.9554 11.0101 13.7937 11.5077 13.9068 11.9819L14.9452 16.3352C15.0071 16.5948 14.7247 16.8 14.497 16.6609L10.6776 14.328C10.2616 14.0739 9.73839 14.0739 9.32237 14.328L5.50298 16.6609C5.27525 16.8 4.99287 16.5948 5.05479 16.3352L6.09322 11.9819C6.20633 11.5077 6.04465 11.0101 5.67443 10.693L2.27548 7.7814C2.07282 7.6078 2.18068 7.27585 2.44667 7.25452L6.90785 6.89687C7.39378 6.85792 7.81707 6.55038 8.00428 6.10027L9.723 1.96796Z"
-                                      fill="#FFAF06"
-                                      stroke="#FFAF06"
-                                    />
-                                    <path
-                                      d="M33.723 1.96796C33.8255 1.72157 34.1745 1.72157 34.277 1.96796L35.9957 6.10027C36.1829 6.55038 36.6062 6.85792 37.0922 6.89687L41.5533 7.25452C41.8193 7.27585 41.9272 7.6078 41.7245 7.7814L38.3256 10.693C37.9554 11.0101 37.7937 11.5077 37.9068 11.9819L38.9452 16.3352C39.0071 16.5948 38.7247 16.8 38.497 16.6609L34.6776 14.328C34.2616 14.0739 33.7384 14.0739 33.3224 14.328L29.503 16.6609C29.2752 16.8 28.9929 16.5948 29.0548 16.3352L30.0932 11.9819C30.2063 11.5077 30.0447 11.0101 29.6744 10.693L26.2755 7.7814C26.0728 7.6078 26.1807 7.27585 26.4467 7.25452L30.9078 6.89687C31.3938 6.85792 31.8171 6.55038 32.0043 6.10027L33.723 1.96796Z"
-                                      fill="#FFAF06"
-                                      stroke="#FFAF06"
-                                    />
-                                    <path
-                                      d="M57.723 1.96796C57.8255 1.72157 58.1745 1.72157 58.277 1.96796L59.9957 6.10027C60.1829 6.55038 60.6062 6.85792 61.0922 6.89687L65.5533 7.25452C65.8193 7.27585 65.9272 7.6078 65.7245 7.7814L62.3256 10.693C61.9554 11.0101 61.7937 11.5077 61.9068 11.9819L62.9452 16.3352C63.0071 16.5948 62.7247 16.8 62.497 16.6609L58.6776 14.328C58.2616 14.0739 57.7384 14.0739 57.3224 14.328L53.503 16.6609C53.2752 16.8 52.9929 16.5948 53.0548 16.3352L54.0932 11.9819C54.2063 11.5077 54.0447 11.0101 53.6744 10.693L50.2755 7.7814C50.0728 7.6078 50.1807 7.27585 50.4467 7.25452L54.9078 6.89687C55.3938 6.85792 55.8171 6.55038 56.0043 6.10027L57.723 1.96796Z"
-                                      fill="#FFAF06"
-                                      stroke="#FFAF06"
-                                    />
-                                    <path
-                                      d="M81.723 1.96796C81.8255 1.72157 82.1745 1.72157 82.277 1.96796L83.9957 6.10027C84.1829 6.55038 84.6062 6.85792 85.0922 6.89687L89.5533 7.25452C89.8193 7.27585 89.9272 7.6078 89.7245 7.7814L86.3256 10.693C85.9554 11.0101 85.7937 11.5077 85.9068 11.9819L86.9452 16.3352C87.0071 16.5948 86.7247 16.8 86.497 16.6609L82.6776 14.328C82.2616 14.0739 81.7384 14.0739 81.3224 14.328L77.503 16.6609C77.2752 16.8 76.9929 16.5948 77.0548 16.3352L78.0932 11.9819C78.2063 11.5077 78.0447 11.0101 77.6744 10.693L74.2755 7.7814C74.0728 7.6078 74.1807 7.27585 74.4467 7.25452L78.9078 6.89687C79.3938 6.85792 79.8171 6.55038 80.0043 6.10027L81.723 1.96796Z"
-                                      stroke="#FFAF06"
-                                    />
-                                    <path
-                                      d="M105.723 1.96796C105.825 1.72157 106.175 1.72157 106.277 1.96796L107.996 6.10027C108.183 6.55038 108.606 6.85792 109.092 6.89687L113.553 7.25452C113.819 7.27585 113.927 7.6078 113.725 7.7814L110.326 10.693C109.955 11.0101 109.794 11.5077 109.907 11.9819L110.945 16.3352C111.007 16.5948 110.725 16.8 110.497 16.6609L106.678 14.328C106.262 14.0739 105.738 14.0739 105.322 14.328L101.503 16.6609C101.275 16.8 100.993 16.5948 101.055 16.3352L102.093 11.9819C102.206 11.5077 102.045 11.0101 101.674 10.693L98.2755 7.7814C98.0728 7.6078 98.1807 7.27585 98.4467 7.25452L102.908 6.89687C103.394 6.85792 103.817 6.55038 104.004 6.10027L105.723 1.96796Z"
-                                      stroke="#FFAF06"
-                                    />
-                                  </svg>
-                                </td>
-                                <td>June 15, 2023</td>
-                                <td>
-                                  <div class="expert-dropdown">
-                                    <button
-                                      class="btn action-btn"
-                                      type="button"
-                                      id="dropdownMenuButton1"
-                                      data-bs-toggle="dropdown"
-                                      aria-expanded="false"
-                                    >
-                                      ...
-                                    </button>
-                                    <ul
-                                      class="dropdown-menu"
-                                      aria-labelledby="dropdownMenuButton1"
-                                    >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>View</li></a
-                                      >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>Delete</li></a
-                                      >
-                                    </ul>
-                                  </div>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td>Usama A.</td>
-                                <td>Orhan Khan</td>
-                                <td>
-                                  <img
-                                    class="table-img"
-                                    src="assets/admin/asset/img/table img.jpeg"
-                                  /><span class="para-1"
-                                    >Learn How to design</span
-                                  >
-                                  <p class="para-2">
-                                    attractive UI for clients....
-                                  </p>
-                                </td>
-                                <td>Freelance Service</td>
-                                <td>
-                                  This Course is very helpful for Beginners I
-                                  learn ......
-                                </td>
-                                <td>
-                                  <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    width="116"
-                                    height="20"
-                                    viewBox="0 0 116 20"
-                                    fill="none"
-                                  >
-                                    <path
-                                      d="M9.723 1.96796C9.82548 1.72157 10.1745 1.72157 10.277 1.96796L11.9957 6.10027C12.1829 6.55038 12.6062 6.85792 13.0922 6.89687L17.5533 7.25452C17.8193 7.27585 17.9272 7.6078 17.7245 7.7814L14.3256 10.693C13.9554 11.0101 13.7937 11.5077 13.9068 11.9819L14.9452 16.3352C15.0071 16.5948 14.7247 16.8 14.497 16.6609L10.6776 14.328C10.2616 14.0739 9.73839 14.0739 9.32237 14.328L5.50298 16.6609C5.27525 16.8 4.99287 16.5948 5.05479 16.3352L6.09322 11.9819C6.20633 11.5077 6.04465 11.0101 5.67443 10.693L2.27548 7.7814C2.07282 7.6078 2.18068 7.27585 2.44667 7.25452L6.90785 6.89687C7.39378 6.85792 7.81707 6.55038 8.00428 6.10027L9.723 1.96796Z"
-                                      fill="#FFAF06"
-                                      stroke="#FFAF06"
-                                    />
-                                    <path
-                                      d="M33.723 1.96796C33.8255 1.72157 34.1745 1.72157 34.277 1.96796L35.9957 6.10027C36.1829 6.55038 36.6062 6.85792 37.0922 6.89687L41.5533 7.25452C41.8193 7.27585 41.9272 7.6078 41.7245 7.7814L38.3256 10.693C37.9554 11.0101 37.7937 11.5077 37.9068 11.9819L38.9452 16.3352C39.0071 16.5948 38.7247 16.8 38.497 16.6609L34.6776 14.328C34.2616 14.0739 33.7384 14.0739 33.3224 14.328L29.503 16.6609C29.2752 16.8 28.9929 16.5948 29.0548 16.3352L30.0932 11.9819C30.2063 11.5077 30.0447 11.0101 29.6744 10.693L26.2755 7.7814C26.0728 7.6078 26.1807 7.27585 26.4467 7.25452L30.9078 6.89687C31.3938 6.85792 31.8171 6.55038 32.0043 6.10027L33.723 1.96796Z"
-                                      fill="#FFAF06"
-                                      stroke="#FFAF06"
-                                    />
-                                    <path
-                                      d="M57.723 1.96796C57.8255 1.72157 58.1745 1.72157 58.277 1.96796L59.9957 6.10027C60.1829 6.55038 60.6062 6.85792 61.0922 6.89687L65.5533 7.25452C65.8193 7.27585 65.9272 7.6078 65.7245 7.7814L62.3256 10.693C61.9554 11.0101 61.7937 11.5077 61.9068 11.9819L62.9452 16.3352C63.0071 16.5948 62.7247 16.8 62.497 16.6609L58.6776 14.328C58.2616 14.0739 57.7384 14.0739 57.3224 14.328L53.503 16.6609C53.2752 16.8 52.9929 16.5948 53.0548 16.3352L54.0932 11.9819C54.2063 11.5077 54.0447 11.0101 53.6744 10.693L50.2755 7.7814C50.0728 7.6078 50.1807 7.27585 50.4467 7.25452L54.9078 6.89687C55.3938 6.85792 55.8171 6.55038 56.0043 6.10027L57.723 1.96796Z"
-                                      fill="#FFAF06"
-                                      stroke="#FFAF06"
-                                    />
-                                    <path
-                                      d="M81.723 1.96796C81.8255 1.72157 82.1745 1.72157 82.277 1.96796L83.9957 6.10027C84.1829 6.55038 84.6062 6.85792 85.0922 6.89687L89.5533 7.25452C89.8193 7.27585 89.9272 7.6078 89.7245 7.7814L86.3256 10.693C85.9554 11.0101 85.7937 11.5077 85.9068 11.9819L86.9452 16.3352C87.0071 16.5948 86.7247 16.8 86.497 16.6609L82.6776 14.328C82.2616 14.0739 81.7384 14.0739 81.3224 14.328L77.503 16.6609C77.2752 16.8 76.9929 16.5948 77.0548 16.3352L78.0932 11.9819C78.2063 11.5077 78.0447 11.0101 77.6744 10.693L74.2755 7.7814C74.0728 7.6078 74.1807 7.27585 74.4467 7.25452L78.9078 6.89687C79.3938 6.85792 79.8171 6.55038 80.0043 6.10027L81.723 1.96796Z"
-                                      stroke="#FFAF06"
-                                    />
-                                    <path
-                                      d="M105.723 1.96796C105.825 1.72157 106.175 1.72157 106.277 1.96796L107.996 6.10027C108.183 6.55038 108.606 6.85792 109.092 6.89687L113.553 7.25452C113.819 7.27585 113.927 7.6078 113.725 7.7814L110.326 10.693C109.955 11.0101 109.794 11.5077 109.907 11.9819L110.945 16.3352C111.007 16.5948 110.725 16.8 110.497 16.6609L106.678 14.328C106.262 14.0739 105.738 14.0739 105.322 14.328L101.503 16.6609C101.275 16.8 100.993 16.5948 101.055 16.3352L102.093 11.9819C102.206 11.5077 102.045 11.0101 101.674 10.693L98.2755 7.7814C98.0728 7.6078 98.1807 7.27585 98.4467 7.25452L102.908 6.89687C103.394 6.85792 103.817 6.55038 104.004 6.10027L105.723 1.96796Z"
-                                      stroke="#FFAF06"
-                                    />
-                                  </svg>
-                                </td>
-                                <td>June 15, 2023</td>
-
-                                <td>
-                                  <div class="expert-dropdown">
-                                    <button
-                                      class="btn action-btn"
-                                      type="button"
-                                      id="dropdownMenuButton1"
-                                      data-bs-toggle="dropdown"
-                                      aria-expanded="false"
-                                    >
-                                      ...
-                                    </button>
-                                    <ul
-                                      class="dropdown-menu"
-                                      aria-labelledby="dropdownMenuButton1"
-                                    >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>View</li></a
-                                      >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>Delete</li></a
-                                      >
-                                    </ul>
-                                  </div>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td>Usama A.</td>
-                                <td>Orhan Khan</td>
-                                <td>
-                                  <img
-                                    class="table-img"
-                                    src="assets/admin/asset/img/table img.jpeg"
-                                  /><span class="para-1"
-                                    >Learn How to design</span
-                                  >
-                                  <p class="para-2">
-                                    attractive UI for clients....
-                                  </p>
-                                </td>
-                                <td>Freelance Service</td>
-                                <td>
-                                  This Course is very helpful for Beginners I
-                                  learn ......
-                                </td>
-                                <td>
-                                  <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    width="116"
-                                    height="20"
-                                    viewBox="0 0 116 20"
-                                    fill="none"
-                                  >
-                                    <path
-                                      d="M9.723 1.96796C9.82548 1.72157 10.1745 1.72157 10.277 1.96796L11.9957 6.10027C12.1829 6.55038 12.6062 6.85792 13.0922 6.89687L17.5533 7.25452C17.8193 7.27585 17.9272 7.6078 17.7245 7.7814L14.3256 10.693C13.9554 11.0101 13.7937 11.5077 13.9068 11.9819L14.9452 16.3352C15.0071 16.5948 14.7247 16.8 14.497 16.6609L10.6776 14.328C10.2616 14.0739 9.73839 14.0739 9.32237 14.328L5.50298 16.6609C5.27525 16.8 4.99287 16.5948 5.05479 16.3352L6.09322 11.9819C6.20633 11.5077 6.04465 11.0101 5.67443 10.693L2.27548 7.7814C2.07282 7.6078 2.18068 7.27585 2.44667 7.25452L6.90785 6.89687C7.39378 6.85792 7.81707 6.55038 8.00428 6.10027L9.723 1.96796Z"
-                                      fill="#FFAF06"
-                                      stroke="#FFAF06"
-                                    />
-                                    <path
-                                      d="M33.723 1.96796C33.8255 1.72157 34.1745 1.72157 34.277 1.96796L35.9957 6.10027C36.1829 6.55038 36.6062 6.85792 37.0922 6.89687L41.5533 7.25452C41.8193 7.27585 41.9272 7.6078 41.7245 7.7814L38.3256 10.693C37.9554 11.0101 37.7937 11.5077 37.9068 11.9819L38.9452 16.3352C39.0071 16.5948 38.7247 16.8 38.497 16.6609L34.6776 14.328C34.2616 14.0739 33.7384 14.0739 33.3224 14.328L29.503 16.6609C29.2752 16.8 28.9929 16.5948 29.0548 16.3352L30.0932 11.9819C30.2063 11.5077 30.0447 11.0101 29.6744 10.693L26.2755 7.7814C26.0728 7.6078 26.1807 7.27585 26.4467 7.25452L30.9078 6.89687C31.3938 6.85792 31.8171 6.55038 32.0043 6.10027L33.723 1.96796Z"
-                                      fill="#FFAF06"
-                                      stroke="#FFAF06"
-                                    />
-                                    <path
-                                      d="M57.723 1.96796C57.8255 1.72157 58.1745 1.72157 58.277 1.96796L59.9957 6.10027C60.1829 6.55038 60.6062 6.85792 61.0922 6.89687L65.5533 7.25452C65.8193 7.27585 65.9272 7.6078 65.7245 7.7814L62.3256 10.693C61.9554 11.0101 61.7937 11.5077 61.9068 11.9819L62.9452 16.3352C63.0071 16.5948 62.7247 16.8 62.497 16.6609L58.6776 14.328C58.2616 14.0739 57.7384 14.0739 57.3224 14.328L53.503 16.6609C53.2752 16.8 52.9929 16.5948 53.0548 16.3352L54.0932 11.9819C54.2063 11.5077 54.0447 11.0101 53.6744 10.693L50.2755 7.7814C50.0728 7.6078 50.1807 7.27585 50.4467 7.25452L54.9078 6.89687C55.3938 6.85792 55.8171 6.55038 56.0043 6.10027L57.723 1.96796Z"
-                                      fill="#FFAF06"
-                                      stroke="#FFAF06"
-                                    />
-                                    <path
-                                      d="M81.723 1.96796C81.8255 1.72157 82.1745 1.72157 82.277 1.96796L83.9957 6.10027C84.1829 6.55038 84.6062 6.85792 85.0922 6.89687L89.5533 7.25452C89.8193 7.27585 89.9272 7.6078 89.7245 7.7814L86.3256 10.693C85.9554 11.0101 85.7937 11.5077 85.9068 11.9819L86.9452 16.3352C87.0071 16.5948 86.7247 16.8 86.497 16.6609L82.6776 14.328C82.2616 14.0739 81.7384 14.0739 81.3224 14.328L77.503 16.6609C77.2752 16.8 76.9929 16.5948 77.0548 16.3352L78.0932 11.9819C78.2063 11.5077 78.0447 11.0101 77.6744 10.693L74.2755 7.7814C74.0728 7.6078 74.1807 7.27585 74.4467 7.25452L78.9078 6.89687C79.3938 6.85792 79.8171 6.55038 80.0043 6.10027L81.723 1.96796Z"
-                                      stroke="#FFAF06"
-                                    />
-                                    <path
-                                      d="M105.723 1.96796C105.825 1.72157 106.175 1.72157 106.277 1.96796L107.996 6.10027C108.183 6.55038 108.606 6.85792 109.092 6.89687L113.553 7.25452C113.819 7.27585 113.927 7.6078 113.725 7.7814L110.326 10.693C109.955 11.0101 109.794 11.5077 109.907 11.9819L110.945 16.3352C111.007 16.5948 110.725 16.8 110.497 16.6609L106.678 14.328C106.262 14.0739 105.738 14.0739 105.322 14.328L101.503 16.6609C101.275 16.8 100.993 16.5948 101.055 16.3352L102.093 11.9819C102.206 11.5077 102.045 11.0101 101.674 10.693L98.2755 7.7814C98.0728 7.6078 98.1807 7.27585 98.4467 7.25452L102.908 6.89687C103.394 6.85792 103.817 6.55038 104.004 6.10027L105.723 1.96796Z"
-                                      stroke="#FFAF06"
-                                    />
-                                  </svg>
-                                </td>
-                                <td>June 15, 2023</td>
-                                <td>
-                                  <div class="expert-dropdown">
-                                    <button
-                                      class="btn action-btn"
-                                      type="button"
-                                      id="dropdownMenuButton1"
-                                      data-bs-toggle="dropdown"
-                                      aria-expanded="false"
-                                    >
-                                      ...
-                                    </button>
-                                    <ul
-                                      class="dropdown-menu"
-                                      aria-labelledby="dropdownMenuButton1"
-                                    >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>View</li></a
-                                      >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>Delete</li></a
-                                      >
-                                    </ul>
-                                  </div>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td>Usama A.</td>
-                                <td>Orhan Khan</td>
-                                <td>
-                                  <img
-                                    class="table-img"
-                                    src="assets/admin/asset/img/table img.jpeg"
-                                  /><span class="para-1"
-                                    >Learn How to design</span
-                                  >
-                                  <p class="para-2">
-                                    attractive UI for clients....
-                                  </p>
-                                </td>
-                                <td>Freelance Service</td>
-                                <td>
-                                  This Course is very helpful for Beginners I
-                                  learn ......
-                                </td>
-                                <td>
-                                  <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    width="116"
-                                    height="20"
-                                    viewBox="0 0 116 20"
-                                    fill="none"
-                                  >
-                                    <path
-                                      d="M9.723 1.96796C9.82548 1.72157 10.1745 1.72157 10.277 1.96796L11.9957 6.10027C12.1829 6.55038 12.6062 6.85792 13.0922 6.89687L17.5533 7.25452C17.8193 7.27585 17.9272 7.6078 17.7245 7.7814L14.3256 10.693C13.9554 11.0101 13.7937 11.5077 13.9068 11.9819L14.9452 16.3352C15.0071 16.5948 14.7247 16.8 14.497 16.6609L10.6776 14.328C10.2616 14.0739 9.73839 14.0739 9.32237 14.328L5.50298 16.6609C5.27525 16.8 4.99287 16.5948 5.05479 16.3352L6.09322 11.9819C6.20633 11.5077 6.04465 11.0101 5.67443 10.693L2.27548 7.7814C2.07282 7.6078 2.18068 7.27585 2.44667 7.25452L6.90785 6.89687C7.39378 6.85792 7.81707 6.55038 8.00428 6.10027L9.723 1.96796Z"
-                                      fill="#FFAF06"
-                                      stroke="#FFAF06"
-                                    />
-                                    <path
-                                      d="M33.723 1.96796C33.8255 1.72157 34.1745 1.72157 34.277 1.96796L35.9957 6.10027C36.1829 6.55038 36.6062 6.85792 37.0922 6.89687L41.5533 7.25452C41.8193 7.27585 41.9272 7.6078 41.7245 7.7814L38.3256 10.693C37.9554 11.0101 37.7937 11.5077 37.9068 11.9819L38.9452 16.3352C39.0071 16.5948 38.7247 16.8 38.497 16.6609L34.6776 14.328C34.2616 14.0739 33.7384 14.0739 33.3224 14.328L29.503 16.6609C29.2752 16.8 28.9929 16.5948 29.0548 16.3352L30.0932 11.9819C30.2063 11.5077 30.0447 11.0101 29.6744 10.693L26.2755 7.7814C26.0728 7.6078 26.1807 7.27585 26.4467 7.25452L30.9078 6.89687C31.3938 6.85792 31.8171 6.55038 32.0043 6.10027L33.723 1.96796Z"
-                                      fill="#FFAF06"
-                                      stroke="#FFAF06"
-                                    />
-                                    <path
-                                      d="M57.723 1.96796C57.8255 1.72157 58.1745 1.72157 58.277 1.96796L59.9957 6.10027C60.1829 6.55038 60.6062 6.85792 61.0922 6.89687L65.5533 7.25452C65.8193 7.27585 65.9272 7.6078 65.7245 7.7814L62.3256 10.693C61.9554 11.0101 61.7937 11.5077 61.9068 11.9819L62.9452 16.3352C63.0071 16.5948 62.7247 16.8 62.497 16.6609L58.6776 14.328C58.2616 14.0739 57.7384 14.0739 57.3224 14.328L53.503 16.6609C53.2752 16.8 52.9929 16.5948 53.0548 16.3352L54.0932 11.9819C54.2063 11.5077 54.0447 11.0101 53.6744 10.693L50.2755 7.7814C50.0728 7.6078 50.1807 7.27585 50.4467 7.25452L54.9078 6.89687C55.3938 6.85792 55.8171 6.55038 56.0043 6.10027L57.723 1.96796Z"
-                                      fill="#FFAF06"
-                                      stroke="#FFAF06"
-                                    />
-                                    <path
-                                      d="M81.723 1.96796C81.8255 1.72157 82.1745 1.72157 82.277 1.96796L83.9957 6.10027C84.1829 6.55038 84.6062 6.85792 85.0922 6.89687L89.5533 7.25452C89.8193 7.27585 89.9272 7.6078 89.7245 7.7814L86.3256 10.693C85.9554 11.0101 85.7937 11.5077 85.9068 11.9819L86.9452 16.3352C87.0071 16.5948 86.7247 16.8 86.497 16.6609L82.6776 14.328C82.2616 14.0739 81.7384 14.0739 81.3224 14.328L77.503 16.6609C77.2752 16.8 76.9929 16.5948 77.0548 16.3352L78.0932 11.9819C78.2063 11.5077 78.0447 11.0101 77.6744 10.693L74.2755 7.7814C74.0728 7.6078 74.1807 7.27585 74.4467 7.25452L78.9078 6.89687C79.3938 6.85792 79.8171 6.55038 80.0043 6.10027L81.723 1.96796Z"
-                                      stroke="#FFAF06"
-                                    />
-                                    <path
-                                      d="M105.723 1.96796C105.825 1.72157 106.175 1.72157 106.277 1.96796L107.996 6.10027C108.183 6.55038 108.606 6.85792 109.092 6.89687L113.553 7.25452C113.819 7.27585 113.927 7.6078 113.725 7.7814L110.326 10.693C109.955 11.0101 109.794 11.5077 109.907 11.9819L110.945 16.3352C111.007 16.5948 110.725 16.8 110.497 16.6609L106.678 14.328C106.262 14.0739 105.738 14.0739 105.322 14.328L101.503 16.6609C101.275 16.8 100.993 16.5948 101.055 16.3352L102.093 11.9819C102.206 11.5077 102.045 11.0101 101.674 10.693L98.2755 7.7814C98.0728 7.6078 98.1807 7.27585 98.4467 7.25452L102.908 6.89687C103.394 6.85792 103.817 6.55038 104.004 6.10027L105.723 1.96796Z"
-                                      stroke="#FFAF06"
-                                    />
-                                  </svg>
-                                </td>
-                                <td>June 15, 2023</td>
-                                <td>
-                                  <div class="expert-dropdown">
-                                    <button
-                                      class="btn action-btn"
-                                      type="button"
-                                      id="dropdownMenuButton1"
-                                      data-bs-toggle="dropdown"
-                                      aria-expanded="false"
-                                    >
-                                      ...
-                                    </button>
-                                    <ul
-                                      class="dropdown-menu"
-                                      aria-labelledby="dropdownMenuButton1"
-                                    >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>View</li></a
-                                      >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>Delete</li></a
-                                      >
-                                    </ul>
-                                  </div>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td>Usama A.</td>
-                                <td>Orhan Khan</td>
-                                <td>
-                                  <img
-                                    class="table-img"
-                                    src="assets/admin/asset/img/table img.jpeg"
-                                  /><span class="para-1"
-                                    >Learn How to design</span
-                                  >
-                                  <p class="para-2">
-                                    attractive UI for clients....
-                                  </p>
-                                </td>
-                                <td>Freelance Service</td>
-                                <td>
-                                  This Course is very helpful for Beginners I
-                                  learn ......
-                                </td>
-                                <td>
-                                  <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    width="116"
-                                    height="20"
-                                    viewBox="0 0 116 20"
-                                    fill="none"
-                                  >
-                                    <path
-                                      d="M9.723 1.96796C9.82548 1.72157 10.1745 1.72157 10.277 1.96796L11.9957 6.10027C12.1829 6.55038 12.6062 6.85792 13.0922 6.89687L17.5533 7.25452C17.8193 7.27585 17.9272 7.6078 17.7245 7.7814L14.3256 10.693C13.9554 11.0101 13.7937 11.5077 13.9068 11.9819L14.9452 16.3352C15.0071 16.5948 14.7247 16.8 14.497 16.6609L10.6776 14.328C10.2616 14.0739 9.73839 14.0739 9.32237 14.328L5.50298 16.6609C5.27525 16.8 4.99287 16.5948 5.05479 16.3352L6.09322 11.9819C6.20633 11.5077 6.04465 11.0101 5.67443 10.693L2.27548 7.7814C2.07282 7.6078 2.18068 7.27585 2.44667 7.25452L6.90785 6.89687C7.39378 6.85792 7.81707 6.55038 8.00428 6.10027L9.723 1.96796Z"
-                                      fill="#FFAF06"
-                                      stroke="#FFAF06"
-                                    />
-                                    <path
-                                      d="M33.723 1.96796C33.8255 1.72157 34.1745 1.72157 34.277 1.96796L35.9957 6.10027C36.1829 6.55038 36.6062 6.85792 37.0922 6.89687L41.5533 7.25452C41.8193 7.27585 41.9272 7.6078 41.7245 7.7814L38.3256 10.693C37.9554 11.0101 37.7937 11.5077 37.9068 11.9819L38.9452 16.3352C39.0071 16.5948 38.7247 16.8 38.497 16.6609L34.6776 14.328C34.2616 14.0739 33.7384 14.0739 33.3224 14.328L29.503 16.6609C29.2752 16.8 28.9929 16.5948 29.0548 16.3352L30.0932 11.9819C30.2063 11.5077 30.0447 11.0101 29.6744 10.693L26.2755 7.7814C26.0728 7.6078 26.1807 7.27585 26.4467 7.25452L30.9078 6.89687C31.3938 6.85792 31.8171 6.55038 32.0043 6.10027L33.723 1.96796Z"
-                                      fill="#FFAF06"
-                                      stroke="#FFAF06"
-                                    />
-                                    <path
-                                      d="M57.723 1.96796C57.8255 1.72157 58.1745 1.72157 58.277 1.96796L59.9957 6.10027C60.1829 6.55038 60.6062 6.85792 61.0922 6.89687L65.5533 7.25452C65.8193 7.27585 65.9272 7.6078 65.7245 7.7814L62.3256 10.693C61.9554 11.0101 61.7937 11.5077 61.9068 11.9819L62.9452 16.3352C63.0071 16.5948 62.7247 16.8 62.497 16.6609L58.6776 14.328C58.2616 14.0739 57.7384 14.0739 57.3224 14.328L53.503 16.6609C53.2752 16.8 52.9929 16.5948 53.0548 16.3352L54.0932 11.9819C54.2063 11.5077 54.0447 11.0101 53.6744 10.693L50.2755 7.7814C50.0728 7.6078 50.1807 7.27585 50.4467 7.25452L54.9078 6.89687C55.3938 6.85792 55.8171 6.55038 56.0043 6.10027L57.723 1.96796Z"
-                                      fill="#FFAF06"
-                                      stroke="#FFAF06"
-                                    />
-                                    <path
-                                      d="M81.723 1.96796C81.8255 1.72157 82.1745 1.72157 82.277 1.96796L83.9957 6.10027C84.1829 6.55038 84.6062 6.85792 85.0922 6.89687L89.5533 7.25452C89.8193 7.27585 89.9272 7.6078 89.7245 7.7814L86.3256 10.693C85.9554 11.0101 85.7937 11.5077 85.9068 11.9819L86.9452 16.3352C87.0071 16.5948 86.7247 16.8 86.497 16.6609L82.6776 14.328C82.2616 14.0739 81.7384 14.0739 81.3224 14.328L77.503 16.6609C77.2752 16.8 76.9929 16.5948 77.0548 16.3352L78.0932 11.9819C78.2063 11.5077 78.0447 11.0101 77.6744 10.693L74.2755 7.7814C74.0728 7.6078 74.1807 7.27585 74.4467 7.25452L78.9078 6.89687C79.3938 6.85792 79.8171 6.55038 80.0043 6.10027L81.723 1.96796Z"
-                                      stroke="#FFAF06"
-                                    />
-                                    <path
-                                      d="M105.723 1.96796C105.825 1.72157 106.175 1.72157 106.277 1.96796L107.996 6.10027C108.183 6.55038 108.606 6.85792 109.092 6.89687L113.553 7.25452C113.819 7.27585 113.927 7.6078 113.725 7.7814L110.326 10.693C109.955 11.0101 109.794 11.5077 109.907 11.9819L110.945 16.3352C111.007 16.5948 110.725 16.8 110.497 16.6609L106.678 14.328C106.262 14.0739 105.738 14.0739 105.322 14.328L101.503 16.6609C101.275 16.8 100.993 16.5948 101.055 16.3352L102.093 11.9819C102.206 11.5077 102.045 11.0101 101.674 10.693L98.2755 7.7814C98.0728 7.6078 98.1807 7.27585 98.4467 7.25452L102.908 6.89687C103.394 6.85792 103.817 6.55038 104.004 6.10027L105.723 1.96796Z"
-                                      stroke="#FFAF06"
-                                    />
-                                  </svg>
-                                </td>
-                                <td>June 15, 2023</td>
-                                <td>
-                                  <div class="expert-dropdown">
-                                    <button
-                                      class="btn action-btn"
-                                      type="button"
-                                      id="dropdownMenuButton1"
-                                      data-bs-toggle="dropdown"
-                                      aria-expanded="false"
-                                    >
-                                      ...
-                                    </button>
-                                    <ul
-                                      class="dropdown-menu"
-                                      aria-labelledby="dropdownMenuButton1"
-                                    >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>View</li></a
-                                      >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>Delete</li></a
-                                      >
-                                    </ul>
-                                  </div>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td>Usama A.</td>
-                                <td>Orhan Khan</td>
-                                <td>
-                                  <img
-                                    class="table-img"
-                                    src="assets/admin/asset/img/table img.jpeg"
-                                  /><span class="para-1"
-                                    >Learn How to design</span
-                                  >
-                                  <p class="para-2">
-                                    attractive UI for clients....
-                                  </p>
-                                </td>
-                                <td>Freelance Service</td>
-                                <td>
-                                  This Course is very helpful for Beginners I
-                                  learn ......
-                                </td>
-                                <td>
-                                  <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    width="116"
-                                    height="20"
-                                    viewBox="0 0 116 20"
-                                    fill="none"
-                                  >
-                                    <path
-                                      d="M9.723 1.96796C9.82548 1.72157 10.1745 1.72157 10.277 1.96796L11.9957 6.10027C12.1829 6.55038 12.6062 6.85792 13.0922 6.89687L17.5533 7.25452C17.8193 7.27585 17.9272 7.6078 17.7245 7.7814L14.3256 10.693C13.9554 11.0101 13.7937 11.5077 13.9068 11.9819L14.9452 16.3352C15.0071 16.5948 14.7247 16.8 14.497 16.6609L10.6776 14.328C10.2616 14.0739 9.73839 14.0739 9.32237 14.328L5.50298 16.6609C5.27525 16.8 4.99287 16.5948 5.05479 16.3352L6.09322 11.9819C6.20633 11.5077 6.04465 11.0101 5.67443 10.693L2.27548 7.7814C2.07282 7.6078 2.18068 7.27585 2.44667 7.25452L6.90785 6.89687C7.39378 6.85792 7.81707 6.55038 8.00428 6.10027L9.723 1.96796Z"
-                                      fill="#FFAF06"
-                                      stroke="#FFAF06"
-                                    />
-                                    <path
-                                      d="M33.723 1.96796C33.8255 1.72157 34.1745 1.72157 34.277 1.96796L35.9957 6.10027C36.1829 6.55038 36.6062 6.85792 37.0922 6.89687L41.5533 7.25452C41.8193 7.27585 41.9272 7.6078 41.7245 7.7814L38.3256 10.693C37.9554 11.0101 37.7937 11.5077 37.9068 11.9819L38.9452 16.3352C39.0071 16.5948 38.7247 16.8 38.497 16.6609L34.6776 14.328C34.2616 14.0739 33.7384 14.0739 33.3224 14.328L29.503 16.6609C29.2752 16.8 28.9929 16.5948 29.0548 16.3352L30.0932 11.9819C30.2063 11.5077 30.0447 11.0101 29.6744 10.693L26.2755 7.7814C26.0728 7.6078 26.1807 7.27585 26.4467 7.25452L30.9078 6.89687C31.3938 6.85792 31.8171 6.55038 32.0043 6.10027L33.723 1.96796Z"
-                                      fill="#FFAF06"
-                                      stroke="#FFAF06"
-                                    />
-                                    <path
-                                      d="M57.723 1.96796C57.8255 1.72157 58.1745 1.72157 58.277 1.96796L59.9957 6.10027C60.1829 6.55038 60.6062 6.85792 61.0922 6.89687L65.5533 7.25452C65.8193 7.27585 65.9272 7.6078 65.7245 7.7814L62.3256 10.693C61.9554 11.0101 61.7937 11.5077 61.9068 11.9819L62.9452 16.3352C63.0071 16.5948 62.7247 16.8 62.497 16.6609L58.6776 14.328C58.2616 14.0739 57.7384 14.0739 57.3224 14.328L53.503 16.6609C53.2752 16.8 52.9929 16.5948 53.0548 16.3352L54.0932 11.9819C54.2063 11.5077 54.0447 11.0101 53.6744 10.693L50.2755 7.7814C50.0728 7.6078 50.1807 7.27585 50.4467 7.25452L54.9078 6.89687C55.3938 6.85792 55.8171 6.55038 56.0043 6.10027L57.723 1.96796Z"
-                                      fill="#FFAF06"
-                                      stroke="#FFAF06"
-                                    />
-                                    <path
-                                      d="M81.723 1.96796C81.8255 1.72157 82.1745 1.72157 82.277 1.96796L83.9957 6.10027C84.1829 6.55038 84.6062 6.85792 85.0922 6.89687L89.5533 7.25452C89.8193 7.27585 89.9272 7.6078 89.7245 7.7814L86.3256 10.693C85.9554 11.0101 85.7937 11.5077 85.9068 11.9819L86.9452 16.3352C87.0071 16.5948 86.7247 16.8 86.497 16.6609L82.6776 14.328C82.2616 14.0739 81.7384 14.0739 81.3224 14.328L77.503 16.6609C77.2752 16.8 76.9929 16.5948 77.0548 16.3352L78.0932 11.9819C78.2063 11.5077 78.0447 11.0101 77.6744 10.693L74.2755 7.7814C74.0728 7.6078 74.1807 7.27585 74.4467 7.25452L78.9078 6.89687C79.3938 6.85792 79.8171 6.55038 80.0043 6.10027L81.723 1.96796Z"
-                                      stroke="#FFAF06"
-                                    />
-                                    <path
-                                      d="M105.723 1.96796C105.825 1.72157 106.175 1.72157 106.277 1.96796L107.996 6.10027C108.183 6.55038 108.606 6.85792 109.092 6.89687L113.553 7.25452C113.819 7.27585 113.927 7.6078 113.725 7.7814L110.326 10.693C109.955 11.0101 109.794 11.5077 109.907 11.9819L110.945 16.3352C111.007 16.5948 110.725 16.8 110.497 16.6609L106.678 14.328C106.262 14.0739 105.738 14.0739 105.322 14.328L101.503 16.6609C101.275 16.8 100.993 16.5948 101.055 16.3352L102.093 11.9819C102.206 11.5077 102.045 11.0101 101.674 10.693L98.2755 7.7814C98.0728 7.6078 98.1807 7.27585 98.4467 7.25452L102.908 6.89687C103.394 6.85792 103.817 6.55038 104.004 6.10027L105.723 1.96796Z"
-                                      stroke="#FFAF06"
-                                    />
-                                  </svg>
-                                </td>
-                                <td>June 15, 2023</td>
-                                <td>
-                                  <div class="expert-dropdown">
-                                    <button
-                                      class="btn action-btn"
-                                      type="button"
-                                      id="dropdownMenuButton1"
-                                      data-bs-toggle="dropdown"
-                                      aria-expanded="false"
-                                    >
-                                      ...
-                                    </button>
-                                    <ul
-                                      class="dropdown-menu"
-                                      aria-labelledby="dropdownMenuButton1"
-                                    >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>View</li></a
-                                      >
-                                      <a class="dropdown-item" href="#"
-                                        ><li>Delete</li></a
-                                      >
-                                    </ul>
-                                  </div>
-                                </td>
-                              </tr>
-                            </tbody>
-                          </table>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <!-- top categories and sub categories -->
-              <div class="top-categories-sub-categories">
-                <div class="row">
-                  <div class="col-lg-3 col-md-3 col-sm-12">
-                    <div class="top-cat">
-                      <h5>Graphic Designing</h5>
-                    </div>
-                    <div class="top-sub-cat">
-                      <p>Logo Design</p>
-                      <p>Poster Design</p>
-                      <p>Flyers</p>
-                      <p>UI Design</p>
-                      <p>UI / UX</p>
-                      <p>Packaging design</p>
-                      <p>Advertising design</p>
-                      <p>Illustration</p>
-                    </div>
-                  </div>
-                  <div class="col-lg-3 col-md-3 col-sm-12">
-                    <div class="top-cat">
-                      <h5>Graphic Designing</h5>
-                    </div>
-                    <div class="top-sub-cat">
-                      <p>Logo Design</p>
-                      <p>Poster Design</p>
-                      <p>Flyers</p>
-                      <p>UI Design</p>
-                      <p>UI / UX</p>
-                      <p>Packaging design</p>
-                      <p>Advertising design</p>
-                      <p>Illustration</p>
-                    </div>
-                  </div>
-                  <div class="col-lg-3 col-md-3 col-sm-12">
-                    <div class="top-cat">
-                      <h5>Graphic Designing</h5>
-                    </div>
-                    <div class="top-sub-cat">
-                      <p>Logo Design</p>
-                      <p>Poster Design</p>
-                      <p>Flyers</p>
-                      <p>UI Design</p>
-                      <p>UI / UX</p>
-                      <p>Packaging design</p>
-                      <p>Advertising design</p>
-                      <p>Illustration</p>
-                    </div>
-                  </div>
-                  <div class="col-lg-3 col-md-3 col-sm-12">
-                    <div class="top-cat">
-                      <h5>Graphic Designing</h5>
-                    </div>
-                    <div class="top-sub-cat">
-                      <p>Logo Design</p>
-                      <p>Poster Design</p>
-                      <p>Flyers</p>
-                      <p>UI Design</p>
-                      <p>UI / UX</p>
-                      <p>Packaging design</p>
-                      <p>Advertising design</p>
-                      <p>Illustration</p>
-                    </div>
-                  </div>
-                  <div class="col-lg-3 col-md-3 col-sm-12">
-                    <div class="top-cat">
-                      <h5>Graphic Designing</h5>
-                    </div>
-                    <div class="top-sub-cat">
-                      <p>Logo Design</p>
-                      <p>Poster Design</p>
-                      <p>Flyers</p>
-                      <p>UI Design</p>
-                      <p>UI / UX</p>
-                      <p>Packaging design</p>
-                      <p>Advertising design</p>
-                      <p>Illustration</p>
-                    </div>
-                  </div>
-                  <div class="col-lg-3 col-md-3 col-sm-12">
-                    <div class="top-cat">
-                      <h5>Graphic Designing</h5>
-                    </div>
-                    <div class="top-sub-cat">
-                      <p>Logo Design</p>
-                      <p>Poster Design</p>
-                      <p>Flyers</p>
-                      <p>UI Design</p>
-                      <p>UI / UX</p>
-                      <p>Packaging design</p>
-                      <p>Advertising design</p>
-                      <p>Illustration</p>
-                    </div>
-                  </div>
-                  <div class="col-lg-3 col-md-3 col-sm-12">
-                    <div class="top-cat">
-                      <h5>Graphic Designing</h5>
-                    </div>
-                    <div class="top-sub-cat">
-                      <p>Logo Design</p>
-                      <p>Poster Design</p>
-                      <p>Flyers</p>
-                      <p>UI Design</p>
-                      <p>UI / UX</p>
-                      <p>Packaging design</p>
-                      <p>Advertising design</p>
-                      <p>Illustration</p>
-                    </div>
-                  </div>
-                  <div class="col-lg-3 col-md-3 col-sm-12">
-                    <div class="top-cat">
-                      <h5>Graphic Designing</h5>
-                    </div>
-                    <div class="top-sub-cat">
-                      <p>Logo Design</p>
-                      <p>Poster Design</p>
-                      <p>Flyers</p>
-                      <p>UI Design</p>
-                      <p>UI / UX</p>
-                      <p>Packaging design</p>
-                      <p>Advertising design</p>
-                      <p>Illustration</p>
-                    </div>
-                  </div>
-                  <div class="col-lg-3 col-md-3 col-sm-12">
-                    <div class="top-cat">
-                      <h5>Graphic Designing</h5>
-                    </div>
-                    <div class="top-sub-cat">
-                      <p>Logo Design</p>
-                      <p>Poster Design</p>
-                      <p>Flyers</p>
-                      <p>UI Design</p>
-                      <p>UI / UX</p>
-                      <p>Packaging design</p>
-                      <p>Advertising design</p>
-                      <p>Illustration</p>
-                    </div>
-                  </div>
-                  <div class="col-lg-3 col-md-3 col-sm-12">
-                    <div class="top-cat">
-                      <h5>Graphic Designing</h5>
-                    </div>
-                    <div class="top-sub-cat">
-                      <p>Logo Design</p>
-                      <p>Poster Design</p>
-                      <p>Flyers</p>
-                      <p>UI Design</p>
-                      <p>UI / UX</p>
-                      <p>Packaging design</p>
-                      <p>Advertising design</p>
-                      <p>Illustration</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
             </div>
-          </div>
+
+            <!-- Date Filter Panel -->
+            <div class="filter-panel card mb-4">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h6 class="mb-3">Filter by Date Range</h6>
+                            <div class="btn-group flex-wrap" role="group">
+                                <button type="button" class="btn btn-outline-primary filter-preset active" data-preset="all_time">All Time</button>
+                                <button type="button" class="btn btn-outline-primary filter-preset" data-preset="today">Today</button>
+                                <button type="button" class="btn btn-outline-primary filter-preset" data-preset="yesterday">Yesterday</button>
+                                <button type="button" class="btn btn-outline-primary filter-preset" data-preset="this_week">This Week</button>
+                                <button type="button" class="btn btn-outline-primary filter-preset" data-preset="last_week">Last Week</button>
+                                <button type="button" class="btn btn-outline-primary filter-preset" data-preset="last_7_days">Last 7 Days</button>
+                                <button type="button" class="btn btn-outline-primary filter-preset" data-preset="this_month">This Month</button>
+                                <button type="button" class="btn btn-outline-primary filter-preset" data-preset="last_month">Last Month</button>
+                                <button type="button" class="btn btn-outline-primary filter-preset" data-preset="last_3_months">Last 3 Months</button>
+                                <button type="button" class="btn btn-outline-primary filter-preset" data-preset="last_6_months">Last 6 Months</button>
+                                <button type="button" class="btn btn-outline-primary filter-preset" data-preset="last_year">Last Year</button>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <h6 class="mb-3">Custom Date Range</h6>
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="dateFrom" placeholder="From Date">
+                            </div>
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="dateTo" placeholder="To Date">
+                            </div>
+                            <button class="btn btn-primary w-100" onclick="applyCustomDateFilter()">Apply Custom</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CRITICAL ALERTS -->
+            <div class="row mb-4 d-none">
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="alert-card critical">
+                        <div class="alert-header">
+                            <i class="bx bx-error-circle"></i>
+                            <h6>Pending Applications</h6>
+                            <span class="badge bg-danger" id="alert-applications">0</span>
+                        </div>
+                        <div class="alert-body">
+                            <p class="mb-2">Seller applications awaiting review</p>
+                            <a href="/all-application" class="btn btn-sm btn-danger">Review Now <i class="bx bx-right-arrow-alt"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="alert-card critical">
+                        <div class="alert-header">
+                            <i class="bx bx-message-square-error"></i>
+                            <h6>Active Disputes</h6>
+                            <span class="badge bg-danger" id="alert-disputes">0</span>
+                        </div>
+                        <div class="alert-body">
+                            <p class="mb-2">Orders requiring resolution</p>
+                            <button class="btn btn-sm btn-danger" onclick="viewDisputes()">Resolve <i class="bx bx-right-arrow-alt"></i></button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="alert-card warning">
+                        <div class="alert-header">
+                            <i class="bx bx-money-withdraw"></i>
+                            <h6>Pending Payouts</h6>
+                            <span class="badge bg-warning" id="alert-payout-amount">$0</span>
+                        </div>
+                        <div class="alert-body">
+                            <p class="mb-2">Sellers awaiting payment</p>
+                            <button class="btn btn-sm btn-warning" onclick="viewPayouts()">Process <i class="bx bx-right-arrow-alt"></i></button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="alert-card warning">
+                        <div class="alert-header">
+                            <i class="bx bx-undo"></i>
+                            <h6>Pending Refunds</h6>
+                            <span class="badge bg-warning" id="alert-refunds">0</span>
+                        </div>
+                        <div class="alert-body">
+                            <p class="mb-2">Refund requests to approve</p>
+                            <button class="btn btn-sm btn-warning" onclick="viewRefunds()">Approve <i class="bx bx-right-arrow-alt"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Financial Overview -->
+            <div class="section-header mb-3">
+                <h5><i class='bx bx-dollar-circle'></i> Financial Overview</h5>
+            </div>
+            <div class="row mb-4">
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="stat-card" style="border-left: 4px solid #28a745;">
+                        <div class="stat-icon" style="background: rgba(40, 167, 69, 0.1);">
+                            <i class='bx bx-wallet' style="color: #28a745;"></i>
+                        </div>
+                        <div class="stat-content">
+                            <p class="stat-label">Total Admin Commission</p>
+                            <h3 class="stat-value" id="stat-total-commission">$0.00</h3>
+                            <small class="stat-sublabel">Platform revenue</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="stat-card" style="border-left: 4px solid #17a2b8;">
+                        <div class="stat-icon" style="background: rgba(23, 162, 184, 0.1);">
+                            <i class='bx bx-calendar' style="color: #17a2b8;"></i>
+                        </div>
+                        <div class="stat-content">
+                            <p class="stat-label">This Month Revenue</p>
+                            <h3 class="stat-value" id="stat-month-revenue">$0.00</h3>
+                            <small class="stat-sublabel" id="current-month">{{ now()->format('F Y') }}</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="stat-card" style="border-left: 4px solid #6f42c1;">
+                        <div class="stat-icon" style="background: rgba(111, 66, 193, 0.1);">
+                            <i class='bx bx-trending-up' style="color: #6f42c1;"></i>
+                        </div>
+                        <div class="stat-content">
+                            <p class="stat-label">Total GMV</p>
+                            <h3 class="stat-value" id="stat-total-gmv">$0.00</h3>
+                            <small class="stat-sublabel">Gross merchandise value</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="stat-card" style="border-left: 4px solid #ffc107;">
+                        <div class="stat-icon" style="background: rgba(255, 193, 7, 0.1);">
+                            <i class='bx bx-time-five' style="color: #ffc107;"></i>
+                        </div>
+                        <div class="stat-content">
+                            <p class="stat-label">Pending Payouts</p>
+                            <h3 class="stat-value" id="stat-pending-payouts">$0.00</h3>
+                            <small class="stat-sublabel">To sellers</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="stat-card-small">
+                        <h3 class="stat-value" id="stat-avg-transaction">$0.00</h3>
+                        <p class="stat-label">Avg Transaction</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="stat-card-small">
+                        <h3 class="stat-value" id="stat-total-refunded">$0.00</h3>
+                        <p class="stat-label">Total Refunded</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="stat-card-small">
+                        <h3 class="stat-value" id="stat-coupon-discount">$0.00</h3>
+                        <p class="stat-label">Coupon Discounts</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="stat-card-small">
+                        <h3 class="stat-value" id="stat-net-revenue">$0.00</h3>
+                        <p class="stat-label">Net Revenue</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- User Management -->
+            <div class="section-header mb-3">
+                <h5><i class='bx bx-user'></i> User Management</h5>
+            </div>
+            <div class="row mb-4">
+                <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
+                    <div class="stat-card-small">
+                        <h3 class="stat-value" id="stat-total-users">0</h3>
+                        <p class="stat-label">Total Users</p>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
+                    <div class="stat-card-small">
+                        <h3 class="stat-value" id="stat-total-sellers">0</h3>
+                        <p class="stat-label">Sellers</p>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
+                    <div class="stat-card-small">
+                        <h3 class="stat-value" id="stat-total-buyers">0</h3>
+                        <p class="stat-label">Buyers</p>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
+                    <div class="stat-card-small">
+                        <h3 class="stat-value" id="stat-new-signups-today">0</h3>
+                        <p class="stat-label">New Today</p>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
+                    <div class="stat-card-small">
+                        <h3 class="stat-value" id="stat-new-signups-week">0</h3>
+                        <p class="stat-label">New This Week</p>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
+                    <div class="stat-card-small">
+                        <h3 class="stat-value" id="stat-active-users">0</h3>
+                        <p class="stat-label">Active Users</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Order Statistics -->
+            <div class="section-header mb-3">
+                <h5><i class='bx bx-shopping-bag'></i> Order Statistics</h5>
+            </div>
+            <div class="row mb-4">
+                <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
+                    <div class="stat-card-small">
+                        <h3 class="stat-value" id="stat-total-orders">0</h3>
+                        <p class="stat-label">Total Orders</p>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
+                    <div class="stat-card-small" style="border-left: 4px solid #007bff;">
+                        <h3 class="stat-value" id="stat-active-orders">0</h3>
+                        <p class="stat-label">Active</p>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
+                    <div class="stat-card-small" style="border-left: 4px solid #ffc107;">
+                        <h3 class="stat-value" id="stat-pending-orders">0</h3>
+                        <p class="stat-label">Pending</p>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
+                    <div class="stat-card-small" style="border-left: 4px solid #17a2b8;">
+                        <h3 class="stat-value" id="stat-delivered-orders">0</h3>
+                        <p class="stat-label">Delivered</p>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
+                    <div class="stat-card-small" style="border-left: 4px solid #28a745;">
+                        <h3 class="stat-value" id="stat-completed-orders">0</h3>
+                        <p class="stat-label">Completed</p>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
+                    <div class="stat-card-small" style="border-left: 4px solid #dc3545;">
+                        <h3 class="stat-value" id="stat-cancelled-orders">0</h3>
+                        <p class="stat-label">Cancelled</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Service Performance -->
+            <div class="section-header mb-3">
+                <h5><i class='bx bx-line-chart'></i> Service Performance</h5>
+            </div>
+            <div class="row mb-4">
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="stat-card-small">
+                        <h3 class="stat-value" id="stat-total-services">0</h3>
+                        <p class="stat-label">Total Services</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="stat-card-small">
+                        <h3 class="stat-value" id="stat-active-services">0</h3>
+                        <p class="stat-label">Active Services</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="stat-card-small">
+                        <h3 class="stat-value" id="stat-conversion-rate">0%</h3>
+                        <p class="stat-label">Conversion Rate</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="stat-card-small">
+                        <h3 class="stat-value" id="stat-avg-rating">0.0</h3>
+                        <p class="stat-label">Avg Rating</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Section -->
+            <div class="row mb-4">
+                <div class="col-lg-8 mb-3">
+                    <div class="chart-card card">
+                        <div class="card-body">
+                            <h6 class="card-title"><i class='bx bx-line-chart'></i> Revenue Trend (Last 12 Months)</h6>
+                            <div class="chart-container" style="height: 300px;">
+                                <canvas id="revenueChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 mb-3">
+                    <div class="chart-card card">
+                        <div class="card-body">
+                            <h6 class="card-title"><i class='bx bx-pie-chart-alt'></i> Order Status</h6>
+                            <div class="chart-container" style="height: 300px;">
+                                <canvas id="orderStatusChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
-      </div>
-      <div class="copyright">
-        <p>Copyright Dreamcrowd © 2021. All Rights Reserved.</p>
-      </div>
-      <!-- =============================== MAIN CONTENT END HERE =========================== -->
-    </section>
+    </div>
+</section>
 
-    <script src="assets/admin/libs/jquery/jquery.js"></script>
-    <script src="assets/admin/libs/datatable/js/datatable.js"></script>
-    <script src="assets/admin/libs/datatable/js/datatablebootstrap.js"></script>
-    <script src="assets/admin/libs/select2/js/select2.min.js"></script>
-    <script src="assets/admin/libs/owl-carousel/js/owl.carousel.min.js"></script>
-    <script src="assets/admin/libs/aos/js/aos.js"></script>
-    <script src="assets/admin/asset/js/bootstrap.min.js"></script>
-    <script src="assets/admin/asset/js/script.js"></script>
-    <script src="script.js"></script>
-  </body>
+<!-- JavaScript Libraries -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="/assets/admin/asset/js/bootstrap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+<script>
+    // Global variables
+    let revenueChart = null;
+    let orderStatusChart = null;
+
+    // Initialize on page load
+    $(document).ready(function () {
+        // Initialize CSRF token
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+
+        // Load initial statistics
+        loadDashboardStatistics('all_time');
+
+        // Initialize date pickers
+        flatpickr("#dateFrom", {
+            dateFormat: "Y-m-d",
+        });
+        flatpickr("#dateTo", {
+            dateFormat: "Y-m-d",
+        });
+
+        // Filter preset buttons
+        $('.filter-preset').click(function () {
+            $('.filter-preset').removeClass('active');
+            $(this).addClass('active');
+            const preset = $(this).data('preset');
+            loadDashboardStatistics(preset);
+        });
+    });
+
+    /**
+     * Load dashboard statistics from API
+     */
+    function loadDashboardStatistics(preset, customFrom = null, customTo = null) {
+        $('#dashboardLoading').addClass('active');
+
+        let url = '/admin-dashboard/statistics?preset=' + preset;
+        if (customFrom && customTo) {
+            url += '&date_from=' + customFrom + '&date_to=' + customTo;
+        }
+
+        $.ajax({
+            url: url,
+            method: 'GET',
+            success: function (data) {
+                updateStatistics(data);
+                loadCharts(preset, customFrom, customTo);
+            },
+            error: function (xhr, status, error) {
+                console.error('Error loading statistics:', error);
+                alert('Failed to load dashboard statistics.');
+            },
+            complete: function () {
+                $('#dashboardLoading').removeClass('active');
+            }
+        });
+    }
+
+    /**
+     * Update all statistics
+     */
+    function updateStatistics(data) {
+        // Financial
+        $('#stat-total-commission').text('$' + parseFloat(data.financial.total_admin_commission).toFixed(2));
+        $('#stat-month-revenue').text('$' + parseFloat(data.financial.month_revenue).toFixed(2));
+        $('#stat-total-gmv').text('$' + parseFloat(data.financial.total_gmv).toFixed(2));
+        $('#stat-pending-payouts').text('$' + parseFloat(data.financial.pending_payouts).toFixed(2));
+        $('#stat-avg-transaction').text('$' + parseFloat(data.financial.avg_transaction_value).toFixed(2));
+        $('#stat-total-refunded').text('$' + parseFloat(data.financial.total_refunded).toFixed(2));
+        $('#stat-coupon-discount').text('$' + parseFloat(data.financial.total_coupon_discount).toFixed(2));
+        $('#stat-net-revenue').text('$' + parseFloat(data.financial.net_platform_revenue).toFixed(2));
+
+        // Alerts
+        $('#alert-applications').text(data.applications.pending_applications);
+        $('#alert-disputes').text(data.disputes.active_disputes);
+        $('#alert-payout-amount').text('$' + parseFloat(data.financial.pending_payouts).toFixed(0));
+        $('#alert-refunds').text(data.disputes.pending_refunds);
+
+        // Users
+        $('#stat-total-users').text(data.users.total_users);
+        $('#stat-total-sellers').text(data.users.total_sellers);
+        $('#stat-total-buyers').text(data.users.total_buyers);
+        $('#stat-new-signups-today').text(data.users.new_signups_today);
+        $('#stat-new-signups-week').text(data.users.new_signups_this_week);
+        $('#stat-active-users').text(data.users.active_users);
+
+        // Orders
+        $('#stat-total-orders').text(data.orders.total_orders);
+        $('#stat-active-orders').text(data.orders.active_orders);
+        $('#stat-pending-orders').text(data.orders.pending_orders);
+        $('#stat-delivered-orders').text(data.orders.delivered_orders);
+        $('#stat-completed-orders').text(data.orders.completed_orders);
+        $('#stat-cancelled-orders').text(data.orders.cancelled_orders);
+
+        // Services
+        $('#stat-total-services').text(data.services.total_services);
+        $('#stat-active-services').text(data.services.active_services);
+        $('#stat-conversion-rate').text(parseFloat(data.services.conversion_rate).toFixed(1) + '%');
+        $('#stat-avg-rating').text(parseFloat(data.services.avg_service_rating).toFixed(1));
+    }
+
+    /**
+     * Load charts
+     */
+    function loadCharts(preset, customFrom = null, customTo = null) {
+        // Revenue chart
+        $.ajax({
+            url: '/admin-dashboard/revenue-chart',
+            method: 'GET',
+            success: function (data) {
+                renderRevenueChart(data);
+            }
+        });
+
+        // Order status chart
+        let statusUrl = '/admin-dashboard/order-status-chart?preset=' + preset;
+        if (customFrom && customTo) {
+            statusUrl += '&date_from=' + customFrom + '&date_to=' + customTo;
+        }
+
+        $.ajax({
+            url: statusUrl,
+            method: 'GET',
+            success: function (data) {
+                renderOrderStatusChart(data);
+            }
+        });
+    }
+
+    /**
+     * Render revenue chart
+     */
+    function renderRevenueChart(data) {
+        const ctx = document.getElementById('revenueChart').getContext('2d');
+
+        if (revenueChart) {
+            revenueChart.destroy();
+        }
+
+        revenueChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: data.labels,
+                datasets: [{
+                    label: 'Revenue ($)',
+                    data: data.revenue,
+                    borderColor: '#007bff',
+                    backgroundColor: 'rgba(0, 123, 255, 0.1)',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function (value) {
+                                return '$' + value.toLocaleString();
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    /**
+     * Render order status chart
+     */
+    function renderOrderStatusChart(data) {
+        const ctx = document.getElementById('orderStatusChart').getContext('2d');
+
+        if (orderStatusChart) {
+            orderStatusChart.destroy();
+        }
+
+        if (data.data.length === 0) {
+            ctx.canvas.parentNode.innerHTML = '<p class="text-center text-muted py-5">No order data</p>';
+            return;
+        }
+
+        orderStatusChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: data.labels,
+                datasets: [{
+                    data: data.data,
+                    backgroundColor: data.backgroundColor,
+                    borderWidth: 2,
+                    borderColor: '#fff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+    }
+
+    /**
+     * Apply custom date filter
+     */
+    function applyCustomDateFilter() {
+        const dateFrom = $('#dateFrom').val();
+        const dateTo = $('#dateTo').val();
+
+        if (!dateFrom || !dateTo) {
+            alert('Please select both from and to dates');
+            return;
+        }
+
+        $('.filter-preset').removeClass('active');
+        loadDashboardStatistics('custom', dateFrom, dateTo);
+    }
+
+    /**
+     * Placeholder functions for action buttons
+     */
+    function viewDisputes() {
+        window.location.href = '/all-orders'; // Adjust URL as needed
+    }
+
+    function viewPayouts() {
+        window.location.href = '/payout-details'; // Adjust URL as needed
+    }
+
+    function viewRefunds() {
+        window.location.href = '/refund-details'; // Adjust URL as needed
+    }
+
+    function exportDashboard() {
+        alert('Export functionality coming soon!');
+    }
+</script>
+</body>
 </html>
-<!-- Date Picker JS -->
-<script>
-  const dateFilter = document.getElementById("dateFilter");
-  const fromDateFields = document.getElementById("fromDateFields");
-  const toDateFields = document.getElementById("toDateFields");
-
-  dateFilter.addEventListener("change", function () {
-    if (dateFilter.value === "custom") {
-      fromDateFields.style.display = "inline";
-      toDateFields.style.display = "inline";
-    } else {
-      fromDateFields.style.display = "none";
-      toDateFields.style.display = "none";
-    }
-  });
-</script>
-<!-- ================ side js start here=============== -->
-<script>
-  // Sidebar script
-  document.addEventListener("DOMContentLoaded", function () {
-    let arrow = document.querySelectorAll(".arrow");
-    for (let i = 0; i < arrow.length; i++) {
-      arrow[i].addEventListener("click", function (e) {
-        let arrowParent = e.target.parentElement.parentElement; // Selecting main parent of arrow
-        arrowParent.classList.toggle("showMenu");
-      });
-    }
-
-    let sidebar = document.querySelector(".sidebar");
-    let sidebarBtn = document.querySelector(".bx-menu");
-
-    sidebarBtn.addEventListener("click", function () {
-      sidebar.classList.toggle("close");
-    });
-
-    // Function to toggle sidebar based on screen size
-    function toggleSidebar() {
-      let screenWidth = window.innerWidth;
-      if (screenWidth < 992) {
-        sidebar.classList.add("close");
-      } else {
-        sidebar.classList.remove("close");
-      }
-    }
-
-    // Call the function initially
-    toggleSidebar();
-
-    // Listen for resize events to adjust sidebar
-    window.addEventListener("resize", function () {
-      toggleSidebar();
-    });
-  });
-</script>
-<!-- ================ side js start End=============== -->
-

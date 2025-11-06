@@ -12,6 +12,8 @@ use App\Models\Home2Dynamic;
 use App\Models\HomeDynamic;
 use App\Models\TeacherGig;
 use App\Models\TermPrivacy;
+use App\Models\ServiceReviews;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class PublicWebController extends Controller
@@ -49,6 +51,15 @@ class PublicWebController extends Controller
                 ${'profile_' . $i} = null;
             }
         }
+
+        // Get top 10 highest rated reviews from service_reviews table
+        $topReviews = ServiceReviews::with(['user', 'teacher', 'gig'])
+            ->whereNull('parent_id') // Only parent reviews, not replies
+            ->orderBy('rating', 'desc')
+            ->orderBy('created_at', 'desc')
+            ->limit(10)
+            ->get();
+
         return view("Public-site.index", compact(
             'home',
             'home2',
@@ -68,7 +79,8 @@ class PublicWebController extends Controller
             'profile_5',
             'profile_6',
             'profile_7',
-            'profile_8'
+            'profile_8',
+            'topReviews'
         ));
     }
 

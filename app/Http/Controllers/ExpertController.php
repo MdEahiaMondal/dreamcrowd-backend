@@ -386,7 +386,29 @@ if ($request->speak_other_language == 1) {
     $new_expert->save();
 
     if ($new_expert) {
-                
+        // Send notification to seller (confirmation)
+        app(\App\Services\NotificationService::class)->send(
+            userId: Auth::id(),
+            type: 'account',
+            title: 'Application Submitted',
+            message: 'Your seller application has been submitted successfully. We will review it and notify you once a decision is made.',
+            data: ['application_id' => $new_expert->id, 'submitted_at' => now()],
+            sendEmail: true
+        );
+
+        // Send notification to admin (new application alert)
+        $adminIds = \App\Models\User::where('role', 2)->pluck('id')->toArray();
+        if (!empty($adminIds)) {
+            app(\App\Services\NotificationService::class)->sendToMultipleUsers(
+                userIds: $adminIds,
+                type: 'account',
+                title: 'New Seller Application',
+                message: Auth::user()->first_name . ' ' . Auth::user()->last_name . ' has submitted a new seller application for review.',
+                data: ['application_id' => $new_expert->id, 'user_id' => Auth::id(), 'app_type' => $request->app_type],
+                sendEmail: true
+            );
+        }
+
         return redirect()->to('/')->with('success','Your Expert Application Submmited Successfuly, Please Wait Addmin Approvel!');
     } else {
         return redirect()->back()->with('error','Something Went Rong,Tryagain Later!');

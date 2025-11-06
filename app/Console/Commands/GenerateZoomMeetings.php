@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Models\ZoomMeeting;
 use App\Models\ZoomSecureToken;
 use App\Services\ZoomMeetingService;
+use App\Services\NotificationService;
 use App\Mail\ClassStartReminder;
 use App\Mail\GuestClassInvitation;
 use Illuminate\Console\Command;
@@ -32,11 +33,13 @@ class GenerateZoomMeetings extends Command
     protected $description = 'Generate Zoom meetings and secure tokens for classes starting in 30 minutes';
 
     protected $zoomMeetingService;
+    protected $notificationService;
 
-    public function __construct(ZoomMeetingService $zoomMeetingService)
+    public function __construct(ZoomMeetingService $zoomMeetingService, NotificationService $notificationService)
     {
         parent::__construct();
         $this->zoomMeetingService = $zoomMeetingService;
+        $this->notificationService = $notificationService;
     }
 
     /**
@@ -192,6 +195,38 @@ class GenerateZoomMeetings extends Command
                 }
 
                 $this->info("  ✓ Successfully created meeting: {$meeting->meeting_id}");
+
+                // Send in-app notifications
+                // Notify Buyer
+                if ($buyer) {
+                    try {
+                        $this->notificationService->send(
+                            userId: $buyer->id,
+                            type: 'class',
+                            title: 'Zoom Link Ready',
+                            message: 'Your Zoom link for "' . $order->title . '" is now available. Class starts soon!',
+                            data: ['order_id' => $order->id, 'class_date_id' => $classDate->id, 'meeting_id' => $meeting->meeting_id],
+                            sendEmail: false // Email already sent above
+                        );
+                    } catch (\Exception $e) {
+                        Log::error("Failed to send Zoom notification to buyer: " . $e->getMessage());
+                    }
+                }
+
+                // Notify Teacher
+                try {
+                    $this->notificationService->send(
+                        userId: $teacher->id,
+                        type: 'class',
+                        title: 'Zoom Meeting Created',
+                        message: 'Zoom meeting created for "' . $order->title . '". Class starts at ' . $classDate->teacher_date->format('h:i A'),
+                        data: ['order_id' => $order->id, 'class_date_id' => $classDate->id, 'meeting_id' => $meeting->meeting_id],
+                        sendEmail: false
+                    );
+                } catch (\Exception $e) {
+                    Log::error("Failed to send Zoom notification to teacher: " . $e->getMessage());
+                }
+
                 $successCount++;
 
             } catch (\Exception $e) {

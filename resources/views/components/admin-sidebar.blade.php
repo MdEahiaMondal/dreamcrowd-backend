@@ -8,34 +8,19 @@
             @endphp
             @if ($home)
 
-                <img src="assets/public-site/asset/img/{{$home->site_logo}}" width="100%">
+                <img src="/assets/public-site/asset/img/{{$home->site_logo}}" width="100%">
             @endif
         </i>
         <span class="logo_name">DREAMCROWD</span>
     </div>
     <ul class="nav-links">
-        <li class="active">
+        <li>
             <a href="/admin-dashboard">
                 <i class='bx bx-grid-alt' title="Dashboard"></i>
                 <span class="link_name">Dashboard</span>
             </a>
             <ul class="sub-menu blank">
                 <li><a class="link_name" href="/admin-dashboard">Dashboard</a></li>
-            </ul>
-        </li>
-        <li>
-            <div class="iocn-link">
-                <a href="#">
-                    <i class='bx bx-bar-chart-alt icon' title="Analytics & Reports"></i>
-                    <span class="link_name">Analytics & Reports</span>
-                </a>
-                <i class='bx bxs-chevron-down arrow'></i>
-            </div>
-            <ul class="sub-menu">
-                <li><a class="link_name" href="#">Analytics & Reports</a></li>
-                <li><a href="google-analytic.html">Google Analytics</a></li>
-                <li><a href="website-analytic.html">Website Analytics</a></li>
-                <li><a href="finance-reports.html">Finance Reports</a></li>
             </ul>
         </li>
         <!-- <li> -->
@@ -80,7 +65,7 @@
 
             @if (Auth::user()->admin_role >= 4)
 
-                <li class=" showMenu">
+                <li>
                     <div class="iocn-link">
                         <a href="#">
                             <i class='bx bx-cog icon' title="Dynamic Management"></i>
@@ -113,7 +98,7 @@
                 </li>
 
 
-                <li class=" showMenu">
+                <li>
                     <div class="iocn-link">
                         <a href="#">
                             <i class='bx bx-cog icon' title="Seller Setting"></i>
@@ -158,12 +143,12 @@
                 </ul>
             </li>
             <li>
-                <a href="notification.html">
+                <a href="{{ route('admin.notifications') }}">
                     <i class='bx bx-bell-minus' title="Notifications"></i>
                     <span class="link_name">Notifications</span>
                 </a>
                 <ul class="sub-menu blank">
-                    <li><a class="link_name" href="notification.html">Notifications</a></li>
+                    <li><a class="link_name" href="{{ route('admin.notifications') }}">Notifications</a></li>
                 </ul>
             </li>
             <li>
@@ -311,3 +296,8 @@
     </div>
 </div>
 <!--  -->
+
+<!-- Common Sidebar Script -->
+<script src="/assets/admin/asset/js/sidebar.js"></script>
+<!-- Active Menu Script -->
+<script src="/assets/admin/asset/js/active-menu.js"></script>

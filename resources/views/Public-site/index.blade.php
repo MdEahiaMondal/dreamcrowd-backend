@@ -1168,54 +1168,93 @@
                     <h1 class="page-title">{{$home2->review_heading}}</h1>
                     <p class="page-title-2">{{$home2->review_tagline}}</p>
                     <div class="owl-carousel card_carousel">
-                        <div class="card card-slider">
-                            <div class="card-body">
-                                <div class="d-flex"><img src="assets/public-site/asset/img/{{$home2->review_image_1}}"
-                                                         class="rounded-circle">
-                                    <div class="d-flex flex-column">
-                                        <div class="name">{{$home2->review_name_1}}</div>
-                                        <p class="text-muted">{{$home2->review_designation_1}}</p>
+                        @forelse($topReviews as $review)
+                            <div class="card card-slider">
+                                <div class="card-body">
+                                    <div class="d-flex">
+                                        @if($review->user && $review->user->profile)
+                                            <img src="{{ asset('uploads/users/' . $review->user->profile) }}"
+                                                 class="rounded-circle"
+                                                 alt="{{ $review->user->name ?? 'User' }}"
+                                                 style="width: 50px; height: 50px; object-fit: cover;">
+                                        @else
+                                            <img src="{{ asset('assets/public-site/asset/img/default-avatar.png') }}"
+                                                 class="rounded-circle"
+                                                 alt="Default Avatar"
+                                                 style="width: 50px; height: 50px; object-fit: cover;">
+                                        @endif
+                                        <div class="d-flex flex-column ms-3">
+                                            <div class="name">{{ $review->user->name ?? 'Anonymous User' }}</div>
+                                            <p class="text-muted mb-1">
+                                                @for($i = 1; $i <= 5; $i++)
+                                                    @if($i <= $review->rating)
+                                                        <i class="bx bxs-star text-warning"></i>
+                                                    @else
+                                                        <i class="bx bx-star text-muted"></i>
+                                                    @endif
+                                                @endfor
+                                                <span class="ms-1">({{ number_format($review->rating, 1) }})</span>
+                                            </p>
+                                            @if($review->gig)
+                                                <small class="text-muted">{{ Str::limit($review->gig->title, 30) }}</small>
+                                            @endif
+                                        </div>
                                     </div>
+                                    <p class="card-text mt-3">{{ $review->cmnt ?? 'No comment provided.' }}</p>
+                                    <small class="text-muted">{{ $review->created_at->diffForHumans() }}</small>
                                 </div>
-                                <p class="card-text">{{$home2->review_review_1}}</p>
                             </div>
-                        </div>
-                        <div class="card card-slider">
-                            <div class="card-body">
-                                <div class="d-flex"><img src="assets/public-site/asset/img/{{$home2->review_image_2}}"
-                                                         class="rounded-circle">
-                                    <div class="d-flex flex-column">
-                                        <div class="name">{{$home2->review_name_2}}</div>
-                                        <p class="text-muted">{{$home2->review_designation_2}}</p>
+                        @empty
+                            <!-- Fallback to static reviews if no database reviews exist -->
+                            <div class="card card-slider">
+                                <div class="card-body">
+                                    <div class="d-flex"><img src="assets/public-site/asset/img/{{$home2->review_image_1}}"
+                                                             class="rounded-circle">
+                                        <div class="d-flex flex-column">
+                                            <div class="name">{{$home2->review_name_1}}</div>
+                                            <p class="text-muted">{{$home2->review_designation_1}}</p>
+                                        </div>
                                     </div>
+                                    <p class="card-text">{{$home2->review_review_1}}</p>
                                 </div>
-                                <p class="card-text">{{$home2->review_review_2}} </p>
                             </div>
-                        </div>
-                        <div class="card  card-slider">
-                            <div class="card-body">
-                                <div class="d-flex"><img src="assets/public-site/asset/img/{{$home2->review_image_3}}"
-                                                         class="rounded-circle">
-                                    <div class="d-flex flex-column">
-                                        <div class="name">{{$home2->review_name_3}}</div>
-                                        <p class="text-muted">{{$home2->review_designation_3}}</p>
+                            <div class="card card-slider">
+                                <div class="card-body">
+                                    <div class="d-flex"><img src="assets/public-site/asset/img/{{$home2->review_image_2}}"
+                                                             class="rounded-circle">
+                                        <div class="d-flex flex-column">
+                                            <div class="name">{{$home2->review_name_2}}</div>
+                                            <p class="text-muted">{{$home2->review_designation_2}}</p>
+                                        </div>
                                     </div>
+                                    <p class="card-text">{{$home2->review_review_2}} </p>
                                 </div>
-                                <p class="card-text">{{$home2->review_review_3}} </p>
                             </div>
-                        </div>
-                        <div class="card  card-slider">
-                            <div class="card-body">
-                                <div class="d-flex"><img src="assets/public-site/asset/img/{{$home2->review_image_4}}"
-                                                         class="rounded-circle">
-                                    <div class="d-flex flex-column">
-                                        <div class="name">{{$home2->review_name_4}}</div>
-                                        <p class="text-muted">{{$home2->review_designation_4}}</p>
+                            <div class="card  card-slider">
+                                <div class="card-body">
+                                    <div class="d-flex"><img src="assets/public-site/asset/img/{{$home2->review_image_3}}"
+                                                             class="rounded-circle">
+                                        <div class="d-flex flex-column">
+                                            <div class="name">{{$home2->review_name_3}}</div>
+                                            <p class="text-muted">{{$home2->review_designation_3}}</p>
+                                        </div>
                                     </div>
+                                    <p class="card-text">{{$home2->review_review_3}} </p>
                                 </div>
-                                <p class="card-text">{{$home2->review_review_4}} </p>
                             </div>
-                        </div>
+                            <div class="card  card-slider">
+                                <div class="card-body">
+                                    <div class="d-flex"><img src="assets/public-site/asset/img/{{$home2->review_image_4}}"
+                                                             class="rounded-circle">
+                                        <div class="d-flex flex-column">
+                                            <div class="name">{{$home2->review_name_4}}</div>
+                                            <p class="text-muted">{{$home2->review_designation_4}}</p>
+                                        </div>
+                                    </div>
+                                    <p class="card-text">{{$home2->review_review_4}} </p>
+                                </div>
+                            </div>
+                        @endforelse
                     </div>
                 </div>
             </div>

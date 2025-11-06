@@ -10,7 +10,7 @@
             <div class="col-md-8" style="padding: 0px 12px;display: flex;">
                 <div class="nav-dash-logo">
                   <a href="{{ url('/') }}">
-    <img src="assets/teacher/asset/img/dash-logo.png">
+    <img src="/assets/teacher/asset/img/dash-logo.png">
     </a>
                   </div>
                 <i class='bx bx-menu'></i>
@@ -24,15 +24,15 @@
                   @if (Auth::user())
                   @if (Auth::user()->profile == null)
                   @php  $firstLetter = strtoupper(substr(Auth::user()->first_name, 0, 1));  @endphp
-                  
-                  <div class="img_profile">
-                 <img src="{{ asset(Auth::user()->profile) }}"> 
-                </div>  
+
+                  <div class="img_profile" style="width: 50px; height: 50px; background: #007bff; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 20px; border-radius: 50%;">
+                    {{ $firstLetter }}
+                  </div>
                 @else
                 <div class="img_profile" style="width: 50px; height: 50px;">
-                  <img src="{{ asset(Auth::user()->profile) }}" style="width: 100%; height: 100%;"> 
-                </div>  
-                     
+                  <img src="{{ asset('assets/profile/img/' . Auth::user()->profile) }}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+                </div>
+
                  @endif
                  @endif
                     @if (Auth::user()) <h1>{{Auth::user()->first_name}}</h1> @endif

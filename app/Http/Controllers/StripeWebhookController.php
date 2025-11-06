@@ -5,9 +5,17 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Transaction;
 use App\Models\BookOrder;
+use App\Models\User;
+use App\Services\NotificationService;
 
 class StripeWebhookController extends Controller
 {
+    protected $notificationService;
+
+    public function __construct(NotificationService $notificationService)
+    {
+        $this->notificationService = $notificationService;
+    }
     public function handleWebhook(Request $request)
     {
         $payload = $request->getContent();
@@ -61,6 +69,29 @@ class StripeWebhookController extends Controller
                 'transaction_id' => $transaction->id,
                 'amount' => $paymentIntent->amount / 100
             ]);
+
+            // Send notifications
+            $amount = number_format($paymentIntent->amount / 100, 2);
+
+            // Notify Buyer
+            $this->notificationService->send(
+                userId: $transaction->buyer_id,
+                type: 'payment',
+                title: 'Payment Confirmed',
+                message: 'Your payment of $' . $amount . ' has been successfully processed.',
+                data: ['transaction_id' => $transaction->id, 'amount' => $amount],
+                sendEmail: true
+            );
+
+            // Notify Seller
+            $this->notificationService->send(
+                userId: $transaction->seller_id,
+                type: 'payment',
+                title: 'Payment Received',
+                message: 'Payment of $' . $amount . ' has been received for your service.',
+                data: ['transaction_id' => $transaction->id, 'amount' => $amount],
+                sendEmail: false
+            );
         }
     }
 
@@ -70,7 +101,8 @@ class StripeWebhookController extends Controller
 
         if ($transaction) {
             $transaction->status = 'failed';
-            $transaction->notes .= "\n[" . now()->format('Y-m-d H:i:s') . "] Payment failed: " . ($paymentIntent->last_payment_error->message ?? 'Unknown error');
+            $errorMessage = $paymentIntent->last_payment_error->message ?? 'Unknown error';
+            $transaction->notes .= "\n[" . now()->format('Y-m-d H:i:s') . "] Payment failed: " . $errorMessage;
             $transaction->save();
 
             // Update order status
@@ -82,8 +114,34 @@ class StripeWebhookController extends Controller
 
             \Log::warning('Webhook: Payment failed', [
                 'transaction_id' => $transaction->id,
-                'reason' => $paymentIntent->last_payment_error->message ?? 'Unknown'
+                'reason' => $errorMessage
             ]);
+
+            // Send notifications
+            $amount = number_format($paymentIntent->amount / 100, 2);
+
+            // Notify Buyer
+            $this->notificationService->send(
+                userId: $transaction->buyer_id,
+                type: 'payment',
+                title: 'Payment Failed',
+                message: 'Your payment of $' . $amount . ' could not be processed. Please update your payment method and try again.',
+                data: ['transaction_id' => $transaction->id, 'amount' => $amount, 'error' => $errorMessage],
+                sendEmail: true
+            );
+
+            // Notify Admin
+            $adminIds = User::where('role', 2)->pluck('id')->toArray();
+            if (!empty($adminIds)) {
+                $this->notificationService->sendToMultipleUsers(
+                    userIds: $adminIds,
+                    type: 'payment',
+                    title: 'Payment Failed Alert',
+                    message: 'Payment of $' . $amount . ' failed for transaction #' . $transaction->id . '. Reason: ' . $errorMessage,
+                    data: ['transaction_id' => $transaction->id, 'buyer_id' => $transaction->buyer_id, 'amount' => $amount],
+                    sendEmail: false
+                );
+            }
         }
     }
 
@@ -125,6 +183,17 @@ class StripeWebhookController extends Controller
                 'transaction_id' => $transaction->id,
                 'payout_id' => $payout->id
             ]);
+
+            // Notify Seller
+            $amount = number_format($transaction->seller_earnings, 2);
+            $this->notificationService->send(
+                userId: $transaction->seller_id,
+                type: 'payout',
+                title: 'Payout Completed',
+                message: 'Your payout of $' . $amount . ' has been successfully processed and is on its way to your account.',
+                data: ['transaction_id' => $transaction->id, 'payout_id' => $payout->id, 'amount' => $amount],
+                sendEmail: true
+            );
         }
     }
 
@@ -134,13 +203,40 @@ class StripeWebhookController extends Controller
 
         foreach ($transactions as $transaction) {
             $transaction->payout_status = 'failed';
-            $transaction->notes .= "\n[" . now()->format('Y-m-d H:i:s') . "] Payout failed: " . ($payout->failure_message ?? 'Unknown error');
+            $errorMessage = $payout->failure_message ?? 'Unknown error';
+            $transaction->notes .= "\n[" . now()->format('Y-m-d H:i:s') . "] Payout failed: " . $errorMessage;
             $transaction->save();
 
             \Log::error('Webhook: Payout failed', [
                 'transaction_id' => $transaction->id,
-                'reason' => $payout->failure_message ?? 'Unknown'
+                'reason' => $errorMessage
             ]);
+
+            // Send notifications
+            $amount = number_format($transaction->seller_earnings, 2);
+
+            // Notify Seller
+            $this->notificationService->send(
+                userId: $transaction->seller_id,
+                type: 'payout',
+                title: 'Payout Failed',
+                message: 'Your payout of $' . $amount . ' could not be processed. Please update your bank account information. Reason: ' . $errorMessage,
+                data: ['transaction_id' => $transaction->id, 'payout_id' => $payout->id, 'amount' => $amount, 'error' => $errorMessage],
+                sendEmail: true
+            );
+
+            // Notify Admin
+            $adminIds = User::where('role', 2)->pluck('id')->toArray();
+            if (!empty($adminIds)) {
+                $this->notificationService->sendToMultipleUsers(
+                    userIds: $adminIds,
+                    type: 'payout',
+                    title: 'Payout Failed Alert',
+                    message: 'Payout of $' . $amount . ' failed for seller #' . $transaction->seller_id . '. Reason: ' . $errorMessage,
+                    data: ['transaction_id' => $transaction->id, 'seller_id' => $transaction->seller_id, 'amount' => $amount],
+                    sendEmail: false
+                );
+            }
         }
     }
 }

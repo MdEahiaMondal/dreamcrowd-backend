@@ -1,37 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <base href="/">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Transactions - Seller Dashboard</title>
 
-    <!-- Animate css -->
-    <link rel="stylesheet" href="assets/user/libs/animate/css/animate.css"/>
-    <!-- AOS Animation css-->
-    <link rel="stylesheet" href="assets/user/libs/aos/css/aos.css"/>
-    <!-- Datatable css  -->
-    <link rel="stylesheet" href="assets/user/libs/datatable/css/datatable.css"/>
+    <!-- Animate CSS -->
+    <link rel="stylesheet" href="/assets/teacher/libs/animate/css/animate.css"/>
+    <!-- AOS Animation CSS -->
+    <link rel="stylesheet" href="/assets/teacher/libs/aos/css/aos.css"/>
+    <!-- Datatable CSS -->
+    <link rel="stylesheet" href="/assets/teacher/libs/datatable/css/datatable.css"/>
+
     {{-- Fav Icon --}}
     @php  $home = \App\Models\HomeDynamic::first(); @endphp
     @if ($home)
-        <link rel="shortcut icon" href="assets/public-site/asset/img/{{$home->fav_icon}}" type="image/x-icon">
-@endif
-<!-- Select2 css -->
-    <link href="assets/user/libs/select2/css/select2.min.css" rel="stylesheet"/>
-    <!-- Owl carousel css -->
-    <link href="assets/user/libs/owl-carousel/css/owl.carousel.css" rel="stylesheet"/>
-    <link href="assets/user/libs/owl-carousel/css/owl.theme.green.css" rel="stylesheet"/>
-    <!-- Bootstrap css -->
-    <link rel="stylesheet" type="text/css" href="assets/user/asset/css/bootstrap.min.css"/>
+        <link rel="shortcut icon" href="/assets/public-site/asset/img/{{$home->fav_icon}}" type="image/x-icon">
+    @endif
+
+    <!-- Select2 CSS -->
+    <link href="/assets/teacher/libs/select2/css/select2.min.css" rel="stylesheet"/>
+    <!-- Owl carousel CSS -->
+    <link href="/assets/teacher/libs/owl-carousel/css/owl.carousel.css" rel="stylesheet"/>
+    <link href="/assets/teacher/libs/owl-carousel/css/owl.theme.green.css" rel="stylesheet"/>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" type="text/css" href="/assets/teacher/asset/css/bootstrap.min.css"/>
     <link href="https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css" rel="stylesheet"/>
     <link rel="stylesheet" href="https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css"/>
     <!-- Fontawesome CDN -->
     <script src="https://kit.fontawesome.com/be69b59144.js" crossorigin="anonymous"></script>
-    <!-- Default css -->
-    <link rel="stylesheet" type="text/css" href="assets/user/asset/css/sidebar.css"/>
-    <link rel="stylesheet" href="assets/user/asset/css/style.css"/>
-    <link rel="stylesheet" href="assets/user/asset/css/table.css"/>
+    <!-- Default CSS -->
+    <link rel="stylesheet" type="text/css" href="/assets/teacher/asset/css/sidebar.css"/>
+    <link rel="stylesheet" href="/assets/teacher/asset/css/style.css"/>
+    <link rel="stylesheet" href="/assets/teacher/asset/css/table.css"/>
 
     <style>
         .star-rating i {

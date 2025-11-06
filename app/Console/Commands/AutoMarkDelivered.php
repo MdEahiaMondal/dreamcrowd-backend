@@ -6,6 +6,7 @@ use App\Models\BookOrder;
 use App\Models\ClassDate;
 use App\Models\ClassReschedule;
 use App\Models\Transaction;
+use App\Services\NotificationService;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
@@ -15,6 +16,14 @@ class AutoMarkDelivered extends Command
 {
     protected $signature = 'orders:auto-deliver {--dry-run : Run without making actual changes}';
     protected $description = 'Mark BookOrders as delivered after last class date has passed';
+
+    protected $notificationService;
+
+    public function __construct(NotificationService $notificationService)
+    {
+        parent::__construct();
+        $this->notificationService = $notificationService;
+    }
 
     public function handle()
     {
@@ -36,7 +45,7 @@ class AutoMarkDelivered extends Command
         $orders = BookOrder::where('status', 1)
             ->where('freelance_service', '!=', 'Normal')
             ->whereNotNull('payment_type')
-            ->with(['user', 'teacher'])
+            ->with(['user', 'teacher', 'gig'])
             ->get();
 
         if ($orders->isEmpty()) {
@@ -143,6 +152,9 @@ class AutoMarkDelivered extends Command
             // Update transaction notes (no status change)
             $this->updateTransactionNotes($order);
 
+            // Send notifications
+            $this->sendDeliveryNotifications($order);
+
             DB::commit();
 
             Log::info("Order #{$order->id} marked as delivered successfully");
@@ -240,6 +252,54 @@ class AutoMarkDelivered extends Command
 
         } catch (\Exception $e) {
             Log::error("Failed to update transaction for order #{$order->id}: " . $e->getMessage());
+            // Don't throw - not critical
+        }
+    }
+
+    /**
+     * Send delivery notifications to buyer and seller
+     */
+    private function sendDeliveryNotifications(BookOrder $order): void
+    {
+        try {
+            $serviceName = $order->title ?? ($order->gig ? $order->gig->name : 'Service');
+            $buyerName = $order->user ? ($order->user->first_name . ' ' . $order->user->last_name) : 'Customer';
+            $disputeDeadline = now()->addHours(48)->format('F j, Y g:i A');
+
+            // Notify buyer
+            $this->notificationService->send(
+                userId: $order->user_id,
+                type: 'order_delivered',
+                title: 'Order Delivered',
+                message: "Your service \"{$serviceName}\" has been delivered. You have 48 hours to report any issues.",
+                data: [
+                    'order_id' => $order->id,
+                    'service_name' => $serviceName,
+                    'delivered_at' => now()->toDateTimeString(),
+                    'dispute_deadline' => $disputeDeadline
+                ],
+                sendEmail: true
+            );
+
+            // Notify seller
+            $this->notificationService->send(
+                userId: $order->teacher_id,
+                type: 'order_delivered',
+                title: 'Order Delivered',
+                message: "Your service \"{$serviceName}\" for {$buyerName} has been marked as delivered.",
+                data: [
+                    'order_id' => $order->id,
+                    'service_name' => $serviceName,
+                    'buyer_name' => $buyerName,
+                    'delivered_at' => now()->toDateTimeString()
+                ],
+                sendEmail: false
+            );
+
+            Log::info("Delivery notifications sent for order #{$order->id}");
+
+        } catch (\Exception $e) {
+            Log::error("Failed to send delivery notifications for order #{$order->id}: " . $e->getMessage());
             // Don't throw - not critical
         }
     }
