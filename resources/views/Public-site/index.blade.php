@@ -835,182 +835,109 @@
             </div>
             <!-- CARD SECTION START HERE -->
             <div class="row">
-                <div class="col-xl-3 col-lg-4 col-md-6 col-12">
-                    <div class="main-Dream-card">
-                        <div class="card dream-Card">
-                            <div class="dream-card-upper-section">
-                                <img src="assets/public-site/asset/img/card-main-img.png" alt="">
-                                <div class="card-img-overlay overlay-inner">
-                                    <p>
-                                        Top Seller
-                                    </p>
-                                    <span id=heart8>
-                                        <i class="fa fa-heart-o" aria-hidden="true"></i>
-                                    </span>
+                @forelse($trendingServices as $index => $service)
+                    <div class="col-xl-3 col-lg-4 col-md-6 col-12">
+                        <div class="main-Dream-card">
+                            <div class="card dream-Card">
+                                <div class="dream-card-upper-section">
+                                    @if($service->cover_image)
+                                        <img src="{{ asset('uploads/gig-images/' . $service->cover_image) }}"
+                                             alt="{{ $service->title }}"
+                                             style="width: 100%; height: 200px; object-fit: cover;">
+                                    @else
+                                        <img src="{{ asset('assets/public-site/asset/img/card-main-img.png') }}"
+                                             alt="Service">
+                                    @endif
+                                    <div class="card-img-overlay overlay-inner">
+                                        @if($service->orders >= 10)
+                                            <p>Top Seller</p>
+                                        @elseif($service->orders >= 5)
+                                            <p>Rising Star</p>
+                                        @else
+                                            <p>New</p>
+                                        @endif
+                                        @if (Auth::user())
+                                            @php  $wishList = \App\Models\WishList::where(['user_id'=>Auth::user()->id,'gig_id'=>$service->id])->first(); @endphp
+                                            @if ($wishList)
+                                                <span id="heart_{{$service->id}}" class="liked"
+                                                      onclick="AddWishList(this.id);" data-gig_id="{{$service->id}}">
+                                                <i class="fa fa-heart" aria-hidden="true"></i>
+                                                </span>
+                                            @else
+                                                <span id="heart_{{$service->id}}" onclick="AddWishList(this.id);"
+                                                      data-gig_id="{{$service->id}}">
+                                                    <i class="fa fa-heart-o" aria-hidden="true"></i>
+                                                </span>
+                                            @endif
+                                        @endif
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="dream-card-dawon-section">
-                                <div class="dream-Card-inner-profile">
-                                    <img src="assets/public-site/asset/img/inner-profile.png" alt="">
-                                    <i class="fa-solid fa-check tick"></i>
-                                </div>
-                                <p class="servise-bener">Online Services</p>
-                                <h5 class="dream-Card-name">
-                                    Usama A.
-                                </h5>
-                                <p class="Dev">Developer</p>
-                                <a href="{{$home2->service_link_1}}" target="__" style="text-decoration: none;">
-                                    <p class="about-teaching">I will teach you how to build an amazing website</p></a>
-                                <span class="card-rat">
-                                    <i class="fa-solid fa-star"></i> &nbsp; (5.0)
-                                </span>
-                                <div class="card-last">
-                                    <span>Starting at $5</span>
-                                    <!-- word img -->
+                                <div class="dream-card-dawon-section">
+                                    <div class="dream-Card-inner-profile">
+                                        @php
+                                            $firstLetter = $service->user ? strtoupper(substr($service->user->first_name ?? 'U', 0, 1)) : 'U';
+                                        @endphp
+                                        @if($service->user && $service->user->profile_image)
+                                            <img src="assets/profile/img/{{$service->user->profile_image}}" alt="">
+                                        @else
+                                            <img src="assets/profile/avatars/({{$firstLetter}}).jpg" alt="">
+                                        @endif
+                                        @if($service->expertProfile && $service->expertProfile->status == 1)
+                                            <i class="fa-solid fa-check tick"></i>
+                                        @endif
+                                    </div>
 
-                                    <a href="#"><img data-toggle="tooltip" title="In Person-Service"
-                                                     src="assets/public-site/asset/img/globe.png"
-                                                     style="height: 25px; width: 25px;" alt=""></a>
-                                    <!-- <i class="fa-solid fa-globe"></i> -->
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-xl-3 col-lg-4 col-md-6 col-12">
-                    <div class="main-Dream-card">
-                        <div class="card dream-Card">
-                            <div class="dream-card-upper-section">
-                                <img src="assets/public-site/asset/img/card-main-img.png" alt="">
-                                <div class="card-img-overlay overlay-inner">
-                                    <p>
-                                        Top Seller
-                                    </p>
-                                    <span id=heart9>
-                                        <i class="fa fa-heart-o" aria-hidden="true"></i>
+                                    @php
+                                        $serviceTypeLabel = 'Service';
+                                        if ($service->service_type == 'online_class') {
+                                            $serviceTypeLabel = 'Online Class';
+                                        } elseif ($service->service_type == 'in_person_class') {
+                                            $serviceTypeLabel = 'In-Person Class';
+                                        } elseif ($service->service_type == 'online_freelance') {
+                                            $serviceTypeLabel = 'Online Service';
+                                        } elseif ($service->service_type == 'in_person_freelance') {
+                                            $serviceTypeLabel = 'In-Person Service';
+                                        }
+
+                                        $full_name = $service->user ? $service->user->first_name . ' ' . strtoupper(substr($service->user->last_name ?? '', 0, 1)) : 'Unknown';
+                                    @endphp
+                                    <p class="servise-bener">{{ $serviceTypeLabel }}</p>
+
+                                    <h5 class="dream-Card-name">
+                                        {{ $full_name }}
+                                    </h5>
+                                    <p class="Dev">{{ $service->sub_category ?? 'Professional' }}</p>
+                                    <p class="about-teaching">{{ Str::limit($service->title, 50) }}</p>
+                                    <span class="card-rat">
+                                        <i class="fa-solid fa-star"></i> &nbsp;
+                                        ({{ $service->all_reviews_avg_rating ? number_format($service->all_reviews_avg_rating, 1) : 'New' }})
                                     </span>
-                                </div>
-                            </div>
-                            <div class="dream-card-dawon-section">
-                                <div class="dream-Card-inner-profile">
-                                    <img src="assets/public-site/asset/img/inner-profile.png" alt="">
-                                    <i class="fa-solid fa-check tick"></i>
-                                </div>
-                                <p class="servise-bener">In-Person Services</p>
-                                <h5 class="dream-Card-name">
-                                    Usama A.
-                                </h5>
-                                <p class="Dev">Developer</p>
-                                <a href="{{$home2->service_link_2}}" target="__" style="text-decoration: none;">
-                                    <p class="about-teaching">I will teach you how to build an amazing website</p></a>
-                                <span class="card-rat">
-                                    <i class="fa-solid fa-star"></i> &nbsp; (5.0)
-                                </span>
-                                <div class="card-last">
-                                    <span>Starting at $5</span>
-                                    <!-- word img -->
-                                    <a>
-                                        <svg data-toggle="tooltip" title="In Person-Service"
-                                             xmlns="http://www.w3.org/2000/svg" width="24" height="24" color="#0072b1"
-                                             fill="currentColor" class="bi bi-house  fa-house" viewBox="0 0 16 16">
-                                            <path
-                                                d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L2 8.207V13.5A1.5 1.5 0 0 0 3.5 15h9a1.5 1.5 0 0 0 1.5-1.5V8.207l.646.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293zM13 7.207V13.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V7.207l5-5z"/>
-                                        </svg>
-                                        {{-- <i  data-toggle="tooltip" title="In Person-Service" class="fa-solid fa-house"></i> --}}
-                                    </a>
+                                    <div class="card-last">
+                                        <span>Starting at ${{ number_format((float)($service->rate ?? 0), 0) }}</span>
+
+                                        @if(in_array($service->service_type, ['online_class', 'online_freelance']))
+                                            <a href="#"><img data-toggle="tooltip" title="Online Service"
+                                                             src="{{ asset('assets/public-site/asset/img/globe.png') }}"
+                                                             style="height: 25px; width: 25px;" alt="Online"></a>
+                                        @else
+                                            <a>
+                                                <svg data-toggle="tooltip" title="In Person Service"
+                                                     xmlns="http://www.w3.org/2000/svg" width="24" height="24" color="#0072b1"
+                                                     fill="currentColor" class="bi bi-house fa-house" viewBox="0 0 16 16">
+                                                    <path d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L2 8.207V13.5A1.5 1.5 0 0 0 3.5 15h9a1.5 1.5 0 0 0 1.5-1.5V8.207l.646.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293zM13 7.207V13.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V7.207l5-5z"/>
+                                                </svg>
+                                            </a>
+                                        @endif
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="col-xl-3 col-lg-4 col-md-6 col-12">
-                    <div class="main-Dream-card">
-                        <div class="card dream-Card">
-                            <div class="dream-card-upper-section">
-                                <img src="assets/public-site/asset/img/card-main-img.png" alt="">
-                                <div class="card-img-overlay overlay-inner">
-                                    <p>
-                                        Top Seller
-                                    </p>
-                                    <span id=heart10>
-                                        <i class="fa fa-heart-o" aria-hidden="true"></i>
-                                    </span>
-                                </div>
-                            </div>
-                            <div class="dream-card-dawon-section">
-                                <div class="dream-Card-inner-profile">
-                                    <img src="assets/public-site/asset/img/inner-profile.png" alt="">
-                                    <i class="fa-solid fa-check tick"></i>
-                                </div>
-                                <p class="servise-bener">Online Services</p>
-                                <h5 class="dream-Card-name">
-                                    Usama A.
-                                </h5>
-                                <p class="Dev">Developer</p>
-                                <a href="{{$home2->service_link_3}}" target="__" style="text-decoration: none;">
-                                    <p class="about-teaching">I will teach you how to build an amazing website</p></a>
-                                <span class="card-rat">
-                                    <i class="fa-solid fa-star"></i> &nbsp; (5.0)
-                                </span>
-                                <div class="card-last">
-                                    <span>Starting at $5</span>
-                                    <!-- word img -->
-                                    <a href="#"><img data-toggle="tooltip" title="In Person-Service"
-                                                     src="assets/public-site/asset/img/globe.png"
-                                                     style="height: 25px; width: 25px;" alt=""></a>
-                                    <!-- <i class="fa-solid fa-globe"></i> -->
-                                </div>
-                            </div>
-                        </div>
+                @empty
+                    <div class="col-12 text-center">
+                        <p>No trending services available at the moment.</p>
                     </div>
-                </div>
-                <div class="col-xl-3 col-lg-4 col-md-6 col-12">
-                    <div class="main-Dream-card">
-                        <div class="card dream-Card">
-                            <div class="dream-card-upper-section">
-                                <img src="assets/public-site/asset/img/card-main-img.png" alt="">
-                                <div class="card-img-overlay overlay-inner">
-                                    <p>
-                                        Top Seller
-                                    </p>
-                                    <span id=heart11>
-                                        <i class="fa fa-heart-o" aria-hidden="true"></i>
-                                    </span>
-                                </div>
-                            </div>
-                            <div class="dream-card-dawon-section">
-                                <div class="dream-Card-inner-profile">
-                                    <img src="assets/public-site/asset/img/inner-profile.png" alt="">
-                                    <i class="fa-solid fa-check tick"></i>
-                                </div>
-                                <p class="servise-bener">In-Person Services</p>
-                                <h5 class="dream-Card-name">
-                                    Usama A.
-                                </h5>
-                                <p class="Dev">Developer</p>
-                                <a href="{{$home2->service_link_4}}" target="__" style="text-decoration: none;">
-                                    <p class="about-teaching">I will teach you how to build an amazing website</p></a>
-                                <span class="card-rat">
-                                    <i class="fa-solid fa-star"></i> &nbsp; (5.0)
-                                </span>
-                                <div class="card-last">
-                                    <span>Starting at $5</span>
-                                    <!-- word img -->
-                                    <a>
-                                        <svg data-toggle="tooltip" title="In Person-Service"
-                                             xmlns="http://www.w3.org/2000/svg" width="24" height="24" color="#0072b1"
-                                             fill="currentColor" class="bi bi-house  fa-house" viewBox="0 0 16 16">
-                                            <path
-                                                d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L2 8.207V13.5A1.5 1.5 0 0 0 3.5 15h9a1.5 1.5 0 0 0 1.5-1.5V8.207l.646.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293zM13 7.207V13.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V7.207l5-5z"/>
-                                        </svg>
-                                        {{-- <i  data-toggle="tooltip" title="In Person-Service" class="fa-solid fa-house"></i> --}}
-                                    </a>
-                                    <!-- <i class="fa-solid fa-globe"></i> -->
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                @endforelse
             </div>
         @endif
         <!-- CARD SECTION END HERE -->
@@ -1040,48 +967,111 @@
             <!-- ========= SLIDER START HERE =========== -->
             <div class="home-demo">
                 <div class="owl-carousel owl-theme">
-                    <div class="item">
-                        <div class="main-Dream-card">
-                            <div class="card dream-Card">
-                                <div class="dream-card-upper-section">
-                                    <img src="assets/public-site/asset/img/card-main-img.png" alt="">
-                                    <div class="card-img-overlay overlay-inner">
-                                        <p>
-                                            Top Seller
-                                        </p>
-                                        <span id="heart13">
-                                        <i class="fa fa-heart-o" aria-hidden="true"></i>
-                                    </span>
+                    @forelse($trendingServices as $index => $service)
+                        <div class="item">
+                            <div class="main-Dream-card">
+                                <div class="card dream-Card">
+                                    <div class="dream-card-upper-section">
+                                        @if($service->cover_image)
+                                            <img src="{{ asset('uploads/gig-images/' . $service->cover_image) }}"
+                                                 alt="{{ $service->title }}"
+                                                 style="width: 100%; height: 200px; object-fit: cover;">
+                                        @else
+                                            <img src="{{ asset('assets/public-site/asset/img/card-main-img.png') }}"
+                                                 alt="Service">
+                                        @endif
+                                        <div class="card-img-overlay overlay-inner">
+                                            @if($service->orders >= 10)
+                                                <p>Top Seller</p>
+                                            @elseif($service->orders >= 5)
+                                                <p>Rising Star</p>
+                                            @else
+                                                <p>New</p>
+                                            @endif
+                                            @if (Auth::user())
+                                                @php  $wishList = \App\Models\WishList::where(['user_id'=>Auth::user()->id,'gig_id'=>$service->id])->first(); @endphp
+                                                @if ($wishList)
+                                                    <span id="heart_{{$service->id}}" class="liked"
+                                                          onclick="AddWishList(this.id);" data-gig_id="{{$service->id}}">
+                                                    <i class="fa fa-heart" aria-hidden="true"></i>
+                                                    </span>
+                                                @else
+                                                    <span id="heart_{{$service->id}}" onclick="AddWishList(this.id);"
+                                                          data-gig_id="{{$service->id}}">
+                                                        <i class="fa fa-heart-o" aria-hidden="true"></i>
+                                                    </span>
+                                                @endif
+                                            @endif
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="dream-card-dawon-section">
-                                    <div class="dream-Card-inner-profile">
-                                        <img src="assets/public-site/asset/img/inner-profile.png" alt="">
-                                        <i class="fa-solid fa-check tick"></i>
-                                    </div>
-                                    <p class="servise-bener">Online Services</p>
-                                    <h5 class="dream-Card-name">
-                                        Usama A.
-                                    </h5>
-                                    <p class="Dev">Developer</p>
-                                    <a href="{{$home2->service_link_1}}" target="__" style="text-decoration: none;">
-                                        <p class="about-teaching">I will teach you how to build an amazing website</p>
-                                    </a>
-                                    <span class="card-rat">
-                                    <i class="fa-solid fa-star"></i> &nbsp; (5.0)
-                                </span>
-                                    <div class="card-last">
-                                        <span>Starting at $5</span>
-                                        <!-- word img -->
-                                        <a href="#"><img data-toggle="tooltip" title="In Person-Service"
-                                                         src="assets/public-site/asset/img/globe.png"
-                                                         style="height: 25px; width: 25px;" alt=""></a>
-                                        <!-- <i class="fa-solid fa-globe"></i> -->
+                                    <div class="dream-card-dawon-section">
+                                        <div class="dream-Card-inner-profile">
+                                            @php
+                                                $firstLetter = $service->user ? strtoupper(substr($service->user->first_name ?? 'U', 0, 1)) : 'U';
+                                            @endphp
+                                            @if($service->user && $service->user->profile_image)
+                                                <img src="assets/profile/img/{{$service->user->profile_image}}" alt="">
+                                            @else
+                                                <img src="assets/profile/avatars/({{$firstLetter}}).jpg" alt="">
+                                            @endif
+                                            @if($service->expertProfile && $service->expertProfile->status == 1)
+                                                <i class="fa-solid fa-check tick"></i>
+                                            @endif
+                                        </div>
+
+                                        @php
+                                            $serviceTypeLabel = 'Service';
+                                            if ($service->service_type == 'online_class') {
+                                                $serviceTypeLabel = 'Online Class';
+                                            } elseif ($service->service_type == 'in_person_class') {
+                                                $serviceTypeLabel = 'In-Person Class';
+                                            } elseif ($service->service_type == 'online_freelance') {
+                                                $serviceTypeLabel = 'Online Service';
+                                            } elseif ($service->service_type == 'in_person_freelance') {
+                                                $serviceTypeLabel = 'In-Person Service';
+                                            }
+
+                                            $full_name = $service->user ? $service->user->first_name . ' ' . strtoupper(substr($service->user->last_name ?? '', 0, 1)) : 'Unknown';
+                                        @endphp
+                                        <p class="servise-bener">{{ $serviceTypeLabel }}</p>
+
+                                        <h5 class="dream-Card-name">
+                                            {{ $full_name }}
+                                        </h5>
+                                        <p class="Dev">{{ $service->sub_category ?? 'Professional' }}</p>
+                                        <p class="about-teaching">{{ Str::limit($service->title, 50) }}</p>
+                                        <span class="card-rat">
+                                            <i class="fa-solid fa-star"></i> &nbsp;
+                                            ({{ $service->all_reviews_avg_rating ? number_format($service->all_reviews_avg_rating, 1) : 'New' }})
+                                        </span>
+                                        <div class="card-last">
+                                            <span>Starting at ${{ number_format((float)($service->rate ?? 0), 0) }}</span>
+
+                                            @if(in_array($service->service_type, ['online_class', 'online_freelance']))
+                                                <a href="#"><img data-toggle="tooltip" title="Online Service"
+                                                                 src="{{ asset('assets/public-site/asset/img/globe.png') }}"
+                                                                 style="height: 25px; width: 25px;" alt="Online"></a>
+                                            @else
+                                                <a>
+                                                    <svg data-toggle="tooltip" title="In Person Service"
+                                                         xmlns="http://www.w3.org/2000/svg" width="24" height="24" color="#0072b1"
+                                                         fill="currentColor" class="bi bi-house fa-house" viewBox="0 0 16 16">
+                                                        <path d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L2 8.207V13.5A1.5 1.5 0 0 0 3.5 15h9a1.5 1.5 0 0 0 1.5-1.5V8.207l.646.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293zM13 7.207V13.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V7.207l5-5z"/>
+                                                    </svg>
+                                                </a>
+                                            @endif
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    @empty
+                        <div class="item">
+                            <div class="col-12 text-center p-5">
+                                <p>No trending services available at the moment.</p>
+                            </div>
+                        </div>
+                    @endforelse
                 </div>
             </div>
         @endif

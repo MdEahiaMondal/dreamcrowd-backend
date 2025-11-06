@@ -60,6 +60,15 @@ class PublicWebController extends Controller
             ->limit(10)
             ->get();
 
+        // Get trending services - top 8 services by orders and rating
+        $trendingServices = TeacherGig::with(['user', 'expertProfile'])
+            ->withAvg('all_reviews', 'rating')
+            ->where('status', 1) // Only active services
+            ->orderBy('orders', 'desc') // Most orders first
+            ->orderBy('all_reviews_avg_rating', 'desc') // Then by rating
+            ->limit(8)
+            ->get();
+
         return view("Public-site.index", compact(
             'home',
             'home2',
@@ -80,7 +89,8 @@ class PublicWebController extends Controller
             'profile_6',
             'profile_7',
             'profile_8',
-            'topReviews'
+            'topReviews',
+            'trendingServices'
         ));
     }
 
