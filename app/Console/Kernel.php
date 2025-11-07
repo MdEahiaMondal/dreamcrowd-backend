@@ -68,6 +68,36 @@ class Kernel extends ConsoleKernel
         // =====================================================
         // END ZOOM INTEGRATION SCHEDULED COMMANDS
         // =====================================================
+
+        // =====================================================
+        // CLASS REMINDERS SCHEDULED COMMANDS
+        // =====================================================
+
+        // Send class reminders (24 hours, 1 hour, and 3-day recurring reminders)
+        $schedule->command('reminders:send-class-reminders')
+            ->hourly()
+            ->withoutOverlapping()
+            ->runInBackground()
+            ->appendOutputTo(storage_path('logs/class-reminders.log'));
+
+        // =====================================================
+        // END CLASS REMINDERS SCHEDULED COMMANDS
+        // =====================================================
+
+        // =====================================================
+        // COUPON NOTIFICATIONS SCHEDULED COMMANDS
+        // =====================================================
+
+        // Notify about expiring and expired coupons (runs daily at 9 AM)
+        $schedule->command('coupons:notify-expiring')
+            ->dailyAt('09:00')
+            ->withoutOverlapping()
+            ->runInBackground()
+            ->appendOutputTo(storage_path('logs/coupon-notifications.log'));
+
+        // =====================================================
+        // END COUPON NOTIFICATIONS SCHEDULED COMMANDS
+        // =====================================================
     }
 
 

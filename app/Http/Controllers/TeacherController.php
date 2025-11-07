@@ -18,12 +18,19 @@ use App\Models\TeacherLocationRequest;
 use App\Models\TeacherProfileRequest;
 use App\Models\TeacherRequest;
 use App\Services\TeacherDashboardService;
+use App\Services\NotificationService;
 use Carbon\Language;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class TeacherController extends Controller
 {
+    protected $notificationService;
+
+    public function __construct(NotificationService $notificationService)
+    {
+        $this->notificationService = $notificationService;
+    }
 
     public function TeachercheckAuth()
     {
@@ -861,9 +868,30 @@ class TeacherController extends Controller
                 'rating' => $request->rating,
                 'cmnt' => $request->cmnt
             ]);
+
+            // Notify seller that review was edited
+            try {
+                $this->notificationService->send(
+                    userId: $order->teacher_id,
+                    type: 'review',
+                    title: 'Review Updated',
+                    message: "A review for your service '{$order->title}' has been updated.",
+                    data: [
+                        'review_id' => $existingReview->id,
+                        'order_id' => $order->id,
+                        'rating' => $request->rating,
+                        'service_name' => $order->title,
+                        'updated_at' => now()->toISOString()
+                    ],
+                    sendEmail: false
+                );
+            } catch (\Exception $e) {
+                \Log::error('Failed to send review updated notification: ' . $e->getMessage());
+            }
+
             return redirect()->back()->with('success', 'Successfully submitted a review for this order.');
         } else {
-            ServiceReviews::create([
+            $review = ServiceReviews::create([
                 'user_id' => Auth::id(),
                 'teacher_id' => $order->teacher_id,
                 'gig_id' => $order->gig_id,
@@ -871,15 +899,70 @@ class TeacherController extends Controller
                 'rating' => $request->rating,
                 'cmnt' => $request->cmnt
             ]);
+
+            // Check for rating milestones
+            if ($request->rating >= 4) { // Only count high ratings (4 or 5 stars)
+                $highRatingCount = ServiceReviews::where('teacher_id', $order->teacher_id)
+                    ->where('rating', '>=', 4)
+                    ->count();
+
+                $milestones = [10, 25, 50, 100, 250, 500, 1000];
+
+                if (in_array($highRatingCount, $milestones)) {
+                    try {
+                        $this->notificationService->send(
+                            userId: $order->teacher_id,
+                            type: 'account',
+                            title: 'Rating Milestone Achieved!',
+                            message: "Congratulations! You've received {$highRatingCount} high ratings (4+ stars). Keep up the excellent work!",
+                            data: [
+                                'milestone' => $highRatingCount,
+                                'total_reviews' => ServiceReviews::where('teacher_id', $order->teacher_id)->count(),
+                                'average_rating' => ServiceReviews::where('teacher_id', $order->teacher_id)->avg('rating'),
+                                'achieved_at' => now()->toISOString()
+                            ],
+                            sendEmail: true
+                        );
+                    } catch (\Exception $e) {
+                        \Log::error('Failed to send milestone notification: ' . $e->getMessage());
+                    }
+                }
+            }
         }
         return redirect()->back()->with('success', 'Thank you for your review!');
     }
 
     public function deleteReview($review_id)
     {
-        ServiceReviews::where('id', $review_id)
+        $review = ServiceReviews::where('id', $review_id)
             ->where('teacher_id', Auth::id())
-            ->delete();
+            ->first();
+
+        if ($review) {
+            $order = BookOrder::find($review->order_id);
+            $review->delete();
+
+            // Notify seller that review was deleted
+            if ($order) {
+                try {
+                    $this->notificationService->send(
+                        userId: $order->teacher_id,
+                        type: 'review',
+                        title: 'Review Deleted',
+                        message: "A review for your service '{$order->title}' has been removed.",
+                        data: [
+                            'order_id' => $order->id,
+                            'service_name' => $order->title,
+                            'deleted_at' => now()->toISOString()
+                        ],
+                        sendEmail: false
+                    );
+                } catch (\Exception $e) {
+                    \Log::error('Failed to send review deleted notification: ' . $e->getMessage());
+                }
+            }
+        }
+
         return redirect()->back()->with('success', 'Your review has been deleted.');
     }
 

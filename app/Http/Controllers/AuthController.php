@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Mail\ForgotPassword;
 use App\Mail\VerifyMail;
+use App\Services\NotificationService;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Stevebauman\Location\Facades\Location;
@@ -17,10 +18,12 @@ use Illuminate\Http\Request;
 class AuthController extends Controller
 {
     public $IP;
+    protected $notificationService;
 
-    public function __construct()
+    public function __construct(NotificationService $notificationService)
     {
         $this->IP = $_SERVER['REMOTE_ADDR'];
+        $this->notificationService = $notificationService;
         // public $IP =  '162.159.24.227';
     }
 
@@ -447,6 +450,27 @@ class AuthController extends Controller
             $user->status = 1;
             $user->update();
             Auth::login($user);
+
+            // Send email verification success notification
+            try {
+                $roleName = $user->role == 0 ? 'Buyer' : ($user->role == 1 ? 'Seller' : 'Admin');
+
+                $this->notificationService->send(
+                    userId: $user->id,
+                    type: 'account',
+                    title: 'Email Verified Successfully',
+                    message: "Welcome to DreamCrowd! Your email has been verified and your {$roleName} account is now active.",
+                    data: [
+                        'verified_at' => now()->toISOString(),
+                        'role' => $user->role,
+                        'email' => $user->email,
+                        'dashboard_url' => $user->role == 0 ? route('user.dashboard') : ($user->role == 1 ? route('teacher.dashboard') : route('admin.dashboard'))
+                    ],
+                    sendEmail: false // User just verified email, don't spam
+                );
+            } catch (\Exception $e) {
+                \Log::error('Failed to send email verification success notification: ' . $e->getMessage());
+            }
 
             return redirect('/')->with('success', 'your email has been successfully verified');
         } else {

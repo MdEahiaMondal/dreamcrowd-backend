@@ -214,13 +214,79 @@ class User extends Authenticatable
                 return true;
             }
 
+            // Token refresh API call failed
+            \Log::error('Zoom token refresh API call failed for user ' . $this->id, [
+                'status' => $response->status(),
+                'response' => $response->body()
+            ]);
+
+            ZoomAuditLog::logAction('token_refresh_failed', $this->id, 'user', $this->id, [
+                'error' => 'API call failed: ' . $response->status(),
+            ]);
+
+            // Send notifications about token refresh failure
+            $this->sendZoomTokenRefreshFailureNotifications('API call failed: ' . $response->status());
+
             return false;
         } catch (\Exception $e) {
             \Log::error('Failed to refresh Zoom token for user ' . $this->id . ': ' . $e->getMessage());
             ZoomAuditLog::logAction('token_refresh_failed', $this->id, 'user', $this->id, [
                 'error' => $e->getMessage(),
             ]);
+
+            // Send notifications about token refresh failure
+            $this->sendZoomTokenRefreshFailureNotifications($e->getMessage());
+
             return false;
+        }
+    }
+
+    /**
+     * Send notifications when Zoom token refresh fails
+     *
+     * @param string $errorMessage
+     * @return void
+     */
+    protected function sendZoomTokenRefreshFailureNotifications($errorMessage)
+    {
+        try {
+            $notificationService = app(\App\Services\NotificationService::class);
+
+            // Notify the teacher/seller
+            $notificationService->send(
+                userId: $this->id,
+                type: 'zoom',
+                title: 'Zoom Connection Failed',
+                message: 'Failed to refresh your Zoom connection. Please reconnect your Zoom account to continue hosting classes.',
+                data: [
+                    'error' => $errorMessage,
+                    'reconnect_url' => route('teacher.zoom.connect'),
+                    'failed_at' => now()->toISOString()
+                ],
+                sendEmail: true
+            );
+
+            // Notify admins
+            $adminIds = User::where('role', 2)->pluck('id')->toArray();
+            if (!empty($adminIds)) {
+                $notificationService->sendToMultipleUsers(
+                    userIds: $adminIds,
+                    type: 'system',
+                    title: 'Zoom Token Refresh Failed',
+                    message: "Zoom token refresh failed for seller #{$this->id} ({$this->first_name} {$this->last_name}). User may experience meeting creation issues.",
+                    data: [
+                        'seller_id' => $this->id,
+                        'seller_name' => $this->first_name . ' ' . $this->last_name,
+                        'seller_email' => $this->email,
+                        'error' => $errorMessage,
+                        'failed_at' => now()->toISOString()
+                    ],
+                    sendEmail: true
+                );
+            }
+        } catch (\Exception $e) {
+            // Don't let notification failures break the main flow
+            \Log::error('Failed to send Zoom token refresh failure notifications: ' . $e->getMessage());
         }
     }
 

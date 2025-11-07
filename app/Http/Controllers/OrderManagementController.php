@@ -1865,23 +1865,38 @@ class OrderManagementController extends Controller
             $order->payment_status = 'refunded';
             $order->save();
 
-            // To Buyer (if approved)
+            // Notify buyer about dispute resolution
+            $refundType = $dispute->refund_type == 0 ? 'Full' : 'Partial';
             $this->notificationService->send(
                 userId: $order->user_id,
-                type: 'refund',
-                title: 'Refund Approved',
-                message: 'Your refund request has been approved. Amount: $' . $dispute->amount,
-                data: ['order_id' => $order->id, 'refund_amount' => $dispute->amount],
+                type: 'dispute',
+                title: 'Dispute Resolved',
+                message: "Your dispute for order #{$order->id} has been resolved by admin. Decision: {$refundType} refund of \${$dispute->amount} approved.",
+                data: [
+                    'order_id' => $order->id,
+                    'dispute_id' => $dispute->id,
+                    'decision' => "{$refundType} refund approved",
+                    'refund_amount' => $dispute->amount,
+                    'resolved_at' => now()->toISOString(),
+                    'resolved_by' => 'admin'
+                ],
                 sendEmail: true
             );
 
-            // To Seller (if rejected)
+            // Notify seller about dispute resolution
             $this->notificationService->send(
                 userId: $order->teacher_id,
-                type: 'refund',
-                title: 'Dispute Resolved in Your Favor',
-                message: 'The refund dispute has been resolved. Payment will be released.',
-                data: ['order_id' => $order->id, 'amount' => $order->finel_price],
+                type: 'dispute',
+                title: 'Dispute Resolved by Admin',
+                message: "Dispute for order #{$order->id} has been resolved by admin. Decision: {$refundType} refund of \${$dispute->amount} to buyer.",
+                data: [
+                    'order_id' => $order->id,
+                    'dispute_id' => $dispute->id,
+                    'decision' => "{$refundType} refund to buyer",
+                    'refund_amount' => $dispute->amount,
+                    'resolved_at' => now()->toISOString(),
+                    'resolved_by' => 'admin'
+                ],
                 sendEmail: true
             );
 
@@ -2969,7 +2984,7 @@ class OrderManagementController extends Controller
                 'cmnt' => $request->cmnt
             ]);
         } else {
-            ServiceReviews::create([
+            $review = ServiceReviews::create([
                 'user_id' => Auth::id(),
                 'teacher_id' => $order->teacher_id,
                 'gig_id' => $order->gig_id,
@@ -2977,6 +2992,35 @@ class OrderManagementController extends Controller
                 'rating' => $request->rating,
                 'cmnt' => $request->cmnt
             ]);
+
+            // Check for rating milestones
+            if ($request->rating >= 4) { // Only count high ratings (4 or 5 stars)
+                $highRatingCount = ServiceReviews::where('teacher_id', $order->teacher_id)
+                    ->where('rating', '>=', 4)
+                    ->count();
+
+                $milestones = [10, 25, 50, 100, 250, 500, 1000];
+
+                if (in_array($highRatingCount, $milestones)) {
+                    try {
+                        $this->notificationService->send(
+                            userId: $order->teacher_id,
+                            type: 'account',
+                            title: 'Rating Milestone Achieved!',
+                            message: "Congratulations! You've received {$highRatingCount} high ratings (4+ stars). Keep up the excellent work!",
+                            data: [
+                                'milestone' => $highRatingCount,
+                                'total_reviews' => ServiceReviews::where('teacher_id', $order->teacher_id)->count(),
+                                'average_rating' => ServiceReviews::where('teacher_id', $order->teacher_id)->avg('rating'),
+                                'achieved_at' => now()->toISOString()
+                            ],
+                            sendEmail: true
+                        );
+                    } catch (\Exception $e) {
+                        \Log::error('Failed to send milestone notification: ' . $e->getMessage());
+                    }
+                }
+            }
         }
 
         // ============ AUTO-COMPLETE ORDER AFTER REVIEW ============

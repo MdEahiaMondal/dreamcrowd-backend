@@ -401,6 +401,7 @@ class AdminController extends Controller
         if ($request->action == 'reject') {
 
             $user = User::find($expert->user_id);
+            $oldRole = $user->role;
             $user->role = 0;
 
 
@@ -447,6 +448,28 @@ class AdminController extends Controller
 
             $user->update();
             $expert->update();
+
+            // Send account role change notification
+            if ($oldRole != 0) {
+                try {
+                    $this->notificationService->send(
+                        userId: $expert->user_id,
+                        type: 'account',
+                        title: 'Account Role Changed',
+                        message: 'Your account role has been changed to Buyer due to seller application rejection.',
+                        data: [
+                            'old_role' => $oldRole,
+                            'new_role' => 0,
+                            'changed_at' => now()->toISOString(),
+                            'reason' => 'Seller application rejected'
+                        ],
+                        sendEmail: false
+                    );
+                } catch (\Exception $e) {
+                    \Log::error('Failed to send role change notification: ' . $e->getMessage());
+                }
+            }
+
             // If rejected
             $this->notificationService->send(
                 userId: $expert->user_id,
@@ -465,6 +488,7 @@ class AdminController extends Controller
         } else {
             $user = User::find($expert->user_id);
 
+            $oldRole = $user->role;
             $user->profile = $expert->profile_image;
             $user->first_name = $expert->first_name;
             $user->last_name = $expert->last_name;
@@ -475,6 +499,27 @@ class AdminController extends Controller
             $user->ip = $expert->ip_address;
             $user->role = 1;
             $user->update();
+
+            // Send account role change notification
+            if ($oldRole != 1) {
+                try {
+                    $this->notificationService->send(
+                        userId: $expert->user_id,
+                        type: 'account',
+                        title: 'Account Role Changed',
+                        message: 'Congratulations! Your account has been upgraded to Seller. You can now create and manage services.',
+                        data: [
+                            'old_role' => $oldRole,
+                            'new_role' => 1,
+                            'changed_at' => now()->toISOString(),
+                            'reason' => 'Seller application approved'
+                        ],
+                        sendEmail: false
+                    );
+                } catch (\Exception $e) {
+                    \Log::error('Failed to send role change notification: ' . $e->getMessage());
+                }
+            }
 
             $expert->status = 1;
             $expert->action_date = date("M d, Y");
@@ -559,6 +604,22 @@ class AdminController extends Controller
         $request = TeacherRequest::find($id);
         $request->status = 2;
         $request->update();
+
+        // Send notification to seller about request rejection
+        if ($request && $request->user_id) {
+            $this->notificationService->send(
+                userId: $request->user_id,
+                type: 'account',
+                title: 'Request Rejected',
+                message: 'Your request has been rejected by the admin team. Please contact support for more information.',
+                data: [
+                    'request_id' => $id,
+                    'rejected_at' => now()->toISOString(),
+                    'request_type' => $request->request_type ?? 'unknown'
+                ],
+                sendEmail: true
+            );
+        }
 
         if ($request) {
             return redirect()->to('/seller-request')->with('success', 'Seller Request Rejected!');
@@ -800,6 +861,20 @@ class AdminController extends Controller
             $expert->update();
             $user->update();
             $request->update();
+
+            // Send notification to seller about profile update approval
+            $this->notificationService->send(
+                userId: $user->id,
+                type: 'account',
+                title: 'Profile Update Approved',
+                message: 'Your profile update request has been approved by the admin team.',
+                data: [
+                    'request_id' => $id,
+                    'approved_at' => now()->toISOString(),
+                    'request_type' => 'profile'
+                ],
+                sendEmail: true
+            );
 
             if ($expert) {
                 return redirect()->to('/seller-request')->with('success', 'Seller Request Approved!');

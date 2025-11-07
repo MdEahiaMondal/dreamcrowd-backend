@@ -808,11 +808,61 @@ class BookingController extends Controller
             ]);
 
         } catch (\Exception $e) {
-            \Log::error('Payment failed: ' . $e->getMessage(), [
+            \Log::error('Order creation failed: ' . $e->getMessage(), [
+                'payment_intent_id' => $paymentIntent ? $paymentIntent->id : null,
+                'gig_id' => $gig->id ?? null,
+                'buyer_id' => Auth::id(),
                 'trace' => $e->getTraceAsString()
             ]);
+
+            // If payment was processed but order creation failed, notify buyer and admin
+            if ($paymentIntent && !$isFreeTrialClass) {
+                // Notify buyer about the error
+                try {
+                    $this->notificationService->send(
+                        userId: Auth::id(),
+                        type: 'payment',
+                        title: 'Payment Processing Error',
+                        message: "We received your payment but encountered an error creating your order. Our team has been notified and will resolve this shortly. Reference: {$paymentIntent->id}",
+                        data: [
+                            'payment_intent_id' => $paymentIntent->id,
+                            'amount' => $finalPrice,
+                            'error' => 'Order creation failed',
+                            'reference' => $paymentIntent->id
+                        ],
+                        sendEmail: true
+                    );
+                } catch (\Exception $notifError) {
+                    \Log::error('Failed to send buyer notification: ' . $notifError->getMessage());
+                }
+
+                // Notify admins urgently
+                try {
+                    $adminIds = User::where('role', 2)->pluck('id')->toArray();
+                    if (!empty($adminIds)) {
+                        $this->notificationService->sendToMultipleUsers(
+                            userIds: $adminIds,
+                            type: 'system',
+                            title: 'URGENT: Payment Received, Order Failed',
+                            message: "Payment of \${$finalPrice} received but order creation failed. Payment Intent: {$paymentIntent->id}, Buyer: " . Auth::user()->email,
+                            data: [
+                                'payment_intent_id' => $paymentIntent->id,
+                                'buyer_id' => Auth::id(),
+                                'buyer_email' => Auth::user()->email,
+                                'amount' => $finalPrice,
+                                'gig_id' => $gig->id ?? null,
+                                'error' => $e->getMessage()
+                            ],
+                            sendEmail: true
+                        );
+                    }
+                } catch (\Exception $notifError) {
+                    \Log::error('Failed to send admin notification: ' . $notifError->getMessage());
+                }
+            }
+
             return response()->json([
-                'error' => 'Payment failed: ' . $e->getMessage()
+                'error' => 'Payment processing failed: ' . $e->getMessage()
             ], 500);
         }
     }

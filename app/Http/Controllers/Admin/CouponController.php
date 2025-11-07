@@ -7,11 +7,18 @@ use Illuminate\Http\Request;
 use App\Models\Coupon;
 use App\Models\CouponUsage;
 use App\Models\User;
+use App\Services\NotificationService;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 
 class CouponController extends Controller
 {
+    protected $notificationService;
+
+    public function __construct(NotificationService $notificationService)
+    {
+        $this->notificationService = $notificationService;
+    }
     public function AdmincheckAuth()
     {
         if (!Auth::user()) {
@@ -98,7 +105,50 @@ class CouponController extends Controller
                 return redirect()->back()->with('error', 'Percentage discount cannot exceed 100%')->withInput();
             }
 
-            Coupon::create($data);
+            $coupon = Coupon::create($data);
+
+            // Send notification for platform-wide coupons
+            if ($request->coupon_type === 'seller-wide' && $coupon->is_active) {
+                try {
+                    // Get all active buyers (role 0)
+                    $buyerIds = User::where('role', 0)
+                        ->whereNotNull('email_verified_at')
+                        ->limit(1000) // Limit to prevent overwhelming system
+                        ->pluck('id')
+                        ->toArray();
+
+                    if (!empty($buyerIds)) {
+                        $discountText = $coupon->discount_type === 'percentage'
+                            ? "{$coupon->discount_value}% off"
+                            : "\${$coupon->discount_value} off";
+
+                        $this->notificationService->sendToMultipleUsers(
+                            userIds: $buyerIds,
+                            type: 'coupon',
+                            title: 'New Coupon Available!',
+                            message: "Use code {$coupon->coupon_code} to get {$discountText} on your next booking! Valid until " . $coupon->expiry_date->format('M d, Y'),
+                            data: [
+                                'coupon_id' => $coupon->id,
+                                'coupon_code' => $coupon->coupon_code,
+                                'coupon_name' => $coupon->coupon_name,
+                                'discount_type' => $coupon->discount_type,
+                                'discount_value' => $coupon->discount_value,
+                                'expiry_date' => $coupon->expiry_date->toISOString(),
+                                'description' => $coupon->description
+                            ],
+                            sendEmail: false // Don't spam email for promotional coupons
+                        );
+
+                        \Log::info("New coupon notification sent to " . count($buyerIds) . " buyers", [
+                            'coupon_id' => $coupon->id,
+                            'coupon_code' => $coupon->coupon_code
+                        ]);
+                    }
+                } catch (\Exception $e) {
+                    \Log::error('Failed to send new coupon notifications: ' . $e->getMessage());
+                    // Don't fail the coupon creation if notification fails
+                }
+            }
 
             return redirect()->route('admin.coupons.index')->with('success', 'Coupon created successfully!');
 

@@ -12,6 +12,7 @@ use App\Models\TeacherGigData;
 use App\Models\TeacherGigPayment;
 use App\Models\TeacherReapetDays;
 use App\Models\TopSellerTag;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -21,6 +22,12 @@ use Illuminate\Support\Facades\Storage;
 
 class ClassManagementController extends Controller
 {
+    protected $notificationService;
+
+    public function __construct(NotificationService $notificationService)
+    {
+        $this->notificationService = $notificationService;
+    }
 
     // Authentication Check Function Start====
 
@@ -840,6 +847,30 @@ class ClassManagementController extends Controller
         $gig->update();
         if ($gig) {
 
+            // Send notification when service is deactivated (hidden or deleted)
+            if ($action == 'hide' || $action == 'delete') {
+                try {
+                    $actionText = $action == 'hide' ? 'hidden' : 'deactivated';
+
+                    $this->notificationService->send(
+                        userId: Auth::id(),
+                        type: 'gig',
+                        title: 'Service ' . ucfirst($actionText),
+                        message: "Your service '{$gig->title}' has been {$actionText} and is no longer visible to buyers.",
+                        data: [
+                            'gig_id' => $gig->id,
+                            'gig_title' => $gig->title,
+                            'action' => $action,
+                            'status' => $gig->status,
+                            'updated_at' => now()->toISOString()
+                        ],
+                        sendEmail: false
+                    );
+                } catch (\Exception $e) {
+                    \Log::error('Failed to send service deactivation notification: ' . $e->getMessage());
+                }
+            }
+
             if ($action == 'hide') {
                 return redirect()->back()->with('success', 'Your Service Sent to Hide!');
             } elseif ($action == 'delete') {
@@ -1471,6 +1502,25 @@ class ClassManagementController extends Controller
 
         $gig->update();
 
+        // Send notification for service edited and republished
+        try {
+            $this->notificationService->send(
+                userId: Auth::id(),
+                type: 'gig',
+                title: 'Service Updated Successfully',
+                message: "Your service '{$gig->title}' has been updated and is now live with the new changes.",
+                data: [
+                    'gig_id' => $gig->id,
+                    'gig_title' => $gig->title,
+                    'service_role' => $gig->service_role,
+                    'service_type' => $gig->service_type,
+                    'updated_at' => now()->toISOString()
+                ],
+                sendEmail: false
+            );
+        } catch (\Exception $e) {
+            \Log::error('Failed to send service updated notification: ' . $e->getMessage());
+        }
 
         if ($payment) {
             return redirect()->to('/class-management')->with('success', 'Your Service Published Successfuly!');

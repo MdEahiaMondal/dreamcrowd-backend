@@ -195,6 +195,24 @@ class AutoMarkCompleted extends Command
                 sendEmail: true
             );
 
+            // Send review request notification to buyer
+            $sellerName = $order->teacher ? ($order->teacher->first_name . ' ' . $order->teacher->last_name) : 'the seller';
+            $this->notificationService->send(
+                userId: $order->user_id,
+                type: 'review',
+                title: 'Leave a Review',
+                message: "How was your experience with {$sellerName}? Share your feedback to help others!",
+                data: [
+                    'order_id' => $order->id,
+                    'service_name' => $serviceName,
+                    'seller_id' => $order->teacher_id,
+                    'seller_name' => $sellerName,
+                    'review_url' => route('user.orders.review', $order->id),
+                    'completed_at' => now()->toDateTimeString()
+                ],
+                sendEmail: false // In-app notification only for review requests
+            );
+
             // Notify seller
             $this->notificationService->send(
                 userId: $order->teacher_id,
