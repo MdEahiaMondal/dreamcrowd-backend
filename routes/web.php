@@ -29,11 +29,20 @@ use App\Http\Controllers\NotificationController;
 // });
 
 Route::middleware('auth')->group(function () {
+    // Notification API routes (JSON responses)
     Route::get('/notifications', [NotificationController::class, 'index']);
     Route::get('/notifications/unread-count', [NotificationController::class, 'unreadCount']);
     Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead']);
     Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllAsRead']);
     Route::delete('/notifications/{id}', [NotificationController::class, 'delete']);
+
+    // Notification page routes (returns Blade views)
+    Route::get('/admin/notifications', [NotificationController::class, 'adminIndex'])
+        ->name('admin.notifications');
+    Route::get('/teacher/notifications', [NotificationController::class, 'teacherIndex'])
+        ->name('teacher.notifications');
+    Route::get('/user/notifications', [NotificationController::class, 'userIndex'])
+        ->name('user.notifications');
 });
 
 
@@ -116,6 +125,12 @@ Route::controller(ExpertController::class)->group(function () {
 
 Route::controller(AdminController::class)->group(function () {
     Route::get('/admin-dashboard', 'AdminDashboard');
+    // Admin Dashboard AJAX endpoints
+    Route::get('/admin-dashboard/statistics', 'getAdminDashboardStatistics');
+    Route::get('/admin-dashboard/revenue-chart', 'getAdminRevenueChart');
+    Route::get('/admin-dashboard/order-status-chart', 'getAdminOrderStatusChart');
+    Route::get('/admin-dashboard/top-performers', 'getAdminTopPerformers');
+    Route::get('/admin-dashboard/action-items', 'getAdminActionItems');
     // Seller Management =========
     // Seller Application ====
     Route::get('/all-application', 'AllApplication');
@@ -392,6 +407,10 @@ Route::post('/api/validate-coupon', [CouponController::class, 'validateCoupon'])
 
 Route::controller(TeacherController::class)->group(function () {
     Route::get('/teacher-dashboard', 'TeacherDashboard');
+    // Dashboard AJAX endpoints
+    Route::get('/teacher-dashboard/statistics', 'getDashboardStatistics');
+    Route::get('/teacher-dashboard/earnings-trend', 'getEarningsTrendChart');
+    Route::get('/teacher-dashboard/order-status-chart', 'getOrderStatusChart');
     Route::get('/teacher-faqs', 'TeacherFaqs');
     // Teacher Profile =======
     Route::get('/teacher-profile', 'TeacherProfile');
@@ -580,6 +599,28 @@ Route::middleware(['auth'])->group(function () {
     // AJAX Filter
     Route::post('/transactions/filter', [TransactionController::class, 'filterTransactions'])
         ->name('transactions.filter');
+
+    // ============ USER DASHBOARD AJAX ROUTES ============
+
+    // Get dashboard statistics with date filters
+    Route::post('/user/dashboard/statistics', [UserController::class, 'getDashboardStatistics'])
+        ->name('user.dashboard.statistics');
+
+    // Get chart data
+    Route::get('/user/dashboard/chart-data', [UserController::class, 'getChartData'])
+        ->name('user.dashboard.chart-data');
+
+    // Get paginated transactions table
+    Route::get('/user/dashboard/transactions', [UserController::class, 'getDashboardTransactions'])
+        ->name('user.dashboard.transactions');
+
+    // Export dashboard to PDF
+    Route::post('/user/dashboard/export/pdf', [UserController::class, 'exportDashboardPDF'])
+        ->name('user.dashboard.export.pdf');
+
+    // Export dashboard to Excel
+    Route::post('/user/dashboard/export/excel', [UserController::class, 'exportDashboardExcel'])
+        ->name('user.dashboard.export.excel');
 });
 
 

@@ -3,7 +3,7 @@
     <div class="container">
         <div class="row">
             <div class="col-md-5">
-                <img src="assets/public-site/asset/img/Logo.png" alt="">
+                <img src="/assets/public-site/asset/img/Logo.png" alt="">
                 <p>We recruit worldclass experts to help you complete any goals you have. <br />Get the help you need
                     online or in-person.
                 <div class="social-icons">

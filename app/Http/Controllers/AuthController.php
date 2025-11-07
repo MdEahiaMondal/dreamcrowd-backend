@@ -117,6 +117,19 @@ class AuthController extends Controller
 
             $email_send = Mail::to($request->email)->send(new VerifyMail($mailData));
 
+            // Send welcome notification
+            try {
+                app(\App\Services\NotificationService::class)->send(
+                    userId: $user->id,
+                    type: 'account',
+                    title: 'Welcome to DreamCrowd!',
+                    message: 'Thank you for joining DreamCrowd. Please verify your email to get started.',
+                    data: ['registration_date' => now()],
+                    sendEmail: false // Email already sent above
+                );
+            } catch (\Exception $e) {
+                \Log::error("Failed to send welcome notification: " . $e->getMessage());
+            }
 
             // Auth::login($user);
             $response['success'] = true;
@@ -568,6 +581,20 @@ class AuthController extends Controller
         $user->update();
 
         if ($user) {
+            // Send password change notification
+            try {
+                app(\App\Services\NotificationService::class)->send(
+                    userId: $user->id,
+                    type: 'account',
+                    title: 'Password Changed',
+                    message: 'Your password has been successfully changed. If you did not make this change, please contact support immediately.',
+                    data: ['changed_at' => now()],
+                    sendEmail: false
+                );
+            } catch (\Exception $e) {
+                \Log::error("Failed to send password change notification: " . $e->getMessage());
+            }
+
             // Auth::login($user);
             return response()->json(['success' => true,
                 'message' => 'Password Changed Successfuly!']);

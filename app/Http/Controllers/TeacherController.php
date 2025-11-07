@@ -17,6 +17,7 @@ use App\Models\TeacherFaqs;
 use App\Models\TeacherLocationRequest;
 use App\Models\TeacherProfileRequest;
 use App\Models\TeacherRequest;
+use App\Services\TeacherDashboardService;
 use Carbon\Language;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -48,8 +49,89 @@ class TeacherController extends Controller
             return $redirect;
         }
 
+        $teacher = Auth::user();
 
-        return view("Teacher-Dashboard.dashboard");
+        // Get recent bookings (initial load)
+        $recentBookings = BookOrder::where('teacher_id', $teacher->id)
+            ->with(['gig', 'user'])
+            ->latest()
+            ->limit(10)
+            ->get();
+
+        return view("Teacher-Dashboard.dashboard", compact('recentBookings'));
+    }
+
+    /**
+     * Get dashboard statistics via AJAX
+     */
+    public function getDashboardStatistics(Request $request)
+    {
+        $teacher = Auth::user();
+        $preset = $request->input('preset', 'all_time');
+        $customFrom = $request->input('date_from');
+        $customTo = $request->input('date_to');
+
+        $service = new TeacherDashboardService();
+
+        // Use custom dates if provided, otherwise use preset
+        if ($customFrom && $customTo) {
+            $dateFrom = $customFrom;
+            $dateTo = $customTo;
+        } else {
+            $dates = $service->applyDatePreset($preset);
+            $dateFrom = $dates['from'];
+            $dateTo = $dates['to'];
+        }
+
+        // Get all statistics
+        $statistics = $service->getAllStatistics(
+            $teacher->id,
+            $dateFrom,
+            $dateTo
+        );
+
+        return response()->json($statistics);
+    }
+
+    /**
+     * Get earnings trend chart data
+     */
+    public function getEarningsTrendChart(Request $request)
+    {
+        $teacher = Auth::user();
+        $months = $request->input('months', 6);
+
+        $service = new TeacherDashboardService();
+        $chartData = $service->getMonthlyEarningsTrend($teacher->id, $months);
+
+        return response()->json($chartData);
+    }
+
+    /**
+     * Get order status breakdown chart data
+     */
+    public function getOrderStatusChart(Request $request)
+    {
+        $teacher = Auth::user();
+        $preset = $request->input('preset', 'all_time');
+        $customFrom = $request->input('date_from');
+        $customTo = $request->input('date_to');
+
+        $service = new TeacherDashboardService();
+
+        // Use custom dates if provided, otherwise use preset
+        if ($customFrom && $customTo) {
+            $dateFrom = $customFrom;
+            $dateTo = $customTo;
+        } else {
+            $dates = $service->applyDatePreset($preset);
+            $dateFrom = $dates['from'];
+            $dateTo = $dates['to'];
+        }
+
+        $chartData = $service->getOrderStatusBreakdown($teacher->id, $dateFrom, $dateTo);
+
+        return response()->json($chartData);
     }
 
 
@@ -964,6 +1046,20 @@ class TeacherController extends Controller
             'rating' => $parentReview->rating,
             'cmnt' => $request->cmnt,
         ]);
+
+        // Send notification to buyer
+        $sellerName = Auth::user()->first_name . ' ' . Auth::user()->last_name;
+        $gig = \App\Models\TeacherGig::find($parentReview->gig_id);
+        $serviceName = $gig ? $gig->title : 'service';
+
+        app(\App\Services\NotificationService::class)->send(
+            userId: $parentReview->user_id,
+            type: 'review',
+            title: 'Seller Responded to Your Review',
+            message: $sellerName . ' has responded to your review for ' . $serviceName . '.',
+            data: ['review_id' => $parentReview->id, 'reply_id' => $reply->id, 'gig_id' => $parentReview->gig_id],
+            sendEmail: false
+        );
 
         return response()->json([
             'success' => true,

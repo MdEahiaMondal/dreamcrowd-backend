@@ -1,383 +1,410 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <!-- Required meta tags -->
-    <meta charset="UTF-8"/>
-    <!-- View Point scale to 1.0 -->
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <!-- Animate css -->
-    <link rel="stylesheet" href="assets/user/libs/animate/css/animate.css"/>
-    <!-- AOS Animation css-->
-    <link rel="stylesheet" href="assets/user/libs/aos/css/aos.css"/>
-    <!-- Datatable css  -->
-    <link rel="stylesheet" href="assets/user/libs/datatable/css/datatable.css"/>
-    <!-- dropdawon -->
-    <link rel="stylesheet" id="swapcss" type="text/css"
-          href="https://unpkg.com/@leapdev/gui-leap@latest/dist/css/leap.css"/>
-    <!-- dropdawon -->
-    {{-- Fav Icon --}}
-    @php  $home = \App\Models\HomeDynamic::first(); @endphp
-    @if ($home)
-        <link rel="shortcut icon" href="assets/public-site/asset/img/{{$home->fav_icon}}" type="image/x-icon">
-    @endif
-    <!-- Select2 css -->
-    <link href="assets/user/libs/select2/css/select2.min.css" rel="stylesheet"/>
-    <!-- Owl carousel css -->
-    <link href="assets/user/libs/owl-carousel/css/owl.carousel.css" rel="stylesheet"/>
-    <link href="assets/user/libs/owl-carousel/css/owl.theme.green.css" rel="stylesheet"/>
-    <!-- Bootstrap css -->
-    <link rel="stylesheet" type="text/css" href="assets/user/asset/css/bootstrap.min.css"/>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>User Dashboard | DreamCrowd</title>
+
+    <!-- CSS Libraries -->
+    <link rel="stylesheet" href="/assets/user/asset/css/bootstrap.min.css"/>
     <link href="https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css" rel="stylesheet"/>
-    <link rel="stylesheet" href="https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css"/>
-    <!-- Fontawesome CDN -->
-    <script src="https://kit.fontawesome.com/be69b59144.js" crossorigin="anonymous"></script>
-    <!-- Defualt css -->
-    <link rel="stylesheet" href="assets/user/asset/css/new.css">
-    <link rel="stylesheet" type="text/css" href="assets/user/asset/css/sidebar.css"/>
-    <link rel="stylesheet" href="assets/user/asset/css/style.css"/>
-    <title>User Dashboard | My Profile</title>
+    <link rel="stylesheet" href="/assets/user/asset/css/sidebar.css"/>
+    <link rel="stylesheet" href="/assets/user/asset/css/style.css">
+    <link rel="stylesheet" href="/assets/user/asset/css/dashboard.css">
+
+    {{-- Fav Icon --}}
+    @php $home = \App\Models\HomeDynamic::first(); @endphp
+    @if ($home)
+        <link rel="shortcut icon" href="/assets/public-site/asset/img/{{$home->fav_icon}}" type="image/x-icon">
+    @endif
+
+    <!-- Flatpickr for Date Picker -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
+    <style>
+        .dashboard-loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.9);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .dashboard-loading.active {
+            display: flex;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #007bff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
 </head>
-
 <body>
-{{-- ===========User Sidebar Start==================== --}}
+<!-- Loading Overlay -->
+<div class="dashboard-loading" id="dashboardLoading">
+    <div class="spinner"></div>
+</div>
+<!-- Sidebar -->
 <x-user-sidebar/>
-{{-- ===========User Sidebar End==================== --}}
 <section class="home-section">
-    {{-- ===========User NavBar Start==================== --}}
+    <!-- Navigation -->
     <x-user-nav/>
-    {{-- ===========User NavBar End==================== --}}
-    <!-- =============================== MAIN CONTENT START HERE =========================== -->
-    <div class="container-fluid">
-        <div class="row Dash-notification">
-            <div class="col-xl-12 col-lg-12 col-md-12">
-                <div class="row">
-                    {{-- === ORDER STAT CARDS === --}}
-                    <div class="col-xl-4 col-lg-6 col-md-6">
-                        <div class="prof-card">
-                            <div class="prof-mg">
-                                <img src="{{ asset('assets/user/asset/img/Cardorder-img.png') }}" alt="" width="28px"
-                                     height="28px"/>
-                            </div>
-                            <div class="prof-body">
-                                <p class="title">All Orders</p>
-                                <h5>{{ $stats['all_orders'] ?? 0 }}</h5>
-                                <p class="increes">
-                                    <span><img src="{{ asset('assets/user/asset/img/increes.svg') }}" alt=""/></span>Increase
-                                </p>
-                            </div>
-                        </div>
-                    </div>
+    <!-- Main Content -->
+    <div class="container-fluid py-4">
+        <div class="row dash-notification">
 
-                    <div class="col-xl-4 col-lg-6 col-md-6">
-                        <div class="prof-card">
-                            <div class="prof-mg">
-                                <img src="{{ asset('assets/user/asset/img/class-order-img.png') }}" alt="" width="28px"
-                                     height="28px"/>
-                            </div>
-                            <div class="prof-body">
-                                <p class="title">Class Orders</p>
-                                <h5>{{ $stats['class_orders'] ?? 0 }}</h5>
-                                <p class="increes">
-                                    <span><img src="{{ asset('assets/user/asset/img/increes.svg') }}" alt=""/></span>Increase
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-xl-4 col-lg-6 col-md-6">
-                        <div class="prof-card">
-                            <div class="prof-mg">
-                                <img src="{{ asset('assets/user/asset/img/Freelance-Card-image.png') }}" alt=""
-                                     width="28px" height="28px"/>
-                            </div>
-                            <div class="prof-body">
-                                <p class="title">Freelance Orders</p>
-                                <h5>{{ $stats['freelancer_orders'] ?? 0 }}</h5>
-                                <p class="increes">
-                                    <span><img src="{{ asset('assets/user/asset/img/increes.svg') }}" alt=""/></span>Increase
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-xl-4 col-lg-6 col-md-6">
-                        <div class="prof-card">
-                            <div class="prof-mg">
-                                <img src="{{ asset('assets/user/asset/img/completed-Order-image.png') }}" alt=""
-                                     width="28px" height="28px"/>
-                            </div>
-                            <div class="prof-body">
-                                <p class="title">Completed Orders</p>
-                                <h5>{{ $stats['completed_orders'] ?? 0 }}</h5>
-                                <p class="increes">
-                                    <span><img src="{{ asset('assets/user/asset/img/increes.svg') }}" alt=""/></span>Increase
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-xl-4 col-lg-6 col-md-6">
-                        <div class="prof-card">
-                            <div class="prof-mg">
-                                <img src="{{ asset('assets/user/asset/img/Cancelled-Order-Image.png') }}" alt=""
-                                     width="28px" height="28px"/>
-                            </div>
-                            <div class="prof-body">
-                                <p class="title">Cancelled Orders</p>
-                                <h5>{{ $stats['cancelled_orders'] ?? 0 }}</h5>
-                                <p class="increes">
-                                    <span><img src="{{ asset('assets/user/asset/img/redincrees.svg') }}" alt=""/></span>Decrease
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-xl-4 col-lg-6 col-md-6">
-                        <div class="prof-card">
-                            <div class="prof-mg">
-                                <img src="{{ asset('assets/user/asset/img/Cardorder-img.png') }}" alt="" width="28px"
-                                     height="28px"/>
-                            </div>
-                            <div class="prof-body">
-                                <p class="title">Active Orders</p>
-                                <h5>{{ $stats['active_orders'] ?? 0 }}</h5>
-                                <p class="increes">
-                                    <span><img src="{{ asset('assets/user/asset/img/increes.svg') }}" alt=""/></span>Increase
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-xl-4 col-lg-6 col-md-6">
-                        <div class="prof-card">
-                            <div class="prof-mg">
-                                <i class="fa-solid fa-globe" aria-hidden="true"></i>
-                            </div>
-                            <div class="prof-body">
-                                <p class="title">Online Orders</p>
-                                <h5>{{ $stats['online_orders'] ?? 0 }}</h5>
-                                <p class="increes">
-                                    <span><img src="{{ asset('assets/user/asset/img/increes.svg') }}" alt=""/></span>Increase
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-xl-4 col-lg-6 col-md-6">
-                        <div class="prof-card">
-                            <div class="prof-mg">
-                                <i class="fa-solid fa-house" aria-hidden="true"></i>
-                            </div>
-                            <div class="prof-body">
-                                <p class="title">In-Person Orders</p>
-                                <h5>{{ $stats['inperson_orders'] ?? 0 }}</h5>
-                                <p class="increes">
-                                    <span><img src="{{ asset('assets/user/asset/img/increes.svg') }}" alt=""/></span>Increase
-                                </p>
-                            </div>
-                        </div>
-                    </div>
+            <!-- Page Header -->
+            <div class="row mb-4">
+                <div class="col-md-8">
+                    <h2><i class='bx bx-grid-alt'></i> My Dashboard</h2>
+                    <p class="text-muted">Welcome back, {{ Auth::user()->name }}! Here's your activity overview.</p>
                 </div>
-
-                {{-- === RECENT BOOKINGS === --}}
-                <div class="row mt-4">
-                    <h1 class="top-heading">Recent Bookings</h1>
-
-                    @forelse($recentBookings as $booking)
-                        <div class="col-xl-4 col-lg-6 col-md-6">
-                            <div class="recent">
-                                <div class="booking">
-                                    <img class="jenny-profile"
-                                         src="{{ $booking->booker->profile ?? asset('assets/user/asset/img/default-user.png') }}"
-                                         alt="Profile" width="28" height="28"/>
-                                    <div class="recent-body">
-                                        <p class="title">
-                                            {{ trim( ($booking->booker?->first_name ?? '') . ' ' . ($booking->booker?->last_name ?? '') ) ?: 'Unknown User' }}
-                                        </p>
-                                        <p class="text">{{ $booking->gig->category_name ?? 'No Category' }}</p>
-                                    </div>
-                                </div>
-                                <div class="para">
-                                    <p>{{ $booking->title ?? 'No gig title available' }}</p>
-                                </div>
-                            </div>
-                        </div>
-                    @empty
-                        <p class="text-muted ps-3">No recent bookings found.</p>
-                    @endforelse
+                <div class="col-md-4 text-end d-none">
+                    <button class="btn btn-danger me-2" onclick="exportPDF()">
+                        <i class='bx bxs-file-pdf'></i> Export PDF
+                    </button>
+                    <button class="btn btn-success" onclick="exportExcel()">
+                        <i class='bx bxs-file'></i> Export Excel
+                    </button>
                 </div>
             </div>
 
-
-        </div>
-        <div class="row">
-            <div class="col-md-12 p-0">
-                <div class="copyright">
-                    <p>Copyright Dreamcrowd © 2021. All Rights Reserved.</p>
+            <!-- Date Filter Panel -->
+            <div class="filter-panel card mb-4">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h6 class="mb-3">Filter by Date Range</h6>
+                            <div class="btn-group flex-wrap" role="group">
+                                <button type="button" class="btn btn-outline-primary filter-preset active"
+                                        data-preset="all_time">All Time
+                                </button>
+                                <button type="button" class="btn btn-outline-primary filter-preset" data-preset="today">
+                                    Today
+                                </button>
+                                <button type="button" class="btn btn-outline-primary filter-preset"
+                                        data-preset="yesterday">Yesterday
+                                </button>
+                                <button type="button" class="btn btn-outline-primary filter-preset"
+                                        data-preset="this_week">This Week
+                                </button>
+                                <button type="button" class="btn btn-outline-primary filter-preset"
+                                        data-preset="last_week">Last Week
+                                </button>
+                                <button type="button" class="btn btn-outline-primary filter-preset"
+                                        data-preset="this_month">This Month
+                                </button>
+                                <button type="button" class="btn btn-outline-primary filter-preset"
+                                        data-preset="last_month">Last Month
+                                </button>
+                                <button type="button" class="btn btn-outline-primary filter-preset"
+                                        data-preset="last_3_months">Last 3 Months
+                                </button>
+                                <button type="button" class="btn btn-outline-primary filter-preset"
+                                        data-preset="last_6_months">Last 6 Months
+                                </button>
+                                <button type="button" class="btn btn-outline-primary filter-preset"
+                                        data-preset="last_year">Last Year
+                                </button>
+                                <button type="button" class="btn btn-outline-primary filter-preset"
+                                        data-preset="year_to_date">Year to Date
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <h6 class="mb-3">Custom Date Range</h6>
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="dateFrom" placeholder="From Date">
+                            </div>
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="dateTo" placeholder="To Date">
+                            </div>
+                            <button class="btn btn-primary w-100" onclick="applyCustomDateFilter()">Apply Custom
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
+
+            <!-- Financial Statistics -->
+            <div class="section-header mb-3">
+                <h5><i class='bx bx-dollar-circle'></i> Financial Overview</h5>
+            </div>
+            <div class="row mb-4">
+                <div class="col-3 col--6 mb-3">
+                    <div class="stat-card" style="border-left: 4px solid #007bff;">
+                        <div class="stat-icon" style="background: rgba(0, 123, 255, 0.1);">
+                            <i class='bx bx-wallet' style="color: #007bff;"></i>
+                        </div>
+                        <div class="stat-content">
+                            <p class="stat-label">Total Spent</p>
+                            <h3 class="stat-value" id="stat-total-spent">$0.00</h3>
+                            <small class="stat-sublabel">All-time spending</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="stat-card" style="border-left: 4px solid #17a2b8;">
+                        <div class="stat-icon" style="background: rgba(23, 162, 184, 0.1);">
+                            <i class='bx bx-calendar' style="color: #17a2b8;"></i>
+                        </div>
+                        <div class="stat-content">
+                            <p class="stat-label">This Month</p>
+                            <h3 class="stat-value" id="stat-month-spent">$0.00</h3>
+                            <small class="stat-sublabel" id="current-month">{{ now()->format('F Y') }}</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="stat-card" style="border-left: 4px solid #6f42c1;">
+                        <div class="stat-icon" style="background: rgba(111, 66, 193, 0.1);">
+                            <i class='bx bx-trending-up' style="color: #6f42c1;"></i>
+                        </div>
+                        <div class="stat-content">
+                            <p class="stat-label">Avg Order Value</p>
+                            <h3 class="stat-value" id="stat-avg-order">$0.00</h3>
+                            <small class="stat-sublabel">Per transaction</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="stat-card" style="border-left: 4px solid #6c757d;">
+                        <div class="stat-icon" style="background: rgba(108, 117, 125, 0.1);">
+                            <i class='bx bx-credit-card' style="color: #6c757d;"></i>
+                        </div>
+                        <div class="stat-content">
+                            <p class="stat-label">Service Fees</p>
+                            <h3 class="stat-value" id="stat-service-fees">$0.00</h3>
+                            <small class="stat-sublabel">Platform fees paid</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="stat-card" style="border-left: 4px solid #28a745;">
+                        <div class="stat-icon" style="background: rgba(40, 167, 69, 0.1);">
+                            <i class='bx bx-gift' style="color: #28a745;"></i>
+                        </div>
+                        <div class="stat-content">
+                            <p class="stat-label">Coupon Savings</p>
+                            <h3 class="stat-value" id="stat-coupon-savings">$0.00</h3>
+                            <small class="stat-sublabel">Discounts applied</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Order Statistics -->
+            <div class="section-header mb-3">
+                <h5><i class='bx bx-shopping-bag'></i> Order Statistics</h5>
+            </div>
+            <div class="row  mb-4">
+                <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
+                    <div class="stat-card-small">
+                        <h3 class="stat-value" id="stat-total-orders">0</h3>
+                        <p class="stat-label">Total Orders</p>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
+                    <div class="stat-card-small status-active">
+                        <h3 class="stat-value" id="stat-active-orders">0</h3>
+                        <p class="stat-label">Active</p>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
+                    <div class="stat-card-small status-pending">
+                        <h3 class="stat-value" id="stat-pending-orders">0</h3>
+                        <p class="stat-label">Pending</p>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
+                    <div class="stat-card-small status-completed">
+                        <h3 class="stat-value" id="stat-completed-orders">0</h3>
+                        <p class="stat-label">Completed</p>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
+                    <div class="stat-card-small status-cancelled">
+                        <h3 class="stat-value" id="stat-cancelled-orders">0</h3>
+                        <p class="stat-label">Cancelled</p>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
+                    <div class="stat-card-small status-upcoming">
+                        <h3 class="stat-value" id="stat-upcoming-classes">0</h3>
+                        <p class="stat-label">Upcoming</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Engagement Statistics -->
+            <div class="section-header mb-3">
+                <h5><i class='bx bx-user-circle'></i> Engagement Metrics</h5>
+            </div>
+            <div class="row  mb-4">
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="stat-card-small">
+                        <h3 class="stat-value" id="stat-reviews-given">0</h3>
+                        <p class="stat-label">Reviews Given</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="stat-card-small">
+                        <h3 class="stat-value" id="stat-coupons-used">0</h3>
+                        <p class="stat-label">Coupons Used</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="stat-card-small">
+                        <h3 class="stat-value" id="stat-unique-sellers">0</h3>
+                        <p class="stat-label">Unique Sellers</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="stat-card-small">
+                        <h3 class="stat-value" id="stat-days-member">0</h3>
+                        <p class="stat-label">Days as Member</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Section -->
+            <div class="row mb-4">
+                <div class="col-lg-8 mb-3">
+                    <div class="chart-card card">
+                        <div class="card-body">
+                            <h6 class="card-title"><i class='bx bx-line-chart'></i> Spending Trend (Last 6 Months)</h6>
+                            <div class="chart-container" style="height: 300px;">
+                                <canvas id="spendingTrendChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 mb-3">
+                    <div class="chart-card card">
+                        <div class="card-body">
+                            <h6 class="card-title"><i class='bx bx-pie-chart-alt'></i> Order Status</h6>
+                            <div class="chart-container" style="height: 300px;">
+                                <canvas id="statusBreakdownChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Bookings Section -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class='bx bx-history'></i> Recent Bookings</h5>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table table-hover mb-0">
+                                    <thead>
+                                    <tr>
+                                        <th>Service</th>
+                                        <th>Category</th>
+                                        <th>Date</th>
+                                        <th>Status</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    @foreach($recentBookings as $booking)
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    @if($booking->gig && $booking->gig->images)
+                                                        <img
+                                                            src="/{{ json_decode($booking->gig->images)[0] ?? 'assets/default-service.jpg' }}"
+                                                            alt="Service" class="rounded me-2"
+                                                            style="width: 40px; height: 40px; object-fit: cover;">
+                                                    @endif
+                                                    <div>
+                                                        <div class="fw-bold">{{ $booking->gig->title ?? 'N/A' }}</div>
+                                                        <small
+                                                            class="text-muted">{{ $booking->teacher->name ?? 'Unknown' }}</small>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <span
+                                                    class="badge bg-secondary">{{ $booking->gig->category_name ?? 'N/A' }}</span>
+                                            </td>
+                                            <td>{{ $booking->created_at->format('M d, Y') }}</td>
+                                            <td>
+                                                @php
+                                                    $statusLabels = ['0' => 'Pending', '1' => 'Active', '2' => 'Delivered', '3' => 'Completed', '4' => 'Cancelled'];
+                                                    $statusColors = ['0' => 'warning', '1' => 'primary', '2' => 'info', '3' => 'success', '4' => 'danger'];
+                                                @endphp
+                                                <span
+                                                    class="badge bg-{{ $statusColors[$booking->status] ?? 'secondary' }}">
+                                                    {{ $statusLabels[$booking->status] ?? 'Unknown' }}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
+
     </div>
-    <!-- =============================== MAIN CONTENT END HERE =========================== -->
 </section>
 
-<script src="assets/user/libs/jquery/jquery.js"></script>
-<script src="assets/user/libs/datatable/js/datatable.js"></script>
-<script src="assets/user/libs/datatable/js/datatablebootstrap.js"></script>
-<script src="assets/user/libs/select2/js/select2.min.js"></script>
-<script src="assets/user/libs/owl-carousel/js/owl.carousel.min.js"></script>
-<script src="assets/user/libs/aos/js/aos.js"></script>
-<script src="assets/user/asset/js/bootstrap.min.js"></script>
-<script src="assets/user/asset/js/script.js"></script>
-<!-- jQuery -->
-<script
-    src="https://code.jquery.com/jquery-3.7.1.min.js"
-    integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
-    crossorigin="anonymous"
-></script>
-</body>
-
-</html>
-
-<!-- ================ side js start here=============== -->
+<!-- JavaScript Libraries -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="/assets/user/asset/js/bootstrap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="/assets/user/asset/js/dashboard.js"></script>
 <script>
-    // Sidebar script
-    document.addEventListener("DOMContentLoaded", function () {
-        let arrow = document.querySelectorAll(".arrow");
-        for (let i = 0; i < arrow.length; i++) {
-            arrow[i].addEventListener("click", function (e) {
-                let arrowParent = e.target.parentElement.parentElement; // Selecting main parent of arrow
-                arrowParent.classList.toggle("showMenu");
-            });
-        }
-
-        let sidebar = document.querySelector(".sidebar");
-        let sidebarBtn = document.querySelector(".bx-menu");
-
-        sidebarBtn.addEventListener("click", function () {
-            sidebar.classList.toggle("close");
-        });
-
-        // Function to toggle sidebar based on screen size
-        function toggleSidebar() {
-            let screenWidth = window.innerWidth;
-            if (screenWidth < 992) {
-                sidebar.classList.add("close");
-            } else {
-                sidebar.classList.remove("close");
-            }
-        }
-
-        // Call the function initially
-        toggleSidebar();
-
-        // Listen for resize events to adjust sidebar
-        window.addEventListener("resize", function () {
-            toggleSidebar();
-        });
-    });
-</script>
-<!-- ================ side js start End=============== -->
-<!-- profile-upload -->
-<script>
-    // File Upload
-    //
-    function readURL(input) {
-        if (input.files && input.files[0]) {
-            var reader = new FileReader();
-            reader.onload = function (e) {
-                $('#imagePreview').css('background-image', 'url(' + e.target.result + ')');
-                $('#imagePreview').hide();
-                $('#imagePreview').fadeIn(650);
-            }
-            reader.readAsDataURL(input.files[0]);
-        }
-    }
-
-    $("#imageUpload").change(function () {
-        readURL(this);
-    });
-</script>
-<!-- ============ -->
-<!-- =====================NEW JS END HERE====================== -->
-
-
-<!-- radio js here -->
-<script>
-    function showAdditionalOptions1() {
-        hideAllAdditionalOptions();
-        document.getElementById('additionalOptions1').style.display = 'block';
-    }
-
-    function showAdditionalOptions2() {
-        hideAllAdditionalOptions();
-        document.getElementById('additionalOptions2').style.display = 'block';
-    }
-
-    function showAdditionalOptions3() {
-        hideAllAdditionalOptions();
-    }
-
-    function showAdditionalOptions4() {
-        hideAllAdditionalOptions();
-        document.getElementById('additionalOptions4').style.display = 'block';
-    }
-
-    function hideAllAdditionalOptions() {
-        var elements = document.getElementsByClassName('additional-options');
-        for (var i = 0; i < elements.length; i++) {
-            elements[i].style.display = 'none';
-        }
-    }
-
-    // Call the function to show the additional options for the default checked radio button on page load
-    window.onload = function () {
-        showAdditionalOptions1();
-    };
-</script>
-<!-- modal hide show jquery here -->
-<script>
+    // Initialize on page load
     $(document).ready(function () {
-        $(document).on("click", "#delete-account", function (e) {
-            e.preventDefault();
-            $("#exampleModal3").modal("show");
-            $("#delete-user-account").modal("hide");
+        // Load initial statistics (all time)
+        loadDashboardStatistics('all_time');
+
+        // Initialize date pickers
+        flatpickr("#dateFrom", {
+            dateFormat: "Y-m-d",
+        });
+        flatpickr("#dateTo", {
+            dateFormat: "Y-m-d",
         });
 
-        $(document).on("click", "#delete-account", function (e) {
-            e.preventDefault();
-            $("#delete-user-account").modal("show");
-            $("#exampleModal3").modal("hide");
+        // Filter preset buttons
+        $('.filter-preset').click(function () {
+            $('.filter-preset').removeClass('active');
+            $(this).addClass('active');
+            const preset = $(this).data('preset');
+            loadDashboardStatistics(preset);
         });
     });
 </script>
-<!-- JavaScript to close the modal when Cancel button is clicked -->
-<script>
-    // Wait for the document to load
-    document.addEventListener('DOMContentLoaded', function () {
-        // Get the Cancel button by its ID
-        var cancelButton = document.getElementById('cancelButton');
-
-        // Add a click event listener to the Cancel button
-        cancelButton.addEventListener('click', function () {
-            // Find the modal by its ID
-            var modal = document.getElementById('exampleModal2');
-
-            // Use Bootstrap's modal method to hide the modal
-            $(modal).modal('hide');
-        });
-    });
-</script>
-<script>
-    (function ($) {
-        $('.dropdown-toggle').click(function (e) {
-            var _this = $(this);
-            e.preventDefault();
-            _this.toggleClass('toggle-on');
-            _this.parent().next('.sub-menu').toggleClass('toggled-on');
-            _this.attr('aria-expanded', _this.attr('aria-expanded') === 'false' ? 'true' : 'false');
-        });
-    })(jQuery);
-</script>
+</body>
+</html>

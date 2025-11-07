@@ -9,7 +9,7 @@
         @endphp
         @if ($home)
 
-        <img src="assets/public-site/asset/img/{{$home->site_logo}}"  width="100%">
+        <img src="/assets/public-site/asset/img/{{$home->site_logo}}"  width="100%">
         @endif
       </i>
         <span class="logo_name">DREAMCROWD</span>
@@ -34,12 +34,12 @@
             </ul>
         </li>
         <li>
-            <a href="notification.html">
+            <a href="{{ route('teacher.notifications') }}">
                 <i class='bx bx-bell icon' title="Notifications"></i>
                 <span class="link_name">Notifications</span>
             </a>
             <ul class="sub-menu blank">
-                <li><a class="link_name" href="notification.html">Notifications</a></li>
+                <li><a class="link_name" href="{{ route('teacher.notifications') }}">Notifications</a></li>
             </ul>
         </li>
         <li>
@@ -296,19 +296,9 @@ aria-hidden="true"
 <!-- Modal End Here -->
 
 
-<!-- modal hide show jquery here -->
-<script>
-$(document).ready(function () {
-  $(document).on("click", "#delete-account", function (e) {
-    e.preventDefault();
-    $("#exampleModal7").modal("show");
-    $("#delete-teacher-account").modal("hide");
-  });
-
-  $(document).on("click", "#delete-account", function (e) {
-    e.preventDefault();
-    $("#delete-teacher-account").modal("show");
-    $("#exampleModal7").modal("hide");
-  });
-});
-</script>
+<!-- Common Sidebar Script -->
+<script src="/assets/teacher/asset/js/sidebar.js"></script>
+<!-- Active Menu Script -->
+<script src="/assets/teacher/asset/js/active-menu.js"></script>
+<!-- Common Modal Script (requires jQuery) -->
+<script src="/assets/teacher/asset/js/modals.js"></script>

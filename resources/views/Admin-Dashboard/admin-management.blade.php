@@ -333,43 +333,6 @@
 </script>
 {{-- Delete Confirmation PopUp Show For Confirmation Script End --}}
 <!-- ================ side js start here=============== -->
-<script>
-  // Sidebar script
-  document.addEventListener("DOMContentLoaded", function () {
-    let arrow = document.querySelectorAll(".arrow");
-    for (let i = 0; i < arrow.length; i++) {
-      arrow[i].addEventListener("click", function (e) {
-        let arrowParent = e.target.parentElement.parentElement; // Selecting main parent of arrow
-        arrowParent.classList.toggle("showMenu");
-      });
-    }
-
-    let sidebar = document.querySelector(".sidebar");
-    let sidebarBtn = document.querySelector(".bx-menu");
-
-    sidebarBtn.addEventListener("click", function () {
-      sidebar.classList.toggle("close");
-    });
-
-    // Function to toggle sidebar based on screen size
-    function toggleSidebar() {
-      let screenWidth = window.innerWidth;
-      if (screenWidth < 992) {
-        sidebar.classList.add("close");
-      } else {
-        sidebar.classList.remove("close");
-      }
-    }
-
-    // Call the function initially
-    toggleSidebar();
-
-    // Listen for resize events to adjust sidebar
-    window.addEventListener("resize", function () {
-      toggleSidebar();
-    });
-  });
-</script>
 <!-- ================ side js start End=============== -->
 {{-- Update Admin Details Script Start ================ --}}
 <script>

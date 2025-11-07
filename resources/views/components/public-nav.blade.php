@@ -88,7 +88,7 @@
             @endphp
             @if ($home)
 
-                <img src="assets/public-site/asset/img/{{$home->site_logo}}" width="100%">
+                <img src="/assets/public-site/asset/img/{{$home->site_logo}}" width="100%">
             @endif
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
@@ -351,7 +351,7 @@
                                     <div class="dropDawon-profile-section">
                                         <div class="inbox-profile-img">
                                             <h1>.</h1>
-                                            <img src="assets/public-site/asset/img/Ellipse 329.png" alt="">
+                                            <img src="/assets/public-site/asset/img/Ellipse 329.png" alt="">
                                         </div>
                                         <div class="inbox-profile-detail">
                                             <h5>alice_529</h5>
@@ -366,7 +366,7 @@
                                     <div class="dropDawon-profile-section">
                                         <div class="inbox-profile-img">
                                             <h1 style="color: #D2D2D2 !important;">.</h1>
-                                            <img src="assets/public-site/asset/img/Ellipse 329.png" alt="">
+                                            <img src="/assets/public-site/asset/img/Ellipse 329.png" alt="">
                                         </div>
                                         <div class="inbox-profile-detail">
                                             <h5>alice_529</h5>
@@ -381,7 +381,7 @@
                                     <div class="dropDawon-profile-section">
                                         <div class="inbox-profile-img">
                                             <h1>.</h1>
-                                            <img src="assets/public-site/asset/img/Ellipse 329.png" alt="">
+                                            <img src="/assets/public-site/asset/img/Ellipse 329.png" alt="">
                                         </div>
                                         <div class="inbox-profile-detail">
                                             <h5>alice_529</h5>
@@ -396,7 +396,7 @@
                                     <div class="dropDawon-profile-section">
                                         <div class="inbox-profile-img">
                                             <h1 style="color: #D2D2D2 !important;">.</h1>
-                                            <img src="assets/public-site/asset/img/Ellipse 329.png" alt="">
+                                            <img src="/assets/public-site/asset/img/Ellipse 329.png" alt="">
                                         </div>
                                         <div class="inbox-profile-detail">
                                             <h5>alice_529</h5>
@@ -411,7 +411,7 @@
                                     <div class="dropDawon-profile-section">
                                         <div class="inbox-profile-img">
                                             <h1>.</h1>
-                                            <img src="assets/public-site/asset/img/Ellipse 329.png" alt="">
+                                            <img src="/assets/public-site/asset/img/Ellipse 329.png" alt="">
                                         </div>
                                         <div class="inbox-profile-detail">
                                             <h5>alice_529</h5>
@@ -426,7 +426,7 @@
                                     <div class="dropDawon-profile-section">
                                         <div class="inbox-profile-img">
                                             <h1 style="color: #D2D2D2 !important;">.</h1>
-                                            <img src="assets/public-site/asset/img/Ellipse 329.png" alt="">
+                                            <img src="/assets/public-site/asset/img/Ellipse 329.png" alt="">
                                         </div>
                                         <div class="inbox-profile-detail">
                                             <h5>alice_529</h5>
@@ -564,12 +564,12 @@
                             @php  $firstLetter = strtoupper(substr(Auth::user()->first_name, 0, 1));  @endphp
 
                               <div class="img_profile" style="width: 50px; height: 50px;">
-                                  <img src="assets/profile/avatars/({{$firstLetter}}).jpg">
+                                  <img src="/assets/profile/avatars/({{$firstLetter}}).jpg">
                               </div>
                               @if (Auth::user()) <h1>{{Auth::user()->first_name}}</span> @endif
                             @else
                             <div class="img_profile" style="width: 50px; height: 50px;">
-                                <img src="assets/profile/img/{{Auth::user()->profile}}">
+                                <img src="/assets/profile/img/{{Auth::user()->profile}}">
                             </div>
                             @if (Auth::user()) <h1>{{Auth::user()->first_name}}</span> @endif
 
@@ -577,7 +577,7 @@
                             @endif
                         </p>
                     </div>  --}}
-                    {{-- <img src="assets/public-site/asset/img/dashboard.png" class="btn dropdown-toggle dash-img" type="button" id="dropdownMicroProcessorTrigger" data-bs-toggle="dropdown" aria-expanded="false"> --}}
+                    {{-- <img src="/assets/public-site/asset/img/dashboard.png" class="btn dropdown-toggle dash-img" type="button" id="dropdownMicroProcessorTrigger" data-bs-toggle="dropdown" aria-expanded="false"> --}}
 
                     {{-- <ul class="dropdown-menu dropdown-menu-lg-end dropdown-menu-sm-start logout-dropdawon" aria-labelledby="dropdownMicroProcessorTrigger">
                         <li>
@@ -693,7 +693,7 @@
                     <div class="col-md-6 col-6 signin">
                         <form action="/google/redirect" method="GET">
                             <button type="submit" name="google_action" value="login">
-                                <img src="assets/public-site/asset/img/google.png" alt=""> &nbsp;&nbsp;Sign in with
+                                <img src="/assets/public-site/asset/img/google.png" alt=""> &nbsp;&nbsp;Sign in with
                                 google
                             </button>
                         </form>
@@ -701,7 +701,7 @@
                     <div class="col-md-6 col-6 signins">
                         <form action="/facebook/redirect" method="GET">
                             <button type="submit" name="facebook_action" value="login">
-                                <img src="assets/public-site/asset/img/facebook.png" alt=""> &nbsp;&nbsp;Sign in with
+                                <img src="/assets/public-site/asset/img/facebook.png" alt=""> &nbsp;&nbsp;Sign in with
                                 facebook
                             </button>
                         </form>
@@ -828,7 +828,7 @@
                     <div class="col-md-6 col-6 signin">
                         <form action="/google/redirect" method="GET">
                             <button type="submit" name="google_action" value="signup">
-                                <img src="assets/public-site/asset/img/google.png" alt=""> &nbsp;&nbsp;Sign in with
+                                <img src="/assets/public-site/asset/img/google.png" alt=""> &nbsp;&nbsp;Sign in with
                                 google
                             </button>
                         </form>
@@ -836,7 +836,7 @@
                     <div class="col-md-6 col-6 signins">
                         <form action="/facebook/redirect" method="GET">
                             <button type="submit" name="facebook_action" value="signup">
-                                <img src="assets/public-site/asset/img/facebook.png" alt=""> &nbsp;&nbsp;Sign in with
+                                <img src="/assets/public-site/asset/img/facebook.png" alt=""> &nbsp;&nbsp;Sign in with
                                 facebook
                             </button>
                         </form>

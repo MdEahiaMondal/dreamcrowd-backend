@@ -4,6 +4,8 @@ namespace App\Console\Commands;
 
 use App\Models\BookOrder;
 use App\Models\Transaction;
+use App\Models\User;
+use App\Services\NotificationService;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
@@ -13,6 +15,14 @@ class AutoMarkCompleted extends Command
 {
     protected $signature = 'orders:auto-complete {--dry-run : Run without making actual changes}';
     protected $description = 'Mark BookOrders as Completed 48 hours after delivery';
+
+    protected $notificationService;
+
+    public function __construct(NotificationService $notificationService)
+    {
+        parent::__construct();
+        $this->notificationService = $notificationService;
+    }
 
     public function handle()
     {
@@ -33,7 +43,7 @@ class AutoMarkCompleted extends Command
         // Get delivered orders waiting for completion
         $orders = BookOrder::where('status', 2) // Delivered
         ->whereNotNull('action_date')
-            ->with(['user', 'teacher'])
+            ->with(['user', 'teacher', 'gig'])
             ->get()
             ->filter(function($order) use ($now) {
                 try {
@@ -110,6 +120,9 @@ class AutoMarkCompleted extends Command
             // Update transaction - mark as ready for payout
             $this->updateTransactionForPayout($order);
 
+            // Send notifications
+            $this->sendCompletionNotifications($order);
+
             DB::commit();
 
             Log::info("Order #{$order->id} auto-completed successfully", [
@@ -151,6 +164,76 @@ class AutoMarkCompleted extends Command
         } catch (\Exception $e) {
             Log::error("Failed to update transaction for order #{$order->id}: " . $e->getMessage());
             // Don't throw - not critical for order completion
+        }
+    }
+
+    /**
+     * Send completion notifications to buyer, seller, and admin
+     */
+    private function sendCompletionNotifications(BookOrder $order): void
+    {
+        try {
+            $serviceName = $order->title ?? ($order->gig ? $order->gig->name : 'Service');
+            $buyerName = $order->user ? ($order->user->first_name . ' ' . $order->user->last_name) : 'Customer';
+
+            // Get transaction for seller payout info
+            $transaction = Transaction::where('buyer_id', $order->user_id)
+                ->where('seller_id', $order->teacher_id)
+                ->first();
+
+            // Notify buyer
+            $this->notificationService->send(
+                userId: $order->user_id,
+                type: 'order_completed',
+                title: 'Order Completed',
+                message: "Your order for \"{$serviceName}\" is now complete. Thank you for choosing DreamCrowd!",
+                data: [
+                    'order_id' => $order->id,
+                    'service_name' => $serviceName,
+                    'completed_at' => now()->toDateTimeString()
+                ],
+                sendEmail: true
+            );
+
+            // Notify seller
+            $this->notificationService->send(
+                userId: $order->teacher_id,
+                type: 'order_completed',
+                title: 'Order Completed - Payment Released',
+                message: "Your order for \"{$serviceName}\" is complete. Payment will be released soon.",
+                data: [
+                    'order_id' => $order->id,
+                    'service_name' => $serviceName,
+                    'buyer_name' => $buyerName,
+                    'seller_payout' => $transaction ? $transaction->seller_earnings : null,
+                    'completed_at' => now()->toDateTimeString()
+                ],
+                sendEmail: true
+            );
+
+            // Notify admins
+            $adminIds = User::where('role', 'admin')->pluck('id')->toArray();
+            if (!empty($adminIds)) {
+                $this->notificationService->sendToMultipleUsers(
+                    userIds: $adminIds,
+                    type: 'order_completed',
+                    title: 'Order Completed',
+                    message: "Order #{$order->id} completed. Ready for payout.",
+                    data: [
+                        'order_id' => $order->id,
+                        'seller_id' => $order->teacher_id,
+                        'buyer_id' => $order->user_id,
+                        'completed_at' => now()->toDateTimeString()
+                    ],
+                    sendEmail: false
+                );
+            }
+
+            Log::info("Completion notifications sent for order #{$order->id}");
+
+        } catch (\Exception $e) {
+            Log::error("Failed to send completion notifications for order #{$order->id}: " . $e->getMessage());
+            // Don't throw - not critical
         }
     }
 }

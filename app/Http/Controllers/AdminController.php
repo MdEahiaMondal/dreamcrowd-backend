@@ -29,6 +29,7 @@ use App\Models\WebSetting;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use App\Services\NotificationService;
+use App\Services\AdminDashboardService;
 
 class AdminController extends Controller
 {
@@ -60,7 +61,130 @@ class AdminController extends Controller
             return $redirect;
         }
 
+        // Dashboard loads via AJAX, no initial data needed
         return view("Admin-Dashboard.dashboard");
+    }
+
+    /**
+     * Get admin dashboard statistics via AJAX
+     */
+    public function getAdminDashboardStatistics(Request $request)
+    {
+        $service = new AdminDashboardService();
+        $preset = $request->input('preset', 'all_time');
+        $customFrom = $request->input('date_from');
+        $customTo = $request->input('date_to');
+
+        // Use custom dates if provided, otherwise use preset
+        if ($customFrom && $customTo) {
+            $dateFrom = $customFrom;
+            $dateTo = $customTo;
+        } else {
+            $dates = $service->applyDatePreset($preset);
+            $dateFrom = $dates['from'];
+            $dateTo = $dates['to'];
+        }
+
+        // Get all statistics
+        $statistics = $service->getAllStatistics($dateFrom, $dateTo);
+
+        return response()->json($statistics);
+    }
+
+    /**
+     * Get revenue chart data for admin dashboard
+     */
+    public function getAdminRevenueChart(Request $request)
+    {
+        $service = new AdminDashboardService();
+        $months = $request->input('months', 12);
+
+        $chartData = $service->getRevenueChartData($months);
+
+        return response()->json($chartData);
+    }
+
+    /**
+     * Get order status chart data
+     */
+    public function getAdminOrderStatusChart(Request $request)
+    {
+        $service = new AdminDashboardService();
+        $preset = $request->input('preset', 'all_time');
+        $customFrom = $request->input('date_from');
+        $customTo = $request->input('date_to');
+
+        // Use custom dates if provided, otherwise use preset
+        if ($customFrom && $customTo) {
+            $dateFrom = $customFrom;
+            $dateTo = $customTo;
+        } else {
+            $dates = $service->applyDatePreset($preset);
+            $dateFrom = $dates['from'];
+            $dateTo = $dates['to'];
+        }
+
+        $chartData = $service->getOrderStatusChart($dateFrom, $dateTo);
+
+        return response()->json($chartData);
+    }
+
+    /**
+     * Get top performers data (sellers, buyers, services, categories)
+     */
+    public function getAdminTopPerformers(Request $request)
+    {
+        $service = new AdminDashboardService();
+        $type = $request->input('type', 'sellers');
+        $limit = $request->input('limit', 10);
+        $preset = $request->input('preset', 'all_time');
+        $customFrom = $request->input('date_from');
+        $customTo = $request->input('date_to');
+
+        // Use custom dates if provided, otherwise use preset
+        if ($customFrom && $customTo) {
+            $dateFrom = $customFrom;
+            $dateTo = $customTo;
+        } else {
+            $dates = $service->applyDatePreset($preset);
+            $dateFrom = $dates['from'];
+            $dateTo = $dates['to'];
+        }
+
+        switch ($type) {
+            case 'sellers':
+                $data = $service->getTopSellers($limit, $dateFrom, $dateTo);
+                break;
+            case 'buyers':
+                $data = $service->getTopBuyers($limit, $dateFrom, $dateTo);
+                break;
+            case 'services':
+                $data = $service->getTopServices($limit, $dateFrom, $dateTo);
+                break;
+            case 'categories':
+                $data = $service->getTopCategories($limit, $dateFrom, $dateTo);
+                break;
+            default:
+                $data = [];
+        }
+
+        return response()->json($data);
+    }
+
+    /**
+     * Get management action items (pending applications, disputes, etc.)
+     */
+    public function getAdminActionItems(Request $request)
+    {
+        $service = new AdminDashboardService();
+
+        $actionItems = [
+            'pending_applications' => $service->getPendingApplications(10),
+            'active_disputes' => $service->getActiveDisputes(10),
+            'pending_refunds' => $service->getPendingRefunds(10),
+        ];
+
+        return response()->json($actionItems);
     }
 
 
@@ -172,6 +296,15 @@ class AdminController extends Controller
 
         $app->update();
 
+        // Send notification to seller
+        $this->notificationService->send(
+            userId: $app->user_id,
+            type: 'account',
+            title: 'Category Rejected',
+            message: 'The category "' . $category->category . '" has been removed from your seller application. Please review your application or contact support for more information.',
+            data: ['application_id' => $app->id, 'rejected_category' => $category->category, 'type' => $request->type],
+            sendEmail: true
+        );
 
         if ($app) {
             $response['cate'] = $app;
@@ -314,13 +447,13 @@ class AdminController extends Controller
 
             $user->update();
             $expert->update();
-            // If approved
+            // If rejected
             $this->notificationService->send(
                 userId: $expert->user_id,
                 type: 'account',
-                title: 'Seller Application Approved',
-                message: 'Congratulations! Your seller application has been approved.',
-                data: ['approved_at' => now()],
+                title: 'Seller Application Rejected',
+                message: 'Unfortunately, your seller application was not approved. Reason: ' . $request->reason,
+                data: ['rejection_reason' => $request->reason],
                 sendEmail: true
             );
             
@@ -356,13 +489,13 @@ class AdminController extends Controller
             }
 
 
-            // If rejected
+            // If approved
             $this->notificationService->send(
                 userId: $expert->user_id,
                 type: 'account',
-                title: 'Seller Application Rejected',
-                message: 'Unfortunately, your seller application was not approved. Reason: ' . $request->reason,
-                data: ['rejection_reason' => $request->reason],
+                title: 'Seller Application Approved',
+                message: 'Congratulations! Your seller application has been approved. You can now start creating services and accepting orders.',
+                data: ['approved_at' => now()],
                 sendEmail: true
             );
 
@@ -1385,6 +1518,17 @@ class AdminController extends Controller
                 'admin_id' => Auth::id()
             ]);
 
+            // Send notification to seller
+            $amount = number_format($transaction->seller_earnings, 2);
+            $this->notificationService->send(
+                userId: $transaction->seller_id,
+                type: 'payout',
+                title: 'Payment Processed',
+                message: 'Your payment of $' . $amount . ' has been processed by admin and will be transferred to your account shortly.',
+                data: ['transaction_id' => $transaction->id, 'amount' => $amount],
+                sendEmail: true
+            );
+
             return redirect()->back()->with('success', 'Payout marked as completed successfully');
         } catch (\Exception $e) {
             \Log::error('Payout completion failed: ' . $e->getMessage());
@@ -1417,6 +1561,17 @@ class AdminController extends Controller
                 if ($transaction && $transaction->payout_status == 'pending' && $transaction->status == 'completed') {
                     $transaction->markPayoutCompleted();
                     $processed++;
+
+                    // Send notification to seller
+                    $amount = number_format($transaction->seller_earnings, 2);
+                    $this->notificationService->send(
+                        userId: $transaction->seller_id,
+                        type: 'payout',
+                        title: 'Payment Processed',
+                        message: 'Your payment of $' . $amount . ' has been processed and will be transferred to your account shortly.',
+                        data: ['transaction_id' => $transaction->id, 'amount' => $amount],
+                        sendEmail: true
+                    );
                 }
             } catch (\Exception $e) {
                 \Log::error('Batch payout failed for transaction ' . $id . ': ' . $e->getMessage());

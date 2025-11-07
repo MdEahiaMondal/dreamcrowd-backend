@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="UTF-8"/>
+    <!-- View Point scale to 1.0 -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <!-- Animate css -->
+    <link rel="stylesheet" href="assets/user/libs/animate/css/animate.css"/>
+    <!-- AOS Animation css-->
+    <link rel="stylesheet" href="assets/user/libs/aos/css/aos.css"/>
+    <!-- Datatable css  -->
+    <link rel="stylesheet" href="assets/user/libs/datatable/css/datatable.css"/>
+    <!-- dropdawon -->
+    <link rel="stylesheet" id="swapcss" type="text/css"
+          href="https://unpkg.com/@leapdev/gui-leap@latest/dist/css/leap.css"/>
+    <!-- dropdawon -->
+    {{-- Fav Icon --}}
+    @php  $home = \App\Models\HomeDynamic::first(); @endphp
+    @if ($home)
+        <link rel="shortcut icon" href="assets/public-site/asset/img/{{$home->fav_icon}}" type="image/x-icon">
+    @endif
+    <!-- Select2 css -->
+    <link href="assets/user/libs/select2/css/select2.min.css" rel="stylesheet"/>
+    <!-- Owl carousel css -->
+    <link href="assets/user/libs/owl-carousel/css/owl.carousel.css" rel="stylesheet"/>
+    <link href="assets/user/libs/owl-carousel/css/owl.theme.green.css" rel="stylesheet"/>
+    <!-- Bootstrap css -->
+    <link rel="stylesheet" type="text/css" href="assets/user/asset/css/bootstrap.min.css"/>
+    <link href="https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css"/>
+    <!-- Fontawesome CDN -->
+    <script src="https://kit.fontawesome.com/be69b59144.js" crossorigin="anonymous"></script>
+    <!-- Defualt css -->
+    <link rel="stylesheet" href="assets/user/asset/css/new.css">
+    <link rel="stylesheet" type="text/css" href="assets/user/asset/css/sidebar.css"/>
+    <link rel="stylesheet" href="assets/user/asset/css/style.css"/>
+    <title>User Dashboard | My Profile</title>
+</head>
+
+<body>
+{{-- ===========User Sidebar Start==================== --}}
+<x-user-sidebar/>
+{{-- ===========User Sidebar End==================== --}}
+<section class="home-section">
+    {{-- ===========User NavBar Start==================== --}}
+    <x-user-nav/>
+    {{-- ===========User NavBar End==================== --}}
+    <!-- =============================== MAIN CONTENT START HERE =========================== -->
+    <div class="container-fluid">
+        <div class="row Dash-notification">
+            <div class="col-xl-12 col-lg-12 col-md-12">
+                <div class="row">
+                    {{-- === ORDER STAT CARDS === --}}
+                    <div class="col-xl-4 col-lg-6 col-md-6">
+                        <div class="prof-card">
+                            <div class="prof-mg">
+                                <img src="{{ asset('assets/user/asset/img/Cardorder-img.png') }}" alt="" width="28px"
+                                     height="28px"/>
+                            </div>
+                            <div class="prof-body">
+                                <p class="title">All Orders</p>
+                                <h5>{{ $stats['all_orders'] ?? 0 }}</h5>
+                                <p class="increes">
+                                    <span><img src="{{ asset('assets/user/asset/img/increes.svg') }}" alt=""/></span>Increase
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-4 col-lg-6 col-md-6">
+                        <div class="prof-card">
+                            <div class="prof-mg">
+                                <img src="{{ asset('assets/user/asset/img/class-order-img.png') }}" alt="" width="28px"
+                                     height="28px"/>
+                            </div>
+                            <div class="prof-body">
+                                <p class="title">Class Orders</p>
+                                <h5>{{ $stats['class_orders'] ?? 0 }}</h5>
+                                <p class="increes">
+                                    <span><img src="{{ asset('assets/user/asset/img/increes.svg') }}" alt=""/></span>Increase
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-4 col-lg-6 col-md-6">
+                        <div class="prof-card">
+                            <div class="prof-mg">
+                                <img src="{{ asset('assets/user/asset/img/Freelance-Card-image.png') }}" alt=""
+                                     width="28px" height="28px"/>
+                            </div>
+                            <div class="prof-body">
+                                <p class="title">Freelance Orders</p>
+                                <h5>{{ $stats['freelancer_orders'] ?? 0 }}</h5>
+                                <p class="increes">
+                                    <span><img src="{{ asset('assets/user/asset/img/increes.svg') }}" alt=""/></span>Increase
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-4 col-lg-6 col-md-6">
+                        <div class="prof-card">
+                            <div class="prof-mg">
+                                <img src="{{ asset('assets/user/asset/img/completed-Order-image.png') }}" alt=""
+                                     width="28px" height="28px"/>
+                            </div>
+                            <div class="prof-body">
+                                <p class="title">Completed Orders</p>
+                                <h5>{{ $stats['completed_orders'] ?? 0 }}</h5>
+                                <p class="increes">
+                                    <span><img src="{{ asset('assets/user/asset/img/increes.svg') }}" alt=""/></span>Increase
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-4 col-lg-6 col-md-6">
+                        <div class="prof-card">
+                            <div class="prof-mg">
+                                <img src="{{ asset('assets/user/asset/img/Cancelled-Order-Image.png') }}" alt=""
+                                     width="28px" height="28px"/>
+                            </div>
+                            <div class="prof-body">
+                                <p class="title">Cancelled Orders</p>
+                                <h5>{{ $stats['cancelled_orders'] ?? 0 }}</h5>
+                                <p class="increes">
+                                    <span><img src="{{ asset('assets/user/asset/img/redincrees.svg') }}" alt=""/></span>Decrease
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-4 col-lg-6 col-md-6">
+                        <div class="prof-card">
+                            <div class="prof-mg">
+                                <img src="{{ asset('assets/user/asset/img/Cardorder-img.png') }}" alt="" width="28px"
+                                     height="28px"/>
+                            </div>
+                            <div class="prof-body">
+                                <p class="title">Active Orders</p>
+                                <h5>{{ $stats['active_orders'] ?? 0 }}</h5>
+                                <p class="increes">
+                                    <span><img src="{{ asset('assets/user/asset/img/increes.svg') }}" alt=""/></span>Increase
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-4 col-lg-6 col-md-6">
+                        <div class="prof-card">
+                            <div class="prof-mg">
+                                <i class="fa-solid fa-globe" aria-hidden="true"></i>
+                            </div>
+                            <div class="prof-body">
+                                <p class="title">Online Orders</p>
+                                <h5>{{ $stats['online_orders'] ?? 0 }}</h5>
+                                <p class="increes">
+                                    <span><img src="{{ asset('assets/user/asset/img/increes.svg') }}" alt=""/></span>Increase
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-4 col-lg-6 col-md-6">
+                        <div class="prof-card">
+                            <div class="prof-mg">
+                                <i class="fa-solid fa-house" aria-hidden="true"></i>
+                            </div>
+                            <div class="prof-body">
+                                <p class="title">In-Person Orders</p>
+                                <h5>{{ $stats['inperson_orders'] ?? 0 }}</h5>
+                                <p class="increes">
+                                    <span><img src="{{ asset('assets/user/asset/img/increes.svg') }}" alt=""/></span>Increase
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- === RECENT BOOKINGS === --}}
+                <div class="row mt-4">
+                    <h1 class="top-heading">Recent Bookings</h1>
+
+                    @forelse($recentBookings as $booking)
+                        <div class="col-xl-4 col-lg-6 col-md-6">
+                            <div class="recent">
+                                <div class="booking">
+                                    <img class="jenny-profile"
+                                         src="{{ $booking->booker->profile ?? asset('assets/user/asset/img/default-user.png') }}"
+                                         alt="Profile" width="28" height="28"/>
+                                    <div class="recent-body">
+                                        <p class="title">
+                                            {{ trim( ($booking->booker?->first_name ?? '') . ' ' . ($booking->booker?->last_name ?? '') ) ?: 'Unknown User' }}
+                                        </p>
+                                        <p class="text">{{ $booking->gig->category_name ?? 'No Category' }}</p>
+                                    </div>
+                                </div>
+                                <div class="para">
+                                    <p>{{ $booking->title ?? 'No gig title available' }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    @empty
+                        <p class="text-muted ps-3">No recent bookings found.</p>
+                    @endforelse
+                </div>
+            </div>
+
+
+        </div>
+        <div class="row">
+            <div class="col-md-12 p-0">
+                <div class="copyright">
+                    <p>Copyright Dreamcrowd © 2021. All Rights Reserved.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- =============================== MAIN CONTENT END HERE =========================== -->
+</section>
+
+<script src="assets/user/libs/jquery/jquery.js"></script>
+<script src="assets/user/libs/datatable/js/datatable.js"></script>
+<script src="assets/user/libs/datatable/js/datatablebootstrap.js"></script>
+<script src="assets/user/libs/select2/js/select2.min.js"></script>
+<script src="assets/user/libs/owl-carousel/js/owl.carousel.min.js"></script>
+<script src="assets/user/libs/aos/js/aos.js"></script>
+<script src="assets/user/asset/js/bootstrap.min.js"></script>
+<script src="assets/user/asset/js/script.js"></script>
+<!-- jQuery -->
+<script
+    src="https://code.jquery.com/jquery-3.7.1.min.js"
+    integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
+    crossorigin="anonymous"
+></script>
+</body>
+
+</html>
+
+<!-- ================ side js start here=============== -->
+<!-- ================ side js start End=============== -->
+<!-- profile-upload -->
+<script>
+    // File Upload
+    //
+    function readURL(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                $('#imagePreview').css('background-image', 'url(' + e.target.result + ')');
+                $('#imagePreview').hide();
+                $('#imagePreview').fadeIn(650);
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    $("#imageUpload").change(function () {
+        readURL(this);
+    });
+</script>
+<!-- ============ -->
+<!-- =====================NEW JS END HERE====================== -->
+
+
+<!-- radio js here -->
+<script>
+    function showAdditionalOptions1() {
+        hideAllAdditionalOptions();
+        document.getElementById('additionalOptions1').style.display = 'block';
+    }
+
+    function showAdditionalOptions2() {
+        hideAllAdditionalOptions();
+        document.getElementById('additionalOptions2').style.display = 'block';
+    }
+
+    function showAdditionalOptions3() {
+        hideAllAdditionalOptions();
+    }
+
+    function showAdditionalOptions4() {
+        hideAllAdditionalOptions();
+        document.getElementById('additionalOptions4').style.display = 'block';
+    }
+
+    function hideAllAdditionalOptions() {
+        var elements = document.getElementsByClassName('additional-options');
+        for (var i = 0; i < elements.length; i++) {
+            elements[i].style.display = 'none';
+        }
+    }
+
+    // Call the function to show the additional options for the default checked radio button on page load
+    window.onload = function () {
+        showAdditionalOptions1();
+    };
+</script>
+<!-- modal hide show jquery here -->
+<script>
+    $(document).ready(function () {
+        $(document).on("click", "#delete-account", function (e) {
+            e.preventDefault();
+            $("#exampleModal3").modal("show");
+            $("#delete-user-account").modal("hide");
+        });
+
+        $(document).on("click", "#delete-account", function (e) {
+            e.preventDefault();
+            $("#delete-user-account").modal("show");
+            $("#exampleModal3").modal("hide");
+        });
+    });
+</script>
+<!-- JavaScript to close the modal when Cancel button is clicked -->
+<script>
+    // Wait for the document to load
+    document.addEventListener('DOMContentLoaded', function () {
+        // Get the Cancel button by its ID
+        var cancelButton = document.getElementById('cancelButton');
+
+        // Add a click event listener to the Cancel button
+        cancelButton.addEventListener('click', function () {
+            // Find the modal by its ID
+            var modal = document.getElementById('exampleModal2');
+
+            // Use Bootstrap's modal method to hide the modal
+            $(modal).modal('hide');
+        });
+    });
+</script>
+<script>
+    (function ($) {
+        $('.dropdown-toggle').click(function (e) {
+            var _this = $(this);
+            e.preventDefault();
+            _this.toggleClass('toggle-on');
+            _this.parent().next('.sub-menu').toggleClass('toggled-on');
+            _this.attr('aria-expanded', _this.attr('aria-expanded') === 'false' ? 'true' : 'false');
+        });
+    })(jQuery);
+</script>

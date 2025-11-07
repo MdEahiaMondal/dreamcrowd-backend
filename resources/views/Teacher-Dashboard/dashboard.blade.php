@@ -1,693 +1,891 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <!-- Required meta tags -->
-    <meta charset="UTF-8" />
-    <!-- View Point scale to 1.0 -->
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <!-- Animate css -->
-    <link rel="stylesheet" href="assets/teacher/libs/animate/css/animate.css" />
-    <!-- AOS Animation css-->
-    <link rel="stylesheet" href="assets/teacher/libs/aos/css/aos.css" />
-    <!-- Datatable css  -->
-    <link rel="stylesheet" href="assets/teacher/libs/datatable/css/datatable.css" />
-     {{-- Fav Icon --}}
-     @php  $home = \App\Models\HomeDynamic::first(); @endphp
-     @if ($home)
-         <link rel="shortcut icon" href="assets/public-site/asset/img/{{$home->fav_icon}}" type="image/x-icon">
-     @endif
-     <!-- Select2 css -->
-    <link href="assets/teacher/libs/select2/css/select2.min.css" rel="stylesheet" />
-    <!-- Owl carousel css -->
-    <link href="assets/teacher/libs/owl-carousel/css/owl.carousel.css" rel="stylesheet" />
-    <link href="assets/teacher/libs/owl-carousel/css/owl.theme.green.css" rel="stylesheet" />
-    <!-- Bootstrap css -->
-    <link
-      rel="stylesheet"
-      type="text/css"
-      href="assets/teacher/asset/css/bootstrap.min.css"
-    />
-    <link
-      href="https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css"
-      rel="stylesheet"
-    />
-    <link
-      rel="stylesheet"
-      href="https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css"
-    />
-    <!-- Fontawesome CDN -->
-    <script
-      src="https://kit.fontawesome.com/be69b59144.js"
-      crossorigin="anonymous"
-    ></script>
-    <!-- Defualt css -->
-    <link rel="stylesheet" type="text/css" href="assets/teacher/asset/css/sidebar.css" />
-    <link rel="stylesheet" href="assets/teacher/asset/css/style.css" />
-    <link rel="stylesheet" href="assets/teacher/asset/css/Dashboard.css" />
-    <title>User Dashboard |</title>
-  </head>
-  <body>
-    {{-- ===========Teacher Sidebar Start==================== --}}
-  <x-teacher-sidebar/>
-  {{-- ===========Teacher Sidebar End==================== --}}
-  <section class="home-section">
-     {{-- ===========Teacher NavBar Start==================== --}}
-     <x-teacher-nav/>
-     {{-- ===========Teacher NavBar End==================== --}}
-      <!-- =============================== MAIN CONTENT START HERE =========================== -->
-      <div class="container-fluid">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>Teacher Dashboard | DreamCrowd</title>
+
+    <!-- CSS Libraries -->
+    <link rel="stylesheet" href="/assets/teacher/asset/css/bootstrap.min.css"/>
+    <link href="https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="/assets/teacher/asset/css/sidebar.css"/>
+    <link rel="stylesheet" href="/assets/teacher/asset/css/style.css">
+    <link rel="stylesheet" href="/assets/teacher/asset/css/Dashboard.css">
+
+    {{-- Fav Icon --}}
+    @php $home = \App\Models\HomeDynamic::first(); @endphp
+    @if ($home)
+        <link rel="shortcut icon" href="/assets/public-site/asset/img/{{$home->fav_icon}}" type="image/x-icon">
+    @endif
+
+    <!-- Flatpickr for Date Picker -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
+    <style>
+        .dashboard-loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.9);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .dashboard-loading.active {
+            display: flex;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #28a745;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .stat-card {
+            background: #fff;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 28px;
+        }
+
+        .stat-content {
+            flex: 1;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: #6c757d;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 26px;
+            font-weight: 700;
+            margin: 0;
+            color: #212529;
+        }
+
+        .stat-sublabel {
+            font-size: 11px;
+            color: #6c757d;
+        }
+
+        .stat-card-small {
+            background: #fff;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card-small:hover {
+            transform: translateY(-3px);
+        }
+
+        .stat-card-small .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .stat-card-small .stat-label {
+            font-size: 12px;
+            color: #6c757d;
+        }
+
+        .status-active {
+            border-left: 4px solid #007bff;
+        }
+
+        .status-pending {
+            border-left: 4px solid #ffc107;
+        }
+
+        .status-completed {
+            border-left: 4px solid #28a745;
+        }
+
+        .status-cancelled {
+            border-left: 4px solid #dc3545;
+        }
+
+        .status-delivered {
+            border-left: 4px solid #17a2b8;
+        }
+
+        .filter-panel {
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .filter-preset {
+            margin: 3px;
+            font-size: 13px;
+        }
+
+        .filter-preset.active {
+            background: #28a745;
+            border-color: #28a745;
+            color: #fff;
+        }
+
+        .section-header {
+            margin-top: 30px;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .section-header h5 {
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .chart-card {
+            background: #fff;
+            border: none;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border-radius: 10px;
+        }
+
+        .chart-card .card-title {
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 20px;
+        }
+
+        .chart-container {
+            position: relative;
+        }
+
+        .input-group {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+<!-- Loading Overlay -->
+<div class="dashboard-loading" id="dashboardLoading">
+    <div class="spinner"></div>
+</div>
+
+<!-- Sidebar -->
+<x-teacher-sidebar/>
+
+<section class="home-section">
+    <!-- Navigation -->
+    <x-teacher-nav/>
+
+    <!-- Main Content -->
+    <div class="container-fluid py-4">
         <div class="row dash-notification">
-          <div class="col-md-12">
-            <div class="dash">
-              <div class="row">
+
+            <!-- Page Header -->
+            <div class="row mb-4">
                 <div class="col-md-12">
-                  <div class="dash-top">
-                    <h1 class="dash-title">Dashboard</h1>
-                  </div>
+                    <h2><i class='bx bx-grid-alt'></i> Teacher Dashboard</h2>
+                    <p class="text-muted">Welcome back, {{ Auth::user()->name }}! Here's your performance overview.</p>
                 </div>
-              </div>
-              <!-- Blue MASSEGES section -->
-              <div class="user-notification">
-                <div class="row">
-                  <div class="col-md-12">
-                    <div class="notify">
-                      <i class="bx bx-grid-alt" title="Dashboard"></i>
-
-                      <h2>Dashboard</h2>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col-xl 3 col-lg-4 col-md-12">
-                  <div class="main-profil-page">
-                    <!-- Profile Image -->
-                    <div class="col-md-2">
-                      <div class="avatar-upload">
-                        <div class="avatar-edit">
-                          <input
-                            type="file"
-                            id="imageUpload"
-                            accept=".png, .jpg, .jpeg"
-                          />
-                          <label for="imageUpload"></label>
-                        </div>
-                        <div class="avatar-preview">
-                          <div
-                            id="imagePreview"
-                            style="
-                              background-image: url(http://i.pravatar.cc/500?img=7);
-                              width: 100%;
-                            "
-                          ></div>
-                        </div>
-                      </div>
-                    </div>
-                    <!-- /.box-body -->
-                    <div class="name">
-                      <p>Petey Cruiser</p>
-                      <h5>Web Designer</h5>
-                    </div>
-                    <!-- <div class="form-group"> -->
-                    <h2 class="About-text">About Me</h2>
-                    <div id="profile-description">
-                      <div class="text show-more-height">
-                        <h4 class="About-para">
-                          Pleasure rationally encounter but<br />
-                          because pursue consequences that are <br />extremely
-                          painful. Occur in which toil<br />
-                          and pain can procure him some great<br />
-                          pleasure.
-                        </h4>
-                      </div>
-                      <div class="show-more">More</div>
-                    </div>
-                    <!-- [End] #profile-description -->
-
-                    <h2 class="Service-text">Service Overview</h2>
-                    <div id="profile-description">
-                      <div class="text show-more-height">
-                        <h4 class="About-para">
-                          pleasure rationally encounter but<br />
-                          because pursue consequences that are <br />
-                          extremely painful.occur in which toil and<br />
-                          pain can procure him some great<br />
-                          pleasure.pleasure rationally encounter<br />
-                          but because pursue consequences that<br />
-                          are extremely painful.occur in which<br />
-                          toil and pain can procure him some great<br />
-                          pleasure.occur in which toil and pain<br />
-                          can procure him some great pleasure<br />
-                          rationally encounter but because pursue<br />
-                          consequences that are extremely<br />
-                          painful....
-                        </h4>
-                      </div>
-                      <div class="show-more">More</div>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-xl 9 col-lg-8 col-md-12">
-                  <div class="row">
-                    <div class="col-xl-4 col-lg-6 col-md-6">
-                      <div class="prof-card">
-                        <div class="prof-mg">
-                          <img
-                            src="assets/teacher/asset/img/card-order-image.png"
-                            alt=""
-                            width="28px"
-                            height="28px"
-                          />
-                        </div>
-                        <div class="prof-body">
-                          <p class="title">All Booking</p>
-                          <h5>22</h5>
-                          <p class="increes">
-                            <span
-                              ><img src="assets/teacher/asset/img/increes.svg" alt="" /></span
-                            >Increase
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="col-xl-4 col-lg-6 col-md-6">
-                      <div class="prof-card">
-                        <div class="prof-mg">
-                          <img
-                            src="assets/teacher/asset/img/Freelance-order-image.png"
-                            alt=""
-                            width="28px"
-                            height="28px"
-                          />
-                        </div>
-                        <div class="prof-body">
-                          <p class="title">Freelance Bookings</p>
-                          <h5>10</h5>
-                          <p class="increes">
-                            <span
-                              ><img src="assets/teacher/asset/img/increes.svg" alt="" /></span
-                            >Increase
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="col-xl-4 col-lg-6 col-md-6">
-                      <div class="prof-card">
-                        <div class="prof-mg">
-                          <img
-                            src="assets/teacher/asset/img/booking-order-image.png"
-                            alt=""
-                            width="28px"
-                            height="28px"
-                          />
-                        </div>
-                        <div class="prof-body">
-                          <p class="title">Class Bookings</p>
-                          <h5>12</h5>
-                          <p class="increes">
-                            <span
-                              ><img src="assets/teacher/asset/img/increes.svg" alt="" /></span
-                            >Increase
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div class="col-xl-4 col-lg-6 col-md-6">
-                      <div class="prof-card">
-                        <div class="prof-mg">
-                          <img
-                            src="assets/teacher/asset/img/Cancelled-order-image.png"
-                            alt=""
-                            width="28px"
-                            height="28px"
-                          />
-                        </div>
-                        <div class="prof-body">
-                          <p class="title">Cancelled Bookings</p>
-                          <h5>12</h5>
-                          <p class="increes">
-                            <span
-                              ><img src="assets/teacher/asset/img/increes.svg" alt="" /></span
-                            >Increase
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="col-xl-4 col-lg-6 col-md-6">
-                      <div class="prof-card">
-                        <div class="prof-mg">
-                          <img
-                            src="assets/teacher/asset/img/delivered-order-image.png"
-                            alt=""
-                            width="28px"
-                            height="28px"
-                          />
-                        </div>
-                        <div class="prof-body">
-                          <p class="title">Delivered Bookings</p>
-                          <h5>34</h5>
-                          <p class="increes">
-                            <span
-                              ><img
-                                src="assets/teacher/asset/img/redincrees.svg"
-                                alt="" /></span
-                            >Increase
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="col-xl-4 col-lg-6 col-md-6">
-                      <div class="prof-card">
-                        <div class="prof-mg">
-                          <img
-                            src="assets/teacher/asset/img/pending-order-image.png"
-                            alt=""
-                            width="28px"
-                            height="28px"
-                          />
-                        </div>
-                        <div class="prof-body">
-                          <p class="title">Pending Bookings</p>
-                          <h5>30</h5>
-                          <p class="increes">
-                            <span
-                              ><img src="assets/teacher/asset/img/increes.svg" alt="" /></span
-                            >Increase
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="col-xl-4 col-lg-6 col-md-6">
-                      <div class="prof-card">
-                        <div class="prof-mg">
-                          <img
-                            src="assets/teacher/asset/img/total-order-image.png"
-                            alt=""
-                            width="28px"
-                            height="28px"
-                          />
-                        </div>
-                        <div class="prof-body">
-                          <p class="title">Total Earnings</p>
-                          <h5>3000</h5>
-                          <p class="increes">
-                            <span
-                              ><img src="assets/teacher/asset/img/increes.svg" alt="" /></span
-                            >Increase
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="col-xl-4 col-lg-6 col-md-6">
-                      <div class="prof-card">
-                        <div class="prof-mg">
-                          <img
-                            src="assets/teacher/asset/img/Freelance-order-image.png"
-                            alt=""
-                            width="28px"
-                            height="28px"
-                          />
-                        </div>
-                        <div class="prof-body">
-                          <p class="title">Freelance Earnings</p>
-                          <h5>5000</h5>
-                          <p class="increes">
-                            <span
-                              ><img src="assets/teacher/asset/img/increes.svg" alt="" /></span
-                            >Increase
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="col-xl-4 col-lg-6 col-md-6">
-                      <div class="prof-card">
-                        <div class="prof-mg">
-                          <img
-                            src="assets/teacher/asset/img/card-order-image.png"
-                            alt=""
-                            width="28px"
-                            height="28px"
-                          />
-                        </div>
-                        <div class="prof-body">
-                          <p class="title">Class Earnings</p>
-                          <h5>2000</h5>
-                          <p class="increes">
-                            <span
-                              ><img src="assets/teacher/asset/img/increes.svg" alt="" /></span
-                            >Increase
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="col-xl-4 col-lg-6 col-md-6">
-                      <div class="prof-card">
-                        <div class="prof-mg">
-                          <i class="fa-solid fa-globe"></i>
-                        </div>
-                        <div class="prof-body">
-                          <p class="title">Online Earnings</p>
-                          <h5>5000</h5>
-                          <p class="increes">
-                            <span
-                              ><img src="assets/teacher/asset/img/increes.svg" alt="" /></span
-                            >Increase
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="col-xl-4 col-lg-6 col-md-6">
-                      <div class="prof-card">
-                        <div class="prof-mg">
-                          <i class="fa-solid fa-house"></i>
-                        </div>
-                        <div class="prof-body">
-                          <p class="title">In-Person Earnings</p>
-                          <h5>2000</h5>
-                          <p class="increes">
-                            <span
-                              ><img src="assets/teacher/asset/img/increes.svg" alt="" /></span
-                            >Increase
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="row">
-                    <h1 class="top-heading">Recent Activity</h1>
-
-                    <!-- notification1 -->
-                    <div class="manu-notification">
-                      <div class="row">
-                        <div class="col-md-12">
-                          <div class="notify-1 notify-first">
-                            <div class="bel-icon">
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="40"
-                                height="40"
-                                viewBox="0 0 40 40"
-                                fill="none"
-                              >
-                                <circle
-                                  cx="20"
-                                  cy="20"
-                                  r="19.5"
-                                  fill="#E5F5FF"
-                                  stroke="#0072B1"
-                                />
-                                <mask
-                                  id="path-2-inside-1_3103_46958"
-                                  fill="white"
-                                >
-                                  <path
-                                    d="M18.4541 27.9141C18.5056 28.3018 18.6901 28.657 18.9734 28.9141C19.2567 29.1712 19.6198 29.3128 19.9956 29.3128C20.3714 29.3128 20.7345 29.1712 21.0179 28.9141C21.3012 28.657 21.4857 28.3018 21.5372 27.9141H18.4541Z"
-                                  />
-                                </mask>
-                                <path
-                                  d="M18.4541 27.9141V26.3141H16.6275L16.868 28.1247L18.4541 27.9141ZM19.9956 29.3128L19.9956 30.9128L19.9956 29.3128ZM21.5372 27.9141L23.1232 28.1247L23.3637 26.3141H21.5372V27.9141ZM16.868 28.1247C16.9681 28.8782 17.328 29.5816 17.8982 30.099L20.0486 27.7292C20.0506 27.731 20.0492 27.7304 20.0468 27.7257C20.0443 27.721 20.0415 27.7134 20.0402 27.7034L16.868 28.1247ZM17.8982 30.099C18.47 30.6179 19.2144 30.9128 19.9956 30.9128L19.9956 27.7128C20.0253 27.7128 20.0434 27.7245 20.0486 27.7292L17.8982 30.099ZM19.9956 30.9128C20.7768 30.9128 21.5212 30.6179 22.093 30.099L19.9427 27.7292C19.9478 27.7245 19.966 27.7128 19.9956 27.7128L19.9956 30.9128ZM22.093 30.099C22.6632 29.5816 23.0231 28.8782 23.1232 28.1247L19.9511 27.7034C19.9498 27.7134 19.947 27.721 19.9445 27.7257C19.942 27.7304 19.9407 27.731 19.9427 27.7292L22.093 30.099ZM21.5372 26.3141H18.4541V29.5141H21.5372V26.3141Z"
-                                  fill="#0072B1"
-                                  mask="url(#path-2-inside-1_3103_46958)"
-                                />
-                                <path
-                                  d="M28.25 25.7694V26.7747H11.75V25.7694L11.788 25.7345L11.788 25.7346L11.7931 25.7297C12.3836 25.1716 12.8993 24.5343 13.3268 23.835L13.3388 23.8153L13.349 23.7946C13.8273 22.8204 14.1136 21.7574 14.1917 20.6679L14.193 20.6501V20.6322L14.193 17.6106L14.193 17.6096C14.1901 16.1258 14.7038 14.694 15.6345 13.5791C16.5648 12.4648 17.8476 11.7433 19.2432 11.5424L19.672 11.4807V11.0475V10.2462C19.672 10.1559 19.7066 10.0731 19.7623 10.0151C19.8173 9.95788 19.8874 9.92969 19.956 9.92969C20.0245 9.92969 20.0947 9.95788 20.1496 10.0151C20.2053 10.0731 20.2399 10.1559 20.2399 10.2462V11.0353V11.4732L20.674 11.5309C22.0821 11.7183 23.3806 12.4353 24.3232 13.5534C25.2663 14.672 25.7872 16.1141 25.7836 17.6094V17.6106V20.6322V20.6501L25.7848 20.6679C25.863 21.7574 26.1492 22.8204 26.6275 23.7946L26.6384 23.8168L26.6515 23.8378C27.0865 24.539 27.6107 25.1765 28.2102 25.7329L28.212 25.7345L28.25 25.7694Z"
-                                  stroke="#0072B1"
-                                />
-                              </svg>
-                            </div>
-                            <p>
-                              Learn all the Dos and Don’ts of Dream Crowd at our
-                              May 16th <br />
-                              Community Standards webinar.
-                              <a href="#">Register Now</a>
-                            </p>
-                            <div class="last-week">
-                              <span>Last Week</span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="manu-notification">
-                      <div class="row">
-                        <div class="col-md-12">
-                          <div class="notify-1 notify-first">
-                            <div class="bel-icon">
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="40"
-                                height="40"
-                                viewBox="0 0 40 40"
-                                fill="none"
-                              >
-                                <circle
-                                  cx="20"
-                                  cy="20"
-                                  r="19.5"
-                                  fill="#E5F5FF"
-                                  stroke="#0072B1"
-                                />
-                                <mask
-                                  id="path-2-inside-1_3103_46958"
-                                  fill="white"
-                                >
-                                  <path
-                                    d="M18.4541 27.9141C18.5056 28.3018 18.6901 28.657 18.9734 28.9141C19.2567 29.1712 19.6198 29.3128 19.9956 29.3128C20.3714 29.3128 20.7345 29.1712 21.0179 28.9141C21.3012 28.657 21.4857 28.3018 21.5372 27.9141H18.4541Z"
-                                  />
-                                </mask>
-                                <path
-                                  d="M18.4541 27.9141V26.3141H16.6275L16.868 28.1247L18.4541 27.9141ZM19.9956 29.3128L19.9956 30.9128L19.9956 29.3128ZM21.5372 27.9141L23.1232 28.1247L23.3637 26.3141H21.5372V27.9141ZM16.868 28.1247C16.9681 28.8782 17.328 29.5816 17.8982 30.099L20.0486 27.7292C20.0506 27.731 20.0492 27.7304 20.0468 27.7257C20.0443 27.721 20.0415 27.7134 20.0402 27.7034L16.868 28.1247ZM17.8982 30.099C18.47 30.6179 19.2144 30.9128 19.9956 30.9128L19.9956 27.7128C20.0253 27.7128 20.0434 27.7245 20.0486 27.7292L17.8982 30.099ZM19.9956 30.9128C20.7768 30.9128 21.5212 30.6179 22.093 30.099L19.9427 27.7292C19.9478 27.7245 19.966 27.7128 19.9956 27.7128L19.9956 30.9128ZM22.093 30.099C22.6632 29.5816 23.0231 28.8782 23.1232 28.1247L19.9511 27.7034C19.9498 27.7134 19.947 27.721 19.9445 27.7257C19.942 27.7304 19.9407 27.731 19.9427 27.7292L22.093 30.099ZM21.5372 26.3141H18.4541V29.5141H21.5372V26.3141Z"
-                                  fill="#0072B1"
-                                  mask="url(#path-2-inside-1_3103_46958)"
-                                />
-                                <path
-                                  d="M28.25 25.7694V26.7747H11.75V25.7694L11.788 25.7345L11.788 25.7346L11.7931 25.7297C12.3836 25.1716 12.8993 24.5343 13.3268 23.835L13.3388 23.8153L13.349 23.7946C13.8273 22.8204 14.1136 21.7574 14.1917 20.6679L14.193 20.6501V20.6322L14.193 17.6106L14.193 17.6096C14.1901 16.1258 14.7038 14.694 15.6345 13.5791C16.5648 12.4648 17.8476 11.7433 19.2432 11.5424L19.672 11.4807V11.0475V10.2462C19.672 10.1559 19.7066 10.0731 19.7623 10.0151C19.8173 9.95788 19.8874 9.92969 19.956 9.92969C20.0245 9.92969 20.0947 9.95788 20.1496 10.0151C20.2053 10.0731 20.2399 10.1559 20.2399 10.2462V11.0353V11.4732L20.674 11.5309C22.0821 11.7183 23.3806 12.4353 24.3232 13.5534C25.2663 14.672 25.7872 16.1141 25.7836 17.6094V17.6106V20.6322V20.6501L25.7848 20.6679C25.863 21.7574 26.1492 22.8204 26.6275 23.7946L26.6384 23.8168L26.6515 23.8378C27.0865 24.539 27.6107 25.1765 28.2102 25.7329L28.212 25.7345L28.25 25.7694Z"
-                                  stroke="#0072B1"
-                                />
-                              </svg>
-                            </div>
-                            <p>
-                              Learn all the Dos and Don’ts of Dream Crowd at our
-                              May 16th <br />
-                              Community Standards webinar.
-                              <a href="#">Register Now</a>
-                            </p>
-                            <div class="last-week">
-                              <span>Last Week</span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="manu-notification">
-                      <div class="row">
-                        <div class="col-md-12">
-                          <div class="notify-1 notify-first">
-                            <div class="bel-icon">
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="40"
-                                height="40"
-                                viewBox="0 0 40 40"
-                                fill="none"
-                              >
-                                <circle
-                                  cx="20"
-                                  cy="20"
-                                  r="19.5"
-                                  fill="#E5F5FF"
-                                  stroke="#0072B1"
-                                />
-                                <mask
-                                  id="path-2-inside-1_3103_46958"
-                                  fill="white"
-                                >
-                                  <path
-                                    d="M18.4541 27.9141C18.5056 28.3018 18.6901 28.657 18.9734 28.9141C19.2567 29.1712 19.6198 29.3128 19.9956 29.3128C20.3714 29.3128 20.7345 29.1712 21.0179 28.9141C21.3012 28.657 21.4857 28.3018 21.5372 27.9141H18.4541Z"
-                                  />
-                                </mask>
-                                <path
-                                  d="M18.4541 27.9141V26.3141H16.6275L16.868 28.1247L18.4541 27.9141ZM19.9956 29.3128L19.9956 30.9128L19.9956 29.3128ZM21.5372 27.9141L23.1232 28.1247L23.3637 26.3141H21.5372V27.9141ZM16.868 28.1247C16.9681 28.8782 17.328 29.5816 17.8982 30.099L20.0486 27.7292C20.0506 27.731 20.0492 27.7304 20.0468 27.7257C20.0443 27.721 20.0415 27.7134 20.0402 27.7034L16.868 28.1247ZM17.8982 30.099C18.47 30.6179 19.2144 30.9128 19.9956 30.9128L19.9956 27.7128C20.0253 27.7128 20.0434 27.7245 20.0486 27.7292L17.8982 30.099ZM19.9956 30.9128C20.7768 30.9128 21.5212 30.6179 22.093 30.099L19.9427 27.7292C19.9478 27.7245 19.966 27.7128 19.9956 27.7128L19.9956 30.9128ZM22.093 30.099C22.6632 29.5816 23.0231 28.8782 23.1232 28.1247L19.9511 27.7034C19.9498 27.7134 19.947 27.721 19.9445 27.7257C19.942 27.7304 19.9407 27.731 19.9427 27.7292L22.093 30.099ZM21.5372 26.3141H18.4541V29.5141H21.5372V26.3141Z"
-                                  fill="#0072B1"
-                                  mask="url(#path-2-inside-1_3103_46958)"
-                                />
-                                <path
-                                  d="M28.25 25.7694V26.7747H11.75V25.7694L11.788 25.7345L11.788 25.7346L11.7931 25.7297C12.3836 25.1716 12.8993 24.5343 13.3268 23.835L13.3388 23.8153L13.349 23.7946C13.8273 22.8204 14.1136 21.7574 14.1917 20.6679L14.193 20.6501V20.6322L14.193 17.6106L14.193 17.6096C14.1901 16.1258 14.7038 14.694 15.6345 13.5791C16.5648 12.4648 17.8476 11.7433 19.2432 11.5424L19.672 11.4807V11.0475V10.2462C19.672 10.1559 19.7066 10.0731 19.7623 10.0151C19.8173 9.95788 19.8874 9.92969 19.956 9.92969C20.0245 9.92969 20.0947 9.95788 20.1496 10.0151C20.2053 10.0731 20.2399 10.1559 20.2399 10.2462V11.0353V11.4732L20.674 11.5309C22.0821 11.7183 23.3806 12.4353 24.3232 13.5534C25.2663 14.672 25.7872 16.1141 25.7836 17.6094V17.6106V20.6322V20.6501L25.7848 20.6679C25.863 21.7574 26.1492 22.8204 26.6275 23.7946L26.6384 23.8168L26.6515 23.8378C27.0865 24.539 27.6107 25.1765 28.2102 25.7329L28.212 25.7345L28.25 25.7694Z"
-                                  stroke="#0072B1"
-                                />
-                              </svg>
-                            </div>
-                            <p>
-                              Learn all the Dos and Don’ts of Dream Crowd at our
-                              May 16th <br />
-                              Community Standards webinar.
-                              <a href="#">Register Now</a>
-                            </p>
-                            <div class="last-week">
-                              <span>Last Week</span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="user-footer text-center">
-                <p class="mb-0">
-                  Copyright Dreamcrowd © 2021. All Rights Reserved.
-                </p>
-              </div>
             </div>
-          </div>
+
+            <!-- Date Filter Panel -->
+            <div class="filter-panel card mb-4">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h6 class="mb-3">Filter by Date Range</h6>
+                            <div class="btn-group flex-wrap" role="group">
+                                <button type="button" class="btn btn-outline-success filter-preset active"
+                                        data-preset="all_time">All Time
+                                </button>
+                                <button type="button" class="btn btn-outline-success filter-preset" data-preset="today">
+                                    Today
+                                </button>
+                                <button type="button" class="btn btn-outline-success filter-preset"
+                                        data-preset="yesterday">Yesterday
+                                </button>
+                                <button type="button" class="btn btn-outline-success filter-preset"
+                                        data-preset="this_week">This Week
+                                </button>
+                                <button type="button" class="btn btn-outline-success filter-preset"
+                                        data-preset="last_week">Last Week
+                                </button>
+                                <button type="button" class="btn btn-outline-success filter-preset"
+                                        data-preset="this_month">This Month
+                                </button>
+                                <button type="button" class="btn btn-outline-success filter-preset"
+                                        data-preset="last_month">Last Month
+                                </button>
+                                <button type="button" class="btn btn-outline-success filter-preset"
+                                        data-preset="last_3_months">Last 3 Months
+                                </button>
+                                <button type="button" class="btn btn-outline-success filter-preset"
+                                        data-preset="last_6_months">Last 6 Months
+                                </button>
+                                <button type="button" class="btn btn-outline-success filter-preset"
+                                        data-preset="last_year">Last Year
+                                </button>
+                                <button type="button" class="btn btn-outline-success filter-preset"
+                                        data-preset="year_to_date">Year to Date
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <h6 class="mb-3">Custom Date Range</h6>
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="dateFrom" placeholder="From Date">
+                            </div>
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="dateTo" placeholder="To Date">
+                            </div>
+                            <button class="btn btn-success w-100" onclick="applyCustomDateFilter()">Apply Custom
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Financial Statistics -->
+            <div class="section-header mb-3">
+                <h5><i class='bx bx-dollar-circle'></i> Financial Overview</h5>
+            </div>
+            <div class="row mb-4">
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="stat-card" style="border-left: 4px solid #28a745;">
+                        <div class="stat-icon" style="background: rgba(40, 167, 69, 0.1);">
+                            <i class='bx bx-wallet' style="color: #28a745;"></i>
+                        </div>
+                        <div class="stat-content">
+                            <p class="stat-label">Total Earnings</p>
+                            <h3 class="stat-value" id="stat-total-earnings">$0.00</h3>
+                            <small class="stat-sublabel">All-time revenue</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="stat-card" style="border-left: 4px solid #17a2b8;">
+                        <div class="stat-icon" style="background: rgba(23, 162, 184, 0.1);">
+                            <i class='bx bx-calendar' style="color: #17a2b8;"></i>
+                        </div>
+                        <div class="stat-content">
+                            <p class="stat-label">This Month</p>
+                            <h3 class="stat-value" id="stat-month-earnings">$0.00</h3>
+                            <small class="stat-sublabel" id="current-month">{{ now()->format('F Y') }}</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="stat-card" style="border-left: 4px solid #6f42c1;">
+                        <div class="stat-icon" style="background: rgba(111, 66, 193, 0.1);">
+                            <i class='bx bx-trending-up' style="color: #6f42c1;"></i>
+                        </div>
+                        <div class="stat-content">
+                            <p class="stat-label">Avg Order Value</p>
+                            <h3 class="stat-value" id="stat-avg-order">$0.00</h3>
+                            <small class="stat-sublabel">Per booking</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="stat-card" style="border-left: 4px solid #ffc107;">
+                        <div class="stat-icon" style="background: rgba(255, 193, 7, 0.1);">
+                            <i class='bx bx-time-five' style="color: #ffc107;"></i>
+                        </div>
+                        <div class="stat-content">
+                            <p class="stat-label">Pending Earnings</p>
+                            <h3 class="stat-value" id="stat-pending-earnings">$0.00</h3>
+                            <small class="stat-sublabel">In 48hr window</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="stat-card" style="border-left: 4px solid #20c997;">
+                        <div class="stat-icon" style="background: rgba(32, 201, 151, 0.1);">
+                            <i class='bx bx-check-circle' style="color: #20c997;"></i>
+                        </div>
+                        <div class="stat-content">
+                            <p class="stat-label">Completed Payouts</p>
+                            <h3 class="stat-value" id="stat-completed-payouts">$0.00</h3>
+                            <small class="stat-sublabel">Already paid out</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="stat-card" style="border-left: 4px solid #6c757d;">
+                        <div class="stat-icon" style="background: rgba(108, 117, 125, 0.1);">
+                            <i class='bx bx-credit-card' style="color: #6c757d;"></i>
+                        </div>
+                        <div class="stat-content">
+                            <p class="stat-label">Commission Paid</p>
+                            <h3 class="stat-value" id="stat-commission-paid">$0.00</h3>
+                            <small class="stat-sublabel">Platform fees</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="stat-card" style="border-left: 4px solid #fd7e14;">
+                        <div class="stat-icon" style="background: rgba(253, 126, 20, 0.1);">
+                            <i class='bx bx-hourglass' style="color: #fd7e14;"></i>
+                        </div>
+                        <div class="stat-content">
+                            <p class="stat-label">Pending Payouts</p>
+                            <h3 class="stat-value" id="stat-pending-payouts">$0.00</h3>
+                            <small class="stat-sublabel">Ready for payout</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="stat-card" style="border-left: 4px solid #198754;">
+                        <div class="stat-icon" style="background: rgba(25, 135, 84, 0.1);">
+                            <i class='bx bx-dollar' style="color: #198754;"></i>
+                        </div>
+                        <div class="stat-content">
+                            <p class="stat-label">Net Earnings</p>
+                            <h3 class="stat-value" id="stat-net-earnings">$0.00</h3>
+                            <small class="stat-sublabel">After refunds</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Order Statistics -->
+            <div class="section-header mb-3">
+                <h5><i class='bx bx-shopping-bag'></i> Booking Statistics</h5>
+            </div>
+            <div class="row mb-4">
+                <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
+                    <div class="stat-card-small">
+                        <h3 class="stat-value" id="stat-total-orders">0</h3>
+                        <p class="stat-label">Total Bookings</p>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
+                    <div class="stat-card-small status-active">
+                        <h3 class="stat-value" id="stat-active-orders">0</h3>
+                        <p class="stat-label">Active</p>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
+                    <div class="stat-card-small status-pending">
+                        <h3 class="stat-value" id="stat-pending-orders">0</h3>
+                        <p class="stat-label">Pending</p>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
+                    <div class="stat-card-small status-delivered">
+                        <h3 class="stat-value" id="stat-delivered-orders">0</h3>
+                        <p class="stat-label">Delivered</p>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
+                    <div class="stat-card-small status-completed">
+                        <h3 class="stat-value" id="stat-completed-orders">0</h3>
+                        <p class="stat-label">Completed</p>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
+                    <div class="stat-card-small status-cancelled">
+                        <h3 class="stat-value" id="stat-cancelled-orders">0</h3>
+                        <p class="stat-label">Cancelled</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Service Type Breakdown -->
+            <div class="section-header mb-3">
+                <h5><i class='bx bx-category'></i> Service Performance</h5>
+            </div>
+            <div class="row mb-4">
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="stat-card-small">
+                        <h3 class="stat-value" id="stat-class-bookings">0</h3>
+                        <p class="stat-label">Class Bookings</p>
+                        <small class="text-success fw-bold" id="stat-class-earnings">$0.00</small>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="stat-card-small">
+                        <h3 class="stat-value" id="stat-freelance-bookings">0</h3>
+                        <p class="stat-label">Freelance Bookings</p>
+                        <small class="text-success fw-bold" id="stat-freelance-earnings">$0.00</small>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="stat-card-small">
+                        <h3 class="stat-value" id="stat-online-bookings">0</h3>
+                        <p class="stat-label">Online Bookings</p>
+                        <small class="text-success fw-bold" id="stat-online-earnings">$0.00</small>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="stat-card-small">
+                        <h3 class="stat-value" id="stat-inperson-bookings">0</h3>
+                        <p class="stat-label">In-Person Bookings</p>
+                        <small class="text-success fw-bold" id="stat-inperson-earnings">$0.00</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Service Performance Metrics -->
+            <div class="section-header mb-3">
+                <h5><i class='bx bx-line-chart'></i> Gig Performance</h5>
+            </div>
+            <div class="row mb-4">
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="stat-card-small">
+                        <h3 class="stat-value" id="stat-active-gigs">0</h3>
+                        <p class="stat-label">Active Gigs</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="stat-card-small">
+                        <h3 class="stat-value" id="stat-total-impressions">0</h3>
+                        <p class="stat-label">Total Impressions</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="stat-card-small">
+                        <h3 class="stat-value" id="stat-total-clicks">0</h3>
+                        <p class="stat-label">Total Clicks</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="stat-card-small">
+                        <h3 class="stat-value" id="stat-conversion-rate">0%</h3>
+                        <p class="stat-label">Conversion Rate</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Engagement Metrics -->
+            <div class="section-header mb-3">
+                <h5><i class='bx bx-user-circle'></i> Engagement & Quality</h5>
+            </div>
+            <div class="row mb-4">
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="stat-card-small">
+                        <h3 class="stat-value" id="stat-total-reviews">0</h3>
+                        <p class="stat-label">Reviews Received</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="stat-card-small">
+                        <h3 class="stat-value" id="stat-avg-rating">0.0</h3>
+                        <p class="stat-label">Average Rating</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="stat-card-small">
+                        <h3 class="stat-value" id="stat-total-clients">0</h3>
+                        <p class="stat-label">Total Clients</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="stat-card-small">
+                        <h3 class="stat-value" id="stat-repeat-customers">0</h3>
+                        <p class="stat-label">Repeat Customers</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="stat-card-small">
+                        <h3 class="stat-value" id="stat-completion-rate">0%</h3>
+                        <p class="stat-label">Completion Rate</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="stat-card-small">
+                        <h3 class="stat-value" id="stat-cancellation-rate">0%</h3>
+                        <p class="stat-label">Cancellation Rate</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Section -->
+            <div class="row mb-4">
+                <div class="col-lg-8 mb-3">
+                    <div class="chart-card card">
+                        <div class="card-body">
+                            <h6 class="card-title"><i class='bx bx-line-chart'></i> Earnings Trend (Last 6 Months)</h6>
+                            <div class="chart-container" style="height: 300px;">
+                                <canvas id="earningsTrendChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 mb-3">
+                    <div class="chart-card card">
+                        <div class="card-body">
+                            <h6 class="card-title"><i class='bx bx-pie-chart-alt'></i> Booking Status</h6>
+                            <div class="chart-container" style="height: 300px;">
+                                <canvas id="statusBreakdownChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Bookings Section -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class='bx bx-history'></i> Recent Bookings</h5>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table table-hover mb-0">
+                                    <thead>
+                                    <tr>
+                                        <th>Service</th>
+                                        <th>Customer</th>
+                                        <th>Date</th>
+                                        <th>Amount</th>
+                                        <th>Status</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    @foreach($recentBookings as $booking)
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    @if($booking->gig && $booking->gig->images)
+                                                        <img
+                                                            src="/{{ json_decode($booking->gig->images)[0] ?? 'assets/default-service.jpg' }}"
+                                                            alt="Service" class="rounded me-2"
+                                                            style="width: 40px; height: 40px; object-fit: cover;">
+                                                    @endif
+                                                    <div>
+                                                        <div class="fw-bold">{{ $booking->gig->title ?? 'N/A' }}</div>
+                                                        <small class="text-muted">{{ $booking->gig->service_role ?? 'N/A' }}</small>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="fw-bold">{{ $booking->user->name ?? 'Unknown' }}</div>
+                                                <small class="text-muted">{{ $booking->user->email ?? '' }}</small>
+                                            </td>
+                                            <td>{{ $booking->created_at->format('M d, Y') }}</td>
+                                            <td>
+                                                <span class="fw-bold text-success">${{ number_format($booking->seller_earnings ?? 0, 2) }}</span>
+                                            </td>
+                                            <td>
+                                                @php
+                                                    $statusLabels = ['0' => 'Pending', '1' => 'Active', '2' => 'Delivered', '3' => 'Completed', '4' => 'Cancelled'];
+                                                    $statusColors = ['0' => 'warning', '1' => 'primary', '2' => 'info', '3' => 'success', '4' => 'danger'];
+                                                @endphp
+                                                <span
+                                                    class="badge bg-{{ $statusColors[$booking->status] ?? 'secondary' }}">
+                                                    {{ $statusLabels[$booking->status] ?? 'Unknown' }}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                    @if($recentBookings->isEmpty())
+                                        <tr>
+                                            <td colspan="5" class="text-center py-4 text-muted">
+                                                No bookings found. Start creating your services to get bookings!
+                                            </td>
+                                        </tr>
+                                    @endif
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
-      </div>
-      <!-- =============================== MAIN CONTENT END HERE =========================== -->
-    </section>
+    </div>
+</section>
 
-    <script src="assets/teacher/libs/jquery/jquery.js"></script>
-    <script src="assets/teacher/libs/datatable/js/datatable.js"></script>
-    <script src="assets/teacher/libs/datatable/js/datatablebootstrap.js"></script>
-    <script src="assets/teacher/libs/select2/js/select2.min.js"></script>
-    <script src="assets/teacher/libs/owl-carousel/js/owl.carousel.min.js"></script>
-    <script src="assets/teacher/libs/aos/js/aos.js"></script>
-    <script src="assets/teacher/asset/js/bootstrap.min.js"></script>
-    <script src="assets/teacher/asset/js/script.js"></script>
-    <!-- jQuery -->
-    <script
-      src="https://code.jquery.com/jquery-3.7.1.min.js"
-      integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
-      crossorigin="anonymous"
-    ></script>
-  </body>
+<!-- JavaScript Libraries -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="/assets/teacher/asset/js/bootstrap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="/assets/teacher/asset/js/dashboard.js"></script>
+
+<script>
+    // Global variables
+    let earningsTrendChart = null;
+    let statusBreakdownChart = null;
+
+    // Initialize on page load
+    $(document).ready(function () {
+        // Initialize CSRF token for AJAX
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+
+        // Load initial statistics (all time)
+        loadDashboardStatistics('all_time');
+
+        // Initialize date pickers
+        flatpickr("#dateFrom", {
+            dateFormat: "Y-m-d",
+        });
+        flatpickr("#dateTo", {
+            dateFormat: "Y-m-d",
+        });
+
+        // Filter preset buttons
+        $('.filter-preset').click(function () {
+            $('.filter-preset').removeClass('active');
+            $(this).addClass('active');
+            const preset = $(this).data('preset');
+            loadDashboardStatistics(preset);
+        });
+    });
+
+    /**
+     * Load dashboard statistics from API
+     */
+    function loadDashboardStatistics(preset, customFrom = null, customTo = null) {
+        // Show loading
+        $('#dashboardLoading').addClass('active');
+
+        // Build URL with parameters
+        let url = '/teacher-dashboard/statistics?preset=' + preset;
+        if (customFrom && customTo) {
+            url += '&date_from=' + customFrom + '&date_to=' + customTo;
+        }
+
+        // Fetch statistics
+        $.ajax({
+            url: url,
+            method: 'GET',
+            success: function (data) {
+                updateStatistics(data);
+                loadCharts(preset, customFrom, customTo);
+            },
+            error: function (xhr, status, error) {
+                console.error('Error loading statistics:', error);
+                alert('Failed to load dashboard statistics. Please refresh the page.');
+            },
+            complete: function () {
+                $('#dashboardLoading').removeClass('active');
+            }
+        });
+    }
+
+    /**
+     * Update all statistic cards with data
+     */
+    function updateStatistics(data) {
+        // Financial statistics
+        $('#stat-total-earnings').text('$' + parseFloat(data.financial.total_earnings).toFixed(2));
+        $('#stat-month-earnings').text('$' + parseFloat(data.financial.month_earnings).toFixed(2));
+        $('#stat-avg-order').text('$' + parseFloat(data.financial.avg_order_value).toFixed(2));
+        $('#stat-pending-earnings').text('$' + parseFloat(data.financial.pending_earnings).toFixed(2));
+        $('#stat-completed-payouts').text('$' + parseFloat(data.financial.completed_payouts).toFixed(2));
+        $('#stat-commission-paid').text('$' + parseFloat(data.financial.total_commission_paid).toFixed(2));
+        $('#stat-pending-payouts').text('$' + parseFloat(data.financial.pending_payouts).toFixed(2));
+        $('#stat-net-earnings').text('$' + parseFloat(data.financial.net_earnings).toFixed(2));
+
+        // Order statistics
+        $('#stat-total-orders').text(data.orders.total_orders);
+        $('#stat-active-orders').text(data.orders.active_orders);
+        $('#stat-pending-orders').text(data.orders.pending_orders);
+        $('#stat-delivered-orders').text(data.orders.delivered_orders);
+        $('#stat-completed-orders').text(data.orders.completed_orders);
+        $('#stat-cancelled-orders').text(data.orders.cancelled_orders);
+
+        // Service type breakdown
+        $('#stat-class-bookings').text(data.orders.class_bookings);
+        $('#stat-class-earnings').text('$' + parseFloat(data.financial.class_earnings).toFixed(2));
+        $('#stat-freelance-bookings').text(data.orders.freelance_bookings);
+        $('#stat-freelance-earnings').text('$' + parseFloat(data.financial.freelance_earnings).toFixed(2));
+        $('#stat-online-bookings').text(data.orders.online_bookings);
+        $('#stat-online-earnings').text('$' + parseFloat(data.financial.online_earnings).toFixed(2));
+        $('#stat-inperson-bookings').text(data.orders.inperson_bookings);
+        $('#stat-inperson-earnings').text('$' + parseFloat(data.financial.inperson_earnings).toFixed(2));
+
+        // Service performance
+        $('#stat-active-gigs').text(data.service_performance.active_gigs);
+        $('#stat-total-impressions').text(data.service_performance.total_impressions);
+        $('#stat-total-clicks').text(data.service_performance.total_clicks);
+        $('#stat-conversion-rate').text(parseFloat(data.service_performance.conversion_rate).toFixed(1) + '%');
+
+        // Engagement metrics
+        $('#stat-total-reviews').text(data.engagement.total_reviews);
+        $('#stat-avg-rating').text(parseFloat(data.engagement.avg_rating).toFixed(1));
+        $('#stat-total-clients').text(data.engagement.total_clients);
+        $('#stat-repeat-customers').text(data.engagement.repeat_customers);
+        $('#stat-completion-rate').text(parseFloat(data.orders.completion_rate).toFixed(1) + '%');
+        $('#stat-cancellation-rate').text(parseFloat(data.orders.cancellation_rate).toFixed(1) + '%');
+    }
+
+    /**
+     * Load and render charts
+     */
+    function loadCharts(preset, customFrom = null, customTo = null) {
+        // Load earnings trend chart
+        $.ajax({
+            url: '/teacher-dashboard/earnings-trend',
+            method: 'GET',
+            success: function (data) {
+                renderEarningsTrendChart(data);
+            }
+        });
+
+        // Load order status chart
+        let statusUrl = '/teacher-dashboard/order-status-chart?preset=' + preset;
+        if (customFrom && customTo) {
+            statusUrl += '&date_from=' + customFrom + '&date_to=' + customTo;
+        }
+
+        $.ajax({
+            url: statusUrl,
+            method: 'GET',
+            success: function (data) {
+                renderStatusBreakdownChart(data);
+            }
+        });
+    }
+
+    /**
+     * Render earnings trend line chart
+     */
+    function renderEarningsTrendChart(data) {
+        const ctx = document.getElementById('earningsTrendChart').getContext('2d');
+
+        // Destroy existing chart if exists
+        if (earningsTrendChart) {
+            earningsTrendChart.destroy();
+        }
+
+        earningsTrendChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: data.labels,
+                datasets: [{
+                    label: 'Earnings ($)',
+                    data: data.earnings,
+                    borderColor: '#28a745',
+                    backgroundColor: 'rgba(40, 167, 69, 0.1)',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function (value) {
+                                return '$' + value.toLocaleString();
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    /**
+     * Render status breakdown pie chart
+     */
+    function renderStatusBreakdownChart(data) {
+        const ctx = document.getElementById('statusBreakdownChart').getContext('2d');
+
+        // Destroy existing chart if exists
+        if (statusBreakdownChart) {
+            statusBreakdownChart.destroy();
+        }
+
+        // Only create chart if there's data
+        if (data.data.length === 0) {
+            ctx.canvas.parentNode.innerHTML = '<p class="text-center text-muted py-5">No booking data available</p>';
+            return;
+        }
+
+        statusBreakdownChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: data.labels,
+                datasets: [{
+                    data: data.data,
+                    backgroundColor: data.backgroundColor,
+                    borderWidth: 2,
+                    borderColor: '#fff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+    }
+
+    /**
+     * Apply custom date filter
+     */
+    function applyCustomDateFilter() {
+        const dateFrom = $('#dateFrom').val();
+        const dateTo = $('#dateTo').val();
+
+        if (!dateFrom || !dateTo) {
+            alert('Please select both from and to dates');
+            return;
+        }
+
+        // Deactivate all preset buttons
+        $('.filter-preset').removeClass('active');
+
+        // Load statistics with custom dates
+        loadDashboardStatistics('custom', dateFrom, dateTo);
+    }
+</script>
+</body>
 </html>
-<!-- profile-upload -->
-<script>
-  // File Upload
-  //
-  function readURL(input) {
-    if (input.files && input.files[0]) {
-      var reader = new FileReader();
-      reader.onload = function (e) {
-        $("#imagePreview").css(
-          "background-image",
-          "url(" + e.target.result + ")"
-        );
-        $("#imagePreview").hide();
-        $("#imagePreview").fadeIn(650);
-      };
-      reader.readAsDataURL(input.files[0]);
-    }
-  }
-  $("#imageUpload").change(function () {
-    readURL(this);
-  });
-</script>
-<!-- ============ -->
-<!-- ================ side js start here=============== -->
-<script>
-  // Sidebar script
-  document.addEventListener("DOMContentLoaded", function () {
-    let arrow = document.querySelectorAll(".arrow");
-    for (let i = 0; i < arrow.length; i++) {
-      arrow[i].addEventListener("click", function (e) {
-        let arrowParent = e.target.parentElement.parentElement; // Selecting main parent of arrow
-        arrowParent.classList.toggle("showMenu");
-      });
-    }
-
-    let sidebar = document.querySelector(".sidebar");
-    let sidebarBtn = document.querySelector(".bx-menu");
-
-    sidebarBtn.addEventListener("click", function () {
-      sidebar.classList.toggle("close");
-    });
-
-    // Function to toggle sidebar based on screen size
-    function toggleSidebar() {
-      let screenWidth = window.innerWidth;
-      if (screenWidth < 992) {
-        sidebar.classList.add("close");
-      } else {
-        sidebar.classList.remove("close");
-      }
-    }
-
-    // Call the function initially
-    toggleSidebar();
-
-    // Listen for resize events to adjust sidebar
-    window.addEventListener("resize", function () {
-      toggleSidebar();
-    });
-  });
-</script>
-<!-- ================ side js start End=============== -->
-
-<!-- modal hide show jquery here -->
-<script>
-  $(document).ready(function () {
-    $(document).on("click", "#delete-account", function (e) {
-      e.preventDefault();
-      $("#exampleModal7").modal("show");
-      $("#delete-teacher-account").modal("hide");
-    });
-
-    $(document).on("click", "#delete-account", function (e) {
-      e.preventDefault();
-      $("#delete-teacher-account").modal("show");
-      $("#exampleModal7").modal("hide");
-    });
-  });
-</script>
-<!-- radio js here -->
-<script>
-  function showAdditionalOptions1() {
-    hideAllAdditionalOptions();
-  }
-
-  function showAdditionalOptions2() {
-    hideAllAdditionalOptions();
-    document.getElementById("additionalOptions2").style.display = "block";
-  }
-
-  function showAdditionalOptions3() {
-    hideAllAdditionalOptions();
-  }
-
-  function showAdditionalOptions4() {
-    hideAllAdditionalOptions();
-    document.getElementById("additionalOptions4").style.display = "block";
-  }
-
-  function hideAllAdditionalOptions() {
-    var elements = document.getElementsByClassName("additional-options");
-    for (var i = 0; i < elements.length; i++) {
-      elements[i].style.display = "none";
-    }
-  }
-
-  // Call the function to show the additional options for the default checked radio button on page load
-  window.onload = function () {
-    showAdditionalOptions1();
-  };
-</script>
-<!-- JavaScript to close the modal when Cancel button is clicked -->
-<script>
-  // Wait for the document to load
-  document.addEventListener("DOMContentLoaded", function () {
-    // Get the Cancel button by its ID
-    var cancelButton = document.getElementById("cancelButton");
-
-    // Add a click event listener to the Cancel button
-    cancelButton.addEventListener("click", function () {
-      // Find the modal by its ID
-      var modal = document.getElementById("exampleModal6");
-
-      // Use Bootstrap's modal method to hide the modal
-      $(modal).modal("hide");
-    });
-  });
-</script>

@@ -49,5 +49,13 @@ class TeacherGig extends Model
         return $this->hasMany(ServiceReviews::class, 'gig_id')->with('replies');
     }
 
+    public function user() {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function expertProfile() {
+        return $this->hasOne(ExpertProfile::class, 'user_id', 'user_id');
+    }
+
 
 }

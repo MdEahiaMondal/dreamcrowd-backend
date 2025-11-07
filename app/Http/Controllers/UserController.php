@@ -17,9 +17,16 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use App\Services\NotificationService;
+use App\Services\UserDashboardService;
 
 class UserController extends Controller
 {
+    protected $dashboardService;
+
+    public function __construct(UserDashboardService $dashboardService)
+    {
+        $this->dashboardService = $dashboardService;
+    }
 
     public function UsercheckAuth()
     {
@@ -42,43 +49,46 @@ class UserController extends Controller
             return $redirect;
         }
 
-        // Base query
-        $orders = BookOrder::query();
+        $userId = Auth::id();
+
+        // Base query for user-specific orders
+        $baseQuery = BookOrder::where('user_id', $userId);
 
         // === COUNT STATISTICS ===
         $stats = [
-            'all_orders'        => BookOrder::count(),
+            'all_orders'        => $baseQuery->clone()->count(),
 
             // Class orders (based on TeacherGig service_role)
-            'class_orders'      => BookOrder::whereHas('gig', function ($q) {
+            'class_orders'      => $baseQuery->clone()->whereHas('gig', function ($q) {
                 $q->where('service_role', 'Class');
             })->count(),
 
             // Freelancer orders (based on TeacherGig freelance_service)
-            'freelancer_orders' => BookOrder::whereHas('gig', function ($q) {
+            'freelancer_orders' => $baseQuery->clone()->whereHas('gig', function ($q) {
                 $q->where('service_role', 'Freelance');
             })->count(),
 
             // Status-based counts
-            'completed_orders'  =>  BookOrder::where('status', 3)->count(),
+            'completed_orders'  =>  $baseQuery->clone()->where('status', 3)->count(),
 
-            'cancelled_orders'  =>  BookOrder::where('status', 4)->count(),
+            'cancelled_orders'  =>  $baseQuery->clone()->where('status', 4)->count(),
 
-            'active_orders'     => BookOrder::where('status', 1)->count(),
+            'active_orders'     => $baseQuery->clone()->where('status', 1)->count(),
 
             // Work site-based counts
-            'online_orders' => BookOrder::whereHas('gig', function ($q) {
+            'online_orders' => $baseQuery->clone()->whereHas('gig', function ($q) {
                 $q->where('service_type', 'Online');
             })->count(),
 
-            'inperson_orders' => BookOrder::whereHas('gig', function ($q) {
+            'inperson_orders' => $baseQuery->clone()->whereHas('gig', function ($q) {
                 $q->where('service_type', 'Inperson');
             })->count(),
 
         ];
 
         // === RECENT BOOKINGS ===
-        $recentBookings = BookOrder::with(['gig', 'booker'])
+        $recentBookings = BookOrder::where('user_id', $userId)
+            ->with(['gig', 'teacher'])
             ->latest()
             ->take(9)
             ->get();
@@ -331,7 +341,266 @@ class UserController extends Controller
     }
 
 
-    // Wish List Functions END================ 
+    // Wish List Functions END================
+
+
+    // ============================================================
+    // AJAX DASHBOARD ENDPOINTS
+    // ============================================================
+
+    /**
+     * Get dashboard statistics with date filters (AJAX)
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getDashboardStatistics(Request $request)
+    {
+        try {
+            $userId = Auth::id();
+
+            // Get date range from preset or custom dates
+            $datePreset = $request->input('date_preset', 'all_time');
+
+            if ($datePreset === 'custom') {
+                $dateFrom = $request->input('date_from');
+                $dateTo = $request->input('date_to');
+            } else {
+                $dates = $this->dashboardService->applyDatePreset($datePreset);
+                $dateFrom = $dates['from'];
+                $dateTo = $dates['to'];
+            }
+
+            // Get all statistics
+            $statistics = $this->dashboardService->getAllStatistics($userId, $dateFrom, $dateTo);
+
+            return response()->json([
+                'success' => true,
+                'data' => $statistics
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error fetching statistics: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Get chart data (AJAX)
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getChartData(Request $request)
+    {
+        try {
+            $userId = Auth::id();
+            $chartType = $request->input('chart_type', 'spending_trend');
+            $months = $request->input('months', 6);
+            $dateFrom = $request->input('date_from');
+            $dateTo = $request->input('date_to');
+
+            $data = [];
+
+            switch ($chartType) {
+                case 'spending_trend':
+                    $data = $this->dashboardService->getMonthlyTrendData($userId, $months);
+                    break;
+
+                case 'status_breakdown':
+                    $data = $this->dashboardService->getOrderStatusBreakdown($userId, $dateFrom, $dateTo);
+                    break;
+
+                case 'category_distribution':
+                    $data = $this->dashboardService->getCategoryDistribution($userId, $dateFrom, $dateTo, 5);
+                    break;
+
+                default:
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Invalid chart type'
+                    ], 400);
+            }
+
+            return response()->json([
+                'success' => true,
+                'chart_type' => $chartType,
+                'data' => $data
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error fetching chart data: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Get paginated transactions for table (AJAX)
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getDashboardTransactions(Request $request)
+    {
+        try {
+            $userId = Auth::id();
+            $perPage = $request->input('per_page', 15);
+            $page = $request->input('page', 1);
+
+            $transactions = $this->dashboardService->getRecentTransactions($userId, $perPage, $page);
+
+            // Format data for frontend
+            $formattedData = $transactions->map(function ($order) {
+                return [
+                    'id' => $order->id,
+                    'date' => $order->created_at->format('M d, Y H:i'),
+                    'service_name' => $order->gig->title ?? 'N/A',
+                    'service_category' => $order->gig->category_name ?? 'N/A',
+                    'seller_name' => $order->teacher->name ?? 'N/A',
+                    'seller_avatar' => $order->teacher->avatar ?? null,
+                    'amount' => $order->price ?? 0,
+                    'service_fee' => $order->buyer_commission ?? 0,
+                    'discount' => $order->discount ?? 0,
+                    'final_price' => $order->finel_price ?? 0,
+                    'status' => $order->status,
+                    'status_label' => $this->getStatusLabel($order->status),
+                    'status_color' => $this->getStatusColor($order->status),
+                    'payment_method' => 'Stripe',
+                    'coupon_code' => $order->coupen ?? null,
+                    'view_url' => route('order.details', $order->id),
+                ];
+            });
+
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'current_page' => $transactions->currentPage(),
+                    'data' => $formattedData,
+                    'per_page' => $transactions->perPage(),
+                    'total' => $transactions->total(),
+                    'last_page' => $transactions->lastPage(),
+                ]
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error fetching transactions: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Export dashboard to PDF
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\Response
+     */
+    public function exportDashboardPDF(Request $request)
+    {
+        try {
+            $userId = Auth::id();
+            $user = Auth::user();
+
+            // Get date range
+            $datePreset = $request->input('date_preset', 'all_time');
+            if ($datePreset === 'custom') {
+                $dateFrom = $request->input('date_from');
+                $dateTo = $request->input('date_to');
+            } else {
+                $dates = $this->dashboardService->applyDatePreset($datePreset);
+                $dateFrom = $dates['from'];
+                $dateTo = $dates['to'];
+            }
+
+            // Get statistics
+            $statistics = $this->dashboardService->getAllStatistics($userId, $dateFrom, $dateTo);
+            $transactions = $this->dashboardService->getRecentTransactions($userId, 50, 1);
+
+            // Generate PDF
+            $pdf = \PDF::loadView('exports.dashboard-pdf', [
+                'user' => $user,
+                'stats' => $statistics,
+                'transactions' => $transactions,
+                'dateRange' => [
+                    'from' => $dateFrom ? \Carbon\Carbon::parse($dateFrom)->format('M d, Y') : 'All Time',
+                    'to' => $dateTo ? \Carbon\Carbon::parse($dateTo)->format('M d, Y') : 'Present',
+                ],
+                'generatedAt' => now()->format('M d, Y H:i:s')
+            ]);
+
+            return $pdf->download('dashboard-report-' . now()->format('Y-m-d') . '.pdf');
+
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Error generating PDF: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Export dashboard to Excel
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\Response
+     */
+    public function exportDashboardExcel(Request $request)
+    {
+        try {
+            $userId = Auth::id();
+
+            // Get date range
+            $datePreset = $request->input('date_preset', 'all_time');
+            if ($datePreset === 'custom') {
+                $dateFrom = $request->input('date_from');
+                $dateTo = $request->input('date_to');
+            } else {
+                $dates = $this->dashboardService->applyDatePreset($datePreset);
+                $dateFrom = $dates['from'];
+                $dateTo = $dates['to'];
+            }
+
+            return \Excel::download(
+                new \App\Exports\UserDashboardExport($userId, $dateFrom, $dateTo),
+                'dashboard-data-' . now()->format('Y-m-d') . '.xlsx'
+            );
+
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Error generating Excel: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Helper: Get status label
+     */
+    private function getStatusLabel($status)
+    {
+        $labels = [
+            '0' => 'Pending',
+            '1' => 'Active',
+            '2' => 'Delivered',
+            '3' => 'Completed',
+            '4' => 'Cancelled',
+        ];
+        return $labels[$status] ?? 'Unknown';
+    }
+
+    /**
+     * Helper: Get status color
+     */
+    private function getStatusColor($status)
+    {
+        $colors = [
+            '0' => 'warning',
+            '1' => 'primary',
+            '2' => 'info',
+            '3' => 'success',
+            '4' => 'danger',
+        ];
+        return $colors[$status] ?? 'secondary';
+    }
 
 
 }

@@ -1509,47 +1509,91 @@ class OrderManagementController extends Controller
 
 
         if($authId == $buyerId){
-            // To Seller
-            $this->notificationService->send(
-                userId: $sellerId,
-                type: 'cancellation',
-                title: 'Order Cancelled by Buyer',
-                message: $buyerName . ' has cancelled the order for ' . $serviceName . ' scheduled on ' . $date,
-                data: ['order_id' => $orderId, 'cancellation_reason' => $reason],
-                sendEmail: true // Important - seller needs to know
-            );
+            // Buyer cancelled - determine refund message
+            $refundMessage = '';
+            if ($cancelOrder->refund == 1) {
+                if ($cancelOrder->amount == $order->finel_price) {
+                    $refundMessage = 'Full refund of $' . number_format($cancelOrder->amount, 2) . ' has been processed.';
+                } else {
+                    $refundMessage = 'Partial refund of $' . number_format($cancelOrder->amount, 2) . ' has been processed.';
+                }
+            } else {
+                $refundMessage = 'No refund is applicable for this cancellation.';
+            }
 
-            // to admin
-            // To admin (Notify new order)
-            $this->notificationService->sendToMultipleUsers(
-                userIds: $adminIds,
-                type: 'order',
-                title: 'Order Cancelled',
-                message: 'Order cancelled by ' . $sellerName . ' for ' . $serviceName,
-                data: ['order_id' => $orderId, 'seller_id' => $sellerId, 'buyer_id' => $buyerId],
-                sendEmail: true // Admin gets email + notification
-            );
-            
-        }else{
             // To Buyer (Confirmation)
             $this->notificationService->send(
                 userId: $buyerId,
                 type: 'cancellation',
                 title: 'Order Cancelled Successfully',
-                message: 'Your order has been cancelled. Refund has been initiated for eligible classes.',
-                data: ['order_id' => $orderId, 'refund_amount' => $refundAmount],
+                message: 'You have successfully cancelled your order for ' . $serviceName . '. ' . $refundMessage,
+                data: ['order_id' => $orderId, 'refund_amount' => $cancelOrder->amount, 'cancellation_reason' => $reason],
                 sendEmail: true
             );
 
-            // to admin
-            // To admin (Notify new order)
+            // To Seller
+            $this->notificationService->send(
+                userId: $sellerId,
+                type: 'cancellation',
+                title: 'Order Cancelled by Buyer',
+                message: $buyerName . ' has cancelled the order for ' . $serviceName . '. ' . $refundMessage,
+                data: ['order_id' => $orderId, 'cancellation_reason' => $reason, 'refund_amount' => $cancelOrder->amount],
+                sendEmail: true
+            );
+
+            // To admin
             $this->notificationService->sendToMultipleUsers(
                 userIds: $adminIds,
                 type: 'order',
-                title: 'Order Cancelled',
-                message: 'Order cancelled by ' . $buyerName . ' for ' . $serviceName,
-                data: ['order_id' => $orderId, 'seller_id' => $sellerId, 'buyer_id' => $buyerId],
-                sendEmail: true // Admin gets email + notification
+                title: 'Order Cancelled by Buyer',
+                message: $buyerName . ' cancelled order for ' . $serviceName . '. ' . $refundMessage,
+                data: ['order_id' => $orderId, 'seller_id' => $sellerId, 'buyer_id' => $buyerId, 'refund_amount' => $cancelOrder->amount],
+                sendEmail: false
+            );
+
+        }else{
+            // Seller cancelled - determine refund message
+            $refundMessage = '';
+            if ($cancelOrder->refund == 1) {
+                if ($cancelOrder->amount == $order->finel_price) {
+                    $refundMessage = 'Full refund of $' . number_format($cancelOrder->amount, 2) . ' has been issued.';
+                } else if ($cancelOrder->amount > 0) {
+                    $refundMessage = 'Partial refund of $' . number_format($cancelOrder->amount, 2) . ' has been issued.';
+                } else {
+                    $refundMessage = 'No refund was processed.';
+                }
+            } else {
+                $refundMessage = 'No refund is applicable.';
+            }
+
+            // To Buyer
+            $this->notificationService->send(
+                userId: $buyerId,
+                type: 'cancellation',
+                title: 'Order Cancelled by Seller',
+                message: $sellerName . ' has cancelled your order for ' . $serviceName . '. ' . $refundMessage,
+                data: ['order_id' => $orderId, 'refund_amount' => $cancelOrder->amount, 'cancellation_reason' => $reason],
+                sendEmail: true
+            );
+
+            // To Seller (Confirmation)
+            $this->notificationService->send(
+                userId: $sellerId,
+                type: 'cancellation',
+                title: 'Order Cancelled Successfully',
+                message: 'You have successfully cancelled the order for ' . $serviceName . '. ' . $refundMessage,
+                data: ['order_id' => $orderId, 'refund_amount' => $cancelOrder->amount, 'cancellation_reason' => $reason],
+                sendEmail: true
+            );
+
+            // To admin
+            $this->notificationService->sendToMultipleUsers(
+                userIds: $adminIds,
+                type: 'order',
+                title: 'Order Cancelled by Seller',
+                message: $sellerName . ' cancelled order for ' . $serviceName . '. ' . $refundMessage,
+                data: ['order_id' => $orderId, 'seller_id' => $sellerId, 'buyer_id' => $buyerId, 'refund_amount' => $cancelOrder->amount],
+                sendEmail: false
             );
         }
         
@@ -2378,6 +2422,31 @@ class OrderManagementController extends Controller
         $order->user_reschedule = 1;
         $order->update();
 
+        // Send notifications
+        $buyerName = Auth::user()->first_name . ' ' . Auth::user()->last_name;
+        $sellerName = DB::table('users')->where('id', $order->teacher_id)->value(DB::raw("CONCAT(first_name, ' ', last_name)"));
+        $serviceName = $order->title;
+
+        // Notify Buyer (confirmation)
+        $this->notificationService->send(
+            userId: $order->user_id,
+            type: 'reschedule',
+            title: 'Reschedule Request Submitted',
+            message: 'Your reschedule request for ' . $serviceName . ' has been submitted and is awaiting approval from ' . $sellerName . '.',
+            data: ['order_id' => $order->id, 'reschedule_count' => count($classes)],
+            sendEmail: false
+        );
+
+        // Notify Teacher (action required)
+        $this->notificationService->send(
+            userId: $order->teacher_id,
+            type: 'reschedule',
+            title: 'Reschedule Request Received',
+            message: $buyerName . ' has requested to reschedule ' . count($classes) . ' class(es) for ' . $serviceName . '. Please review and respond.',
+            data: ['order_id' => $order->id, 'buyer_id' => $order->user_id, 'reschedule_count' => count($classes)],
+            sendEmail: true
+        );
+
         if ($gig->service_role == 'Class') {
             return redirect()->to('/order-management')->with('success', 'Resheduled Classes Successfully!');
         } else if ($gigData->freelance_service == 'Consultation') {
@@ -2677,6 +2746,30 @@ class OrderManagementController extends Controller
         $order->user_reschedule = 0;
         $order->update();
 
+        // Send notifications
+        $sellerName = Auth::user()->first_name . ' ' . Auth::user()->last_name;
+        $buyerName = DB::table('users')->where('id', $order->user_id)->value(DB::raw("CONCAT(first_name, ' ', last_name)"));
+        $serviceName = $order->title;
+
+        // Notify Teacher (confirmation)
+        $this->notificationService->send(
+            userId: $order->teacher_id,
+            type: 'reschedule',
+            title: 'Reschedule Request Submitted',
+            message: 'Your reschedule request for ' . $serviceName . ' has been submitted and is awaiting approval from ' . $buyerName . '.',
+            data: ['order_id' => $order->id, 'reschedule_count' => count($classes)],
+            sendEmail: false
+        );
+
+        // Notify Buyer (action required)
+        $this->notificationService->send(
+            userId: $order->user_id,
+            type: 'reschedule',
+            title: 'Seller Requested Reschedule',
+            message: $sellerName . ' has requested to reschedule ' . count($classes) . ' class(es) for ' . $serviceName . '. Please review and respond.',
+            data: ['order_id' => $order->id, 'seller_id' => $order->teacher_id, 'reschedule_count' => count($classes)],
+            sendEmail: true
+        );
 
         if ($gig->service_role == 'Class') {
             return redirect()->to('/client-management')->with('success', 'Resheduled Classes Successfully!');
@@ -2789,23 +2882,43 @@ class OrderManagementController extends Controller
             $class->update();
         }
 
+        // Determine who requested and who rejected
+        $buyerRequested = ($order->user_reschedule == 1);
+        $sellerRequested = ($order->teacher_reschedule == 1);
+
+        $buyerName = DB::table('users')->where('id', $order->user_id)->value(DB::raw("CONCAT(first_name, ' ', last_name)"));
+        $sellerName = DB::table('users')->where('id', $order->teacher_id)->value(DB::raw("CONCAT(first_name, ' ', last_name)"));
+        $serviceName = $order->title;
+        $rejectorName = Auth::user()->first_name . ' ' . Auth::user()->last_name;
+
         $order->teacher_reschedule = 0;
         $order->user_reschedule = 0;
         $order->update();
 
-        // $requesterId = 
-
-
-        // // Similar to accept, but with rejection message
-        // // To the person who requested reschedule
-        // $this->notificationService->send(
-        //     userId: $requesterId, // Determine who requested
-        //     type: 'reschedule',
-        //     title: 'Reschedule Rejected',
-        //     message: 'Your reschedule request has been rejected.',
-        //     data: ['order_id' => $order->id],
-        //     sendEmail: false
-        // );
+        // Send notifications based on who requested
+        if ($buyerRequested) {
+            // Buyer requested, seller rejected
+            // Notify Buyer (requester)
+            $this->notificationService->send(
+                userId: $order->user_id,
+                type: 'reschedule',
+                title: 'Reschedule Request Rejected',
+                message: $sellerName . ' has rejected your reschedule request for ' . $serviceName . '.',
+                data: ['order_id' => $order->id, 'rejected_by' => $order->teacher_id],
+                sendEmail: true
+            );
+        } elseif ($sellerRequested) {
+            // Seller requested, buyer rejected
+            // Notify Seller (requester)
+            $this->notificationService->send(
+                userId: $order->teacher_id,
+                type: 'reschedule',
+                title: 'Reschedule Request Rejected',
+                message: $buyerName . ' has rejected your reschedule request for ' . $serviceName . '.',
+                data: ['order_id' => $order->id, 'rejected_by' => $order->user_id],
+                sendEmail: true
+            );
+        }
 
         if ($reschedule) {
             return redirect()->back()->with('success', 'Reschedule Rejected Successfully');

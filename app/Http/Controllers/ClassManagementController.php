@@ -647,6 +647,32 @@ class ClassManagementController extends Controller
         $payment->save();
         $gig->update();
 
+        // Send notifications for gig creation
+        $sellerName = Auth::user()->first_name . ' ' . Auth::user()->last_name;
+
+        // Notify Seller (confirmation)
+        app(\App\Services\NotificationService::class)->send(
+            userId: Auth::id(),
+            type: 'gig',
+            title: 'Service Created Successfully',
+            message: 'Your service "' . $gig->title . '" has been published and is now live on the platform.',
+            data: ['gig_id' => $gig->id, 'gig_title' => $gig->title],
+            sendEmail: false
+        );
+
+        // Notify Admin (new service alert)
+        $adminIds = \App\Models\User::where('role', 2)->pluck('id')->toArray();
+        if (!empty($adminIds)) {
+            app(\App\Services\NotificationService::class)->sendToMultipleUsers(
+                userIds: $adminIds,
+                type: 'gig',
+                title: 'New Service Created',
+                message: $sellerName . ' has created a new service: "' . $gig->title . '" (' . $gig->service_role . ')',
+                data: ['gig_id' => $gig->id, 'seller_id' => Auth::id(), 'gig_title' => $gig->title],
+                sendEmail: false
+            );
+        }
+
         if ($payment) {
             setcookie("gig_id", "", time() - 3600, "/"); // Expire the cookie
             return redirect()->to('/class-management')->with('success', 'Your Service Published Successfully!');

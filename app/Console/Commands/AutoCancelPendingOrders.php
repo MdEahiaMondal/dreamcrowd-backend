@@ -8,15 +8,19 @@ use App\Models\CancelOrder;
 use App\Models\ClassDate;
 use App\Models\Transaction;
 use App\Models\ClassReschedule;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 use Stripe\Stripe;
 use Stripe\PaymentIntent;
 use Stripe\Exception\ApiErrorException;
+use App\Services\NotificationService;
 
 class AutoCancelPendingOrders extends Command
 {
+    protected $notificationService;
+
     /**
      * The name and signature of the console command.
      *
@@ -30,6 +34,12 @@ class AutoCancelPendingOrders extends Command
      * @var string
      */
     protected $description = 'Auto-cancel pending orders if first class is about to start in 30 minutes or has already started';
+
+    public function __construct(NotificationService $notificationService)
+    {
+        parent::__construct();
+        $this->notificationService = $notificationService;
+    }
 
     /**
      * Execute the console command.
@@ -214,6 +224,9 @@ class AutoCancelPendingOrders extends Command
 
             DB::commit();
 
+            // ============ SEND NOTIFICATIONS ============
+            $this->sendCancellationNotifications($order, $cancelReason, $refundSuccess);
+
             Log::info("Order #{$order->id} successfully cancelled", [
                 'refund_status' => $refundSuccess ? 'refunded' : 'failed',
                 'reason' => $cancelReason
@@ -395,6 +408,91 @@ class AutoCancelPendingOrders extends Command
         } catch (\Exception $e) {
             Log::error("Failed to cancel reschedules for order #{$order->id}: " . $e->getMessage());
             // Don't throw - this is not critical
+        }
+    }
+
+    /**
+     * Send notifications to buyer, seller, and admin about auto-cancellation
+     */
+    private function sendCancellationNotifications(BookOrder $order, string $reason, bool $refundSuccess): void
+    {
+        try {
+            $buyerId = $order->user_id;
+            $sellerId = $order->teacher_id;
+            $serviceName = $order->title;
+            $orderId = $order->id;
+            $refundAmount = $refundSuccess ? $order->finel_price : 0;
+
+            // Get user names
+            $buyer = User::find($buyerId);
+            $seller = User::find($sellerId);
+            $buyerName = $buyer ? "{$buyer->first_name} {$buyer->last_name}" : 'Buyer';
+            $sellerName = $seller ? "{$seller->first_name} {$seller->last_name}" : 'Seller';
+
+            // Refund status message
+            $refundMessage = $refundSuccess
+                ? "Full refund of $" . number_format($refundAmount, 2) . " has been processed."
+                : "Refund could not be processed. Please contact support.";
+
+            // 1. Notify Buyer
+            $this->notificationService->send(
+                userId: $buyerId,
+                type: 'cancellation',
+                title: 'Order Auto-Cancelled',
+                message: "Your order for {$serviceName} has been automatically cancelled because the seller did not accept it before the class start time. {$refundMessage}",
+                data: [
+                    'order_id' => $orderId,
+                    'refund_amount' => $refundAmount,
+                    'cancellation_reason' => $reason,
+                    'seller_id' => $sellerId
+                ],
+                sendEmail: true // Critical - buyer needs to know
+            );
+
+            Log::info("Auto-cancel notification sent to buyer #{$buyerId} for order #{$orderId}");
+
+            // 2. Notify Seller
+            $this->notificationService->send(
+                userId: $sellerId,
+                type: 'cancellation',
+                title: 'Order Auto-Cancelled - Action Required',
+                message: "Your pending order from {$buyerName} for {$serviceName} was automatically cancelled because it was not accepted before the class start time. Please accept orders promptly to avoid auto-cancellation.",
+                data: [
+                    'order_id' => $orderId,
+                    'buyer_id' => $buyerId,
+                    'cancellation_reason' => $reason
+                ],
+                sendEmail: true // Important - seller needs to improve response time
+            );
+
+            Log::info("Auto-cancel notification sent to seller #{$sellerId} for order #{$orderId}");
+
+            // 3. Notify Admin(s)
+            $adminIds = User::where('role', 2)->pluck('id')->toArray();
+
+            if (!empty($adminIds)) {
+                $this->notificationService->sendToMultipleUsers(
+                    userIds: $adminIds,
+                    type: 'order',
+                    title: 'Order Auto-Cancelled',
+                    message: "Order #{$orderId} for {$serviceName} was auto-cancelled. Seller: {$sellerName}, Buyer: {$buyerName}. Reason: {$reason}. Refund: " . ($refundSuccess ? 'Success' : 'Failed'),
+                    data: [
+                        'order_id' => $orderId,
+                        'seller_id' => $sellerId,
+                        'buyer_id' => $buyerId,
+                        'refund_amount' => $refundAmount,
+                        'refund_success' => $refundSuccess,
+                        'cancellation_reason' => $reason
+                    ],
+                    sendEmail: false // Admin gets notification only, not email spam
+                );
+
+                Log::info("Auto-cancel notification sent to " . count($adminIds) . " admin(s) for order #{$orderId}");
+            }
+
+        } catch (\Exception $e) {
+            // Don't throw - notification failure shouldn't stop the cancellation process
+            Log::error("Failed to send auto-cancel notifications for order #{$order->id}: " . $e->getMessage());
         }
     }
 

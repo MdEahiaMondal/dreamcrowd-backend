@@ -704,11 +704,46 @@ class BookingController extends Controller
                     $transaction->id,
                     $bookOrder->id
                 );
+
+                // Send notification to seller
+                $buyerName = Auth::user()->first_name . ' ' . Auth::user()->last_name;
+                $this->notificationService->send(
+                    userId: $gig->user_id,
+                    type: 'order',
+                    title: 'Coupon Used on Your Service',
+                    message: $buyerName . ' used coupon code "' . $couponCode . '" on ' . $gig->title . '. Discount: $' . number_format($discountAmount, 2),
+                    data: ['order_id' => $bookOrder->id, 'coupon_code' => $couponCode, 'discount_amount' => $discountAmount],
+                    sendEmail: false
+                );
             }
 
             // ============ SEND TRIAL CONFIRMATION EMAIL ============
             if ($gigData->recurring_type == 'Trial') {
                 $this->sendTrialConfirmationEmail($bookOrder, $gig, $gigData);
+
+                // Send in-app notification for trial booking
+                $buyerName = Auth::user()->first_name . ' ' . Auth::user()->last_name;
+                $sellerName = $gig->user->first_name . ' ' . $gig->user->last_name;
+
+                // Notify Buyer
+                $this->notificationService->send(
+                    userId: Auth::id(),
+                    type: 'order',
+                    title: 'Trial Class Booked',
+                    message: 'Your trial class for ' . $gig->title . ' with ' . $sellerName . ' has been booked successfully.',
+                    data: ['order_id' => $bookOrder->id, 'gig_id' => $gig->id],
+                    sendEmail: false // Email already sent via sendTrialConfirmationEmail
+                );
+
+                // Notify Seller
+                $this->notificationService->send(
+                    userId: $gig->user_id,
+                    type: 'order',
+                    title: 'Trial Class Booking Received',
+                    message: $buyerName . ' has booked a trial class for ' . $gig->title . '.',
+                    data: ['order_id' => $bookOrder->id, 'buyer_id' => Auth::id()],
+                    sendEmail: false // Email already sent
+                );
             }
 
             // ============ LOG SUCCESS ============
