@@ -21,6 +21,7 @@ use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\DB;
 use Stripe\PaymentIntent;
 use App\Services\NotificationService;
+use App\Services\GoogleAnalyticsService;
 
 
 class BookingController extends Controller
@@ -29,11 +30,13 @@ class BookingController extends Controller
 
 
     protected $notificationService;
+    protected $analyticsService;
 
-    public function __construct(NotificationService $notification)
+    public function __construct(NotificationService $notification, GoogleAnalyticsService $analytics)
     {
         // Laravel automatically inject করবে
         $this->notificationService = $notification;
+        $this->analyticsService = $analytics;
     }
 
 
@@ -715,6 +718,23 @@ class BookingController extends Controller
                     data: ['order_id' => $bookOrder->id, 'coupon_code' => $couponCode, 'discount_amount' => $discountAmount],
                     sendEmail: false
                 );
+
+                // Track coupon usage in Google Analytics
+                try {
+                    $this->analyticsService->trackEvent('coupon_applied', [
+                        'coupon_code' => $couponCode,
+                        'discount_amount' => $discountAmount,
+                        'original_price' => $originalPrice,
+                        'final_price' => $priceAfterDiscount,
+                        'service_id' => $gig->id,
+                        'service_name' => $gig->title,
+                        'seller_id' => $gig->user_id,
+                        'order_id' => $bookOrder->id,
+                        'transaction_id' => $transaction->id
+                    ]);
+                } catch (\Exception $e) {
+                    \Log::warning("GA4 coupon tracking failed: " . $e->getMessage());
+                }
             }
 
             // ============ SEND TRIAL CONFIRMATION EMAIL ============
@@ -759,6 +779,36 @@ class BookingController extends Controller
                 'final_price' => $finalPrice,
                 'coupon_used' => $couponCode ?? 'None',
             ]);
+
+            // ============ TRACK PURCHASE IN GOOGLE ANALYTICS ============
+            try {
+                $this->analyticsService->trackPurchase([
+                    'transaction_id' => $paymentIntent ? $paymentIntent->id : ('order_' . $bookOrder->id),
+                    'value' => $finalPrice,
+                    'currency' => $commissionSettings->currency ?? 'USD',
+                    'tax' => 0,
+                    'shipping' => 0,
+                    'coupon' => $couponCode ?? '',
+                    'items' => [[
+                        'item_id' => (string)$gig->id,
+                        'item_name' => $gig->title,
+                        'item_category' => $gig->category ?? 'Uncategorized',
+                        'price' => $originalPrice,
+                        'quantity' => 1
+                    ]],
+                    'user_role' => Auth::user()->role ?? 'user',
+                    'service_type' => $gig->service_role ?? 'unknown',
+                    'delivery_type' => $gig->service_type ?? 'unknown',
+                    'admin_commission' => $totalAdminCommission,
+                    'seller_earnings' => $sellerEarnings,
+                    'buyer_commission' => $buyerCommissionAmount,
+                    'discount_amount' => $discountAmount,
+                    'frequency' => $formData['frequency'] ?? 1,
+                    'is_free_trial' => $isFreeTrialClass ? 'yes' : 'no'
+                ]);
+            } catch (\Exception $e) {
+                \Log::warning('GA4 purchase tracking failed: ' . $e->getMessage());
+            }
 
             $sellerId = $gig->user_id;
             $buyerId = Auth::id();

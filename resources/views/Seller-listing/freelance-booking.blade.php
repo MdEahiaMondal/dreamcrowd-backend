@@ -3455,3 +3455,23 @@
 
 {{-- Appointment Calender Booking ==== END --}}
 
+{{-- Google Analytics 4 - Track View Item --}}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        if (typeof DreamCrowdAnalytics !== 'undefined') {
+            DreamCrowdAnalytics.trackViewItem({
+                item_id: '{{ $gig->id }}',
+                item_name: '{{ addslashes($gig->title) }}',
+                item_category: '{{ $gig->category ?? "Uncategorized" }}',
+                price: {{ $gigPayment->price ?? 0 }},
+                currency: 'USD',
+                service_type: '{{ $gig->service_role ?? "unknown" }}',
+                delivery_type: '{{ $gig->service_type ?? "unknown" }}',
+                seller_id: '{{ $gig->user_id }}',
+                rating: {{ $gig->all_reviews->avg('stars') ?? 0 }},
+                review_count: {{ $gig->all_reviews->count() ?? 0 }}
+            });
+        }
+    });
+</script>
+

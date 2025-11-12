@@ -6,6 +6,7 @@ use App\Models\BookOrder;
 use App\Models\Transaction;
 use App\Models\User;
 use App\Services\NotificationService;
+use App\Services\GoogleAnalyticsService;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
@@ -17,11 +18,13 @@ class AutoMarkCompleted extends Command
     protected $description = 'Mark BookOrders as Completed 48 hours after delivery';
 
     protected $notificationService;
+    protected $analyticsService;
 
-    public function __construct(NotificationService $notificationService)
+    public function __construct(NotificationService $notificationService, GoogleAnalyticsService $analyticsService)
     {
         parent::__construct();
         $this->notificationService = $notificationService;
+        $this->analyticsService = $analyticsService;
     }
 
     public function handle()
@@ -124,6 +127,22 @@ class AutoMarkCompleted extends Command
             $this->sendCompletionNotifications($order);
 
             DB::commit();
+
+            // Track order status change in Google Analytics
+            try {
+                $this->analyticsService->trackEvent('order_status_change', [
+                    'order_id' => $order->id,
+                    'from_status' => 'Delivered',
+                    'to_status' => 'Completed',
+                    'order_value' => $order->finel_price ?? 0,
+                    'service_id' => $order->gig_id,
+                    'payment_type' => $order->payment_type,
+                    'trigger' => 'automated',
+                    'ready_for_payout' => true
+                ]);
+            } catch (\Exception $e) {
+                Log::warning("GA4 order status tracking failed for order #{$order->id}: " . $e->getMessage());
+            }
 
             Log::info("Order #{$order->id} auto-completed successfully", [
                 'delivered_at' => $order->action_date,

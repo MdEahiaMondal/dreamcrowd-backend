@@ -98,6 +98,21 @@ class Kernel extends ConsoleKernel
         // =====================================================
         // END COUPON NOTIFICATIONS SCHEDULED COMMANDS
         // =====================================================
+
+        // =====================================================
+        // DAILY SYSTEM REPORT SCHEDULED COMMAND
+        // =====================================================
+
+        // Send daily system information report via email (runs daily at 8:00 AM)
+        $schedule->command('reports:send-daily-system-report')
+            ->dailyAt('08:00')
+            ->withoutOverlapping()
+            ->runInBackground()
+            ->appendOutputTo(storage_path('logs/daily-system-report.log'));
+
+        // =====================================================
+        // END DAILY SYSTEM REPORT SCHEDULED COMMAND
+        // =====================================================
     }
 
 

@@ -21,6 +21,13 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(\App\Services\MessageService::class, function ($app) {
             return new \App\Services\MessageService();
         });
+
+        // Register GoogleAnalyticsService as singleton
+        $this->app->singleton(\App\Services\GoogleAnalyticsService::class, function ($app) {
+            return new \App\Services\GoogleAnalyticsService();
+        });
+
+        // Note: Spatie Laravel Analytics auto-registers via its service provider
     }
 
     /**

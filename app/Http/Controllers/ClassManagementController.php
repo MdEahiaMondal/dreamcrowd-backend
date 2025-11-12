@@ -13,6 +13,7 @@ use App\Models\TeacherGigPayment;
 use App\Models\TeacherReapetDays;
 use App\Models\TopSellerTag;
 use App\Services\NotificationService;
+use App\Services\GoogleAnalyticsService;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -23,10 +24,12 @@ use Illuminate\Support\Facades\Storage;
 class ClassManagementController extends Controller
 {
     protected $notificationService;
+    protected $analyticsService;
 
-    public function __construct(NotificationService $notificationService)
+    public function __construct(NotificationService $notificationService, GoogleAnalyticsService $analyticsService)
     {
         $this->notificationService = $notificationService;
+        $this->analyticsService = $analyticsService;
     }
 
     // Authentication Check Function Start====
@@ -462,6 +465,22 @@ class ClassManagementController extends Controller
         $gig->sub_category = $request->sub_category;
 
         $gig->save();
+
+        // Track service creation in Google Analytics
+        try {
+            $this->analyticsService->trackEvent('create_service', [
+                'service_id' => $gig->id,
+                'service_name' => $gig->title,
+                'service_role' => $gig->service_role ?? 'unknown',
+                'service_type' => $gig->service_type ?? 'unknown',
+                'payment_type' => $gig->payment_type ?? 'unknown',
+                'category' => $category->category ?? 'unknown',
+                'seller_id' => Auth::user()->id,
+                'user_role' => Auth::user()->role ?? 'teacher'
+            ]);
+        } catch (\Exception $e) {
+            \Log::warning("GA4 service creation tracking failed: " . $e->getMessage());
+        }
 
         $gigData->gig_id = $gig->id;
         $gigData->category = $request->category;

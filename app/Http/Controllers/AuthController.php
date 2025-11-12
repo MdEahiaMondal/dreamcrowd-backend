@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Mail\ForgotPassword;
 use App\Mail\VerifyMail;
 use App\Services\NotificationService;
+use App\Services\GoogleAnalyticsService;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Stevebauman\Location\Facades\Location;
@@ -19,11 +20,13 @@ class AuthController extends Controller
 {
     public $IP;
     protected $notificationService;
+    protected $analyticsService;
 
-    public function __construct(NotificationService $notificationService)
+    public function __construct(NotificationService $notificationService, GoogleAnalyticsService $analyticsService)
     {
         $this->IP = $_SERVER['REMOTE_ADDR'];
         $this->notificationService = $notificationService;
+        $this->analyticsService = $analyticsService;
         // public $IP =  '162.159.24.227';
     }
 
@@ -134,6 +137,18 @@ class AuthController extends Controller
                 \Log::error("Failed to send welcome notification: " . $e->getMessage());
             }
 
+            // Track signup in Google Analytics
+            try {
+                $this->analyticsService->trackEvent('sign_up', [
+                    'method' => 'email',
+                    'user_id' => $user->id,
+                    'country' => @$location->countryName ?? 'unknown',
+                    'city' => @$location->cityName ?? 'unknown'
+                ]);
+            } catch (\Exception $e) {
+                \Log::warning("GA4 signup tracking failed: " . $e->getMessage());
+            }
+
             // Auth::login($user);
             $response['success'] = true;
             $response['geterror'] = 'email';
@@ -207,6 +222,18 @@ class AuthController extends Controller
                     'google_id' => $googleUser->id,
                     'status' => 1,
                     'password' => Hash::make(rand(100000, 999999))]);
+
+                // Track Google signup in Google Analytics
+                try {
+                    $this->analyticsService->trackEvent('sign_up', [
+                        'method' => 'google',
+                        'user_id' => $user->id,
+                        'country' => $location->countryName ?? 'unknown',
+                        'city' => $location->cityName ?? 'unknown'
+                    ]);
+                } catch (\Exception $e) {
+                    \Log::warning("GA4 Google signup tracking failed: " . $e->getMessage());
+                }
             } else {
                 if ($user->status == 2) {
                     return redirect()->back()->with('error', 'Your Account is Blocked!');
@@ -220,6 +247,17 @@ class AuthController extends Controller
             }
 
             Auth::login($user);
+
+            // Track Google login in Google Analytics (signup flow)
+            try {
+                $this->analyticsService->trackEvent('login', [
+                    'method' => 'google',
+                    'user_id' => $user->id,
+                    'user_role' => $user->role ?? 'user'
+                ]);
+            } catch (\Exception $e) {
+                \Log::warning("GA4 Google login tracking failed: " . $e->getMessage());
+            }
 
             return redirect('/');
 
@@ -240,6 +278,17 @@ class AuthController extends Controller
                 }
             }
             Auth::login($user);
+
+            // Track Google login in Google Analytics (login flow)
+            try {
+                $this->analyticsService->trackEvent('login', [
+                    'method' => 'google',
+                    'user_id' => $user->id,
+                    'user_role' => $user->role ?? 'user'
+                ]);
+            } catch (\Exception $e) {
+                \Log::warning("GA4 Google login tracking failed: " . $e->getMessage());
+            }
 
             return redirect('/');
         }
@@ -306,6 +355,18 @@ class AuthController extends Controller
                     'facebook_id' => $facebookUser->id,
                     'status' => 1,
                     'password' => Hash::make(rand(100000, 999999))]);
+
+                // Track Facebook signup in Google Analytics
+                try {
+                    $this->analyticsService->trackEvent('sign_up', [
+                        'method' => 'facebook',
+                        'user_id' => $user->id,
+                        'country' => $location->countryName ?? 'unknown',
+                        'city' => $location->cityName ?? 'unknown'
+                    ]);
+                } catch (\Exception $e) {
+                    \Log::warning("GA4 Facebook signup tracking failed: " . $e->getMessage());
+                }
             } else {
                 if ($user->status == 2) {
                     return redirect()->back()->with('error', 'Your Account is Blocked!');
@@ -319,6 +380,17 @@ class AuthController extends Controller
             }
 
             Auth::login($user);
+
+            // Track Facebook login in Google Analytics (signup flow)
+            try {
+                $this->analyticsService->trackEvent('login', [
+                    'method' => 'facebook',
+                    'user_id' => $user->id,
+                    'user_role' => $user->role ?? 'user'
+                ]);
+            } catch (\Exception $e) {
+                \Log::warning("GA4 Facebook login tracking failed: " . $e->getMessage());
+            }
 
             return redirect('/');
 
@@ -339,6 +411,17 @@ class AuthController extends Controller
                 }
             }
             Auth::login($user);
+
+            // Track Facebook login in Google Analytics (login flow)
+            try {
+                $this->analyticsService->trackEvent('login', [
+                    'method' => 'facebook',
+                    'user_id' => $user->id,
+                    'user_role' => $user->role ?? 'user'
+                ]);
+            } catch (\Exception $e) {
+                \Log::warning("GA4 Facebook login tracking failed: " . $e->getMessage());
+            }
 
             return redirect('/');
         }
@@ -391,6 +474,17 @@ class AuthController extends Controller
         }
 
         Auth::login($user);
+
+        // Track login in Google Analytics
+        try {
+            $this->analyticsService->trackEvent('login', [
+                'method' => 'email',
+                'user_id' => $user->id,
+                'user_role' => $user->role ?? 'user'
+            ]);
+        } catch (\Exception $e) {
+            \Log::warning("GA4 login tracking failed: " . $e->getMessage());
+        }
 
         if (isset($request->remember) && !empty($request->remember)) {
             setcookie("email", $request->email, time() + 86400);

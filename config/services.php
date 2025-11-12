@@ -52,4 +52,26 @@ return [
         ],
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Google Analytics 4 Configuration
+    |--------------------------------------------------------------------------
+    |
+    | This configuration is used for Google Analytics 4 tracking.
+    | - enabled: Toggle GA4 tracking on/off
+    | - measurement_id: Your GA4 Measurement ID (format: G-XXXXXXXXXX)
+    | - api_secret: API secret for Measurement Protocol (server-side tracking)
+    | - debug_mode: Enable debug logging (set to APP_DEBUG value)
+    |
+    */
+
+    'google_analytics' => [
+        'enabled' => env('GOOGLE_ANALYTICS_ENABLED', false),
+        'measurement_id' => env('GOOGLE_ANALYTICS_MEASUREMENT_ID'),
+        'api_secret' => env('GOOGLE_ANALYTICS_API_SECRET'),
+        'property_id' => env('GOOGLE_ANALYTICS_PROPERTY_ID'),
+        'credentials_path' => storage_path('app/google-analytics-credentials.json'),
+        'debug_mode' => env('APP_DEBUG', false),
+    ],
+
 ];
