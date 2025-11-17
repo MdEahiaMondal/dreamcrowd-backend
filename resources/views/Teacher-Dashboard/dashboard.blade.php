@@ -596,8 +596,8 @@
                                                 </div>
                                             </td>
                                             <td>
-                                                <div class="fw-bold">{{ $booking->user->name ?? 'Unknown' }}</div>
-                                                <small class="text-muted">{{ $booking->user->email ?? '' }}</small>
+                                                <div class="fw-bold">{{ $booking->user->first_name ?? 'Unknown' }} {{ $booking->user->last_name ?? '' }}</div>
+                                                <small class="text-muted">{{ $booking->user->country ?? '' }}</small>
                                             </td>
                                             <td>{{ $booking->created_at->format('M d, Y') }}</td>
                                             <td>

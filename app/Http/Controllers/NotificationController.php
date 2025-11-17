@@ -3,16 +3,27 @@
 namespace App\Http\Controllers;
 
 use App\Models\Notification;
+use App\Models\User;
 use Illuminate\Http\Request;
+use App\Services\NotificationService;
+
 
 class NotificationController extends Controller
 {
+    protected $notificationService;
+
+    public function __construct(NotificationService $notification)
+    {
+        // Laravel automatically inject করবে
+        $this->notificationService = $notification;
+    }
     public function index(Request $request)
     {
         $user = auth()->user();
-
+        $users = [];
         // Admin can see all notifications, others only see their own
         if ($user->role === 2) {
+            $users = User::whereNot('role', 2)->get();
             $query = Notification::with('user')->orderBy('created_at', 'desc');
         } else {
             $query = Notification::where('user_id', $user->id)
@@ -38,7 +49,42 @@ class NotificationController extends Controller
 
         $notifications = $query->paginate(20);
 
-        return response()->json($notifications);
+        return response()->json(['notifications' => $notifications, 'users' => $users]);
+    }
+
+    public function notificationSend(Request $request)
+    {
+        $userIds = $request->input('user_ids', []);
+        $type = $request->input('type', true);
+        $title = $request->input('title');
+        $message = $request->input('message');
+        $targetUser = $request->input('targetUser', false);
+
+        if ($targetUser === 'both') {
+            $userIds = User::whereNot('role', 2)->pluck('id')->toArray();
+        }
+
+        if ($targetUser === 'seller') {
+            $userIds = User::where('role', 1)->pluck('id')->toArray();
+        }
+
+        if ($targetUser === 'buyer') {
+            $userIds = User::where('role', 0)->pluck('id')->toArray();
+        }
+        info($userIds);
+
+        $this->notificationService->sendToMultipleUsers(
+            userIds: $userIds,
+            type: 'generale',
+            title: $title,
+            message: $message,
+            data: $message,
+            sendEmail: $type
+        );
+        
+       
+
+        return response()->json(['success' => true]);
     }
 
     public function unreadCount()

@@ -345,9 +345,9 @@
                 success: function(response) {
                     $('#loading').hide();
                     $('#notifications-container').show();
-                    renderNotifications(response.data);
-                    renderPagination(response);
-                    $('#total-count').text(response.total);
+                    renderNotifications(response.notifications.data);
+                    renderPagination(response.notifications);
+                    $('#total-count').text(response.notifications.total);
                 },
                 error: function(xhr) {
                     $('#loading').hide();

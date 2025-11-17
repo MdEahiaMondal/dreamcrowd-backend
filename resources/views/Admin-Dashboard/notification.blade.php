@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -16,7 +17,7 @@
     {{-- Fav Icon --}}
     @php  $home = \App\Models\HomeDynamic::first(); @endphp
     @if ($home)
-        <link rel="shortcut icon" href="/assets/public-site/asset/img/{{$home->fav_icon}}" type="image/x-icon">
+        <link rel="shortcut icon" href="/assets/public-site/asset/img/{{ $home->fav_icon }}" type="image/x-icon">
     @endif
 
     <!-- Select2 css -->
@@ -41,18 +42,22 @@
         .notification-item {
             transition: all 0.3s ease;
         }
+
         .notification-item.unread {
             background-color: #f0f7ff;
             border-left: 4px solid #007bff;
         }
+
         .notification-item:hover {
             background-color: #f8f9fa;
         }
+
         .notification-actions {
             display: flex;
             gap: 10px;
             margin-top: 10px;
         }
+
         .notification-actions button {
             padding: 5px 15px;
             font-size: 12px;
@@ -60,39 +65,47 @@
             border-radius: 4px;
             cursor: pointer;
         }
+
         .btn-mark-read {
             background-color: #28a745;
             color: white;
         }
+
         .btn-delete {
             background-color: #dc3545;
             color: white;
         }
+
         .loading {
             text-align: center;
             padding: 20px;
         }
+
         .filters {
             margin-bottom: 20px;
             padding: 15px;
             background: #f8f9fa;
             border-radius: 8px;
         }
+
         .filter-row {
             display: flex;
             gap: 15px;
             flex-wrap: wrap;
             align-items: end;
         }
+
         .filter-group {
             flex: 1;
             min-width: 200px;
         }
+
         .filter-group label {
             display: block;
             margin-bottom: 5px;
             font-weight: 500;
         }
+
         .filter-group select,
         .filter-group input {
             width: 100%;
@@ -100,6 +113,7 @@
             border: 1px solid #ddd;
             border-radius: 4px;
         }
+
         .btn-filter {
             padding: 8px 20px;
             background-color: #007bff;
@@ -108,6 +122,7 @@
             border-radius: 4px;
             cursor: pointer;
         }
+
         .notification-meta {
             display: flex;
             gap: 15px;
@@ -115,6 +130,7 @@
             font-size: 12px;
             color: #666;
         }
+
         .notification-type {
             display: inline-block;
             padding: 2px 8px;
@@ -123,6 +139,7 @@
             font-size: 11px;
             font-weight: 500;
         }
+
         .empty-state {
             text-align: center;
             padding: 40px;
@@ -130,14 +147,15 @@
         }
     </style>
 </head>
+
 <body>
     {{-- ===========Admin Sidebar Start==================== --}}
-    <x-admin-sidebar/>
+    <x-admin-sidebar />
     {{-- ===========Admin Sidebar End==================== --}}
 
     <section class="home-section">
         {{-- ===========Admin NavBar Start==================== --}}
-        <x-admin-nav/>
+        <x-admin-nav />
         {{-- ===========Admin NavBar End==================== --}}
 
         <!-- =============================== MAIN CONTENT START HERE =========================== -->
@@ -162,7 +180,8 @@
                                     <div class="notify">
                                         <i class="bx bx-bell-minus"></i>
                                         <h2>All Notifications (<span id="total-count">0</span>)</h2>
-                                        <span style="margin-left: 15px; color: #007bff;">Unread: <strong id="unread-count">0</strong></span>
+                                        <span style="margin-left: 15px; color: #fff;">Unread: <strong
+                                                id="unread-count">0</strong></span>
                                     </div>
                                 </div>
                             </div>
@@ -205,7 +224,8 @@
                                 </div>
                                 <div class="filter-group">
                                     <button class="btn-filter" onclick="applyFilters()">Apply Filters</button>
-                                    <button class="btn-filter" style="background-color: #6c757d; margin-left: 5px;" onclick="clearFilters()">Clear</button>
+                                    <button class="btn-filter" style="background-color: #6c757d; margin-left: 5px;"
+                                        onclick="clearFilters()">Clear</button>
                                 </div>
                             </div>
                         </div>
@@ -214,12 +234,14 @@
                         <div class="send-notify">
                             <div class="row">
                                 <div class="col-md-6">
-                                    <button type="button" class="btn" data-bs-target="#exampleModalToggle" data-bs-toggle="modal">
+                                    <button type="button" class="btn" data-bs-target="#exampleModalToggle"
+                                        data-bs-toggle="modal">
                                         Send new notification
                                     </button>
                                 </div>
                                 <div class="col-md-6 text-end">
-                                    <button type="button" class="btn" style="background-color: #28a745;" onclick="markAllAsRead()">
+                                    <button type="button" class="btn" style="background-color: #28a745;"
+                                        onclick="markAllAsRead()">
                                         Mark All as Read
                                     </button>
                                 </div>
@@ -254,7 +276,8 @@
     </section>
 
     <!-- Send Notification Modal -->
-    <div class="modal fade" id="exampleModalToggle" aria-hidden="true" aria-labelledby="exampleModalToggleLabel" tabindex="-1">
+    <div class="modal fade" id="exampleModalToggle" aria-hidden="true" aria-labelledby="exampleModalToggleLabel"
+        tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
@@ -264,12 +287,43 @@
                 <div class="modal-body">
                     <form id="send-notification-form">
                         <div class="mb-3">
-                            <label>User ID:</label>
-                            <input type="number" class="form-control" id="notification-user-id" required>
+                            <div class="d-flex justify-content-between">
+                                <label>User Target: <span id="reset" class="text-danger fw-bold" role="button"
+                                        style="cursor: pointer;">
+                                        &times;
+                                    </span></label>
+
+                                <div>
+                                    <input type="radio" id="seller" name="targetUser" value="seller">
+                                    <label for="seller">Seller</label>
+                                </div>
+                                <div>
+                                    <input type="radio" id="buyer" name="targetUser" value="buyer">
+                                    <label for="buyer">Buyer</label>
+                                </div>
+                                <div>
+                                    <!-- keep id "allUser" on the "Both" option to remain compatible with existing JS that checks $('#allUser').is(':checked') -->
+                                    <input type="radio" id="allUser" name="targetUser" value="both">
+                                    <label for="allUser">Both</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3" id="userSelectDiv">
+                            <label>Select Users:</label>
+
+                            <select multiple="multiple" style="width: 100%" id="notificationUserId" required>
+
+                            </select>
                         </div>
                         <div class="mb-3">
-                            <label>Type:</label>
-                            <input type="text" class="form-control" id="notification-type" required>
+                            <div>
+                                <label>Send:</label>
+                                <div>
+                                    <input type="checkbox" id="email" name="notification-type" value="1">
+                                    <label for="email">Email</label>
+                                </div>
+
+                            </div>
                         </div>
                         <div class="mb-3">
                             <label>Title:</label>
@@ -283,7 +337,11 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" onclick="sendNotification()">Send</button>
+                    <button type="button" class="btn btn-primary sndButton"
+                        onclick="sendNotification()">Send</button>
+                    <button type="button" class="btn btn-primary" id="loading-button" style="display: none;">
+                        <i class="fas fa-spinner fa-spin"></i> Sending...
+                    </button>
                 </div>
             </div>
         </div>
@@ -297,7 +355,47 @@
     </script>
     <script src="/assets/admin/asset/js/bootstrap.min.js"></script>
     <script src="/assets/admin/libs/aos/js/aos.js"></script>
+    <!-- Select2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 
+    <!-- Select2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+
+            $("#reset").click(function() {
+                // Clear all radio button selections
+                $('input[name="targetUser"]').prop('checked', false);
+
+                // Hide user select div
+                $('#userSelectDiv').show();
+            });
+
+            // Handle target user radio button changes
+            $('input[name="targetUser"]').on('change', function() {
+                const selectedValue = $(this).val();
+
+                if (selectedValue === 'both' || selectedValue === 'seller' || selectedValue === 'buyer') {
+                    // Hide user select when "Both" is selected
+                    $('#userSelectDiv').hide();
+                } else {
+                    // Show user select for "Seller" or "Buyer"
+                    $('#userSelectDiv').show();
+                }
+            });
+
+            // Initial Select2 setup
+            $('#notificationUserId').select2({
+                placeholder: "Select Users",
+                width: "100%"
+            });
+
+            // loadNotifications(1);
+            // updateUnreadCount();
+            // setupPusher();
+        });
+    </script>
     <script>
         // Check if jQuery is loaded
         if (typeof jQuery === 'undefined') {
@@ -337,9 +435,29 @@
                 success: function(response) {
                     $('#loading').hide();
                     $('#notifications-container').show();
-                    renderNotifications(response.data);
-                    renderPagination(response);
-                    $('#total-count').text(response.total);
+                    renderNotifications(response.notifications.data);
+                    renderPagination(response.notifications);
+                    $('#total-count').text(response.notifications.total);
+
+
+                    // Clear previous options
+                    $('#notificationUserId').empty();
+
+
+                    // Append new users
+                    response.users.forEach(function(user) {
+                        $('#notificationUserId').append(
+                            new Option(user.first_name + ' ' + user.last_name, user.id, false,
+                                false)
+                        );
+                    });
+
+                    // Refresh Select2 after adding options
+                    $('#notificationUserId').trigger('change');
+
+                    $("#notificationUserId").removeClass("select2-hidden-accessible");
+
+
                 },
                 error: function(xhr) {
                     $('#loading').hide();
@@ -355,14 +473,17 @@
             container.empty();
 
             if (notifications.length === 0) {
-                container.html('<div class="empty-state"><i class="bx bx-bell-off" style="font-size: 48px;"></i><p>No notifications found</p></div>');
+                container.html(
+                    '<div class="empty-state"><i class="bx bx-bell-off" style="font-size: 48px;"></i><p>No notifications found</p></div>'
+                );
                 return;
             }
 
             notifications.forEach(function(notification) {
                 const isUnread = !notification.is_read;
                 const createdAt = new Date(notification.created_at).toLocaleString();
-                const userName = notification.user ? (notification.user.first_name + ' ' + notification.user.last_name) : 'N/A';
+                const userName = notification.user ? (notification.user.first_name + ' ' + notification.user
+                    .last_name) : 'N/A';
 
                 const html = `
                     <div class="manu-notification notification-item ${isUnread ? 'unread' : ''}" id="notification-${notification.id}">
@@ -533,19 +654,45 @@
 
         // Send notification (admin only)
         function sendNotification() {
-            const userId = $('#notification-user-id').val();
-            const type = $('#notification-type').val();
+            const userIds = $('#notificationUserId').val();
+            const type = $('input[name="notification-type"]:checked').val();
             const title = $('#notification-title').val();
             const message = $('#notification-message').val();
+            $(".sndButton").hide()
+            $("#loading-button").css('display', 'block');
 
-            if (!userId || !type || !title || !message) {
+            const targetUser = $('input[name="targetUser"]:checked').val();
+
+            if (!title || !message) {
                 alert('Please fill all fields');
                 return;
             }
 
+            $.ajax({
+                url: '/notifications/send',
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                data: {
+                    user_ids: userIds,
+                    type: type,
+                    title: title,
+                    message: message,
+                    targetUser: targetUser
+                },
+                success: function(response) {
+                    alert('Notification sent successfully');
+                    $('#exampleModalToggle').modal('hide');
+                    location.reload();
+
+                    // loadNotifications(1);
+                }
+            });
+
             // This would need a backend endpoint to create notifications
-            alert('Send notification feature requires backend implementation');
-            $('#exampleModalToggle').modal('hide');
+            // alert('Send notification feature requires backend implementation');
+
         }
 
         // Setup Pusher for real-time updates
@@ -558,4 +705,5 @@
         }
     </script>
 </body>
+
 </html>

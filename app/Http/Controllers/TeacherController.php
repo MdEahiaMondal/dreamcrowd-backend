@@ -60,7 +60,7 @@ class TeacherController extends Controller
 
         // Get recent bookings (initial load)
         $recentBookings = BookOrder::where('teacher_id', $teacher->id)
-            ->with(['gig', 'user'])
+            ->with(['gig', 'user', 'booker'])
             ->latest()
             ->limit(10)
             ->get();
