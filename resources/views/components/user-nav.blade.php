@@ -32,21 +32,24 @@
                     <div class="notificationSectionAz"></div>
                     <div class="messageSectionAz"></div>
 
-                    @if (Auth::user())
+                      @if (Auth::user())
                         @if (Auth::user()->profile == null)
                             @php  $firstLetter = strtoupper(substr(Auth::user()->first_name, 0, 1));  @endphp
-                            <div class="img_profile" style="width: 50px; height: 50px; background: #667eea; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 20px; border-radius: 50%;">
+                            <div class="img_profile"
+                                style="width: 50px; height: 50px; background: #28a745; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 20px; border-radius: 50%;">
                                 {{ $firstLetter }}
                             </div>
                         @else
                             <div class="img_profile" style="width: 50px; height: 50px;">
-                                <img src="{{ asset('assets/profile/img/' . Auth::user()->profile) }}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+                                <img src="{{ asset('assets/profile/img/' . Auth::user()->profile) }}"
+                                    style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
                             </div>
                         @endif
                     @endif
                     @if (Auth::user())
                         <h1>{{ Auth::user()->first_name }}</h1>
                     @endif
+
                     <div class="dropdown">
                         <button class="dropdown-toggle dashboard-drop" type="button" id="dropdownMenuButton1"
                             data-bs-toggle="dropdown" aria-expanded="false">

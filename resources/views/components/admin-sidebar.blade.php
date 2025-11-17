@@ -29,7 +29,7 @@
 
             <li>
                 <div class="iocn-link">
-                    <a href="#">
+                    <a href="javascript:void(0)">
                         <i class='bx bx-user icon' title="Seller Management"></i>
                         <span class="link_name">Seller Management</span>
                     </a>
@@ -67,7 +67,7 @@
 
                 <li>
                     <div class="iocn-link">
-                        <a href="#">
+                        <a href="javascript:void(0)">
                             <i class='bx bx-cog icon' title="Dynamic Management"></i>
                             <span class="link_name">Dynamic Management</span>
                         </a>
@@ -100,7 +100,7 @@
 
                 <li>
                     <div class="iocn-link">
-                        <a href="#">
+                        <a href="javascript:void(0)">
                             <i class='bx bx-cog icon' title="Seller Setting"></i>
                             <span class="link_name">Seller Setting</span>
                         </a>
@@ -153,7 +153,7 @@
             </li>
             <li>
                 <div class="iocn-link">
-                    <a href="#">
+                    <a href="javascript:void(0)">
                         <i class='bx bx-credit-card-front icon' title="Payment Management"></i>
                         <span class="link_name">Payment Management</span>
                     </a>
@@ -180,7 +180,7 @@
 
             <li>
                 <div class="iocn-link">
-                    <a href="/admin/coupons">
+                    <a href="javascript:void(0)">
                         <i class='bx bx-credit-card-front icon' title="Discount Codes"></i>
                         <span class="link_name">Discount Codes</span>
                     </a>
@@ -213,7 +213,7 @@
             </li>
             <li>
                 <div class="iocn-link">
-                    <a href="#">
+                    <a href="javascript:void(0)">
                         <i
                             class="bx bxs-user-x icon icon"
                             title="Analytics & Reports"
@@ -234,7 +234,7 @@
             </li>
             <li>
                 <div class="iocn-link">
-                    <a href="#">
+                    <a href="javascript:void(0)">
                         <i class='bx bx-video icon' title="Zoom Integration"></i>
                         <span class="link_name">Zoom Integration</span>
                     </a>

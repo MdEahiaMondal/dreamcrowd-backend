@@ -221,6 +221,8 @@
                                 </div>
                             </div>
                         </div>
+                       
+
                         <p class="">
                         <div class="class-management-sec">
                             <div class="row">
@@ -237,7 +239,6 @@
                                             <th>Status</th>
                                             <th class="act">Action</th>
                                             </thead>
-
 
                                             <tbody>
 
@@ -259,8 +260,12 @@
                                                                          class="card-img-top-profile">
                                                                 @endif
 
-                                                                <p>{{ $order->first_name }}  {{strtoupper(substr($order->last_name, 0, 1))}}
-                                                                    . </p>
+                                                                <div>
+                                                                    <p>{{ $order->first_name }}  {{strtoupper(substr($order->last_name, 0, 1))}}</p>
+                                                                    <p class="text-sm" style="font-size: 12px">{{ $order->country }}</p>
+
+                                                                </div>
+                                                                    
                                                             </div>
                                                         </td>
                                                         <td>
@@ -563,8 +568,10 @@
                                                                          class="card-img-top-profile">
                                                                 @endif
 
-                                                                <p>{{ $order->first_name }}  {{strtoupper(substr($order->last_name, 0, 1))}}
-                                                                    . </p>
+                                                                <div>
+                                                                    <p>{{ $order->first_name }}  {{strtoupper(substr($order->last_name, 0, 1))}}</p>
+                                                                    <p class="text-sm" style="font-size: 12px">{{ $order->country }}</p>
+                                                                </div>
                                                             </div>
                                                         </td>
                                                         <td>
@@ -867,8 +874,11 @@
                                                                          class="card-img-top-profile">
                                                                 @endif
 
-                                                                <p>{{ $order->first_name }}  {{strtoupper(substr($order->last_name, 0, 1))}}
-                                                                    . </p>
+                                                                <div>
+                                                                    <p>{{ $order->first_name }}  {{strtoupper(substr($order->last_name, 0, 1))}}</p>
+                                                                    <p class="text-sm" style="font-size: 12px">{{ $order->country }}</p>
+
+                                                                </div>
                                                             </div>
                                                         </td>
                                                         <td>
@@ -1171,8 +1181,11 @@
                                                                          class="card-img-top-profile">
                                                                 @endif
 
-                                                                <p>{{ $order->first_name }}  {{strtoupper(substr($order->last_name, 0, 1))}}
-                                                                    . </p>
+                                                                <div>
+                                                                    <p>{{ $order->first_name }}  {{strtoupper(substr($order->last_name, 0, 1))}}</p>
+                                                                    <p class="text-sm" style="font-size: 12px">{{ $order->country }}</p>
+
+                                                                </div>
                                                             </div>
                                                         </td>
                                                         <td>
@@ -1459,8 +1472,11 @@
                                                                          class="card-img-top-profile">
                                                                 @endif
 
-                                                                <p>{{ $order->first_name }}  {{strtoupper(substr($order->last_name, 0, 1))}}
-                                                                    . </p>
+                                                                <div>
+                                                                    <p>{{ $order->first_name }}  {{strtoupper(substr($order->last_name, 0, 1))}}</p>
+                                                                    <p class="text-sm" style="font-size: 12px">{{ $order->country }}</p>
+
+                                                                </div>
                                                             </div>
                                                         </td>
                                                         <td>
@@ -1747,8 +1763,11 @@
                                                                          class="card-img-top-profile">
                                                                 @endif
 
-                                                                <p>{{ $order->first_name }}  {{strtoupper(substr($order->last_name, 0, 1))}}
-                                                                    . </p>
+                                                                <div>
+                                                                    <p>{{ $order->first_name }}  {{strtoupper(substr($order->last_name, 0, 1))}}</p>
+                                                                    <p class="text-sm" style="font-size: 12px">{{ $order->country }}</p>
+
+                                                                </div>
                                                             </div>
                                                         </td>
                                                         <td>

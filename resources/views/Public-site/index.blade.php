@@ -387,6 +387,7 @@
                         <input type="hidden" name="category_type" value="Category">
                         <input type="hidden" name="category_service" id="cate_service_1">
                     </form>
+                    
                     <div class="col-lg-3 col-md-6">
                         <a onclick="SearchCate(this.id)" id="search_cate_1" data-cate="{{ $home->category_name_1 }}"
                             style="cursor: pointer">
@@ -1193,7 +1194,7 @@
                         <h1 class="page-title">{{ $home2->review_heading }}</h1>
                         <p class="page-title-2">{{ $home2->review_tagline }}</p>
                         <div class="owl-carousel card_carousel">
-                            @forelse($topReviews as $review)
+                            {{-- @forelse($topReviews as $review)
                                 <div class="card card-slider">
                                     <div class="card-body">
                                         <div class="d-flex">
@@ -1209,25 +1210,20 @@
 
                                             <div class="d-flex">
 
-                                                {{-- Left Side: User Image --}}
                                                 <div>
                                                     <img src="{{ $review->user->photo ?? asset('default_user.png') }}"
                                                         alt="User" class="rounded-circle" width="60"
                                                         height="60" style="object-fit: cover;">
                                                 </div>
 
-                                                {{-- Right Side: Name + Role + Description --}}
                                                 <div class="ms-3">
 
-                                                    {{-- Name --}}
                                                     <h6 class="mb-1 fw-bold">
                                                         {{ ($review->user->first_name ?? 'Anonymous') . ' ' . ($review->user->last_name ?? 'User') }}
                                                     </h6>
 
-                                                    {{-- Role --}}
                                                     <p class="text-secondary mb-1">Student</p>
 
-                                                    {{-- Description / Review Text --}}
                                                     <p class="text-muted mb-0">
                                                         {{ $review->description ?? 'No review text available.' }}
                                                     </p>
@@ -1237,13 +1233,13 @@
                                             </div>
 
                                         </div>
-                                        {{-- <p class="card-text mt-3">{{ $review->cmnt ?? 'No comment provided.' }}</p> --}}
-                                        {{-- <small class="text-muted">{{ $review->created_at->diffForHumans() }}</small> --}}
+                                        <p class="card-text mt-3">{{ $review->cmnt ?? 'No comment provided.' }}</p>
+                                        <small class="text-muted">{{ $review->created_at->diffForHumans() }}</small>
                                     </div>
                                 </div>
-                            @empty
+                            @empty --}}
                                 <!-- Fallback to static reviews if no database reviews exist -->
-                                {{-- <div class="card card-slider">
+                                <div class="card card-slider">
                                 <div class="card-body">
                                     <div class="d-flex"><img src="assets/public-site/asset/img/{{$home2->review_image_1}}"
                                                              class="rounded-circle">
@@ -1290,8 +1286,8 @@
                                     </div>
                                     <p class="card-text">{{$home2->review_review_4}} </p>
                                 </div>
-                            </div> --}}
-                            @endforelse
+                            </div>
+                            {{-- @endforelse --}}
                         </div>
                     </div>
                 </div>

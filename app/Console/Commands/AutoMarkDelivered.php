@@ -281,7 +281,7 @@ class AutoMarkDelivered extends Command
     {
         try {
             $serviceName = $order->title ?? ($order->gig ? $order->gig->name : 'Service');
-            $buyerName = $order->user ? ($order->user->first_name . ' ' . $order->user->last_name) : 'Customer';
+            $buyerName = $order->user ? ($order->user->first_name . ' ' .  strtoupper(substr($order->user->last_name, 0, 1))) : 'Customer';
             $disputeDeadline = now()->addHours(48)->format('F j, Y g:i A');
 
             // Notify buyer

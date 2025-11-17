@@ -478,27 +478,53 @@ class SellerListingController extends Controller
             $query->where('title', 'LIKE', '%' . $keyword . '%');
         }
 
+        //     // Apply sorting based on $tag values
+        //     if ($tag && $tag->sorting_impressions && $tag->sorting_clicks && $tag->sorting_orders && $tag->sorting_reviews) {
+        //         $query->selectRaw('
+        //     (COALESCE(impressions, 0) * ?) +
+        //     (COALESCE(clicks, 0) * ?) +
+        //     (COALESCE(orders, 0) * ?) +
+        //     (COALESCE(reviews, 0) * ?) as score
+        // ', [
+        //             $tag->sorting_impressions / 100,
+        //             $tag->sorting_clicks / 100,
+        //             $tag->sorting_orders / 100,
+        //             $tag->sorting_reviews / 100
+        //         ]);
+        //     } else {
+        //         // Default sorting if $tag is missing
+        //         $query->selectRaw('
+        //     (COALESCE(impressions, 0) * 0.10) +
+        //     (COALESCE(clicks, 0) * 0.10) +
+        //     (COALESCE(orders, 0) * 0.20) +
+        //     (COALESCE(reviews, 0) * 0.60) as score
+        // ');
+        //     }
+
         // Apply sorting based on $tag values
         if ($tag && $tag->sorting_impressions && $tag->sorting_clicks && $tag->sorting_orders && $tag->sorting_reviews) {
-            $query->selectRaw('
-        (COALESCE(impressions, 0) * ?) +
-        (COALESCE(clicks, 0) * ?) +
-        (COALESCE(orders, 0) * ?) +
-        (COALESCE(reviews, 0) * ?) as score
-    ', [
-                $tag->sorting_impressions / 100,
-                $tag->sorting_clicks / 100,
-                $tag->sorting_orders / 100,
-                $tag->sorting_reviews / 100
-            ]);
+            // Ensure we select all columns (including id) and compute score
+            $query->select('*')
+                ->selectRaw('
+            (COALESCE(impressions, 0) * ?) +
+            (COALESCE(clicks, 0) * ?) +
+            (COALESCE(orders, 0) * ?) +
+            (COALESCE(reviews, 0) * ?) as score
+        ', [
+                    $tag->sorting_impressions / 100,
+                    $tag->sorting_clicks / 100,
+                    $tag->sorting_orders / 100,
+                    $tag->sorting_reviews / 100
+                ]);
         } else {
-            // Default sorting if $tag is missing
-            $query->selectRaw('
-        (COALESCE(impressions, 0) * 0.10) +
-        (COALESCE(clicks, 0) * 0.10) +
-        (COALESCE(orders, 0) * 0.20) +
-        (COALESCE(reviews, 0) * 0.60) as score
-    ');
+            // Default sorting if $tag is missing; select all columns including id
+            $query->select('*')
+                ->selectRaw('
+            (COALESCE(impressions, 0) * 0.10) +
+            (COALESCE(clicks, 0) * 0.10) +
+            (COALESCE(orders, 0) * 0.20) +
+            (COALESCE(reviews, 0) * 0.60) as score
+        ');
         }
 
 // Order by calculated score

@@ -129,7 +129,7 @@
             </div>
             <div class="avatar-preview">
               <div id="imagePreview"
-                style="background-image: url('{{ $user->profile ? asset($user->profile) : 'http://i.pravatar.cc/500?img=7' }}'); width: 100%;">
+                style="background-image: url('{{ $user->profile ? asset('assets/profile/img/'.$user->profile) : 'http://i.pravatar.cc/500?img=7' }}'); width: 100%;">
               </div>
             </div>
           </div>

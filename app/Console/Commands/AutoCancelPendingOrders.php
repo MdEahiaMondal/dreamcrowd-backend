@@ -445,8 +445,10 @@ class AutoCancelPendingOrders extends Command
             // Get user names
             $buyer = User::find($buyerId);
             $seller = User::find($sellerId);
-            $buyerName = $buyer ? "{$buyer->first_name} {$buyer->last_name}" : 'Buyer';
-            $sellerName = $seller ? "{$seller->first_name} {$seller->last_name}" : 'Seller';
+            $BuyerLastNameFirstLatter = $buyer ? strtoupper(substr($buyer->last_name, 0, 1)) : '';
+            $sellerLastNameFirstLatter = $buyer ? strtoupper(substr($seller->last_name, 0, 1)) : '';
+            $buyerName = $buyer ? "{$buyer->first_name} {$BuyerLastNameFirstLatter}" : 'Buyer';
+            $sellerName = $seller ? "{$seller->first_name} {$sellerLastNameFirstLatter}" : 'Seller';
 
             // Refund status message
             $refundMessage = $refundSuccess

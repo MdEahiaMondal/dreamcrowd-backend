@@ -1,11 +1,10 @@
 <!-- jQuery -->
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"
-        integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
 
 
 {{-- =======Toastr CDN ======== --}}
-<link rel="stylesheet" type="text/css"
-      href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
 {{-- =======Toastr CDN ======== --}}
@@ -22,7 +21,8 @@
         position: relative;
         left: 260px;
         bottom: 33px;
-        display: none; /* Initially hidden */
+        display: none;
+        /* Initially hidden */
         width: 20px;
         height: 20px;
         border: 3px solid #f3f3f3;
@@ -36,6 +36,7 @@
         0% {
             transform: rotate(0deg);
         }
+
         100% {
             transform: rotate(360deg);
         }
@@ -68,15 +69,21 @@
         color: #0072B1;
     }
 </style>
-<style> #toast-container > .toast-error {
+<style>
+    #toast-container>.toast-error {
         background-color: #BD362F;
-    } </style>
-<style> #toast-container > .toast-success {
+    }
+</style>
+<style>
+    #toast-container>.toast-success {
         background-color: #39ac39;
-    } </style>
-<style> #toast-container > .toast-info {
+    }
+</style>
+<style>
+    #toast-container>.toast-info {
         background-color: #3984ac;
-    } </style>
+    }
+</style>
 
 
 <nav class="navbar navbar-expand-lg">
@@ -87,21 +94,20 @@
 
             @endphp
             @if ($home)
-
-                <img src="/assets/public-site/asset/img/{{$home->site_logo}}" width="100%">
+                <img src="/assets/public-site/asset/img/{{ $home->site_logo }}" width="100%">
             @endif
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
-                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <!-- <span class="navbar-toggler-icon"></span> -->
             <i class="fi fi-br-menu-burger"></i>
         </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav mb-2 mb-lg-0">
                 <li class="nav-item dropdown dropdown-mega position-static">
-                    <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" data-bs-auto-close="outside">Explore
-                        &nbsp;<i
-                            class="fa-solid fa-angle-down"></i></a>
+                    <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown"
+                        data-bs-auto-close="outside">Explore
+                        &nbsp;<i class="fa-solid fa-angle-down"></i></a>
                     <div class="dropdown-menu mega-dropdown">
                         <div class="mega-content px-4">
                             <div class="container">
@@ -114,24 +120,33 @@
                                 <!--  -->
                                 <div class="row service-links">
                                     @php
-                                        $categories = \App\Models\Category::where(['service_type'=>'online','status'=>1 , 'service_role'=>'Class'])->get();
+                                        $categories = \App\Models\Category::where([
+                                            'service_type' => 'online',
+                                            'status' => 1,
+                                            'service_role' => 'Class',
+                                        ])->get();
                                     @endphp
 
                                     @if ($categories)
                                         @foreach ($categories as $item)
-                                            @php  $category = \App\Models\Category::where(['category'=>$item->category,  'service_role'=>'Freelance'])->first();
-                            //  $result = preg_replace('/\(.*?\)/', '', $item->category);
+                                            @php
+
+                                                $category = \App\Models\Category::where([
+                                                    'category' => $item->category,
+                                                    'service_role' => 'Freelance',
+                                                ])->first();
+                                                //  $result = preg_replace('/\(.*?\)/', '', $item->category);
                                             @endphp
                                             @if ($category)
                                                 <div class="col-12 col-md-6 col-lg-3">
                                                     <ul>
                                                         <li>
-                                                            <a href="/seller-listing/online-services/{{$item->category}}">{{$item->category}}</a>
+                                                            <a
+                                                                href="/seller-listing/online-services/{{ $item->category }}">{{ $item->category }}</a>
                                                         </li>
                                                     </ul>
                                                 </div>
                                             @endif
-
                                         @endforeach
 
                                     @endif
@@ -192,28 +207,33 @@
                                 <!--  -->
                                 <div class="row service-links">
                                     @php
-                                        $categories = \App\Models\Category::where(['service_type'=>'inperson','status'=>1 , 'service_role'=>'Class'])->get();
-
+                                        $categories = \App\Models\Category::where([
+                                            'service_type' => 'inperson',
+                                            'status' => 1,
+                                            'service_role' => 'Class',
+                                        ])->get();
 
                                     @endphp
 
                                     @if ($categories)
                                         @foreach ($categories as $item)
-                                            @php $category = \App\Models\Category::where(['category'=>$item->category,  'service_role'=>'Freelance'])->first();
-                            // $result = preg_replace('/\(.*?\)/', '', $item->category);
-                                            @endphp
+                                            @php$category = \App\Models\Category::where([
+                                                                                                                                                    'category' => $item->category,
+                                                                                                                                                    'service_role' => 'Freelance',
+                                                                                                                                                ])->first();
+                                                                                                                                                // $result = preg_replace('/\(.*?\)/', '', $item->category);
+                                                                                                                                    @endphp ?> ?>
 
                                             @if ($category)
-
                                                 <div class="col-12 col-md-6 col-lg-3">
                                                     <ul>
                                                         <li>
-                                                            <a href="/seller-listing/inperson-services/{{$item->category}}">{{$item->category}}</a>
+                                                            <a
+                                                                href="/seller-listing/inperson-services/{{ $item->category }}">{{ $item->category }}</a>
                                                         </li>
                                                     </ul>
                                                 </div>
                                             @endif
-
                                         @endforeach
 
                                     @endif
@@ -276,8 +296,8 @@
                     <div class="search">
                         <input type="hidden" name="category_type" value="">
                         <input type="hidden" name="category_service" value="" id="cate_service">
-                        <input type="text" class="search-input" autocomplete="off" placeholder="Search for a services"
-                               id="keyword_nav" name="keyword">
+                        <input type="text" class="search-input" autocomplete="off"
+                            placeholder="Search for a services" id="keyword_nav" name="keyword">
                         <div class="suggestions" id="suggestions_nav"></div>
                         <button type="submit" class="search-icon" style="border: none;"><i class="fa fa-search"></i>
                         </button>
@@ -307,14 +327,12 @@
                         Login
                     </button>
                     <button type="button" class="btn register-btn" data-bs-toggle="modal"
-                            data-bs-target="#exampleModal1">Register
+                        data-bs-target="#exampleModal1">Register
                     </button>
-
                 @else
-
-                   <!-- BELL SVG START  -->
+                    <!-- BELL SVG START  -->
                     <li class="nav-item dropdown dropdown-mega position-static notificationSectionAz">
-                       
+
                     </li>
 
                     <!--MAIL SVG START  -->
@@ -452,46 +470,34 @@
                         @if (Auth::user())
                             @if (Auth::user()->profile == null)
                                 @php  $firstLetter = strtoupper(substr(Auth::user()->first_name, 0, 1));  @endphp
-
-                                <div class="img_profile">
-                                    <img src="{{ asset(Auth::user()->profile) }}">
+                                <div class="img_profile"
+                                    style="width: 50px; height: 50px; background: #28a745; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 20px; border-radius: 50%;">
+                                    {{ $firstLetter }}
                                 </div>
                             @else
                                 <div class="img_profile" style="width: 50px; height: 50px;">
-                                    <img src="{{ asset(Auth::user()->profile) }}"
-                                         style="width: 100%; height: 100%;">
+                                    <img src="{{ asset('assets/profile/img/' . Auth::user()->profile) }}"
+                                        style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
                                 </div>
-
                             @endif
                         @endif
                         @if (Auth::user())
-                            <h1>{{Auth::user()->first_name}}</h1>
+                            <h1>{{ Auth::user()->first_name }}</h1>
                         @endif
+
+
                         <div class="dropdown">
-                            <button
-                                class="dropdown-toggle dashboard-drop"
-                                type="button"
-                                id="dropdownMenuButton11"
-                                data-bs-toggle="dropdown"
-                                aria-expanded="false"
-                            >
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    width="35"
-                                    height="35"
-                                    viewBox="0 0 35 35"
-                                    fill="none"
-                                >
+                            <button class="dropdown-toggle dashboard-drop" type="button" id="dropdownMenuButton11"
+                                data-bs-toggle="dropdown" aria-expanded="false">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35"
+                                    viewBox="0 0 35 35" fill="none">
                                     <path
                                         d="M5.83333 18.9583H14.5833C14.9701 18.9583 15.341 18.8047 15.6145 18.5312C15.888 18.2577 16.0417 17.8868 16.0417 17.5V5.83333C16.0417 5.44656 15.888 5.07563 15.6145 4.80214C15.341 4.52865 14.9701 4.375 14.5833 4.375H5.83333C5.44656 4.375 5.07563 4.52865 4.80214 4.80214C4.52865 5.07563 4.375 5.44656 4.375 5.83333V17.5C4.375 17.8868 4.52865 18.2577 4.80214 18.5312C5.07563 18.8047 5.44656 18.9583 5.83333 18.9583ZM4.375 29.1667C4.375 29.5534 4.52865 29.9244 4.80214 30.1979C5.07563 30.4714 5.44656 30.625 5.83333 30.625H14.5833C14.9701 30.625 15.341 30.4714 15.6145 30.1979C15.888 29.9244 16.0417 29.5534 16.0417 29.1667V23.3333C16.0417 22.9466 15.888 22.5756 15.6145 22.3021C15.341 22.0286 14.9701 21.875 14.5833 21.875H5.83333C5.44656 21.875 5.07563 22.0286 4.80214 22.3021C4.52865 22.5756 4.375 22.9466 4.375 23.3333V29.1667ZM18.9583 29.1667C18.9583 29.5534 19.112 29.9244 19.3855 30.1979C19.659 30.4714 20.0299 30.625 20.4167 30.625H29.1667C29.5534 30.625 29.9244 30.4714 30.1979 30.1979C30.4714 29.9244 30.625 29.5534 30.625 29.1667V18.9583C30.625 18.5716 30.4714 18.2006 30.1979 17.9271C29.9244 17.6536 29.5534 17.5 29.1667 17.5H20.4167C20.0299 17.5 19.659 17.6536 19.3855 17.9271C19.112 18.2006 18.9583 18.5716 18.9583 18.9583V29.1667ZM20.4167 14.5833H29.1667C29.5534 14.5833 29.9244 14.4297 30.1979 14.1562C30.4714 13.8827 30.625 13.5118 30.625 13.125V5.83333C30.625 5.44656 30.4714 5.07563 30.1979 4.80214C29.9244 4.52865 29.5534 4.375 29.1667 4.375H20.4167C20.0299 4.375 19.659 4.52865 19.3855 4.80214C19.112 5.07563 18.9583 5.44656 18.9583 5.83333V13.125C18.9583 13.5118 19.112 13.8827 19.3855 14.1562C19.659 14.4297 20.0299 14.5833 20.4167 14.5833Z"
-                                        fill="#181818"
-                                    />
+                                        fill="#181818" />
                                 </svg>
                             </button>
-                            <ul
-                                class="dropdown-menu dropdown-menu-lg-end dropdown-menu-sm-start logout-dropdawon"
-                                aria-labelledby="dropdownMicroProcessorTrigger"
-                            >
+                            <ul class="dropdown-menu dropdown-menu-lg-end dropdown-menu-sm-start logout-dropdawon"
+                                aria-labelledby="dropdownMicroProcessorTrigger">
                                 <li>
 
                                     @if (Auth::user()->role == 0)
@@ -510,12 +516,14 @@
                                 </li>
                                 <li>
                                     <a class="dropdown-item" href="/profile">
-                                        <i class="bx bx-user icon"></i> &nbsp;&nbsp;Profile</a
-                                    >
+                                        <i class="bx bx-user icon"></i> &nbsp;&nbsp;Profile</a>
                                 </li>
                                 @if (Auth::user())
                                     @php
-                                        $expert = \App\Models\ExpertProfile::where(['user_id'=>Auth::user()->id, 'status'=>1])->first();
+                                        $expert = \App\Models\ExpertProfile::where([
+                                            'user_id' => Auth::user()->id,
+                                            'status' => 1,
+                                        ])->first();
                                     @endphp
 
                                     @if ($expert)
@@ -541,13 +549,11 @@
                                 <li>
                                     <a class="dropdown-item" href="#">
                                         <i class="fa-brands fa-dribbble"></i>&nbsp;&nbsp;Help &
-                                        Support</a
-                                    >
+                                        Support</a>
                                 </li>
                                 <li>
                                     <a class="dropdown-item" href="/logout">
-                                        <i class="bx bx-log-in"></i>&nbsp;&nbsp;Log Out</a
-                                    >
+                                        <i class="bx bx-log-in"></i>&nbsp;&nbsp;Log Out</a>
                                 </li>
                             </ul>
                         </div>
@@ -654,21 +660,21 @@
                         <label class="control-label login-signup-label">Email</label>
                         <div class="">
                             <input type="email" id="login_email" class="form-control place" name="email"
-                                   @if (isset($_COOKIE["email"])) value="{{ $_COOKIE["email"] }}"
-                                   @endif placeholder="Example@gmail.com" required>
+                                @if (isset($_COOKIE['email'])) value="{{ $_COOKIE['email'] }}" @endif
+                                placeholder="Example@gmail.com" required>
                             <p id="log_error_email" class="text-danger"
-                               style="font-size: 13px; margin-top: 3px; margin-left: 3px; font-weight: 600;"></p>
+                                style="font-size: 13px; margin-top: 3px; margin-left: 3px; font-weight: 600;"></p>
                         </div>
                     </div>
                     <div class="login/signup-password">
                         <label class="control-label">Password</label>
                         <div class="">
                             <input id="login_password" type="password" class="form-control place" name="password"
-                                   @if (isset($_COOKIE["password"])) value="{{ $_COOKIE["password"] }}"
-                                   @endif placeholder="Password" required>
+                                @if (isset($_COOKIE['password'])) value="{{ $_COOKIE['password'] }}" @endif
+                                placeholder="Password" required>
                             <span toggle="#login_password" class="fa fa-fw fa-eye field-icon toggle-password"></span>
                             <p id="log_error_password" class="text-danger"
-                               style="font-size: 13px; margin-top: 3px; margin-left: 3px; font-weight: 600;"></p>
+                                style="font-size: 13px; margin-top: 3px; margin-left: 3px; font-weight: 600;"></p>
                         </div>
                     </div>
                     <div class="form-check form-checkbox">
@@ -676,14 +682,15 @@
                         <label class="form-check-pass" for="exampleCheck1">Remember
                             Password</label>
                         <a id="forgot-password" style="cursor: pointer;"
-                           class="forget-password float-end fst-italic text-decoration-none">Forgot
+                            class="forget-password float-end fst-italic text-decoration-none">Forgot
                             Password?</a>
                     </div>
                     <div class="sign-up">
                         <p class="text-danger" id="login-error"
-                           style="font-size: 15px;font-weight: 600; margin-top: 5px; display: none;"></p>
+                            style="font-size: 15px;font-weight: 600; margin-top: 5px; display: none;"></p>
                     </div>
-                    <button type="button" onclick="LogInUser(this.id)" id="LoginBtn" class="loginbtn">Log In</button>
+                    <button type="button" onclick="LogInUser(this.id)" id="LoginBtn" class="loginbtn">Log
+                        In</button>
                     <div id="LoginloadingSpinner" class="loading-spinner"></div>
                 </form>
                 <div class="separator">OR</div>
@@ -693,7 +700,8 @@
                     <div class="col-md-6 col-6 signin">
                         <form action="/google/redirect" method="GET">
                             <button type="submit" name="google_action" value="login">
-                                <img src="/assets/public-site/asset/img/google.png" alt=""> &nbsp;&nbsp;Sign in with
+                                <img src="/assets/public-site/asset/img/google.png" alt=""> &nbsp;&nbsp;Sign
+                                in with
                                 google
                             </button>
                         </form>
@@ -701,15 +709,15 @@
                     <div class="col-md-6 col-6 signins">
                         <form action="/facebook/redirect" method="GET">
                             <button type="submit" name="facebook_action" value="login">
-                                <img src="/assets/public-site/asset/img/facebook.png" alt=""> &nbsp;&nbsp;Sign in with
+                                <img src="/assets/public-site/asset/img/facebook.png" alt=""> &nbsp;&nbsp;Sign
+                                in with
                                 facebook
                             </button>
                         </form>
                     </div>
                 </div>
                 <p class="last-section text-center">Didn’t Have an Account? <a style="cursor: pointer;"
-                                                                               class="link signup_model"
-                                                                               id="signup-link"> Signup</a></p>
+                        class="link signup_model" id="signup-link"> Signup</a></p>
             </div>
         </div>
     </div>
@@ -731,34 +739,34 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <label class="control-label login-signup-label mt-4">First Name</label>
-                                <input type="text" id="add_first_name" class="form-control place" name="first_name"
-                                       value="" placeholder="Usama" required>
+                                <input type="text" id="add_first_name" class="form-control place"
+                                    name="first_name" value="" placeholder="Usama" required>
                             </div>
                             <div class="col-md-6">
                                 <label class="control-label login-signup-label mt-4">Last Name</label>
                                 <input type="text" id="add_last_name" class="form-control place" name="last_name"
-                                       value="" placeholder="Aslam" required>
+                                    value="" placeholder="Aslam" required>
                             </div>
                         </div>
                     </div>
                     <div class="">
                         <label class="control-label login-signup-label">Email</label>
                         <div class="">
-                            <input type="email" id="add_email" class="form-control place mb-3" name="email" value=""
-                                   placeholder="Example@gmail.com" required>
+                            <input type="email" id="add_email" class="form-control place mb-3" name="email"
+                                value="" placeholder="Example@gmail.com" required>
                             <p id="add_error_email" class="text-danger"
-                               style="font-size: 13px; margin-top: 3px; margin-left: 3px; font-weight: 600;"></p>
+                                style="font-size: 13px; margin-top: 3px; margin-left: 3px; font-weight: 600;"></p>
 
                         </div>
                     </div>
                     <div class="mb-3 login-signup-password">
                         <label class="control-label">Password</label>
                         <div class="">
-                            <input id="add_password" type="password" class="form-control place" name="password" value=""
-                                   placeholder="Password" required>
+                            <input id="add_password" type="password" class="form-control place" name="password"
+                                value="" placeholder="Password" required>
                             <span toggle="#add_password" class="fa fa-fw fa-eye field-icon toggle-password"></span>
                             <p id="add_error_password" class="text-danger"
-                               style="font-size: 13px; margin-top: 3px; margin-left: 3px; font-weight: 600;"></p>
+                                style="font-size: 13px; margin-top: 3px; margin-left: 3px; font-weight: 600;"></p>
                             <div id="passwordPopup" class="password-popup">
                                 <ul>
                                     <li id="length">At least 8 characters</li>
@@ -790,11 +798,13 @@
                                 .password-popup ul li {
                                     font-size: 10px;
                                     margin-bottom: 5px;
-                                    color: #ff0000; /* Red color for unfulfilled criteria */
+                                    color: #ff0000;
+                                    /* Red color for unfulfilled criteria */
                                 }
 
                                 .password-popup ul li.valid {
-                                    color: #00cc00; /* Green color for fulfilled criteria */
+                                    color: #00cc00;
+                                    /* Green color for fulfilled criteria */
                                 }
                             </style>
                         </div>
@@ -803,19 +813,19 @@
                         <label class="control-label">Confirm Password</label>
                         <div class="">
                             <input id="add_c_password" type="password" class="form-control place" name="c_password"
-                                   value="" placeholder="Password" required>
+                                value="" placeholder="Password" required>
                             <span toggle="#add_c_password" class="fa fa-fw fa-eye field-icon toggle-password"></span>
                             <p id="add_error_c_password" class="text-danger"
-                               style="font-size: 13px; margin-top: 3px; margin-left: 3px; font-weight: 600;"></p>
+                                style="font-size: 13px; margin-top: 3px; margin-left: 3px; font-weight: 600;"></p>
 
                         </div>
                     </div>
                     <div class="sign-up">
                         <p>Signing up you agree <a href="/term-condition"><span>Terms &
-                                                            Condition </span></a>and <a href="/privacy"><span>
-                                                            Privacy Policy</span></a></p>
+                                    Condition </span></a>and <a href="/privacy"><span>
+                                    Privacy Policy</span></a></p>
                         <p class="text-danger" id="signup-error"
-                           style="font-size: 15px;font-weight: 600; margin-top: 5px; display: none;"></p>
+                            style="font-size: 15px;font-weight: 600; margin-top: 5px; display: none;"></p>
                     </div>
                     <button type="button" onclick="RegisterUser(this.id)" id="SignUpBtn" class="loginbtn">Register
                     </button>
@@ -828,7 +838,8 @@
                     <div class="col-md-6 col-6 signin">
                         <form action="/google/redirect" method="GET">
                             <button type="submit" name="google_action" value="signup">
-                                <img src="/assets/public-site/asset/img/google.png" alt=""> &nbsp;&nbsp;Sign in with
+                                <img src="/assets/public-site/asset/img/google.png" alt=""> &nbsp;&nbsp;Sign
+                                in with
                                 google
                             </button>
                         </form>
@@ -836,15 +847,15 @@
                     <div class="col-md-6 col-6 signins">
                         <form action="/facebook/redirect" method="GET">
                             <button type="submit" name="facebook_action" value="signup">
-                                <img src="/assets/public-site/asset/img/facebook.png" alt=""> &nbsp;&nbsp;Sign in with
+                                <img src="/assets/public-site/asset/img/facebook.png" alt=""> &nbsp;&nbsp;Sign
+                                in with
                                 facebook
                             </button>
                         </form>
                     </div>
                 </div>
                 <p class="last-section text-center">Already Have an Account? <a style="cursor: pointer;"
-                                                                                class="link login_model"
-                                                                                id="login-link"> Login</a></p>
+                        class="link login_model" id="login-link"> Login</a></p>
             </div>
         </div>
     </div>
@@ -866,16 +877,16 @@
                     <div class="">
                         <label class="control-label login-signup-label">Email</label>
                         <div class="">
-                            <input type="email" id="forgot_email" class="form-control place mb-3" name="email" value=""
-                                   placeholder="Example@gmail.com" required>
+                            <input type="email" id="forgot_email" class="form-control place mb-3" name="email"
+                                value="" placeholder="Example@gmail.com" required>
                             <p id="forgot_error_email" class="text-danger"
-                               style="font-size: 13px; margin-top: 3px; margin-left: 3px; font-weight: 600;"></p>
+                                style="font-size: 13px; margin-top: 3px; margin-left: 3px; font-weight: 600;"></p>
 
                         </div>
                     </div>
                     <div class="sign-up">
                         <p class="text-danger" id="forgot-error"
-                           style="font-size: 15px;font-weight: 600; margin-top: 5px; display: none;"></p>
+                            style="font-size: 15px;font-weight: 600; margin-top: 5px; display: none;"></p>
                     </div>
 
                     <button type="button" onclick="ForgotPassword(this.id)" id="ForgotBtn" class="loginbtn">Forgot
@@ -887,7 +898,7 @@
             </div>
             <div class="modal-footer border-0">
                 <p class="last-section text-center">Goto LogIn? <a style="cursor: pointer;" class="link login_model"
-                                                                   id="login-link"> Login</a></p>
+                        id="login-link"> Login</a></p>
             </div>
         </div>
     </div>
@@ -908,14 +919,14 @@
                     <div class="">
                         <label class="control-label login-signup-label">New Password</label>
                         <div class="">
-                            <input type="hidden" class="form-control place mb-3" id="new_password_id" name="id"
-                                   value="{{ session('newPass') }}" placeholder="xxxxxxxx" required>
+                            <input type="hidden" class="form-control place mb-3" id="new_password_id"
+                                name="id" value="{{ session('newPass') }}" placeholder="xxxxxxxx" required>
                             <input id="new_password" type="password" class="form-control place mb-3" name="password"
-                                   value="" placeholder="xxxxxxxx" required>
+                                value="" placeholder="xxxxxxxx" required>
                             <span toggle="#new_password" class="fa fa-fw fa-eye field-icon toggle-password"
-                                  style="margin-top: -43px;"></span>
+                                style="margin-top: -43px;"></span>
                             <p id="new_error_password" class="text-danger"
-                               style="font-size: 13px; margin-top: 3px; margin-left: 3px; font-weight: 600;"></p>
+                                style="font-size: 13px; margin-top: 3px; margin-left: 3px; font-weight: 600;"></p>
                             <div id="new_passwordPopup" class="password-popup" style="top: 73px; left: 140px;">
                                 <ul>
                                     <li id="new_length">At least 8 characters</li>
@@ -930,18 +941,18 @@
                     <div class="">
                         <label class="control-label login-signup-label">Confirm Password</label>
                         <div class="">
-                            <input id="new_c_password" type="password" class="form-control place mb-3" name="password"
-                                   value="" placeholder="xxxxxxxx" required>
+                            <input id="new_c_password" type="password" class="form-control place mb-3"
+                                name="password" value="" placeholder="xxxxxxxx" required>
                             <span toggle="#new_c_password" class="fa fa-fw fa-eye field-icon toggle-password"
-                                  style="margin-top: -43px;"></span>
+                                style="margin-top: -43px;"></span>
                             <p id="new_error_c_password" class="text-danger"
-                               style="font-size: 13px; margin-top: 3px; margin-left: 3px; font-weight: 600;"></p>
+                                style="font-size: 13px; margin-top: 3px; margin-left: 3px; font-weight: 600;"></p>
                         </div>
                     </div>
 
                     <div class="sign-up">
                         <p class="text-danger" id="new-password-error"
-                           style="font-size: 15px;font-weight: 600; margin-top: 5px; display: none;"></p>
+                            style="font-size: 15px;font-weight: 600; margin-top: 5px; display: none;"></p>
                     </div>
 
                     <button type="button" onclick="NewPassword(this.id)" id="NewPassBtn" class="loginbtn">Update
@@ -953,7 +964,7 @@
             </div>
             <div class="modal-footer border-0">
                 <p class="last-section text-center">Goto LogIn? <a style="cursor: pointer;" class="link login_model"
-                                                                   id="login-link"> Login</a></p>
+                        id="login-link"> Login</a></p>
             </div>
         </div>
     </div>
@@ -1071,20 +1082,18 @@
 
 {{-- Register User Ajax Call Start ======== --}}
 <script>
-
-    $(document).ready(function () {
+    $(document).ready(function() {
 
 
         const message = sessionStorage.getItem('showToaster');
         if (message) {
             // Show the toaster
-            toastr.options =
-                {
-                    "closeButton": true,
-                    "progressBar": true,
-                    "timeOut": "10000", // 10 seconds
-                    "extendedTimeOut": "4410000" // 10 seconds
-                }
+            toastr.options = {
+                "closeButton": true,
+                "progressBar": true,
+                "timeOut": "10000", // 10 seconds
+                "extendedTimeOut": "4410000" // 10 seconds
+            }
             toastr.success(message);
 
             // Remove the flag from sessionStorage to prevent the toaster from showing again
@@ -1130,10 +1139,10 @@
                 email: email,
                 password: password,
                 c_password: c_password,
-                _token: '{{csrf_token()}}'
+                _token: '{{ csrf_token() }}'
             },
             dataType: 'json',
-            success: function (response) {
+            success: function(response) {
 
                 $(button).html('Register');
                 button.disabled = false;
@@ -1189,9 +1198,14 @@
         $.ajax({
             type: "POST",
             url: '/login',
-            data: {email: email, password: password, remember: remember, _token: '{{csrf_token()}}'},
+            data: {
+                email: email,
+                password: password,
+                remember: remember,
+                _token: '{{ csrf_token() }}'
+            },
             dataType: 'json',
-            success: function (response) {
+            success: function(response) {
 
                 $(button).html('Log In');
                 button.disabled = false;
@@ -1239,9 +1253,12 @@
         $.ajax({
             type: "POST",
             url: '/forgot-password',
-            data: {email: email, _token: '{{csrf_token()}}'},
+            data: {
+                email: email,
+                _token: '{{ csrf_token() }}'
+            },
             dataType: 'json',
-            success: function (response) {
+            success: function(response) {
 
                 $(button).html('Forgot Password');
                 button.disabled = false;
@@ -1293,9 +1310,14 @@
         $.ajax({
             type: "POST",
             url: '/new-forgot-password',
-            data: {id: id, password: password, c_password: c_password, _token: '{{csrf_token()}}'},
+            data: {
+                id: id,
+                password: password,
+                c_password: c_password,
+                _token: '{{ csrf_token() }}'
+            },
             dataType: 'json',
-            success: function (response) {
+            success: function(response) {
 
 
                 $(button).html('Update Password');
@@ -1321,16 +1343,14 @@
 
 
     }
-
-
 </script>
 {{-- Register User Ajax Call END ======== --}}
 
 
 <script>
-    $(document).ready(function () {
+    $(document).ready(function() {
         // Event delegation for login and signup links within modals
-        $(document).on('click', '#login-link', function (e) {
+        $(document).on('click', '#login-link', function(e) {
             e.preventDefault();
             $('#exampleModal').modal('show');
             $('#exampleModal1').modal('hide'); // Hide the signup modal if shown
@@ -1338,13 +1358,13 @@
             $('#exampleModal3').modal('hide'); // Hide the signup modal if shown
         });
         // Event delegation for login and signup links within modals
-        $(document).on('click', '#forgot-password', function (e) {
+        $(document).on('click', '#forgot-password', function(e) {
             e.preventDefault();
             $('#exampleModal2').modal('show');
             $('#exampleModal').modal('hide'); // Hide the signup modal if shown
         });
 
-        $(document).on('click', '#signup-link', function (e) {
+        $(document).on('click', '#signup-link', function(e) {
             e.preventDefault();
             $('#exampleModal1').modal('show');
             $('#exampleModal').modal('hide'); // Hide the login modal if shown
@@ -1359,7 +1379,7 @@
     const searchInput = document.getElementById('keyword_nav');
     const suggestionsBox = document.getElementById('suggestions_nav');
 
-    searchInput.addEventListener('keyup', function () {
+    searchInput.addEventListener('keyup', function() {
         const query = this.value.trim();
 
 
@@ -1374,7 +1394,7 @@
 
                             const div = document.createElement('div');
                             div.textContent = keyword;
-                            div.onclick = function () {
+                            div.onclick = function() {
                                 searchInput.value = keyword;
                                 suggestionsBox.style.display = 'none';
                             };
@@ -1391,7 +1411,7 @@
         }
     });
 
-    document.addEventListener('click', function (event) {
+    document.addEventListener('click', function(event) {
         if (!event.target.closest('.search-container-nav')) {
             suggestionsBox.style.display = 'none';
         }

@@ -193,7 +193,7 @@ class AutoMarkCompleted extends Command
     {
         try {
             $serviceName = $order->title ?? ($order->gig ? $order->gig->name : 'Service');
-            $buyerName = $order->user ? ($order->user->first_name . ' ' . $order->user->last_name) : 'Customer';
+            $buyerName = $order->user ? ($order->user->first_name . ' ' .  strtoupper(substr($order->user->last_name, 0, 1))) : 'Customer';
 
             // Get transaction for seller payout info
             $transaction = Transaction::where('buyer_id', $order->user_id)
@@ -215,7 +215,7 @@ class AutoMarkCompleted extends Command
             );
 
             // Send review request notification to buyer
-            $sellerName = $order->teacher ? ($order->teacher->first_name . ' ' . $order->teacher->last_name) : 'the seller';
+            $sellerName = $order->teacher ? ($order->teacher->first_name . ' ' .  strtoupper(substr($order->teacher->last_name, 0, 1))) : 'the seller';
             $this->notificationService->send(
                 userId: $order->user_id,
                 type: 'review',

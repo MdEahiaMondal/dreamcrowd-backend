@@ -682,13 +682,13 @@
                                 @if (count($gigs) > 0)
 
                                     @foreach ($gigs as $item)
-
                                         @php
                                             $media = \App\Models\TeacherGigData::where(['gig_id'=>$item->id])->first();
-            $payment = \App\Models\TeacherGigPayment::where(['gig_id'=>$item->id])->first();
-            $user = \App\Models\ExpertProfile::where(['user_id'=>$item->user_id, 'status'=>1])->first();
-            $firstLetter = strtoupper(substr($user->first_name, 0, 1));
-            $lastLetter = strtoupper(substr($user->last_name, 0, 1));
+                                            $payment = \App\Models\TeacherGigPayment::where(['gig_id'=>$item->id])->first();
+                                            $user = \App\Models\ExpertProfile::where(['user_id'=>$item->user_id, 'status'=>1])->first();
+                                            
+                                            $firstLetter = strtoupper(substr(@$user->first_name, 0, 1));
+                                            $lastLetter = strtoupper(substr(@$user->last_name, 0, 1));
                                         @endphp
 
                                         <div class="col-lg-3 col-md-6 col-12">

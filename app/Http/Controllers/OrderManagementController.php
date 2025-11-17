@@ -551,6 +551,7 @@ class OrderManagementController extends Controller
                 'users.id',
                 'users.first_name',
                 'users.last_name',
+                'users.country',
                 'users.profile',
                 'book_orders.title',
                 'teacher_gigs.service_type',
@@ -644,6 +645,7 @@ class OrderManagementController extends Controller
                 'users.id',
                 'users.first_name',
                 'users.last_name',
+                'users.country',
                 'users.profile',
                 'book_orders.title',
                 'teacher_gig_data.description',
@@ -685,6 +687,7 @@ class OrderManagementController extends Controller
                 'users.id',
                 'users.first_name',
                 'users.last_name',
+                'users.country',
                 'users.profile',
                 'book_orders.title',
                 'teacher_gig_data.description',
@@ -752,6 +755,7 @@ class OrderManagementController extends Controller
                 'users.id',
                 'users.first_name',
                 'users.last_name',
+                'users.country',
                 'users.profile',
                 'book_orders.title',
                 'teacher_gig_data.description',
@@ -793,6 +797,7 @@ class OrderManagementController extends Controller
                 'users.id',
                 'users.first_name',
                 'users.last_name',
+                'users.country',
                 'users.profile',
                 'book_orders.title',
                 'teacher_gig_data.description',
@@ -856,6 +861,7 @@ class OrderManagementController extends Controller
                 'users.id',
                 'users.first_name',
                 'users.last_name',
+                'users.country',
                 'users.profile',
                 'book_orders.title',
                 'teacher_gig_data.description',
@@ -880,6 +886,7 @@ class OrderManagementController extends Controller
                 'users.id',
                 'users.first_name',
                 'users.last_name',
+                'users.country',
                 'users.profile',
                 'book_orders.title',
                 'teacher_gig_data.description',
@@ -926,6 +933,7 @@ class OrderManagementController extends Controller
                 'users.id',
                 'users.first_name',
                 'users.last_name',
+                'users.country',
                 'users.profile',
                 'book_orders.title',
                 'teacher_gig_data.description',
@@ -950,6 +958,7 @@ class OrderManagementController extends Controller
                 'users.id',
                 'users.first_name',
                 'users.last_name',
+                'users.country',
                 'users.profile',
                 'book_orders.title',
                 'teacher_gig_data.description',
@@ -1005,6 +1014,7 @@ class OrderManagementController extends Controller
                 'users.id',
                 'users.first_name',
                 'users.last_name',
+                'users.country',
                 'users.profile',
                 'book_orders.title',
                 'teacher_gig_data.description',
@@ -1033,6 +1043,7 @@ class OrderManagementController extends Controller
                 'users.id',
                 'users.first_name',
                 'users.last_name',
+                'users.country',
                 'users.profile',
                 'book_orders.title',
 
@@ -2738,6 +2749,7 @@ class OrderManagementController extends Controller
                 $class->update();
             }
         } else {
+            dd($classes, $newTeacherDates);
             // ✅ Create new reschedule records
             foreach ($classes as $index => $class) {
                 // Create new ClassReschedule record
