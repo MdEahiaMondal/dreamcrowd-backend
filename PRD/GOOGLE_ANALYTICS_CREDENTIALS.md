@@ -734,7 +734,7 @@ Once you've implemented the tracking code, test if GA4 is receiving data:
 **Verify it includes:**
 
 ```gitignore
-.env
+../.env
 .env.backup
 .env.production
 .phpunit.result.cache

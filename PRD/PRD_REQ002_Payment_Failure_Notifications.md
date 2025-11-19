@@ -1329,8 +1329,8 @@ class PaymentFailureEmailTest extends TestCase
 ## Appendix
 
 ### Related Documents
-- [MASTER_IMPLEMENTATION_PLAN.md](./MASTER_IMPLEMENTATION_PLAN.md)
-- [PRD_REQ001_Order_Confirmation_Notifications.md](./PRD_REQ001_Order_Confirmation_Notifications.md)
+- [MASTER_IMPLEMENTATION_PLAN.md](MASTER_IMPLEMENTATION_PLAN.md)
+- [PRD_REQ001_Order_Confirmation_Notifications.md](PRD_REQ001_Order_Confirmation_Notifications.md)
 
 ### Stripe Test Cards
 | Card Number | Result |
