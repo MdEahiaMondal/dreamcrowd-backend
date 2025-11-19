@@ -946,8 +946,8 @@ If issues arise after deployment:
 ## Appendix
 
 ### Related Documents
-- [MASTER_IMPLEMENTATION_PLAN.md](./MASTER_IMPLEMENTATION_PLAN.md)
-- [REMAINING_TASKS.md](./REMAINING_TASKS.md)
+- [MASTER_IMPLEMENTATION_PLAN.md](MASTER_IMPLEMENTATION_PLAN.md)
+- [REMAINING_TASKS.md](REMAINING_TASKS.md)
 
 ### Email Preview Screenshots
 (Attach screenshots of email templates here after design)

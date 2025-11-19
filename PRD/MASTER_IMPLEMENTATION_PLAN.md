@@ -86,8 +86,8 @@ All requirements are documented in separate PRD files for modular tracking and a
 
 | REQ-ID | Requirement Title | Effort | Document |
 |--------|-------------------|---------|----------|
-| REQ-001 | Order Confirmation Notifications | 4 hours | [PRD_REQ001_Order_Confirmation_Notifications.md](./PRD_REQ001_Order_Confirmation_Notifications.md) |
-| REQ-002 | Payment Failure Notifications | 4 hours | [PRD_REQ002_Payment_Failure_Notifications.md](./PRD_REQ002_Payment_Failure_Notifications.md) |
+| REQ-001 | Order Confirmation Notifications | 4 hours | [PRD_REQ001_Order_Confirmation_Notifications.md](PRD_REQ001_Order_Confirmation_Notifications.md) |
+| REQ-002 | Payment Failure Notifications | 4 hours | [PRD_REQ002_Payment_Failure_Notifications.md](PRD_REQ002_Payment_Failure_Notifications.md) |
 
 **Subtotal:** 8 hours
 
@@ -97,13 +97,13 @@ All requirements are documented in separate PRD files for modular tracking and a
 
 | REQ-ID | Requirement Title | Effort | Document |
 |--------|-------------------|---------|----------|
-| REQ-003 | Class Cancellation Notifications | 4 hours | [PRD_REQ003_Class_Cancellation_Notifications.md](./PRD_REQ003_Class_Cancellation_Notifications.md) |
-| REQ-004 | Refund Processed Notifications | 3 hours | [PRD_REQ004_Refund_Processed_Notifications.md](./PRD_REQ004_Refund_Processed_Notifications.md) |
-| REQ-005 | 24-Hour Class Reminder Notifications | 5 hours | [PRD_REQ005_24Hour_Class_Reminders.md](./PRD_REQ005_24Hour_Class_Reminders.md) |
-| REQ-006 | Dispute Opened Notifications | 4 hours | [PRD_REQ006_Dispute_Opened_Notifications.md](./PRD_REQ006_Dispute_Opened_Notifications.md) |
-| REQ-007 | Dispute Resolved Notifications | 4 hours | [PRD_REQ007_Dispute_Resolved_Notifications.md](./PRD_REQ007_Dispute_Resolved_Notifications.md) |
-| REQ-008 | Class Reschedule Request Notifications | 4 hours | [PRD_REQ008_Reschedule_Request_Notifications.md](./PRD_REQ008_Reschedule_Request_Notifications.md) |
-| REQ-009 | Reschedule Approved/Rejected Notifications | 4 hours | [PRD_REQ009_Reschedule_Approved_Rejected_Notifications.md](./PRD_REQ009_Reschedule_Approved_Rejected_Notifications.md) |
+| REQ-003 | Class Cancellation Notifications | 4 hours | [PRD_REQ003_Class_Cancellation_Notifications.md](PRD_REQ003_Class_Cancellation_Notifications.md) |
+| REQ-004 | Refund Processed Notifications | 3 hours | [PRD_REQ004_Refund_Processed_Notifications.md](PRD_REQ004_Refund_Processed_Notifications.md) |
+| REQ-005 | 24-Hour Class Reminder Notifications | 5 hours | [PRD_REQ005_24Hour_Class_Reminders.md](PRD_REQ005_24Hour_Class_Reminders.md) |
+| REQ-006 | Dispute Opened Notifications | 4 hours | [PRD_REQ006_Dispute_Opened_Notifications.md](PRD_REQ006_Dispute_Opened_Notifications.md) |
+| REQ-007 | Dispute Resolved Notifications | 4 hours | [PRD_REQ007_Dispute_Resolved_Notifications.md](PRD_REQ007_Dispute_Resolved_Notifications.md) |
+| REQ-008 | Class Reschedule Request Notifications | 4 hours | [PRD_REQ008_Reschedule_Request_Notifications.md](PRD_REQ008_Reschedule_Request_Notifications.md) |
+| REQ-009 | Reschedule Approved/Rejected Notifications | 4 hours | [PRD_REQ009_Reschedule_Approved_Rejected_Notifications.md](PRD_REQ009_Reschedule_Approved_Rejected_Notifications.md) |
 
 **Subtotal:** 28 hours
 
@@ -113,16 +113,16 @@ All requirements are documented in separate PRD files for modular tracking and a
 
 | REQ-ID | Requirement Title | Effort | Document |
 |--------|-------------------|---------|----------|
-| REQ-010 | Order Status Change Notifications | 6 hours | [PRD_REQ010_Order_Status_Change_Notifications.md](./PRD_REQ010_Order_Status_Change_Notifications.md) |
-| REQ-011 | Review Reminder Notifications | 5 hours | [PRD_REQ011_Review_Reminder_Notifications.md](./PRD_REQ011_Review_Reminder_Notifications.md) |
-| REQ-012 | New Message Notifications | 6 hours | [PRD_REQ012_New_Message_Notifications.md](./PRD_REQ012_New_Message_Notifications.md) |
-| REQ-013 | Gig Status Change Notifications | 4 hours | [PRD_REQ013_Gig_Status_Change_Notifications.md](./PRD_REQ013_Gig_Status_Change_Notifications.md) |
-| REQ-014 | Real-time Booking Notifications | 5 hours | [PRD_REQ014_Realtime_Booking_Notifications.md](./PRD_REQ014_Realtime_Booking_Notifications.md) |
-| REQ-015 | Payout Processed Notifications | 5 hours | [PRD_REQ015_Payout_Processed_Notifications.md](./PRD_REQ015_Payout_Processed_Notifications.md) |
-| REQ-016 | Account Verification Enhancements | 4 hours | [PRD_REQ016_Account_Verification_Enhancements.md](./PRD_REQ016_Account_Verification_Enhancements.md) |
-| REQ-017 | Admin Alert Notifications | 5 hours | [PRD_REQ017_Admin_Alert_Notifications.md](./PRD_REQ017_Admin_Alert_Notifications.md) |
-| REQ-018 | Coupon Usage Notifications | 3 hours | [PRD_REQ018_Coupon_Usage_Notifications.md](./PRD_REQ018_Coupon_Usage_Notifications.md) |
-| REQ-019 | Zoom Connection Status Notifications | 2 hours | [PRD_REQ019_Zoom_Connection_Status_Notifications.md](./PRD_REQ019_Zoom_Connection_Status_Notifications.md) |
+| REQ-010 | Order Status Change Notifications | 6 hours | [PRD_REQ010_Order_Status_Change_Notifications.md](PRD_REQ010_Order_Status_Change_Notifications.md) |
+| REQ-011 | Review Reminder Notifications | 5 hours | [PRD_REQ011_Review_Reminder_Notifications.md](PRD_REQ011_Review_Reminder_Notifications.md) |
+| REQ-012 | New Message Notifications | 6 hours | [PRD_REQ012_New_Message_Notifications.md](PRD_REQ012_New_Message_Notifications.md) |
+| REQ-013 | Gig Status Change Notifications | 4 hours | [PRD_REQ013_Gig_Status_Change_Notifications.md](PRD_REQ013_Gig_Status_Change_Notifications.md) |
+| REQ-014 | Real-time Booking Notifications | 5 hours | [PRD_REQ014_Realtime_Booking_Notifications.md](PRD_REQ014_Realtime_Booking_Notifications.md) |
+| REQ-015 | Payout Processed Notifications | 5 hours | [PRD_REQ015_Payout_Processed_Notifications.md](PRD_REQ015_Payout_Processed_Notifications.md) |
+| REQ-016 | Account Verification Enhancements | 4 hours | [PRD_REQ016_Account_Verification_Enhancements.md](PRD_REQ016_Account_Verification_Enhancements.md) |
+| REQ-017 | Admin Alert Notifications | 5 hours | [PRD_REQ017_Admin_Alert_Notifications.md](PRD_REQ017_Admin_Alert_Notifications.md) |
+| REQ-018 | Coupon Usage Notifications | 3 hours | [PRD_REQ018_Coupon_Usage_Notifications.md](PRD_REQ018_Coupon_Usage_Notifications.md) |
+| REQ-019 | Zoom Connection Status Notifications | 2 hours | [PRD_REQ019_Zoom_Connection_Status_Notifications.md](PRD_REQ019_Zoom_Connection_Status_Notifications.md) |
 
 **Subtotal:** 45 hours
 
@@ -132,12 +132,12 @@ All requirements are documented in separate PRD files for modular tracking and a
 
 | REQ-ID | Requirement Title | Effort | Document |
 |--------|-------------------|---------|----------|
-| REQ-020 | Newsletter/Promotional Email System | 10 hours | [PRD_REQ020_Newsletter_System.md](./PRD_REQ020_Newsletter_System.md) |
-| REQ-021 | Social Notifications (Follow, Like, Share) | 8 hours | [PRD_REQ021_Social_Notifications.md](./PRD_REQ021_Social_Notifications.md) |
-| REQ-022 | Weekly Summary Email Digests | 6 hours | [PRD_REQ022_Weekly_Summary_Emails.md](./PRD_REQ022_Weekly_Summary_Emails.md) |
-| REQ-023 | SMS Notifications (Optional) | 12 hours | [PRD_REQ023_SMS_Notifications.md](./PRD_REQ023_SMS_Notifications.md) |
-| REQ-024 | Browser Push Notifications (Optional) | 8 hours | [PRD_REQ024_Push_Notifications.md](./PRD_REQ024_Push_Notifications.md) |
-| REQ-025 | Zoom UX Enhancements (Optional) | 6 hours | [PRD_REQ025_Zoom_Enhancements.md](./PRD_REQ025_Zoom_Enhancements.md) |
+| REQ-020 | Newsletter/Promotional Email System | 10 hours | [PRD_REQ020_Newsletter_System.md](PRD_REQ020_Newsletter_System.md) |
+| REQ-021 | Social Notifications (Follow, Like, Share) | 8 hours | [PRD_REQ021_Social_Notifications.md](PRD_REQ021_Social_Notifications.md) |
+| REQ-022 | Weekly Summary Email Digests | 6 hours | [PRD_REQ022_Weekly_Summary_Emails.md](PRD_REQ022_Weekly_Summary_Emails.md) |
+| REQ-023 | SMS Notifications (Optional) | 12 hours | [PRD_REQ023_SMS_Notifications.md](PRD_REQ023_SMS_Notifications.md) |
+| REQ-024 | Browser Push Notifications (Optional) | 8 hours | [PRD_REQ024_Push_Notifications.md](PRD_REQ024_Push_Notifications.md) |
+| REQ-025 | Zoom UX Enhancements (Optional) | 6 hours | [PRD_REQ025_Zoom_Enhancements.md](PRD_REQ025_Zoom_Enhancements.md) |
 
 **Subtotal:** 50+ hours
 
@@ -147,7 +147,7 @@ All requirements are documented in separate PRD files for modular tracking and a
 
 | REQ-ID | Requirement Title | Effort | Document |
 |--------|-------------------|---------|----------|
-| REQ-QA | Comprehensive Testing & QA Plan | 20-30 hours | [PRD_TESTING_QA_CHECKLIST.md](./PRD_TESTING_QA_CHECKLIST.md) |
+| REQ-QA | Comprehensive Testing & QA Plan | 20-30 hours | [PRD_TESTING_QA_CHECKLIST.md](PRD_TESTING_QA_CHECKLIST.md) |
 
 ---
 
@@ -155,7 +155,7 @@ All requirements are documented in separate PRD files for modular tracking and a
 
 | REQ-ID | Requirement Title | Effort | Document |
 |--------|-------------------|---------|----------|
-| REQ-DOC | Documentation & User Guides | 10-15 hours | [PRD_DOCUMENTATION_TASKS.md](./PRD_DOCUMENTATION_TASKS.md) |
+| REQ-DOC | Documentation & User Guides | 10-15 hours | [PRD_DOCUMENTATION_TASKS.md](PRD_DOCUMENTATION_TASKS.md) |
 
 ---
 
@@ -609,9 +609,9 @@ For critical bugs in production:
 
 ## Quick Links to Individual PRDs
 
-- [All Critical Priority PRDs](./PRD_REQ001_Order_Confirmation_Notifications.md)
-- [All High Priority PRDs](./PRD_REQ003_Class_Cancellation_Notifications.md)
-- [All Medium Priority PRDs](./PRD_REQ010_Order_Status_Change_Notifications.md)
-- [All Low Priority PRDs](./PRD_REQ020_Newsletter_System.md)
-- [Testing & QA Plan](./PRD_TESTING_QA_CHECKLIST.md)
-- [Documentation Plan](./PRD_DOCUMENTATION_TASKS.md)
+- [All Critical Priority PRDs](PRD_REQ001_Order_Confirmation_Notifications.md)
+- [All High Priority PRDs](PRD_REQ003_Class_Cancellation_Notifications.md)
+- [All Medium Priority PRDs](PRD_REQ010_Order_Status_Change_Notifications.md)
+- [All Low Priority PRDs](PRD_REQ020_Newsletter_System.md)
+- [Testing & QA Plan](PRD_TESTING_QA_CHECKLIST.md)
+- [Documentation Plan](PRD_DOCUMENTATION_TASKS.md)
