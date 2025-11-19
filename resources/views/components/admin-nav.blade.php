@@ -48,7 +48,7 @@
                         @endif
                     @endif
                     @if (Auth::user())
-                        <h1>{{ Auth::user()->first_name }} hhhhhhhhh</h1>
+                        <h1>{{ Auth::user()->first_name }}</h1>
                     @endif
                     
                     <div class="dropdown">

@@ -194,7 +194,7 @@
                                 <div class="row mega-menu-top">
                                     <h1></h1>
                                     <div class="col-md-12">
-                                        <a href="/seller-listing/online-services">view all >></a>
+                                        <a href="/seller-listing/online-services">View all >></a>
                                     </div>
                                 </div>
                                 <!-- FIRST ROW END HERE -->
@@ -217,19 +217,15 @@
 
                                     @if ($categories)
                                         @foreach ($categories as $item)
-                                            @php$category = \App\Models\Category::where([
-                                                                                                                                                    'category' => $item->category,
-                                                                                                                                                    'service_role' => 'Freelance',
-                                                                                                                                                ])->first();
-                                                                                                                                                // $result = preg_replace('/\(.*?\)/', '', $item->category);
-                                                                                                                                    @endphp ?> ?>
+                                            @php
+                                                $category = \App\Models\Category::where(['category' => $item->category, 'service_role' => 'Freelance', ])->first(); 
+                                            @endphp 
 
                                             @if ($category)
                                                 <div class="col-12 col-md-6 col-lg-3">
                                                     <ul>
                                                         <li>
-                                                            <a
-                                                                href="/seller-listing/inperson-services/{{ $item->category }}">{{ $item->category }}</a>
+                                                            <a href="/seller-listing/inperson-services/{{ $item->category }}">{{ $item->category }}</a>
                                                         </li>
                                                     </ul>
                                                 </div>
@@ -280,7 +276,7 @@
                                 </div>
                                 <div class="row mega-menu-top">
                                     <div class="col-md-12">
-                                        <a href="/seller-listing/inperson-services">view all >></a>
+                                        <a href="/seller-listing/inperson-services">View all >></a>
                                     </div>
                                 </div>
                                 <!-- SECOND ROW END HERE -->

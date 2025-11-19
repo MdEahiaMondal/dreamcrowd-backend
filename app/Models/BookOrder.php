@@ -9,6 +9,15 @@ class BookOrder extends Model
 {
     use HasFactory;
 
+    
+// Status Code	Status      Name		                    Description
+
+        // 0	Pending		Order placed,                   awaiting seller acceptance
+        // 1	Active	    Order accepted by seller,       service in progress
+        // 2	Delivered	Service completed,              48-hour dispute window active
+        // 3	Completed	Order finalized,                ready for seller payout
+        // 4	Cancelled   Order cancelled (with or without refund)
+
     protected $fillable = [
         'user_id',
         'gig_id',

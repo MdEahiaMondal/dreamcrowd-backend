@@ -7,6 +7,17 @@
     function initSidebar() {
         // Arrow toggle for submenu
         let arrow = document.querySelectorAll(".arrow");
+        let submenu = document.querySelectorAll(".iocn-link");
+
+
+        for (let i = 0; i < submenu.length; i++) {
+            submenu[i].addEventListener("click", function (e) {
+                console.log(e.target.parentElement);
+
+                let submenuArrowParent = e.target.parentElement.parentElement.parentElement; // Selecting main parent of arrow
+                submenuArrowParent.classList.toggle("showMenu");
+            });
+        }
         for (let i = 0; i < arrow.length; i++) {
             arrow[i].addEventListener("click", function (e) {
                 let arrowParent = e.target.parentElement.parentElement; // Selecting main parent of arrow
