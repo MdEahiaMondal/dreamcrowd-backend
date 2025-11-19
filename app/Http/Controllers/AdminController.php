@@ -1656,4 +1656,240 @@ class AdminController extends Controller
 
         return redirect()->back()->with('success', "Processed {$processed} payouts successfully. Failed: {$failed}");
     }
+
+    // ============================================
+    // CRITICAL-2 FIX: Missing Admin Panel Features
+    // ============================================
+
+    /**
+     * All Sellers Management
+     */
+    public function allSellers()
+    {
+        if ($redirect = $this->AdmincheckAuth()) {
+            return $redirect;
+        }
+
+        $sellers = User::where('role', 1)
+            ->with('expertProfile')
+            ->withCount('teacherGigs')
+            ->withCount('bookOrders')
+            ->orderBy('created_at', 'desc')
+            ->paginate(20);
+
+        return view('Admin-Dashboard.all-sellers', compact('sellers'));
+    }
+
+    /**
+     * All Services Management
+     */
+    public function allServices()
+    {
+        if ($redirect = $this->AdmincheckAuth()) {
+            return $redirect;
+        }
+
+        $services = \App\Models\TeacherGig::with(['user', 'category'])
+            ->withAvg('all_reviews', 'rating')
+            ->orderBy('created_at', 'desc')
+            ->paginate(20);
+
+        return view('Admin-Dashboard.all-services', compact('services'));
+    }
+
+    /**
+     * Buyer Management
+     */
+    public function buyerManagement()
+    {
+        if ($redirect = $this->AdmincheckAuth()) {
+            return $redirect;
+        }
+
+        $buyers = User::where('role', 0)
+            ->withCount('bookOrders')
+            ->withSum('transactions as total_spent', 'total_amount')
+            ->orderBy('created_at', 'desc')
+            ->paginate(20);
+
+        return view('Admin-Dashboard.buyer-management', compact('buyers'));
+    }
+
+    /**
+     * All Orders Management
+     */
+    public function allOrders()
+    {
+        if ($redirect = $this->AdmincheckAuth()) {
+            return $redirect;
+        }
+
+        $orders = \App\Models\BookOrder::with(['user', 'teacher', 'gig'])
+            ->orderBy('created_at', 'desc')
+            ->paginate(20);
+
+        // Order status counts
+        $statusCounts = [
+            'pending' => \App\Models\BookOrder::where('status', 0)->count(),
+            'active' => \App\Models\BookOrder::where('status', 1)->count(),
+            'delivered' => \App\Models\BookOrder::where('status', 2)->count(),
+            'completed' => \App\Models\BookOrder::where('status', 3)->count(),
+            'cancelled' => \App\Models\BookOrder::where('status', 4)->count(),
+        ];
+
+        return view('Admin-Dashboard.All-orders', compact('orders', 'statusCounts'));
+    }
+
+    /**
+     * Payout Details
+     */
+    public function payoutDetails()
+    {
+        if ($redirect = $this->AdmincheckAuth()) {
+            return $redirect;
+        }
+
+        $payouts = \App\Models\Transaction::where('payout_status', 'pending')
+            ->where('status', 'completed')
+            ->with(['seller', 'buyer'])
+            ->orderBy('created_at', 'desc')
+            ->paginate(20);
+
+        $stats = [
+            'pending_amount' => \App\Models\Transaction::where('payout_status', 'pending')
+                ->where('status', 'completed')
+                ->sum('seller_earnings'),
+            'pending_count' => \App\Models\Transaction::where('payout_status', 'pending')
+                ->where('status', 'completed')
+                ->count(),
+            'completed_amount' => \App\Models\Transaction::where('payout_status', 'completed')
+                ->sum('seller_earnings'),
+            'completed_count' => \App\Models\Transaction::where('payout_status', 'completed')
+                ->count(),
+        ];
+
+        return view('Admin-Dashboard.payout-details', compact('payouts', 'stats'));
+    }
+
+    /**
+     * Refund Details
+     */
+    public function refundDetails()
+    {
+        if ($redirect = $this->AdmincheckAuth()) {
+            return $redirect;
+        }
+
+        $refunds = \App\Models\Transaction::where('status', 'refunded')
+            ->with(['seller', 'buyer', 'bookOrder'])
+            ->orderBy('updated_at', 'desc')
+            ->paginate(20);
+
+        $stats = [
+            'total_refunded' => \App\Models\Transaction::where('status', 'refunded')
+                ->sum('total_amount'),
+            'refund_count' => \App\Models\Transaction::where('status', 'refunded')
+                ->count(),
+            'pending_disputes' => \App\Models\DisputeOrder::where('status', 0)->count(),
+        ];
+
+        return view('Admin-Dashboard.refund-details', compact('refunds', 'stats'));
+    }
+
+    /**
+     * Invoice & Statement
+     */
+    public function invoice()
+    {
+        if ($redirect = $this->AdmincheckAuth()) {
+            return $redirect;
+        }
+
+        $transactions = \App\Models\Transaction::with(['seller', 'buyer', 'bookOrder'])
+            ->orderBy('created_at', 'desc')
+            ->paginate(20);
+
+        $monthlyRevenue = \App\Models\Transaction::where('status', 'completed')
+            ->whereMonth('created_at', now()->month)
+            ->sum('admin_commission');
+
+        return view('Admin-Dashboard.invoice', compact('transactions', 'monthlyRevenue'));
+    }
+
+    /**
+     * Reviews & Ratings
+     */
+    public function reviewsRatings()
+    {
+        if ($redirect = $this->AdmincheckAuth()) {
+            return $redirect;
+        }
+
+        $reviews = \App\Models\ServiceReviews::with(['user', 'teacher', 'gig', 'replies'])
+            ->orderBy('created_at', 'desc')
+            ->paginate(20);
+
+        $stats = [
+            'total_reviews' => \App\Models\ServiceReviews::count(),
+            'average_rating' => \App\Models\ServiceReviews::avg('rating'),
+            'five_star' => \App\Models\ServiceReviews::where('rating', 5)->count(),
+            'one_star' => \App\Models\ServiceReviews::where('rating', 1)->count(),
+        ];
+
+        return view('Admin-Dashboard.reviews&rating', compact('reviews', 'stats'));
+    }
+
+    /**
+     * Seller Reports
+     */
+    public function sellerReports()
+    {
+        if ($redirect = $this->AdmincheckAuth()) {
+            return $redirect;
+        }
+
+        $sellers = User::where('role', 1)
+            ->with('expertProfile')
+            ->withCount('teacherGigs')
+            ->withCount('bookOrders')
+            ->withSum('sellerTransactions as total_earnings', 'seller_earnings')
+            ->orderBy('created_at', 'desc')
+            ->paginate(20);
+
+        $stats = [
+            'total_sellers' => User::where('role', 1)->count(),
+            'active_sellers' => User::where('role', 1)->whereHas('teacherGigs', function($q) {
+                $q->where('status', 1);
+            })->count(),
+            'total_services' => \App\Models\TeacherGig::count(),
+            'total_revenue' => \App\Models\Transaction::where('status', 'completed')->sum('seller_earnings'),
+        ];
+
+        return view('Admin-Dashboard.seller-reports', compact('sellers', 'stats'));
+    }
+
+    /**
+     * Buyer Reports
+     */
+    public function buyerReports()
+    {
+        if ($redirect = $this->AdmincheckAuth()) {
+            return $redirect;
+        }
+
+        $buyers = User::where('role', 0)
+            ->withCount('bookOrders')
+            ->withSum('buyerTransactions as total_spent', 'total_amount')
+            ->orderBy('created_at', 'desc')
+            ->paginate(20);
+
+        $stats = [
+            'total_buyers' => User::where('role', 0)->count(),
+            'active_buyers' => User::where('role', 0)->whereHas('bookOrders')->count(),
+            'total_orders' => \App\Models\BookOrder::count(),
+            'total_revenue' => \App\Models\Transaction::where('status', 'completed')->sum('total_amount'),
+        ];
+
+        return view('Admin-Dashboard.Buyer-reports', compact('buyers', 'stats'));
+    }
 }

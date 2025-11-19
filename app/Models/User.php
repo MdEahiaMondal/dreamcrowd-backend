@@ -101,6 +101,30 @@ class User extends Authenticatable
     }
 
     /**
+     * Get teacher's gigs/services
+     */
+    public function teacherGigs()
+    {
+        return $this->hasMany(TeacherGig::class, 'user_id');
+    }
+
+    /**
+     * Get book orders as buyer
+     */
+    public function bookOrders()
+    {
+        return $this->hasMany(BookOrder::class, 'user_id');
+    }
+
+    /**
+     * Get expert/teacher profile
+     */
+    public function expertProfile()
+    {
+        return $this->hasOne(ExpertProfile::class, 'user_id');
+    }
+
+    /**
      * Get total earnings as seller
      */
     public function getTotalEarningsAttribute()

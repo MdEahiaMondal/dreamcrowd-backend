@@ -37,20 +37,20 @@
                 </div>
                 <ul class="sub-menu">
                     <li><a class="link_name" href="#">Seller Management</a></li>
-                    <li><a href="all-sellers.html">All Sellers</a></li>
+                    <li><a href="{{ route('admin.all-sellers') }}">All Sellers</a></li>
                     <li><a href="/all-application">All Applications</a></li>
                     <li><a href="/seller-request">Seller Requests</a></li>
-                    <li><a href="all-services.html">All Services</a></li>
+                    <li><a href="{{ route('admin.all-services') }}">All Services</a></li>
                 </ul>
             </li>
             <!-- <li> -->
             <li>
-                <a href="buyer-management.html">
+                <a href="{{ route('admin.buyer-management') }}">
                     <i class='bx bx-user icon' title="Buyer Management"></i>
                     <span class="link_name">Buyer Management</span>
                 </a>
                 <ul class="sub-menu blank">
-                    <li><a class="link_name" href="buyer-management.html">Buyer Management</a></li>
+                    <li><a class="link_name" href="{{ route('admin.buyer-management') }}">Buyer Management</a></li>
                 </ul>
             </li>
             <li>
@@ -161,18 +161,18 @@
                 </div>
                 <ul class="sub-menu">
                     <li><a class="link_name" href="#">Payment Management</a></li>
-                    <li><a href="All-orders.html">All Orders</a></li>
-                    <li><a href="payout-details.html">Payout Detail</a></li>
-                    <li><a href="refund-details.html">Refund Detail</a></li>
+                    <li><a href="{{ route('admin.all-orders') }}">All Orders</a></li>
+                    <li><a href="{{ route('admin.payout-details') }}">Payout Detail</a></li>
+                    <li><a href="{{ route('admin.refund-details') }}">Refund Detail</a></li>
                 </ul>
             </li>
             <li>
-                <a href="invoice.html">
+                <a href="{{ route('admin.invoice') }}">
                     <i class='bx bx-file' title="Invoice & Statement"></i>
                     <span class="link_name">Invoice & Statement</span>
                 </a>
                 <ul class="sub-menu blank">
-                    <li><a class="link_name" href="invoice.html">Invoice & Statement</a></li>
+                    <li><a class="link_name" href="{{ route('admin.invoice') }}">Invoice & Statement</a></li>
                 </ul>
             </li>
 
@@ -203,12 +203,12 @@
                 </ul>
             </li>
             <li>
-                <a href="reviews&rating.html">
+                <a href="{{ route('admin.reviews-ratings') }}">
                     <i class='bx bx-star icon' title="Reviews & Ratings"></i>
                     <span class="link_name">Reviews & Ratings</span>
                 </a>
                 <ul class="sub-menu blank">
-                    <li><a class="link_name" href="reviews&rating.html">Reviews & Ratings</a></li>
+                    <li><a class="link_name" href="{{ route('admin.reviews-ratings') }}">Reviews & Ratings</a></li>
                 </ul>
             </li>
             <li>
@@ -225,10 +225,10 @@
                 <ul class="sub-menu">
                     <li><a class="link_name" href="#">Reports</a></li>
                     <li>
-                        <a href="seller-reports.html">Seller Reports</a>
+                        <a href="{{ route('admin.seller-reports') }}">Seller Reports</a>
                     </li>
                     <li>
-                        <a href="Buyer-reports .html">Buyer Reports</a>
+                        <a href="{{ route('admin.buyer-reports') }}">Buyer Reports</a>
                     </li>
                 </ul>
             </li>

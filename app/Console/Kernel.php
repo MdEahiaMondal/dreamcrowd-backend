@@ -100,6 +100,21 @@ class Kernel extends ConsoleKernel
         // =====================================================
 
         // =====================================================
+        // ORDER APPROVAL REMINDERS SCHEDULED COMMAND
+        // =====================================================
+
+        // Send order approval reminders to sellers and notify buyers after 48h (runs daily at 10 AM)
+        $schedule->command('orders:send-approval-reminders')
+            ->dailyAt('10:00')
+            ->withoutOverlapping()
+            ->runInBackground()
+            ->appendOutputTo(storage_path('logs/order-approval-reminders.log'));
+
+        // =====================================================
+        // END ORDER APPROVAL REMINDERS SCHEDULED COMMAND
+        // =====================================================
+
+        // =====================================================
         // DAILY SYSTEM REPORT SCHEDULED COMMAND
         // =====================================================
 

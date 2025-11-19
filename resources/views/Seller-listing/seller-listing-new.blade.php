@@ -686,7 +686,12 @@
                                             $media = \App\Models\TeacherGigData::where(['gig_id'=>$item->id])->first();
                                             $payment = \App\Models\TeacherGigPayment::where(['gig_id'=>$item->id])->first();
                                             $user = \App\Models\ExpertProfile::where(['user_id'=>$item->user_id, 'status'=>1])->first();
-                                            
+
+                                            // FIX: Check if user exists before accessing properties
+                                            if (!$user) {
+                                                continue; // Skip this gig if user/profile doesn't exist
+                                            }
+
                                             $firstLetter = strtoupper(substr(@$user->first_name, 0, 1));
                                             $lastLetter = strtoupper(substr(@$user->last_name, 0, 1));
                                         @endphp

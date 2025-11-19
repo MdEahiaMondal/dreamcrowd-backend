@@ -50,8 +50,8 @@ Route::middleware('auth')->group(function () {
 
 
 Route::controller(AuthController::class)->group(function () {
-    Route::post('/create-account', 'CreateAccount');
-    Route::post('/login', 'Login');
+    Route::post('/create-account', 'CreateAccount')->name('register');
+    Route::post('/login', 'Login')->name('login'); // FIX LOG-3: Added route name
     // Sign With Google ================
     Route::get('/google/redirect', 'redirectToGoogle')->name('google.redirect');
     Route::get('/google/callback', 'handleGoogleCallback')->name('google.callback');
@@ -60,11 +60,11 @@ Route::controller(AuthController::class)->group(function () {
     Route::get('/facebook/redirect', 'facebookRedirect');
     Route::get('/auth/facebook/callback', 'facebookCallback');
     //End ==== With Facebook account =====
-    Route::get('/logout', 'LogOut');
+    Route::get('/logout', 'LogOut')->name('logout');
     Route::get('/switch-account', 'SwitchAccount');
-    Route::get('/verify-email/{token}', 'VerifyEmail');
-    Route::post('/forgot-password', 'ForgotPassword');
-    Route::get('/forgot-password-verify/{token}', 'ForgotPasswordVerify');
+    Route::get('/verify-email/{token}', 'VerifyEmail')->name('email.verify');
+    Route::post('/forgot-password', 'ForgotPassword')->name('password.email');
+    Route::get('/forgot-password-verify/{token}', 'ForgotPasswordVerify')->name('password.reset');
     Route::post('/new-forgot-password', 'NewForgotPassword');
 
     // Get Current Location =====
@@ -75,7 +75,7 @@ Route::controller(AuthController::class)->group(function () {
 
 
 Route::controller(PublicWebController::class)->group(function () {
-    Route::get('/', 'Index');
+    Route::get('/', 'Index')->name('home'); // FIX LOG-3: Added route name
     Route::get('/about-us', 'AboutUs');
     Route::get('/contact-us', 'ContactUs');
     Route::get('/expert-faqs', 'ExpertFaqs');
@@ -128,7 +128,7 @@ Route::controller(ExpertController::class)->group(function () {
 
 
 Route::controller(AdminController::class)->group(function () {
-    Route::get('/admin-dashboard', 'AdminDashboard');
+    Route::get('/admin-dashboard', 'AdminDashboard')->name('admin.dashboard'); // FIX LOG-3: Added route name
     // Admin Dashboard AJAX endpoints
     Route::get('/admin-dashboard/statistics', 'getAdminDashboardStatistics');
     Route::get('/admin-dashboard/revenue-chart', 'getAdminRevenueChart');
@@ -155,6 +155,20 @@ Route::controller(AdminController::class)->group(function () {
     Route::get('/approve-seller-request/{id}', 'ApproveSellerRequest');
     // Seller Requests======
     // Seller Management =========
+
+    // CRITICAL-2 FIX: Missing Admin Panel Routes =========
+    Route::get('/admin/all-sellers', 'allSellers')->name('admin.all-sellers');
+    Route::get('/admin/all-services', 'allServices')->name('admin.all-services');
+    Route::get('/admin/buyer-management', 'buyerManagement')->name('admin.buyer-management');
+    Route::get('/admin/all-orders', 'allOrders')->name('admin.all-orders');
+    Route::get('/admin/payout-details', 'payoutDetails')->name('admin.payout-details');
+    Route::get('/admin/refund-details', 'refundDetails')->name('admin.refund-details');
+    Route::get('/admin/invoice', 'invoice')->name('admin.invoice');
+    Route::get('/admin/reviews-ratings', 'reviewsRatings')->name('admin.reviews-ratings');
+    Route::get('/admin/seller-reports', 'sellerReports')->name('admin.seller-reports');
+    Route::get('/admin/buyer-reports', 'buyerReports')->name('admin.buyer-reports');
+    // CRITICAL-2 FIX END =========
+
     // Admin Management =========
     Route::get('/admin-management', 'AdminManagement');
     Route::post('/create-admin', 'CreateAdmin');
@@ -426,7 +440,7 @@ Route::post('/api/validate-coupon', [CouponController::class, 'validateCoupon'])
 
 
 Route::controller(TeacherController::class)->group(function () {
-    Route::get('/teacher-dashboard', 'TeacherDashboard');
+    Route::get('/teacher-dashboard', 'TeacherDashboard')->name('teacher.dashboard'); // FIX LOG-3: Added route name
     // Dashboard AJAX endpoints
     Route::get('/teacher-dashboard/statistics', 'getDashboardStatistics');
     Route::get('/teacher-dashboard/earnings-trend', 'getEarningsTrendChart');
@@ -538,7 +552,7 @@ Route::controller(OrderManagementController::class)->group(function () {
 
 
 Route::controller(UserController::class)->group(function () {
-    Route::get('/user-dashboard', 'UserDashboard');
+    Route::get('/user-dashboard', 'UserDashboard')->name('user.dashboard'); // FIX LOG-3 & LOG-4: Added route name
     Route::get('/user-faqs', 'UserFaqs');
     Route::get('/change-password', 'ChangePassword');
     Route::get('/profile', 'profile');

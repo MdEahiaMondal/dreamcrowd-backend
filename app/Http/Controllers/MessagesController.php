@@ -305,8 +305,22 @@ class MessagesController extends Controller
         $authusertypevalue = (Auth::user()->role === 2) ? 'admin' : ((Auth::user()->role === 1) ? 'teacher' : 'user');
 
         $firstChat = ChatList::where([$usertype => $usertypevalue, $authusertypevalue => Auth::user()->id])->first();
-        $block = $firstChat->block;
-        $block_by = $firstChat->block_by;
+
+        // FIX LOG-2: Add null check and create ChatList if doesn't exist
+        if ($firstChat) {
+            $block = $firstChat->block;
+            $block_by = $firstChat->block_by;
+        } else {
+            // Create new chat list for first-time conversation
+            $firstChat = ChatList::create([
+                $usertype => $usertypevalue,
+                $authusertypevalue => Auth::user()->id,
+                'block' => 0,
+                'block_by' => null
+            ]);
+            $block = 0;
+            $block_by = null;
+        }
         $response['block'] = $block;
         $response['block_by'] = $block_by;
         // Fetch Chat Status Block List --------------END
@@ -675,8 +689,22 @@ class MessagesController extends Controller
         $authusertypevalue = (Auth::user()->role === 2) ? 'admin' : ((Auth::user()->role === 1) ? 'teacher' : 'user');
 
         $firstChat = ChatList::where([$usertype => $usertypevalue, $authusertypevalue => Auth::user()->id])->first();
-        $block = $firstChat->block;
-        $block_by = $firstChat->block_by;
+
+        // FIX LOG-2: Add null check and create ChatList if doesn't exist
+        if ($firstChat) {
+            $block = $firstChat->block;
+            $block_by = $firstChat->block_by;
+        } else {
+            // Create new chat list for first-time conversation
+            $firstChat = ChatList::create([
+                $usertype => $usertypevalue,
+                $authusertypevalue => Auth::user()->id,
+                'block' => 0,
+                'block_by' => null
+            ]);
+            $block = 0;
+            $block_by = null;
+        }
         $response['block'] = $block;
         $response['block_by'] = $block_by;
         // Fetch Chat Status Block List --------------END
@@ -1048,8 +1076,22 @@ class MessagesController extends Controller
         $authusertypevalue = (Auth::user()->role === 2) ? 'admin' : ((Auth::user()->role === 1) ? 'teacher' : 'user');
 
         $firstChat = ChatList::where([$usertype => $usertypevalue, $authusertypevalue => Auth::user()->id])->first();
-        $block = $firstChat->block;
-        $block_by = $firstChat->block_by;
+
+        // FIX LOG-2: Add null check and create ChatList if doesn't exist
+        if ($firstChat) {
+            $block = $firstChat->block;
+            $block_by = $firstChat->block_by;
+        } else {
+            // Create new chat list for first-time conversation
+            $firstChat = ChatList::create([
+                $usertype => $usertypevalue,
+                $authusertypevalue => Auth::user()->id,
+                'block' => 0,
+                'block_by' => null
+            ]);
+            $block = 0;
+            $block_by = null;
+        }
         $response['block'] = $block;
         $response['block_by'] = $block_by;
         // Fetch Chat Status Block List --------------END
@@ -1311,8 +1353,22 @@ class MessagesController extends Controller
         $authusertypevalue = (Auth::user()->role === 2) ? 'admin' : ((Auth::user()->role === 1) ? 'teacher' : 'user');
 
         $firstChat = ChatList::where([$usertype => $usertypevalue, $authusertypevalue => Auth::user()->id])->first();
-        $block = $firstChat->block;
-        $block_by = $firstChat->block_by;
+
+        // FIX LOG-2: Add null check and create ChatList if doesn't exist
+        if ($firstChat) {
+            $block = $firstChat->block;
+            $block_by = $firstChat->block_by;
+        } else {
+            // Create new chat list for first-time conversation
+            $firstChat = ChatList::create([
+                $usertype => $usertypevalue,
+                $authusertypevalue => Auth::user()->id,
+                'block' => 0,
+                'block_by' => null
+            ]);
+            $block = 0;
+            $block_by = null;
+        }
         $response['block'] = $block;
         $response['block_by'] = $block_by;
         // Fetch Chat Status Block List --------------END
@@ -1930,14 +1986,22 @@ class MessagesController extends Controller
         $authusertypevalue = (Auth::user()->role === 2) ? 'admin' : ((Auth::user()->role === 1) ? 'teacher' : 'user');
 
         $firstChat = ChatList::where([$usertype => $usertypevalue, $authusertypevalue => Auth::user()->id])->first();
+
+        // FIX LOG-2: Add null check and create ChatList if doesn't exist
         if ($firstChat) {
             $block = $firstChat->block;
             $block_by = $firstChat->block_by;
         } else {
+            // Create new chat list for first-time conversation
+            $firstChat = ChatList::create([
+                $usertype => $usertypevalue,
+                $authusertypevalue => Auth::user()->id,
+                'block' => 0,
+                'block_by' => null
+            ]);
             $block = 0;
             $block_by = null;
         }
-
 
         $response['block'] = $block;
         $response['block_by'] = $block_by;
