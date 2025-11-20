@@ -1016,5 +1016,99 @@ class BookingController extends Controller
         return view('Public-site.booking-success', compact('order'));
     }
 
+    public function handleCustomOfferPayment(Request $request)
+    {
+        if (!$request->session_id) {
+            return redirect('/messages')->with('error', 'Invalid payment session.');
+        }
+
+        $stripe = new \Stripe\StripeClient(config('services.stripe.secret'));
+
+        try {
+            $session = $stripe->checkout->sessions->retrieve($request->session_id);
+
+            if ($session->payment_status !== 'paid') {
+                return redirect('/messages')->with('error', 'Payment not completed.');
+            }
+
+            $offerId = $session->metadata->custom_offer_id;
+            $offer = \App\Models\CustomOffer::with('milestones')->findOrFail($offerId);
+
+            // Check if order already created
+            $existingOrder = \App\Models\BookOrder::where('custom_offer_id', $offerId)->first();
+            if ($existingOrder) {
+                return redirect('/user-dashboard')->with('success', 'Order already created.');
+            }
+
+            // Calculate commission
+            $commission = \App\Models\TopSellerTag::calculateCommission($offer->gig_id, $offer->seller_id);
+
+            // Create BookOrder
+            $order = \App\Models\BookOrder::create([
+                'user_id' => $offer->buyer_id,
+                'teacher_id' => $offer->seller_id,
+                'gig_id' => $offer->gig_id,
+                'order_type' => $offer->offer_type,
+                'payment_type' => $offer->payment_type,
+                'service_mode' => $offer->service_mode,
+                'total_price' => $offer->total_amount,
+                'buyer_commission' => $commission['buyer_commission'],
+                'seller_commission' => $commission['seller_commission'],
+                'admin_commission' => $commission['admin_commission'],
+                'status' => 0, // Pending (needs seller approval)
+                'payment_status' => 'completed',
+                'stripe_transaction_id' => $session->payment_intent,
+                'custom_offer_id' => $offer->id,
+            ]);
+
+            // Create ClassDates for each milestone
+            foreach ($offer->milestones as $milestone) {
+                \App\Models\ClassDate::create([
+                    'order_id' => $order->id,
+                    'title' => $milestone->title,
+                    'description' => $milestone->description,
+                    'class_date' => $milestone->date,
+                    'start_time' => $milestone->start_time,
+                    'end_time' => $milestone->end_time,
+                    'price' => $milestone->price,
+                ]);
+            }
+
+            // Create Transaction record
+            \App\Models\Transaction::create([
+                'buyer_id' => $offer->buyer_id,
+                'seller_id' => $offer->seller_id,
+                'total_amount' => $offer->total_amount,
+                'buyer_commission' => $commission['buyer_commission'],
+                'seller_commission' => $commission['seller_commission'],
+                'admin_commission' => $commission['admin_commission'],
+                'stripe_transaction_id' => $session->payment_intent,
+                'status' => 'completed',
+            ]);
+
+            // Send notifications
+            if (class_exists('\App\Services\NotificationService')) {
+                try {
+                    app(\App\Services\NotificationService::class)->send(
+                        userId: $offer->seller_id,
+                        type: 'new_order',
+                        title: 'New Order from Custom Offer',
+                        message: 'You have a new order from ' . $offer->buyer->first_name,
+                        data: ['order_id' => $order->id],
+                        sendEmail: true
+                    );
+                } catch (\Exception $e) {
+                    \Log::error('Custom offer order notification failed: ' . $e->getMessage());
+                }
+            }
+
+            return redirect('/user-dashboard')->with('success', 'Order created successfully!');
+
+        } catch (\Exception $e) {
+            \Log::error('Custom offer payment handling failed: ' . $e->getMessage());
+            return redirect('/messages')->with('error', 'Order creation failed.');
+        }
+    }
+
 
 }

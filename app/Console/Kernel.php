@@ -39,6 +39,11 @@ class Kernel extends ConsoleKernel
             ->withoutOverlapping()
             ->runInBackground()
             ->appendOutputTo(storage_path('logs/trial-meetings.log'));
+        $schedule->command('custom-offers:expire')
+            ->hourly()
+            ->withoutOverlapping()
+            ->runInBackground()
+            ->appendOutputTo(storage_path('logs/custom-offers-expiry.log'));
 
         // =====================================================
         // ZOOM INTEGRATION SCHEDULED COMMANDS
