@@ -8,6 +8,7 @@ use App\Models\ZoomMeeting;
 use App\Models\ZoomAuditLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class ZoomSettingsController extends Controller
@@ -38,6 +39,41 @@ class ZoomSettingsController extends Controller
         }
 
         $settings = ZoomSetting::first();
+
+        // Handle decryption errors gracefully
+        if ($settings) {
+            try {
+                // Attempt to access encrypted fields to trigger any decryption errors
+                $testClientId = $settings->client_id;
+                $testClientSecret = $settings->client_secret;
+            } catch (\Illuminate\Contracts\Encryption\DecryptException $e) {
+                // Log the error
+                \Log::warning('Failed to decrypt Zoom settings. Clearing corrupted data.', [
+                    'error' => $e->getMessage(),
+                    'settings_id' => $settings->id
+                ]);
+
+                // Manually encrypt empty strings and update directly in database
+                // This bypasses the model's encrypted casts to avoid re-triggering decryption
+                $encryptedEmpty = encrypt('');
+
+                DB::table('zoom_settings')
+                    ->where('id', $settings->id)
+                    ->update([
+                        'client_id' => $encryptedEmpty,
+                        'client_secret' => $encryptedEmpty,
+                        'webhook_secret' => $encryptedEmpty,
+                        'updated_at' => now(),
+                    ]);
+
+                // Reload the settings with fresh encrypted empty values
+                $settings = ZoomSetting::first();
+
+                // Show a warning message to the user
+                session()->flash('error', 'Encrypted credentials were corrupted and have been cleared. Please re-enter your Zoom credentials.');
+            }
+        }
+
         $auditLogs = ZoomAuditLog::where('entity_type', 'settings')
             ->with('user')
             ->orderBy('created_at', 'desc')

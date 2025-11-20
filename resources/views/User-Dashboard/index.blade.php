@@ -343,7 +343,13 @@
                                                     <div>
                                                         <div class="fw-bold">{{ $booking->gig->title ?? 'N/A' }}</div>
                                                         <small
-                                                            class="text-muted">{{ $booking->teacher->name ?? 'Unknown' }}</small>
+                                                            class="text-muted">
+                                                            @php
+                                                                $sellerName = $booking->teacher ? ($booking->teacher->first_name . ' ' .  strtoupper(substr($booking->teacher->last_name, 0, 1))) : 'the seller';
+
+                                                            @endphp
+                                                            {{ $sellerName ?? 'Unknown' }}
+                                                        </small>
                                                     </div>
                                                 </div>
                                             </td>

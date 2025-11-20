@@ -479,7 +479,7 @@ class AdminController extends Controller
                 data: ['rejection_reason' => $request->reason],
                 sendEmail: true
             );
-            
+
             if ($expert) {
                 return redirect()->to('/all-application')->with('success', 'Application Rejected Successfuly!');
             } else {
@@ -1708,7 +1708,7 @@ class AdminController extends Controller
 
         $buyers = User::where('role', 0)
             ->withCount('bookOrders')
-            ->withSum('transactions as total_spent', 'total_amount')
+            ->withSum('buyerTransactions as total_spent', 'total_amount')
             ->orderBy('created_at', 'desc')
             ->paginate(20);
 

@@ -7,23 +7,23 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Animate css -->
-    <link rel="stylesheet" href="assets/admin/libs/animate/css/animate.css" />
+    <link rel="stylesheet" href="/assets/admin/libs/animate/css/animate.css" />
     <!-- AOS Animation css-->
-    <link rel="stylesheet" href="assets/admin/libs/aos/css/aos.css" />
+    <link rel="stylesheet" href="/assets/admin/libs/aos/css/aos.css" />
     <!-- Datatable css  -->
-    <link rel="stylesheet" href="assets/admin/libs/datatable/css/datatable.css" />
+    <link rel="stylesheet" href="/assets/admin/libs/datatable/css/datatable.css" />
      {{-- Fav Icon --}}
      @php  $home = \App\Models\HomeDynamic::first(); @endphp
      @if ($home)
-         <link rel="shortcut icon" href="assets/public-site/asset/img/{{$home->fav_icon}}" type="image/x-icon">
+         <link rel="shortcut icon" href="/assets/public-site/asset/img/{{$home->fav_icon}}" type="image/x-icon">
      @endif
      <!-- Select2 css -->
-    <link href="assets/admin/libs/select2/css/select2.min.css" rel="stylesheet" />
+    <link href="/assets/admin/libs/select2/css/select2.min.css" rel="stylesheet" />
     <!-- Owl carousel css -->
-    <link href="assets/admin/libs/owl-carousel/css/owl.carousel.css" rel="stylesheet" />
-    <link href="assets/admin/libs/owl-carousel/css/owl.theme.green.css" rel="stylesheet" />
+    <link href="/assets/admin/libs/owl-carousel/css/owl.carousel.css" rel="stylesheet" />
+    <link href="/assets/admin/libs/owl-carousel/css/owl.theme.green.css" rel="stylesheet" />
     <!-- Bootstrap css -->
-    <link rel="stylesheet" type="text/css" href="assets/admin/asset/css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="/assets/admin/asset/css/bootstrap.min.css" />
      <link href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css' rel='stylesheet'>
      <link rel="stylesheet" href="https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css">
     <!-- Fontawesome CDN -->
@@ -31,10 +31,10 @@
      <!-- jquery script -->
      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <!-- Defualt css -->
-    <link rel="stylesheet" type="text/css" href="assets/admin/asset/css/sidebar.css" />
-    <link rel="stylesheet" href="assets/admin/asset/css/style.css">
-    <link rel="stylesheet" href="assets/admin/asset/css/buyer.css">
-    <!-- <link rel="stylesheet" href="../User-Dashboard/assets/css/style.css"> -->
+    <link rel="stylesheet" type="text/css" href="/assets/admin/asset/css/sidebar.css" />
+    <link rel="stylesheet" href="/assets/admin/asset/css/style.css">
+    <link rel="stylesheet" href="/assets/admin/asset/css/buyer.css">
+    <!-- <link rel="stylesheet" href="../User-Dashboard//assets/css/style.css"> -->
     <title>Super Admin Dashboard | Buyer Management</title>
 </head>
 <body>
@@ -49,7 +49,7 @@
               <!-- =============================== MAIN CONTENT START HERE =========================== -->
               <div class="container-fluid">
                 <div class="row dash-notification">
-                  <div class="col-md-12"> 
+                  <div class="col-md-12">
                       <div class="dash">
                           <div class="row">
                               <div class="col-md-12">
@@ -226,13 +226,13 @@
                         <li class="tab-li">
                           <a href="#tab4" class="tab-li__link">Deleted Accounts</a>
                         </li>
-                        
+
                       </ul>
                     </nav>
                   </div>
                 </div>
                 </div>
-              </div> 
+              </div>
                   <div>
                     <section id="tab1" data-tab-content>
                       <p class="tab__content">
@@ -251,7 +251,7 @@
                                                               <table class="table">
                                                                   <thead>
                                                                       <tr class="text-nowrap">
-                                                                          
+
                                                                           <th>Applicant</th>
                                                                           <th>Email</th>
                                                                           <th>Registration Date</th>
@@ -260,13 +260,13 @@
                                                                           <th>Status</th>
                                                                           <th>Last Active</th>
                                                                           <th>Action</th>
-                                                                          
+
                                                                       </tr>
                                                                   </thead>
                                                                   <tbody>
                                                                       <tr>
-                                                                          
-                                                                        <td><img class="Buyer-img" src="assets/admin/asset/img/profile.png" ><span class="para-1">Usama A.</span></td>
+
+                                                                        <td><img class="Buyer-img" src="/assets/admin/asset/img/profile.png" ><span class="para-1">Usama A.</span></td>
                                                                           <td>example@company.com</td>
                                                                           <td>October 23, 2023</td>
                                                                           <td>400</td>
@@ -310,7 +310,7 @@
                                                                           </td>
                                                                       </tr>
                                                                       <tr>
-                                                                        <td><img class="Buyer-img" src="assets/admin/asset/img/profile.png" ><span class="para-1">Usama A.</span></td>
+                                                                        <td><img class="Buyer-img" src="/assets/admin/asset/img/profile.png" ><span class="para-1">Usama A.</span></td>
                                                                           <td>example@company.com</td>
                                                                           <td>October 23, 2023</td>
                                                                           <td>400</td>
@@ -354,7 +354,7 @@
                                                                           </td>
                                                                         </tr>
                                                                       <tr>
-                                                                        <td><img class="Buyer-img" src="assets/admin/asset/img/profile.png" ><span class="para-1">Usama A.</span></td>
+                                                                        <td><img class="Buyer-img" src="/assets/admin/asset/img/profile.png" ><span class="para-1">Usama A.</span></td>
                                                                         <td>example@company.com</td>
                                                                         <td>October 23, 2023</td>
                                                                         <td>400</td>
@@ -398,8 +398,8 @@
                                                                         </td>
                                                                       </tr>
                                                                       <tr>
-                                                                         
-                                                                        <td><img class="Buyer-img" src="assets/admin/asset/img/profile.png" ><span class="para-1">Usama A.</span></td>
+
+                                                                        <td><img class="Buyer-img" src="/assets/admin/asset/img/profile.png" ><span class="para-1">Usama A.</span></td>
                                                                           <td>example@company.com</td>
                                                                           <td>October 23, 2023</td>
                                                                           <td>400</td>
@@ -443,7 +443,7 @@
                                                                           </td>
                                                                          </tr>
                                                                       <tr>
-                                                                        <td><img class="Buyer-img" src="assets/admin/asset/img/profile.png" ><span class="para-1">Usama A.</span></td>
+                                                                        <td><img class="Buyer-img" src="/assets/admin/asset/img/profile.png" ><span class="para-1">Usama A.</span></td>
                                                                         <td>example@company.com</td>
                                                                         <td>October 23, 2023</td>
                                                                         <td>400</td>
@@ -484,12 +484,12 @@
                                                                               >
                                                                             </ul>
                                                                           </div>
-                                                                        </td>   
-                                                                        
+                                                                        </td>
+
                                                                       </tr>
                                                                       <tr>
-                                                                          
-                                                                        <td><img class="Buyer-img" src="assets/admin/asset/img/profile.png" ><span class="para-1">Usama A.</span></td>
+
+                                                                        <td><img class="Buyer-img" src="/assets/admin/asset/img/profile.png" ><span class="para-1">Usama A.</span></td>
                                                                         <td>example@company.com</td>
                                                                         <td>October 23, 2023</td>
                                                                         <td>400</td>
@@ -533,8 +533,8 @@
                                                                         </td>
                                                                       </tr>
                                                                       <tr>
-                                                                       
-                                                                        <td><img class="Buyer-img" src="assets/admin/asset/img/profile.png" ><span class="para-1">Usama A.</span></td>
+
+                                                                        <td><img class="Buyer-img" src="/assets/admin/asset/img/profile.png" ><span class="para-1">Usama A.</span></td>
                                                                           <td>example@company.com</td>
                                                                           <td>October 23, 2023</td>
                                                                           <td>400</td>
@@ -578,7 +578,7 @@
                                                                           </td>
                                                                           </tr>
                                                                       <tr>
-                                                                        <td><img class="Buyer-img" src="assets/admin/asset/img/profile.png" ><span class="para-1">Usama A.</span></td>
+                                                                        <td><img class="Buyer-img" src="/assets/admin/asset/img/profile.png" ><span class="para-1">Usama A.</span></td>
                                                                           <td>example@company.com</td>
                                                                           <td>October 23, 2023</td>
                                                                           <td>400</td>
@@ -619,7 +619,7 @@
                                                                                 >
                                                                               </ul>
                                                                             </div>
-                                                                          </td>  
+                                                                          </td>
                                                                          </tr>
                                                                   </tbody>
                                                               </table>
@@ -631,12 +631,12 @@
                                           <!-- END: INSTALLMENT TABLE SECTION -->
                                       </div>
                                   </div>
-                        
+
                               </div>
                           </div>
                         </div>
                       </p>
-                  
+
                     </section>
                   </div>
                     <section id="tab2" data-tab-content class="">
@@ -656,7 +656,7 @@
                                                             <table class="table">
                                                                 <thead>
                                                                     <tr class="text-nowrap">
-                                                                       
+
                                                                       <th>Applicant</th>
                                                                       <th>Email</th>
                                                                       <th>Registration Date</th>
@@ -665,13 +665,13 @@
                                                                       <th>Status</th>
                                                                       <th>Last Active</th>
                                                                       <th>Action</th>
-                                                                        
+
                                                                     </tr>
                                                                 </thead>
                                                                 <tbody>
                                                                     <tr>
-                                                                        
-                                                                      <td><img class="Buyer-img" src="assets/admin/asset/img/profile.png" ><span class="para-1">Usama A.</span></td>
+
+                                                                      <td><img class="Buyer-img" src="/assets/admin/asset/img/profile.png" ><span class="para-1">Usama A.</span></td>
                                                                       <td>example@company.com</td>
                                                                       <td>October 23, 2023</td>
                                                                       <td>400</td>
@@ -713,56 +713,11 @@
                                                                           </ul>
                                                                         </div>
                                                                       </td>
-                                                                     
-                                                                        
+
+
                                                                     </tr>
                                                                     <tr>
-                                                                      <td><img class="Buyer-img" src="assets/admin/asset/img/profile.png" ><span class="para-1">Usama A.</span></td>
-                                                                      <td>example@company.com</td>
-                                                                      <td>October 23, 2023</td>
-                                                                      <td>400</td>
-                                                                      <td>$ 14,840</td>
-                                                                      <td><span class="badge servce-clas-badge">Inactive</span></td>
-                                                                      <td>Last month ago</td>
-                                                                      <td>
-                                                                        <div class="expert-dropdown">
-                                                                          <button
-                                                                            class="btn action-btn"
-                                                                            type="button"
-                                                                            id="dropdownMenuButton1"
-                                                                            data-bs-toggle="dropdown"
-                                                                            aria-expanded="false"
-                                                                          >
-                                                                            ...
-                                                                          </button>
-                                                                          <ul
-                                                                            class="dropdown-menu"
-                                                                            aria-labelledby="dropdownMenuButton1"
-                                                                          >
-                                                                            <a
-                                                                              class="dropdown-item"
-                                                                              href="#"
-                                                                              ><li>
-                                                                                View dashboard
-                                                                              </li></a
-                                                                            >
-                                                                            <a
-                                                                              class="dropdown-item"
-                                                                              href="#"
-                                                                              ><li> delete account</li></a
-                                                                            >
-                                                                            <a
-                                                                              class="dropdown-item"
-                                                                              href="#"
-                                                                              ><li>ban account</li></a
-                                                                            >
-                                                                          </ul>
-                                                                        </div>
-                                                                      </td>  
-                                                                     
-                                                                    </tr>
-                                                                    <tr>
-                                                                      <td><img class="Buyer-img" src="assets/admin/asset/img/profile.png" ><span class="para-1">Usama A.</span></td>
+                                                                      <td><img class="Buyer-img" src="/assets/admin/asset/img/profile.png" ><span class="para-1">Usama A.</span></td>
                                                                       <td>example@company.com</td>
                                                                       <td>October 23, 2023</td>
                                                                       <td>400</td>
@@ -804,10 +759,10 @@
                                                                           </ul>
                                                                         </div>
                                                                       </td>
-                                                                     
+
                                                                     </tr>
                                                                     <tr>
-                                                                      <td><img class="Buyer-img" src="assets/admin/asset/img/profile.png" ><span class="para-1">Usama A.</span></td>
+                                                                      <td><img class="Buyer-img" src="/assets/admin/asset/img/profile.png" ><span class="para-1">Usama A.</span></td>
                                                                       <td>example@company.com</td>
                                                                       <td>October 23, 2023</td>
                                                                       <td>400</td>
@@ -848,11 +803,11 @@
                                                                             >
                                                                           </ul>
                                                                         </div>
-                                                                      </td> 
-                                                                     
+                                                                      </td>
+
                                                                     </tr>
                                                                     <tr>
-                                                                      <td><img class="Buyer-img" src="assets/admin/asset/img/profile.png" ><span class="para-1">Usama A.</span></td>
+                                                                      <td><img class="Buyer-img" src="/assets/admin/asset/img/profile.png" ><span class="para-1">Usama A.</span></td>
                                                                       <td>example@company.com</td>
                                                                       <td>October 23, 2023</td>
                                                                       <td>400</td>
@@ -893,11 +848,11 @@
                                                                             >
                                                                           </ul>
                                                                         </div>
-                                                                      </td>  
-                                                                     
+                                                                      </td>
+
                                                                     </tr>
                                                                     <tr>
-                                                                      <td><img class="Buyer-img" src="assets/admin/asset/img/profile.png" ><span class="para-1">Usama A.</span></td>
+                                                                      <td><img class="Buyer-img" src="/assets/admin/asset/img/profile.png" ><span class="para-1">Usama A.</span></td>
                                                                       <td>example@company.com</td>
                                                                       <td>October 23, 2023</td>
                                                                       <td>400</td>
@@ -938,11 +893,56 @@
                                                                             >
                                                                           </ul>
                                                                         </div>
-                                                                      </td>  
-                                                                     
+                                                                      </td>
+
                                                                     </tr>
                                                                     <tr>
-                                                                      <td><img class="Buyer-img" src="assets/admin/asset/img/profile.png" ><span class="para-1">Usama A.</span></td>
+                                                                      <td><img class="Buyer-img" src="/assets/admin/asset/img/profile.png" ><span class="para-1">Usama A.</span></td>
+                                                                      <td>example@company.com</td>
+                                                                      <td>October 23, 2023</td>
+                                                                      <td>400</td>
+                                                                      <td>$ 14,840</td>
+                                                                      <td><span class="badge servce-clas-badge">Inactive</span></td>
+                                                                      <td>Last month ago</td>
+                                                                      <td>
+                                                                        <div class="expert-dropdown">
+                                                                          <button
+                                                                            class="btn action-btn"
+                                                                            type="button"
+                                                                            id="dropdownMenuButton1"
+                                                                            data-bs-toggle="dropdown"
+                                                                            aria-expanded="false"
+                                                                          >
+                                                                            ...
+                                                                          </button>
+                                                                          <ul
+                                                                            class="dropdown-menu"
+                                                                            aria-labelledby="dropdownMenuButton1"
+                                                                          >
+                                                                            <a
+                                                                              class="dropdown-item"
+                                                                              href="#"
+                                                                              ><li>
+                                                                                View dashboard
+                                                                              </li></a
+                                                                            >
+                                                                            <a
+                                                                              class="dropdown-item"
+                                                                              href="#"
+                                                                              ><li> delete account</li></a
+                                                                            >
+                                                                            <a
+                                                                              class="dropdown-item"
+                                                                              href="#"
+                                                                              ><li>ban account</li></a
+                                                                            >
+                                                                          </ul>
+                                                                        </div>
+                                                                      </td>
+
+                                                                    </tr>
+                                                                    <tr>
+                                                                      <td><img class="Buyer-img" src="/assets/admin/asset/img/profile.png" ><span class="para-1">Usama A.</span></td>
                                                                           <td>example@company.com</td>
                                                                           <td>October 23, 2023</td>
                                                                           <td>400</td>
@@ -983,11 +983,11 @@
                                                                                 >
                                                                               </ul>
                                                                             </div>
-                                                                          </td>  
-                                                                         
+                                                                          </td>
+
                                                                     </tr>
                                                                     <tr>
-                                                                      <td><img class="Buyer-img" src="assets/admin/asset/img/profile.png" ><span class="para-1">Usama A.</span></td>
+                                                                      <td><img class="Buyer-img" src="/assets/admin/asset/img/profile.png" ><span class="para-1">Usama A.</span></td>
                                                                       <td>example@company.com</td>
                                                                       <td>October 23, 2023</td>
                                                                       <td>400</td>
@@ -1028,8 +1028,8 @@
                                                                             >
                                                                           </ul>
                                                                         </div>
-                                                                      </td>  
-                                                                     
+                                                                      </td>
+
                                                                     </tr>
                                                                 </tbody>
                                                             </table>
@@ -1041,14 +1041,14 @@
                                           <!-- END: INSTALLMENT TABLE SECTION -->
                                       </div>
                                   </div>
-                        
+
                               </div>
                           </div>
                         </div>
                       </p>
                     </section>
-                   
-                   
+
+
                     <section id="tab3" data-tab-content class="">
                       <p class="tab__content">
                         <div class="main-container d-flex">
@@ -1066,7 +1066,7 @@
                                                             <table class="table">
                                                                 <thead>
                                                                     <tr class="text-nowrap">
-                                                                       
+
                                                                       <th>Applicant</th>
                                                                       <th>Email</th>
                                                                       <th>Registration Date</th>
@@ -1075,14 +1075,14 @@
                                                                       <th>Status</th>
                                                                       <th>Last Active</th>
                                                                       <th>Action</th>
-                                                                      
-                                                                        
+
+
                                                                     </tr>
                                                                 </thead>
                                                                 <tbody>
                                                                     <tr>
-                                                                        
-                                                                      <td><img class="Buyer-img" src="assetsassets/admin/asset/img/profile.png" ><span class="para-1">Usama A.</span></td>
+
+                                                                      <td><img class="Buyer-img" src="assets/assets/admin/asset/img/profile.png" ><span class="para-1">Usama A.</span></td>
                                                                       <td>example@company.com</td>
                                                                       <td>October 23, 2023</td>
                                                                       <td>400</td>
@@ -1116,16 +1116,16 @@
                                                                               href="#"
                                                                               ><li> unban</li></a
                                                                             >
-                                                                            
+
                                                                           </ul>
                                                                         </div>
-                                                                      </td>  
-                                                                     
-                                                                        
+                                                                      </td>
+
+
                                                                     </tr>
                                                                     <tr>
-                                                                         
-                                                                      <td><img class="Buyer-img" src="assets/admin/asset/img/profile.png" ><span class="para-1">Usama A.</span></td>
+
+                                                                      <td><img class="Buyer-img" src="/assets/admin/asset/img/profile.png" ><span class="para-1">Usama A.</span></td>
                                                                       <td>example@company.com</td>
                                                                       <td>October 23, 2023</td>
                                                                       <td>400</td>
@@ -1159,15 +1159,15 @@
                                                                               href="#"
                                                                               ><li> unban</li></a
                                                                             >
-                                                                            
+
                                                                           </ul>
                                                                         </div>
-                                                                      </td>    
-                                                                    
+                                                                      </td>
+
                                                                     </tr>
                                                                     <tr>
-                                                                           
-                                                                      <td><img class="Buyer-img" src="assets/admin/asset/img/profile.png" ><span class="para-1">Usama A.</span></td>
+
+                                                                      <td><img class="Buyer-img" src="/assets/admin/asset/img/profile.png" ><span class="para-1">Usama A.</span></td>
                                                                       <td>example@company.com</td>
                                                                       <td>October 23, 2023</td>
                                                                       <td>400</td>
@@ -1201,15 +1201,15 @@
                                                                               href="#"
                                                                               ><li> unban</li></a
                                                                             >
-                                                                            
+
                                                                           </ul>
                                                                         </div>
-                                                                      </td>   
-                                                                    
+                                                                      </td>
+
                                                                     </tr>
                                                                     <tr>
-                                                                         
-                                                                      <td><img class="Buyer-img" src="assets/admin/asset/img/profile.png" ><span class="para-1">Usama A.</span></td>
+
+                                                                      <td><img class="Buyer-img" src="/assets/admin/asset/img/profile.png" ><span class="para-1">Usama A.</span></td>
                                                                       <td>example@company.com</td>
                                                                       <td>October 23, 2023</td>
                                                                       <td>400</td>
@@ -1243,15 +1243,15 @@
                                                                               href="#"
                                                                               ><li> unban</li></a
                                                                             >
-                                                                            
+
                                                                           </ul>
                                                                         </div>
-                                                                      </td>    
-                                                                    
+                                                                      </td>
+
                                                                     </tr>
                                                                     <tr>
-                                                                           
-                                                                      <td><img class="Buyer-img" src="assets/admin/asset/img/profile.png" ><span class="para-1">Usama A.</span></td>
+
+                                                                      <td><img class="Buyer-img" src="/assets/admin/asset/img/profile.png" ><span class="para-1">Usama A.</span></td>
                                                                       <td>example@company.com</td>
                                                                       <td>October 23, 2023</td>
                                                                       <td>400</td>
@@ -1285,15 +1285,15 @@
                                                                               href="#"
                                                                               ><li> unban</li></a
                                                                             >
-                                                                            
+
                                                                           </ul>
                                                                         </div>
-                                                                      </td>   
-                                                                    
+                                                                      </td>
+
                                                                     </tr>
                                                                     <tr>
-                                                                          
-                                                                      <td><img class="Buyer-img" src="assets/admin/asset/img/profile.png" ><span class="para-1">Usama A.</span></td>
+
+                                                                      <td><img class="Buyer-img" src="/assets/admin/asset/img/profile.png" ><span class="para-1">Usama A.</span></td>
                                                                       <td>example@company.com</td>
                                                                       <td>October 23, 2023</td>
                                                                       <td>400</td>
@@ -1327,15 +1327,15 @@
                                                                               href="#"
                                                                               ><li> unban</li></a
                                                                             >
-                                                                            
+
                                                                           </ul>
                                                                         </div>
-                                                                      </td>    
-                                                                    
+                                                                      </td>
+
                                                                     </tr>
                                                                     <tr>
-                                                                         
-                                                                      <td><img class="Buyer-img" src="assets/admin/asset/img/profile.png" ><span class="para-1">Usama A.</span></td>
+
+                                                                      <td><img class="Buyer-img" src="/assets/admin/asset/img/profile.png" ><span class="para-1">Usama A.</span></td>
                                                                       <td>example@company.com</td>
                                                                       <td>October 23, 2023</td>
                                                                       <td>400</td>
@@ -1369,15 +1369,15 @@
                                                                               href="#"
                                                                               ><li> unban</li></a
                                                                             >
-                                                                            
+
                                                                           </ul>
                                                                         </div>
-                                                                      </td>    
-                                                                    
+                                                                      </td>
+
                                                                     </tr>
                                                                     <tr>
-                                                                      
-                                                                      <td><img class="Buyer-img" src="assets/admin/asset/img/profile.png" ><span class="para-1">Usama A.</span></td>
+
+                                                                      <td><img class="Buyer-img" src="/assets/admin/asset/img/profile.png" ><span class="para-1">Usama A.</span></td>
                                                                       <td>example@company.com</td>
                                                                       <td>October 23, 2023</td>
                                                                       <td>400</td>
@@ -1411,11 +1411,11 @@
                                                                               href="#"
                                                                               ><li> unban</li></a
                                                                             >
-                                                                            
+
                                                                           </ul>
                                                                         </div>
-                                                                      </td>    
-                                                                    
+                                                                      </td>
+
                                                                     </tr>
                                                                 </tbody>
                                                             </table>
@@ -1427,13 +1427,13 @@
                                           <!-- END: INSTALLMENT TABLE SECTION -->
                                       </div>
                                   </div>
-                        
+
                               </div>
                           </div>
                         </div>
                       </p>
                   </section>
-                
+
                   <section id="tab4" data-tab-content class="">
                     <p class="tab__content">
                       <div class="main-container d-flex">
@@ -1451,7 +1451,7 @@
                                                           <table class="table">
                                                               <thead>
                                                                   <tr class="text-nowrap">
-                                                                     
+
                                                                     <th>Applicant</th>
                                                                     <th>Email</th>
                                                                     <th>Registration Date</th>
@@ -1460,14 +1460,14 @@
                                                                     <th>Status</th>
                                                                     <th>Last Active</th>
                                                                     <th>Action</th>
-                                                                    
-                                                                      
+
+
                                                                   </tr>
                                                               </thead>
                                                               <tbody>
                                                                   <tr>
-                                                                      
-                                                                    <td><img class="Buyer-img" src="assets/admin/asset/img/profile.png" ><span class="para-1">Usama A.</span></td>
+
+                                                                    <td><img class="Buyer-img" src="/assets/admin/asset/img/profile.png" ><span class="para-1">Usama A.</span></td>
                                                                     <td>example@company.com</td>
                                                                     <td>October 23, 2023</td>
                                                                     <td>400</td>
@@ -1496,16 +1496,16 @@
                                                                               View dashboard
                                                                             </li></a
                                                                           >
-                                                                          
+
                                                                         </ul>
                                                                       </div>
-                                                                    </td>   
-                                                                   
-                                                                      
+                                                                    </td>
+
+
                                                                   </tr>
                                                                   <tr>
-                                                                       
-                                                                    <td><img class="Buyer-img" src="assets/admin/asset/img/profile.png" ><span class="para-1">Usama A.</span></td>
+
+                                                                    <td><img class="Buyer-img" src="/assets/admin/asset/img/profile.png" ><span class="para-1">Usama A.</span></td>
                                                                     <td>example@company.com</td>
                                                                     <td>October 23, 2023</td>
                                                                     <td>400</td>
@@ -1534,15 +1534,15 @@
                                                                               View dashboard
                                                                             </li></a
                                                                           >
-                                                                          
+
                                                                         </ul>
                                                                       </div>
-                                                                    </td>   
-                                                                  
+                                                                    </td>
+
                                                                   </tr>
                                                                   <tr>
-                                                                         
-                                                                    <td><img class="Buyer-img" src="assets/admin/asset/img/profile.png" ><span class="para-1">Usama A.</span></td>
+
+                                                                    <td><img class="Buyer-img" src="/assets/admin/asset/img/profile.png" ><span class="para-1">Usama A.</span></td>
                                                                     <td>example@company.com</td>
                                                                     <td>October 23, 2023</td>
                                                                     <td>400</td>
@@ -1571,15 +1571,15 @@
                                                                               View dashboard
                                                                             </li></a
                                                                           >
-                                                                          
+
                                                                         </ul>
                                                                       </div>
-                                                                    </td>   
-                                                                  
+                                                                    </td>
+
                                                                   </tr>
                                                                   <tr>
-                                                                       
-                                                                    <td><img class="Buyer-img" src="assets/admin/asset/img/profile.png" ><span class="para-1">Usama A.</span></td>
+
+                                                                    <td><img class="Buyer-img" src="/assets/admin/asset/img/profile.png" ><span class="para-1">Usama A.</span></td>
                                                                     <td>example@company.com</td>
                                                                     <td>October 23, 2023</td>
                                                                     <td>400</td>
@@ -1608,15 +1608,15 @@
                                                                               View dashboard
                                                                             </li></a
                                                                           >
-                                                                          
+
                                                                         </ul>
                                                                       </div>
-                                                                    </td>  
-                                                                  
+                                                                    </td>
+
                                                                   </tr>
                                                                   <tr>
-                                                                         
-                                                                    <td><img class="Buyer-img" src="assets/admin/asset/img/profile.png" ><span class="para-1">Usama A.</span></td>
+
+                                                                    <td><img class="Buyer-img" src="/assets/admin/asset/img/profile.png" ><span class="para-1">Usama A.</span></td>
                                                                     <td>example@company.com</td>
                                                                     <td>October 23, 2023</td>
                                                                     <td>400</td>
@@ -1645,15 +1645,15 @@
                                                                               View dashboard
                                                                             </li></a
                                                                           >
-                                                                          
+
                                                                         </ul>
                                                                       </div>
-                                                                    </td>   
-                                                                  
+                                                                    </td>
+
                                                                   </tr>
                                                                   <tr>
-                                                                        
-                                                                    <td><img class="Buyer-img" src="assets/admin/asset/img/profile.png" ><span class="para-1">Usama A.</span></td>
+
+                                                                    <td><img class="Buyer-img" src="/assets/admin/asset/img/profile.png" ><span class="para-1">Usama A.</span></td>
                                                                     <td>example@company.com</td>
                                                                     <td>October 23, 2023</td>
                                                                     <td>400</td>
@@ -1682,15 +1682,15 @@
                                                                               View dashboard
                                                                             </li></a
                                                                           >
-                                                                          
+
                                                                         </ul>
                                                                       </div>
-                                                                    </td> 
-                                                                  
+                                                                    </td>
+
                                                                   </tr>
                                                                   <tr>
-                                                                       
-                                                                    <td><img class="Buyer-img" src="assets/admin/asset/img/profile.png" ><span class="para-1">Usama A.</span></td>
+
+                                                                    <td><img class="Buyer-img" src="/assets/admin/asset/img/profile.png" ><span class="para-1">Usama A.</span></td>
                                                                     <td>example@company.com</td>
                                                                     <td>October 23, 2023</td>
                                                                     <td>400</td>
@@ -1719,15 +1719,15 @@
                                                                               View dashboard
                                                                             </li></a
                                                                           >
-                                                                          
+
                                                                         </ul>
                                                                       </div>
-                                                                    </td>  
-                                                                  
+                                                                    </td>
+
                                                                   </tr>
                                                                   <tr>
-                                                                    
-                                                                    <td><img class="Buyer-img" src="assets/admin/asset/img/profile.png" ><span class="para-1">Usama A.</span></td>
+
+                                                                    <td><img class="Buyer-img" src="/assets/admin/asset/img/profile.png" ><span class="para-1">Usama A.</span></td>
                                                                     <td>example@company.com</td>
                                                                     <td>October 23, 2023</td>
                                                                     <td>400</td>
@@ -1756,11 +1756,11 @@
                                                                               View dashboard
                                                                             </li></a
                                                                           >
-                                                                          
+
                                                                         </ul>
                                                                       </div>
-                                                                    </td>   
-                                                                  
+                                                                    </td>
+
                                                                   </tr>
                                                               </tbody>
                                                           </table>
@@ -1772,13 +1772,13 @@
                                         <!-- END: INSTALLMENT TABLE SECTION -->
                                     </div>
                                 </div>
-                      
+
                             </div>
                         </div>
                       </div>
                     </p>
                 </section>
-                  
+
                   </div>
                   </div>
                   </div>
@@ -1822,15 +1822,15 @@
                 </div>
     <!-- =============================== MAIN CONTENT END HERE =========================== -->
   </section>
-  
-  <script src="assets/admin/libs/jquery/jquery.js"></script>
-  <script src="assets/admin/libs/datatable/js/datatable.js"></script>
-  <script src="assets/admin/libs/datatable/js/datatablebootstrap.js"></script>
-  <script src="assets/admin/libs/select2/js/select2.min.js"></script>
-  <script src="assets/admin/libs/owl-carousel/js/owl.carousel.min.js"></script>  
-  <script src="assets/admin/libs/aos/js/aos.js"></script>
-  <script src="assets/admin/asset/js/bootstrap.min.js"></script>
-  <script src="assets/admin/asset/js/script.js"></script>
+
+  <script src="/assets/admin/libs/jquery/jquery.js"></script>
+  <script src="/assets/admin/libs/datatable/js/datatable.js"></script>
+  <script src="/assets/admin/libs/datatable/js/datatablebootstrap.js"></script>
+  <script src="/assets/admin/libs/select2/js/select2.min.js"></script>
+  <script src="/assets/admin/libs/owl-carousel/js/owl.carousel.min.js"></script>
+  <script src="/assets/admin/libs/aos/js/aos.js"></script>
+  <script src="/assets/admin/asset/js/bootstrap.min.js"></script>
+  <script src="/assets/admin/asset/js/script.js"></script>
   <script src="script.js"></script>
 </body>
 </html>

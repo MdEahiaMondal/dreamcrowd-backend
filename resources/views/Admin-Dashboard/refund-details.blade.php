@@ -7,26 +7,26 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <!-- Animate css -->
-    <link rel="stylesheet" href="assets/admin/libs/animate/css/animate.css" />
+    <link rel="stylesheet" href="/assets/admin/libs/animate/css/animate.css" />
     <!-- AOS Animation css-->
-    <link rel="stylesheet" href="assets/admin/libs/aos/css/aos.css" />
+    <link rel="stylesheet" href="/assets/admin/libs/aos/css/aos.css" />
     <!-- Datatable css  -->
-    <link rel="stylesheet" href="assets/admin/libs/datatable/css/datatable.css" />
+    <link rel="stylesheet" href="/assets/admin/libs/datatable/css/datatable.css" />
      {{-- Fav Icon --}}
      @php  $home = \App\Models\HomeDynamic::first(); @endphp
      @if ($home)
-         <link rel="shortcut icon" href="assets/public-site/asset/img/{{$home->fav_icon}}" type="image/x-icon">
+         <link rel="shortcut icon" href="/assets/public-site/asset/img/{{$home->fav_icon}}" type="image/x-icon">
      @endif
      <!-- Select2 css -->
-    <link href="assets/admin/libs/select2/css/select2.min.css" rel="stylesheet" />
+    <link href="/assets/admin/libs/select2/css/select2.min.css" rel="stylesheet" />
     <!-- Owl carousel css -->
-    <link href="assets/admin/libs/owl-carousel/css/owl.carousel.css" rel="stylesheet" />
-    <link href="assets/admin/libs/owl-carousel/css/owl.theme.green.css" rel="stylesheet" />
+    <link href="/assets/admin/libs/owl-carousel/css/owl.carousel.css" rel="stylesheet" />
+    <link href="/assets/admin/libs/owl-carousel/css/owl.theme.green.css" rel="stylesheet" />
     <!-- Bootstrap css -->
     <link
       rel="stylesheet"
       type="text/css"
-      href="assets/admin/asset/css/bootstrap.min.css"
+      href="/assets/admin/asset/css/bootstrap.min.css"
     />
     <link
       href="https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css"
@@ -42,11 +42,11 @@
       crossorigin="anonymous"
     ></script>
     <!-- Defualt css -->
-    <link rel="stylesheet" type="text/css" href="assets/admin/asset/css/sidebar.css" />
-    <link rel="stylesheet" href="assets/admin/asset/css/style.css" />
-    <link rel="stylesheet" href="assets/user/asset/css/style.css" />
-    <link rel="stylesheet" href="assets/admin/asset/css/sallermangement.css" />
-    <link rel="stylesheet" href="assets/admin/asset/css/seller-table.css" />
+    <link rel="stylesheet" type="text/css" href="/assets/admin/asset/css/sidebar.css" />
+    <link rel="stylesheet" href="/assets/admin/asset/css/style.css" />
+    <link rel="stylesheet" href="/assets/user/asset/css/style.css" />
+    <link rel="stylesheet" href="/assets/admin/asset/css/sallermangement.css" />
+    <link rel="stylesheet" href="/assets/admin/asset/css/seller-table.css" />
     <title>Super Admin Dashboard | Seller Request</title>
   </head>
   <style>
@@ -597,14 +597,14 @@
       <!-- =============================== MAIN CONTENT END HERE =========================== -->
     </section>
 
-    <script src="assets/admin/libs/jquery/jquery.js"></script>
-    <script src="assets/admin/libs/datatable/js/datatable.js"></script>
-    <script src="assets/admin/libs/datatable/js/datatablebootstrap.js"></script>
-    <script src="assets/admin/libs/select2/js/select2.min.js"></script>
-    <script src="assets/admin/libs/owl-carousel/js/owl.carousel.min.js"></script>
-    <script src="assets/admin/libs/aos/js/aos.js"></script>
-    <script src="assets/admin/asset/js/bootstrap.min.js"></script>
-    <script src="assets/admin/asset/js/script.js"></script>
+    <script src="/assets/admin/libs/jquery/jquery.js"></script>
+    <script src="/assets/admin/libs/datatable/js/datatable.js"></script>
+    <script src="/assets/admin/libs/datatable/js/datatablebootstrap.js"></script>
+    <script src="/assets/admin/libs/select2/js/select2.min.js"></script>
+    <script src="/assets/admin/libs/owl-carousel/js/owl.carousel.min.js"></script>
+    <script src="/assets/admin/libs/aos/js/aos.js"></script>
+    <script src="/assets/admin/asset/js/bootstrap.min.js"></script>
+    <script src="/assets/admin/asset/js/script.js"></script>
     <script src="script.js"></script>
   </body>
 </html>

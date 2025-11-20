@@ -2527,8 +2527,9 @@
                                 <h5 class="mb-0 refund">Refund Reason</h5>
                                 <textarea class="form-control" name="reason" id="dispute_refund_reason"
                                           placeholder="explain why dispute order..." required></textarea>
-                                <button type="button" class="btn float-start cancel-button btn-outline-danger">Cancel
+                                <button type="button" class="btn float-start cancel-button btn-outline-danger" data-bs-dismiss="modal" aria-label="Close">Cancel
                                 </button>
+
                                 <button type="submit" class="btn float-end submit-button" id="submit-cancel-service">
                                     Submit
                                 </button>
