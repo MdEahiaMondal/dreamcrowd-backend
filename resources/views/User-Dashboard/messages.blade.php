@@ -232,9 +232,29 @@
                                 <span class="time">{{$message['time_ago']}}</span>
                             </li>
                         @endforeach
+
+                        {{-- Display Custom Offers --}}
+                        @php
+                            $customOffers = \App\Models\CustomOffer::where('buyer_id', auth()->id())
+                                ->where(function($query) use ($otheruserId) {
+                                    $query->where('seller_id', $otheruserId);
+                                })
+                                ->with(['gig', 'seller', 'milestones'])
+                                ->orderBy('created_at', 'desc')
+                                ->get();
+                        @endphp
+
+                        @if($customOffers->count() > 0)
+                            @foreach($customOffers as $offer)
+                                <li class="custom-offer-item" style="list-style: none; margin: 15px 0;">
+                                    <x-custom-offer-card :offer="$offer" />
+                                </li>
+                            @endforeach
+                        @endif
+
                     @endif
-                    
-                    
+
+
                         {{-- <li class="repaly">
                           <p> posuere eget augue sodales, aliquet posuere eros.</p>
                           <span class="time">5 minutes ago</span>
@@ -2391,6 +2411,8 @@ document.getElementById('imgInput').addEventListener('change', function() {
 </script>
 {{-- In Chat Unsetisfied Button Click Function END --}}
 
+<!-- Custom Offers Buyer JavaScript -->
+<script src="{{ asset('assets/user/js/custom-offers-buyer.js') }}"></script>
 
 </body>
 
@@ -2429,8 +2451,8 @@ document.getElementById('imgInput').addEventListener('change', function() {
 </div>
     <!-- ============== safty model end here ================= -->
 
-
-
+<!-- Custom Offer Modals -->
+@include('components.custom-offer-modals')
 
 
 </html>

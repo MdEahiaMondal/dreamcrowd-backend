@@ -112,6 +112,7 @@ Route::controller(BookingController::class)->group(function () {
     Route::post('/get-available-times', 'GetAvailableTimes');
     Route::post('/service-book', 'ServiceBook');
     Route::post('/service-payment', 'ServicePayment');
+    Route::get('/custom-offer-success', 'handleCustomOfferPayment')->name('custom-offers.payment-success');
 });
 
 
@@ -601,8 +602,13 @@ Route::controller(MessagesController::class)->group(function () {
 
     // Search Message Route
     Route::post('/search-message', 'SearchMessage');
+
     // Custom Offer Routes ======
     Route::post('/get-services-for-custom', 'GetServicesForCustom');
+    Route::post('/custom-offers', 'sendCustomOffer')->name('custom-offers.send');
+    Route::get('/custom-offers/{id}', 'viewCustomOffer')->name('custom-offers.view');
+    Route::post('/custom-offers/{id}/accept', 'acceptCustomOffer')->name('custom-offers.accept');
+    Route::post('/custom-offers/{id}/reject', 'rejectCustomOffer')->name('custom-offers.reject');
 
     Route::get('/messages/unread-count/{userId}', 'getUnreadMessageCount');
 

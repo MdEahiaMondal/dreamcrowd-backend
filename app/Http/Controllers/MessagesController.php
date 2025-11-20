@@ -13,7 +13,11 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use App\Services\MessageService;
+use App\Mail\CustomOfferSent;
+use App\Mail\CustomOfferAccepted;
+use App\Mail\CustomOfferRejected;
 
 
 class MessagesController extends Controller
@@ -2325,12 +2329,337 @@ class MessagesController extends Controller
             ->join('teacher_gig_data', 'teacher_gigs.id', '=', 'teacher_gig_data.gig_id')
             ->join('teacher_gig_payments', 'teacher_gigs.id', '=', 'teacher_gig_payments.gig_id')
             ->where('teacher_gigs.user_id', Auth::id())
-            ->where('teacher_gigs.service_role', $request->service)
+            ->where('teacher_gigs.service_role', $request->offer_type)
             ->where('teacher_gigs.status', 1)
             ->select('teacher_gigs.*', 'teacher_gig_data.*', 'teacher_gig_payments.*')
             ->get();
 
         return response()->json(['services' => $services]);
+    }
+
+
+
+    
+
+    public function sendCustomOffer(Request $request)
+    {
+        // Validation
+        $request->validate([
+            'buyer_id' => 'required|exists:users,id',
+            'gig_id' => 'required|exists:teacher_gigs,id',
+            'offer_type' => 'required|in:Class,Freelance',
+            'payment_type' => 'required|in:Single,Milestone',
+            'service_mode' => 'required|in:Online,In-person',
+            'description' => 'nullable|string|max:1000',
+            'expire_days' => 'nullable|integer|min:1|max:30',
+            'request_requirements' => 'nullable|boolean',
+            'milestones' => 'required|array|min:1',
+            'milestones.*.title' => 'required|string|max:255',
+            'milestones.*.description' => 'nullable|string',
+            'milestones.*.price' => 'required|numeric|min:10',
+            'milestones.*.revisions' => 'nullable|integer|min:0',
+            'milestones.*.delivery_days' => 'nullable|integer|min:1',
+            'milestones.*.date' => 'nullable|date|after:today',
+            'milestones.*.start_time' => 'nullable|date_format:H:i',
+            'milestones.*.end_time' => 'nullable|date_format:H:i|after:milestones.*.start_time',
+        ]);
+
+        // Conditional validation for in-person
+        if ($request->service_mode === 'In-person') {
+            $request->validate([
+                'milestones.*.date' => 'required|date|after:today',
+                'milestones.*.start_time' => 'required|date_format:H:i',
+                'milestones.*.end_time' => 'required|date_format:H:i',
+            ]);
+        }
+
+        // Conditional validation for freelance
+        if ($request->offer_type === 'Freelance') {
+            $request->validate([
+                'milestones.*.revisions' => 'required|integer|min:0',
+            ]);
+
+            if ($request->payment_type === 'Single') {
+                $request->validate([
+                    'milestones.*.delivery_days' => 'required|integer|min:1',
+                ]);
+            }
+        }
+
+        // Check for duplicate pending offers
+        $existingOffer = \App\Models\CustomOffer::where('seller_id', auth()->id())
+            ->where('buyer_id', $request->buyer_id)
+            ->where('gig_id', $request->gig_id)
+            ->where('status', 'pending')
+            ->first();
+
+        if ($existingOffer) {
+            return response()->json([
+                'error' => 'You already have a pending offer for this service to this buyer.'
+            ], 400);
+        }
+
+        // Calculate total amount
+        $totalAmount = collect($request->milestones)->sum('price');
+
+        // Get chat_id
+        $chat = \App\Models\Chat::where(function($q) use ($request) {
+            $q->where('sender_id', auth()->id())
+              ->where('receiver_id', $request->buyer_id);
+        })->orWhere(function($q) use ($request) {
+            $q->where('sender_id', $request->buyer_id)
+              ->where('receiver_id', auth()->id());
+        })->first();
+
+        if (!$chat) {
+            return response()->json(['error' => 'No chat found with this buyer.'], 400);
+        }
+
+        // Create custom offer
+        $offer = \App\Models\CustomOffer::create([
+            'chat_id' => $chat->id,
+            'seller_id' => auth()->id(),
+            'buyer_id' => $request->buyer_id,
+            'gig_id' => $request->gig_id,
+            'offer_type' => $request->offer_type,
+            'payment_type' => $request->payment_type,
+            'service_mode' => $request->service_mode,
+            'description' => $request->description,
+            'total_amount' => $totalAmount,
+            'expire_days' => $request->expire_days,
+            'request_requirements' => $request->request_requirements ?? false,
+            'status' => 'pending',
+            'expires_at' => $request->expire_days ? now()->addDays($request->expire_days) : null,
+        ]);
+
+        // Create milestones
+        foreach ($request->milestones as $index => $milestone) {
+            \App\Models\CustomOfferMilestone::create([
+                'custom_offer_id' => $offer->id,
+                'title' => $milestone['title'],
+                'description' => $milestone['description'] ?? null,
+                'date' => $milestone['date'] ?? null,
+                'start_time' => $milestone['start_time'] ?? null,
+                'end_time' => $milestone['end_time'] ?? null,
+                'price' => $milestone['price'],
+                'revisions' => $milestone['revisions'] ?? 0,
+                'delivery_days' => $milestone['delivery_days'] ?? null,
+                'order' => $index,
+            ]);
+        }
+
+        // Send message in chat with offer card
+        
+        // \App\Models\Message::create([
+        //     'chat_id' => $chat->id,
+        //     'sender_id' => auth()->id(),
+        //     'reciver_id' => $request->buyer_id,
+        //     'message' => 'Custom Offer: ' . $offer->gig->title,
+        // ]);
+
+        // Send notification to buyer
+        if (class_exists('\App\Services\NotificationService')) {
+            try {
+                app(\App\Services\NotificationService::class)->send(
+                    userId: $request->buyer_id,
+                    type: 'custom_offer',
+                    title: 'New Custom Offer',
+                    message: auth()->user()->first_name . ' sent you a custom offer for ' . $offer->gig->title,
+                    data: [
+                        'offer_id' => $offer->id,
+                        'seller_name' => auth()->user()->first_name . ' ' . auth()->user()->last_name,
+                        'service_name' => $offer->gig->title,
+                        'total_amount' => $totalAmount,
+                    ],
+                    sendEmail: true
+                );
+            } catch (\Exception $e) {
+                \Log::error('Custom offer notification failed: ' . $e->getMessage());
+            }
+        }
+
+        // Send email to buyer
+        try {
+            $buyer = \App\Models\User::find($request->buyer_id);
+            if ($buyer && $buyer->email) {
+                Mail::to($buyer->email)->send(new CustomOfferSent($offer));
+            }
+        } catch (\Exception $e) {
+            \Log::error('Custom offer email failed: ' . $e->getMessage());
+        }
+
+        return response()->json([
+            'success' => true,
+            'offer' => $offer->load('milestones'),
+            'message' => 'Custom offer sent successfully!'
+        ]);
+    }
+
+
+    
+
+    public function viewCustomOffer($id)
+    {
+        $offer = \App\Models\CustomOffer::with(['milestones', 'seller', 'buyer', 'gig'])
+            ->findOrFail($id);
+
+        // Authorization check
+        if ($offer->buyer_id !== auth()->id() && $offer->seller_id !== auth()->id()) {
+            abort(403, 'Unauthorized access to this offer.');
+        }
+
+        return response()->json([
+            'offer' => $offer,
+            'can_accept' => $offer->canBeAccepted() && $offer->buyer_id === auth()->id(),
+        ]);
+    }
+
+    public function acceptCustomOffer($id)
+    {
+        $offer = \App\Models\CustomOffer::with('milestones')->findOrFail($id);
+
+        // Authorization check
+        if ($offer->buyer_id !== auth()->id()) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        // Check if offer can be accepted
+        if (!$offer->canBeAccepted()) {
+            $reason = $offer->isExpired() ? 'This offer has expired.' : 'This offer is no longer available.';
+            return response()->json(['error' => $reason], 400);
+        }
+
+        // Calculate commission
+        $commission = \App\Models\TopSellerTag::calculateCommission($offer->gig_id, $offer->seller_id);
+        $totalAmount = $offer->total_amount + $commission['buyer_commission'];
+
+        // Create Stripe checkout session
+        $stripe = new \Stripe\StripeClient(config('services.stripe.secret'));
+
+        try {
+            $session = $stripe->checkout->sessions->create([
+                'payment_method_types' => ['card'],
+                'line_items' => [[
+                    'price_data' => [
+                        'currency' => 'usd',
+                        'product_data' => [
+                            'name' => 'Custom Offer: ' . $offer->gig->title,
+                            'description' => $offer->description ?? 'Custom service offer',
+                        ],
+                        'unit_amount' => $totalAmount * 100, // cents
+                    ],
+                    'quantity' => 1,
+                ]],
+                'mode' => 'payment',
+                'success_url' => url('/custom-offer-success?session_id={CHECKOUT_SESSION_ID}'),
+                'cancel_url' => url('/messages'),
+                'metadata' => [
+                    'custom_offer_id' => $offer->id,
+                    'buyer_id' => auth()->id(),
+                    'seller_id' => $offer->seller_id,
+                    'gig_id' => $offer->gig_id,
+                ],
+            ]);
+
+            // Update offer status
+            $offer->update([
+                'status' => 'accepted',
+                'accepted_at' => now(),
+            ]);
+
+            // Send notification to seller
+            if (class_exists('\App\Services\NotificationService')) {
+                try {
+                    app(\App\Services\NotificationService::class)->send(
+                        userId: $offer->seller_id,
+                        type: 'custom_offer',
+                        title: 'Offer Accepted!',
+                        message: $offer->buyer->first_name . ' accepted your custom offer for ' . $offer->gig->title,
+                        data: ['offer_id' => $offer->id],
+                        sendEmail: true
+                    );
+                } catch (\Exception $e) {
+                    \Log::error('Custom offer acceptance notification failed: ' . $e->getMessage());
+                }
+            }
+
+            // Send email to seller
+            try {
+                if ($offer->seller && $offer->seller->email) {
+                    Mail::to($offer->seller->email)->send(new CustomOfferAccepted($offer));
+                }
+            } catch (\Exception $e) {
+                \Log::error('Custom offer acceptance email failed: ' . $e->getMessage());
+            }
+
+            return response()->json([
+                'success' => true,
+                'checkout_url' => $session->url
+            ]);
+
+        } catch (\Exception $e) {
+            \Log::error('Stripe checkout creation failed: ' . $e->getMessage());
+            return response()->json(['error' => 'Payment processing failed. Please try again.'], 500);
+        }
+    }
+
+    public function rejectCustomOffer(Request $request, $id)
+    {
+        $request->validate([
+            'reason' => 'nullable|string|max:500',
+        ]);
+
+        $offer = \App\Models\CustomOffer::findOrFail($id);
+
+        // Authorization check
+        if ($offer->buyer_id !== auth()->id()) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        // Check if offer is still pending
+        if ($offer->status !== 'pending') {
+            return response()->json(['error' => 'This offer has already been processed.'], 400);
+        }
+
+        // Update offer status
+        $offer->update([
+            'status' => 'rejected',
+            'rejected_at' => now(),
+            'rejection_reason' => $request->reason,
+        ]);
+
+        // Send notification to seller
+        if (class_exists('\App\Services\NotificationService')) {
+            try {
+                app(\App\Services\NotificationService::class)->send(
+                    userId: $offer->seller_id,
+                    type: 'custom_offer',
+                    title: 'Offer Rejected',
+                    message: $offer->buyer->first_name . ' declined your custom offer for ' . $offer->gig->title,
+                    data: [
+                        'offer_id' => $offer->id,
+                        'reason' => $request->reason,
+                    ],
+                    sendEmail: true
+                );
+            } catch (\Exception $e) {
+                \Log::error('Custom offer rejection notification failed: ' . $e->getMessage());
+            }
+        }
+
+        // Send email to seller
+        try {
+            if ($offer->seller && $offer->seller->email) {
+                Mail::to($offer->seller->email)->send(new CustomOfferRejected($offer));
+            }
+        } catch (\Exception $e) {
+            \Log::error('Custom offer rejection email failed: ' . $e->getMessage());
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Offer rejected successfully.'
+        ]);
     }
     // Custom Offer in Messsage Functions END =======================
 

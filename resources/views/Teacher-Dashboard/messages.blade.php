@@ -6,6 +6,7 @@
     <!-- View Point scale to 1.0 -->
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <!-- Animate css -->
     <link rel="stylesheet" href="assets/teacher/libs/animate/css/animate.css" />
     <!-- AOS Animation css-->
@@ -488,19 +489,19 @@
                                                   <div class="d-flex radio-toolbar">
                                                         <div class="row">
                                                           <div class="col-md-6">
-                                                              <input type="radio" id="radioApple" value="apple" checked data-bs-toggle="modal" data-bs-target="#secondModal" data-bs-dismiss="modal"> 
-                                                      <label for="radioApple">
+                                                              <input type="radio" id="offerTypeClass" name="offer_type" value="Class" checked data-bs-toggle="modal" data-bs-target="#secondModal" data-bs-dismiss="modal">
+                                                      <label for="offerTypeClass">
                                                           <p class="label mb-0">Class Booking</p>
                                                           <p class="name-label mb-0">Effortless class booking for a seamless learning experience.</p>
                                                       </label>
-                                                      
+
                                                           </div>
                                                           <div class="col-md-6">
-                                                              <input type="radio" id="radioBanana" name="radioFruit" value="banana" data-bs-toggle="modal" data-bs-target="#thirdModal" data-bs-dismiss="modal">
-                                                              <label for="radioBanana">
+                                                              <input type="radio" id="offerTypeFreelance" name="offer_type" value="Freelance" data-bs-toggle="modal" data-bs-target="#thirdModal" data-bs-dismiss="modal">
+                                                              <label for="offerTypeFreelance">
                                                                   <p class="label mb-0">Freelance Booking</p>
                                                                   <p class="name-label mb-0">Simplify your freelancing journey with quick and hassle-free bookings.</p>
-                  
+
                                                               </label>
                                                           </div>
                                                         </div>
@@ -522,82 +523,15 @@
                                       <div class="modal-dialog">
                                           <div class="modal-content">
                                             <div class="modal-header">
-                                              <i class="fa-solid fa-arrow-left"></i>
-                                                <h5 class="modal-title">Select Any Freelance Service</h5>  
+                                              <i class="fa-solid fa-arrow-left" data-bs-target="#myModal" data-bs-toggle="modal" data-bs-dismiss="modal" style="cursor: pointer;"></i>
+                                                <h5 class="modal-title">Select Any Class Service</h5>
                                             </div>
-                                              <div class="modal-body bg-white">
-                                                  <div class="row service"  data-bs-toggle="modal" data-bs-target="#fourmodal" data-bs-dismiss="modal">
-                                                       <div class="col-md-6">
-                                                          <h2>UI/UX Design Service</h2>
-                                                          <a href="#">Duration: 1 day</a>
-                                                      </div>
-                                                      <div class="col-md-6">
-                                                          <a href="#">Start From $5 per Person</a>
-                                                      </di>
+                                              <div class="modal-body bg-white service-list">
+                                                  <!-- Services will be loaded dynamically via AJAX -->
+                                                  <div class="text-center p-4">
+                                                      <p class="text-muted">Loading services...</p>
                                                   </div>
                                                   </div>
-                                                  <!-- <div class="service"> -->
-                                                      <div class="row service" data-bs-toggle="modal" data-bs-target="#fourmodal" data-bs-dismiss="modal">
-                                                           <div class="col-md-6">
-                                                              <h2>UI/UX Design Service</h2>
-                                                              <a href="#">Duration: 3 day</a>
-                                                          </div>
-                                                          <div class="col-md-6">
-                                                              <a href="#">Start From $7 per Person</a>
-                                                          </div>
-                                                      
-                                                      </div>
-                                                      <div class="row service" data-bs-toggle="modal" data-bs-target="#fourmodal" data-bs-dismiss="modal">
-                                                          <div class="col-md-6">
-                                                             <h2>UI/UX Design Service</h2>
-                                                             <a href="#">Duration: 1 week</a>
-                                                         </div>
-                                                         <div class="col-md-6">
-                                                             <a href="#">Start From $10 per Person</a>
-                                                         </div>
-                                                     
-                                                     </div>
-                                                     <div class="row service" data-bs-toggle="modal" data-bs-target="#fourmodal" data-bs-dismiss="modal">
-                                                      <div class="col-md-6">
-                                                         <h2>UI/UX Design Service</h2>
-                                                         <a href="#">Duration: 2 week</a>
-                                                     </div>
-                                                     <div class="col-md-6">
-                                                         <a href="#">Start From $12 per Person</a>
-                                                     </div>
-                                                 
-                                                 </div>
-                                                 <div class="row service" data-bs-toggle="modal" data-bs-target="#fourmodal" data-bs-dismiss="modal">
-                                                  <div class="col-md-6">
-                                                     <h2>UI/UX Design Service</h2>
-                                                     <a href="#">Duration: 3 week</a>
-                                                 </div>
-                                                 <div class="col-md-6">
-                                                     <a href="#">Start From $15 per Person</a>
-                                                 </div>
-                                             
-                                             </div>
-                                             <div class="row service" data-bs-toggle="modal" data-bs-target="#fourmodal" data-bs-dismiss="modal">
-                                              <div class="col-md-6">
-                                                 <h2>UI/UX Design Service</h2>
-                                                 <a href="#">Duration: 1 month</a>
-                                             </div>
-                                             <div class="col-md-6">
-                                                 <a href="#">Start From $17 per Person</a>
-                                             </div>
-                                         
-                                         </div>
-                                         <div class="row service" data-bs-toggle="modal" data-bs-target="#fourmodal" data-bs-dismiss="modal">
-                                          <div class="col-md-6">
-                                             <h2>UI/UX Design Service</h2>
-                                             <a href="#">Duration: 1 month</a>
-                                         </div>
-                                         <div class="col-md-6">
-                                             <a href="#">Start From $20 per Person</a>
-                                         </div>
-                                     
-                                     </div>
-                                                      </div>
                                               </div>
                                           </div>
                                     </div>
@@ -606,86 +540,57 @@
                                           <div class="modal-dialog">
                                               <div class="modal-content">
                                                   <div class="modal-header">
-                                                    <i class="fa-solid fa-arrow-left"></i>
-                                                      <h5 class="modal-title">Select Any Freelance Service</h5>  
+                                                    <i class="fa-solid fa-arrow-left" data-bs-target="#myModal" data-bs-toggle="modal" data-bs-dismiss="modal" style="cursor: pointer;"></i>
+                                                      <h5 class="modal-title">Select Any Freelance Service</h5>
                                                   </div>
-                                                  <div class="modal-body bg-white">
-                                                      <div class="row service" data-bs-toggle="modal" data-bs-target="#fourmodal" data-bs-dismiss="modal">
-                                                           <div class="col-md-6">
-                                                              <h2>UI/UX Design Service</h2>
-                                                              <a href="#">Duration: 1 day</a>
-                                                          </div>
-                                                          <div class="col-md-6">
-                                                              <a href="#">Start From $5 per Person</a>
-                                                          </di>
+                                                  <div class="modal-body bg-white service-list">
+                                                      <!-- Services will be loaded dynamically via AJAX -->
+                                                      <div class="text-center p-4">
+                                                          <p class="text-muted">Loading services...</p>
                                                       </div>
-                                                      </div>
-                                                      <!-- <div class="service"> -->
-                                                          <div class="row service" data-bs-toggle="modal" data-bs-target="#fourmodal" data-bs-dismiss="modal">
-                                                               <div class="col-md-6">
-                                                                  <h2>UI/UX Design Service</h2>
-                                                                  <a href="#">Duration: 3 day</a>
-                                                              </div>
-                                                              <div class="col-md-6">
-                                                                  <a href="#">Start From $7 per Person</a>
-                                                              </div>
-                                                          
-                                                          </div>
-                                                          <div class="row service" data-bs-toggle="modal" data-bs-target="#fourmodal" data-bs-dismiss="modal">
-                                                              <div class="col-md-6">
-                                                                 <h2>UI/UX Design Service</h2>
-                                                                 <a href="#">Duration: 1 week</a>
-                                                             </div>
-                                                             <div class="col-md-6">
-                                                                 <a href="#">Start From $10 per Person</a>
-                                                             </div>
-                                                         
-                                                         </div>
-                                                         <div class="row service" data-bs-toggle="modal" data-bs-target="#fourmodal" data-bs-dismiss="modal">
-                                                          <div class="col-md-6">
-                                                             <h2>UI/UX Design Service</h2>
-                                                             <a href="#">Duration: 2 week</a>
-                                                         </div>
-                                                         <div class="col-md-6">
-                                                             <a href="#">Start From $12 per Person</a>
-                                                         </div>
-                                                     
-                                                     </div>
-                                                     <div class="row service" data-bs-toggle="modal" data-bs-target="#fourmodal" data-bs-dismiss="modal">
-                                                      <div class="col-md-6">
-                                                         <h2>UI/UX Design Service</h2>
-                                                         <a href="#">Duration: 3 week</a>
-                                                     </div>
-                                                     <div class="col-md-6">
-                                                         <a href="#">Start From $15 per Person</a>
-                                                     </div>
-                                                 
-                                                 </div>
-                                                 <div class="row service" data-bs-toggle="modal" data-bs-target="#fourmodal" data-bs-dismiss="modal">
-                                                  <div class="col-md-6">
-                                                     <h2>UI/UX Design Service</h2>
-                                                     <a href="#">Duration: 1 month</a>
-                                                 </div>
-                                                 <div class="col-md-6">
-                                                     <a href="#">Start From $17 per Person</a>
-                                                 </div>
-                                             
-                                             </div>
-                                             <div class="row service last-service" data-bs-toggle="modal" data-bs-target="#fourmodal" data-bs-dismiss="modal">
-                                              <div class="col-md-6">
-                                                 <h2>UI/UX Design Service</h2>
-                                                 <a href="#">Duration: 1 month</a>
-                                             </div>
-                                             <div class="col-md-6">
-                                                 <a href="#">Start From $20 per Person</a>
-                                             </div>
-                                         
-                                         </div>
-                                                          </div>
                                                   </div>
                                               </div>
                                         </div>
-                                        <!-- Modal -->
+                                        <!-- Service Mode Selection Modal -->
+                                        <div class="modal custom-modal" id="servicemode-modal">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content date-modal">
+                                                    <div class="modal-body p-0">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title">Select Service Mode</h5>
+                                                        </div>
+                                                        <div class="model-heading">
+                                                            <p class="about">Choose how the service will be delivered.</p>
+                                                            <div class="d-flex option-btn">
+                                                                <div class="d-flex radio-toolbar">
+                                                                    <div class="row">
+                                                                        <div class="col-md-6">
+                                                                            <input type="radio" id="serviceModeOnline" name="service_mode" value="Online" checked data-bs-toggle="modal" data-bs-target="#fourmodal" data-bs-dismiss="modal">
+                                                                            <label for="serviceModeOnline">
+                                                                                <p class="label mb-0">Online</p>
+                                                                                <p class="name-label mb-0">Service will be delivered remotely via video call or online platform.</p>
+                                                                            </label>
+                                                                        </div>
+                                                                        <div class="col-md-6">
+                                                                            <input type="radio" id="serviceModeInPerson" name="service_mode" value="In-person" data-bs-toggle="modal" data-bs-target="#fourmodal" data-bs-dismiss="modal">
+                                                                            <label for="serviceModeInPerson">
+                                                                                <p class="label mb-0">In-person</p>
+                                                                                <p class="name-label mb-0">Service will be delivered in person at a physical location.</p>
+                                                                            </label>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="model-footer">
+                                                                <button class="back-btn" data-bs-target="#secondModal" data-bs-toggle="modal" data-bs-dismiss="modal">Back</button>
+                                                                <button class="next-btn">Next</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- Payment Type Selection Modal -->
                                         <div class="modal custom-modal" id="fourmodal">
                                           <div class="modal-dialog">
                                             <div class="modal-content date-modal">
@@ -703,29 +608,29 @@
                                                       <div class="d-flex radio-toolbar">
                                                             <div class="row">
                                                               <div class="col-md-6">
-                                                                <input type="radio" id="radioBanana" name="radioFruit" value="banana" checked>
-                                                                <label data-bs-target="#sixModal" data-bs-toggle="modal" data-bs-dismiss="modal">
+                                                                <input type="radio" id="paymentTypeSingle" name="payment_type" value="Single" checked>
+                                                                <label for="paymentTypeSingle" data-bs-target="#sixModal" data-bs-toggle="modal" data-bs-dismiss="modal">
                                                                     <p class="label mb-0">Single Payment</p>
                                                                     <p class="name-label mb-0">Get full payment after completed each order at once.</p>
-                    
+
                                                                 </label>
                                                               </div>
                                                               <div class="col-md-6">
-                                                                  <input type="radio" id="radioBanana" name="radioFruit" value="banana" checked>
-                                                                  <label data-bs-target="#fiveModal" data-bs-toggle="modal" data-bs-dismiss="modal">
+                                                                  <input type="radio" id="paymentTypeMilestone" name="payment_type" value="Milestone">
+                                                                  <label for="paymentTypeMilestone" data-bs-target="#fiveModal" data-bs-toggle="modal" data-bs-dismiss="modal">
                                                                       <p class="label mb-0">Milestones</p>
                                                                       <p class="name-label mb-0">Work in gradual steps and get each completed
                                                                           milestone.</p>
-                      
+
                                                                   </label>
                                                               </div>
                                                             </div>
-                                                          
-                                                         
+
+
                                                       </div>
                                                   </div>
                                                   <div class="model-footer">
-                                                      <button class="back-btn" data-bs-target="#secondModal" data-bs-toggle="modal"
+                                                      <button class="back-btn" data-bs-target="#servicemode-modal" data-bs-toggle="modal"
                                                       data-bs-dismiss="modal">Back</button>
                                                       <button class="next-btn">Next</button>
                                                   </div>
@@ -745,101 +650,61 @@
                                                 </div>
                                                 
                                                 <div class="model-heading bg-white p-3 freelancing">
-                                                  
-                                                 <p class="offer-title"><span>Freelance Service:</span> I will Provide UI UX Service for You</p>
-                                                 <textarea class="offer-area" name="offer" id="" placeholder="Describe your offer...."></textarea>
-                                                 <p class="offer-title">Set up your milestone or <a href="#">switch to single payment</a></p>
-                                                 <p class="offer-title">Divide your work into pre-defined steps With goals (minimum $10 for
-                                                  each milestone).</p>
-                                                
-                                                  <div class="row">
-                                                    <div class="col-md-4 rectangle-desc">
-                                                      <!-- <p>Low fidelity Prototype </p> -->
-                                                    
-                                                      <div class="rectangle">
-                                                        <h3>Milestone Name</h3>
-                                                        <p class="text-muted">Milestone name....</p>
-                                                    </div>
-                                                     
-                                                    </div>
-                                                    <div class="col-md-3 rectangle-desc">
-                                                      <!-- <p>1 Revision</p> -->
-                                                      <div class="rectangle">
-                                                        <h3>Revision</h3>
-                                                        <select class="form-select" aria-label="Default select example">
-                                                          <option selected>1</option>
-                                                          <option value="1">2</option>
-                                                          <option value="2">3</option>
-                                                          <option value="3">4</option>
-                                                        </select>                                  </div>
-                                                    
-                                                    </div>
-                                                    <div class="col-md-3 rectangle-desc">
-                                                      <!-- <p>5 days</p> -->
-                                                      <div class="rectangle">
-                                                        <h3>Delivery</h3>
-                                                        <select class="form-select" aria-label="Default select example">
-                                                          <option selected>5days</option>
-                                                          <option value="1">1day</option>
-                                                          <option value="2">2days</option>
-                                                          <option value="3">3days</option>
-                                                        </select>  
-                                                        
-                                                    </div>
-                                                     
-                                                    </div>
-                                                    <div class="col-md-2 rectangle-desc">
-                                                      <!-- <p>$10</p> -->
-                                                      <div class="rectangle">
-                                                        <h3>Price</h3>
-                                                       <p class="text-muted">$10</p>
-                                                    </div>
-                                                      
-                                                    </div>
+
+                                                 <p class="offer-title"><span class="selected-service-title">Loading...</span></p>
+                                                 <textarea class="form-control offer-area" id="offer-description" name="offer" placeholder="Describe your offer...."></textarea>
+                                                 <p class="offer-title mt-3">Set up your milestones or <a href="#" data-bs-target="#sixModal" data-bs-toggle="modal" data-bs-dismiss="modal">switch to single payment</a></p>
+                                                 <p class="offer-title">Divide your work into pre-defined steps with goals (minimum $10 for each milestone).</p>
+
+                                                  <!-- Milestones Container - will be populated by JavaScript -->
+                                                  <div id="milestones-container">
+                                                    <!-- Milestones will be rendered dynamically by custom-offers.js -->
                                                   </div>
-                                                  <textarea class="offer-area" name="offer" id="" placeholder="Describe your offer in Detail (optional)"></textarea>
-                                                  <p class="offer-title">Adding a description helps set expectations With buyers.</p>
-                                                  <div class="row">
+
+                                                  <button type="button" id="add-milestone-btn" class="btn btn-primary mt-3">
+                                                    <i class="fa-solid fa-plus"></i> Add Milestone
+                                                  </button>
+
+                                                  <!-- Total Amount Display -->
+                                                  <div class="row mt-4">
                                                     <div class="col-md-12">
-                                                      <button class="offer-btn">Save</button>
+                                                      <h4>Total Amount: <span class="total-amount-display text-primary">$0.00</span></h4>
                                                     </div>
                                                   </div>
-                                                   
-                                                  <div class="rado">
+
+                                                  <div class="rado mt-3">
                                                     <div class="row">
                                                       <div class="col-md-9">
                                                         <div class="form-check form-1">
-                                                          <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-                                                          <label class="form-check-label" for="flexCheckDefault">
+                                                          <input class="form-check-input" type="checkbox" id="offer-expire-checkbox">
+                                                          <label class="form-check-label" for="offer-expire-checkbox">
                                                             Offer Expire
                                                           </label>
                                                         </div>
                                                         <div class="form-check">
-                                                          <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked" checked>
-                                                          <label class="form-check-label" for="flexCheckChecked">
+                                                          <input class="form-check-input" type="checkbox" id="request-requirements-checkbox">
+                                                          <label class="form-check-label" for="request-requirements-checkbox">
                                                             Request for Requirements
                                                           </label>
                                                         </div>
                                                       </div>
                                                       <div class="col-md-3">
                                                         <div class="rectangle-desc desc-1">
-                                                          <select class="form-select" aria-label="Default select example">
-                                                            <option selected>5days</option>
-                                                            <option value="1">1day</option>
-                                                            <option value="2">2days</option>
-                                                            <option value="3">3days</option>
-                                                          </select> 
+                                                          <select class="form-select" id="expire-days-select" disabled>
+                                                            <option value="1">1 day</option>
+                                                            <option value="2">2 days</option>
+                                                            <option value="3">3 days</option>
+                                                            <option value="5" selected>5 days</option>
+                                                            <option value="7">7 days</option>
+                                                            <option value="14">14 days</option>
+                                                          </select>
                                                         </div>
                                                       </div>
                                                     </div>
-                                                   
-                                                  
-                                                  
                                                     </div>
                                                     <div class="model-footer mt-4">
-                                                      <button class="bacck-btn"data-bs-target="#fourmodal" data-bs-toggle="modal"
-                                                      data-bs-dismiss="modal">Back</button>
-                                                      <button class="neext-btn">Next</button>
+                                                      <button class="bacck-btn" data-bs-target="#fourmodal" data-bs-toggle="modal" data-bs-dismiss="modal">Back</button>
+                                                      <button class="neext-btn" id="submit-milestone-offer-btn">Send Offer</button>
                                                   </div>
                                                   
                                                   </div>
@@ -865,100 +730,97 @@
                                                   </div>
                                                   
                                                   <div class="model-heading bg-white p-3 freelancing">
-                                                    
-                                                   <p class="offer-title"><span>Freelance Service:</span>I will Provide UI UX Service for You</p>
-                                                   <textarea class="offer-area" name="offer" id="" placeholder="Describe your offer...."></textarea>
-                                                   <p class="offer-title">Set up your milestone or <a href="#">switch to single payment</a></p>
-                                                   <p class="offer-title">Divide your work into pre-defined steps With goals (minimum $10 for
-                                                    each milestone).</p>
-                                                  
-                                                    
-                                                      <div class="rectangle-desc">
-                                                      </div>
-                                                      <div class="row">
-                                                      <div class="col-md-3 rectangle-desc">
+
+                                                   <p class="offer-title"><span class="selected-service-title">Loading...</span></p>
+                                                   <textarea class="form-control offer-area" id="offer-description" placeholder="Describe your offer...."></textarea>
+                                                   <p class="offer-title mt-3">Single payment or <a href="#" data-bs-target="#fiveModal" data-bs-toggle="modal" data-bs-dismiss="modal">switch to milestones</a></p>
+                                                   <p class="offer-title">Set your pricing and delivery terms (minimum $10).</p>
+
+
+                                                      <div class="row mt-3">
+                                                      <div class="col-md-4 rectangle-desc">
                                                         <div class="rectangle">
-                                                          <h3>Revision</h3>
-                                                         
-                                                              <!-- start dropdown -->
-                                                            
-                                                              <select class="form-select" aria-label="Default select example">
-                                                                <option selected>1</option>
-                                                                <option value="1">2</option>
-                                                                <option value="2">3</option>
-                                                                <option value="3">4</option>
-                                                              </select> 
-                                                              <!-- end dropdown -->
+                                                          <h3>Revisions</h3>
+                                                              <select class="form-select" id="single-payment-revisions">
+                                                                <option value="0">No revisions</option>
+                                                                <option value="1" selected>1</option>
+                                                                <option value="2">2</option>
+                                                                <option value="3">3</option>
+                                                                <option value="4">4</option>
+                                                                <option value="5">5</option>
+                                                              </select>
                                                             </div>
-                                                      
+
                                                       </div>
-                                                      <div class="col-md-3 rectangle-desc">
+                                                      <div class="col-md-4 rectangle-desc">
                                                         <div class="rectangle">
                                                           <h3>Delivery</h3>
-                                                          <select class="form-select" aria-label="Default select example">
-                                                            <option selected>5days</option>
-                                                            <option value="1">1day</option>
-                                                            <option value="2">2days</option>
-                                                            <option value="3">3days</option>
-                                                          </select>    
-                                                          
+                                                          <select class="form-select" id="single-payment-delivery">
+                                                            <option value="1">1 day</option>
+                                                            <option value="2">2 days</option>
+                                                            <option value="3">3 days</option>
+                                                            <option value="5" selected>5 days</option>
+                                                            <option value="7">1 week</option>
+                                                            <option value="14">2 weeks</option>
+                                                            <option value="30">1 month</option>
+                                                          </select>
+
                                                       </div>
-                                                       
+
                                                       </div>
-                                                      <div class="col-md-3 rectangle-desc">
+                                                      <div class="col-md-4 rectangle-desc">
                                                         <div class="rectangle">
                                                           <h3>Price</h3>
-                                                         <p class="text-muted">$10</p>
+                                                         <input type="number" class="form-control" id="single-payment-price" placeholder="Enter price" min="10" step="0.01" required>
                                                       </div>
-                                                        
+
                                                       </div>
                                                     </div>
-                                                    <textarea class="offer-area" name="offer" id="" placeholder="Describe your offer in Detail (optional)"></textarea>
-                                                    <p class="offer-title">Adding a description helps set expectations With buyers.</p>
-                                                    <div class="row">
+
+                                                    <!-- Total Amount Display -->
+                                                    <div class="row mt-4">
                                                       <div class="col-md-12">
-                                                        <button class="offer-btn">Save</button>
+                                                        <h4>Total Amount: <span class="total-amount-display text-primary">$0.00</span></h4>
                                                       </div>
                                                     </div>
-                                                     
-                                                    <div class="rado">
+
+                                                    <div class="rado mt-3">
                                                       <div class="row">
                                                         <div class="col-md-9">
                                                           <div class="form-check form-1">
-                                                            <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-                                                            <label class="form-check-label" for="flexCheckDefault">
+                                                            <input class="form-check-input" type="checkbox" id="offer-expire-checkbox">
+                                                            <label class="form-check-label" for="offer-expire-checkbox">
                                                               Offer Expire
                                                             </label>
                                                           </div>
                                                           <div class="form-check">
-                                                            <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked" checked>
-                                                            <label class="form-check-label" for="flexCheckChecked">
+                                                            <input class="form-check-input" type="checkbox" id="request-requirements-checkbox">
+                                                            <label class="form-check-label" for="request-requirements-checkbox">
                                                               Request for Requirements
                                                             </label>
                                                           </div>
                                                         </div>
                                                         <div class="col-md-3">
                                                           <div class="rectangle-desc desc-1">
-                                                           
-                                                                <select class="form-select" aria-label="Default select example">
-                                                                  <option selected>5days</option>
-                                                                  <option value="1">1day</option>
-                                                                  <option value="2">2days</option>
-                                                                  <option value="3">3days</option>
-                                                                </select> 
-                                                                <!-- end dropdown -->
-                                                              
+
+                                                                <select class="form-select" id="expire-days-select" disabled>
+                                                                  <option value="1">1 day</option>
+                                                                  <option value="2">2 days</option>
+                                                                  <option value="3">3 days</option>
+                                                                  <option value="5" selected>5 days</option>
+                                                                  <option value="7">7 days</option>
+                                                                  <option value="14">14 days</option>
+                                                                </select>
+
                                                           </div>
                                                         </div>
                                                       </div>
-                                                     
-                                                    
-                                                    
+
+
                                                       </div>
                                                       <div class="model-footer mt-4">
-                                                        <button class="bacck-btn"data-bs-target="#fourmodal" data-bs-toggle="modal"
-                                                        data-bs-dismiss="modal">Back</button>
-                                                        <button class="neext-btn">Next</button>
+                                                        <button class="bacck-btn" data-bs-target="#fourmodal" data-bs-toggle="modal" data-bs-dismiss="modal">Back</button>
+                                                        <button class="neext-btn" id="submit-single-offer-btn">Send Offer</button>
                                                     </div>
                                                     
                                                     </div>
@@ -1527,6 +1389,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.imagesloaded/4.1.4/imagesloaded.pkgd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js"></script>
   <script src="assets/teacher/js/gallery.js"></script>
+  <script src="assets/teacher/js/custom-offers.js"></script>
   <script src="https://cdn.rawgit.com/dimsemenov/Magnific-Popup/master/dist/magnific-popup.css"></script>
 <!-- ================ side js start here=============== -->
 <!-- ================ side js start End=============== -->
