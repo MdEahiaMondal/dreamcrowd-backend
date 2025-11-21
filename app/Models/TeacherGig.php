@@ -65,5 +65,15 @@ class TeacherGig extends Model
         return $this->hasOne(ExpertProfile::class, 'user_id', 'user_id');
     }
 
+    public function teacherGigData()
+    {
+        return $this->hasOne(TeacherGigData::class, 'gig_id');
+    }
+
+    public function transactions()
+    {
+        return $this->hasMany(Transaction::class, 'service_id');
+    }
+
 
 }

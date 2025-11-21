@@ -1664,37 +1664,426 @@ class AdminController extends Controller
     /**
      * All Sellers Management
      */
-    public function allSellers()
+    public function allSellers(Request $request)
     {
         if ($redirect = $this->AdmincheckAuth()) {
             return $redirect;
         }
 
-        $sellers = User::where('role', 1)
-            ->with('expertProfile')
-            ->withCount('teacherGigs')
-            ->withCount('bookOrders')
-            ->orderBy('created_at', 'desc')
-            ->paginate(20);
+        // Determine which tab/status to show
+        $status = $request->get('status', 'active'); // active, hidden, paused, banned, deleted
 
-        return view('Admin-Dashboard.all-sellers', compact('sellers'));
+        // Base query for sellers (users with role = 1)
+        $query = User::where('role', 1);
+
+        // Apply status filter based on tab
+        switch ($status) {
+            case 'active':
+                $query->where('status', User::STATUS_ACTIVE);
+                break;
+            case 'hidden':
+                $query->where('status', User::STATUS_HIDDEN);
+                break;
+            case 'paused':
+                $query->where('status', User::STATUS_PAUSED);
+                break;
+            case 'banned':
+                $query->where('status', User::STATUS_BANNED);
+                break;
+            case 'deleted':
+                $query->onlyTrashed();
+                break;
+        }
+
+        // FILTER 1: Date Range Filter (Registration Date)
+        if ($request->filled('date_filter')) {
+            switch ($request->date_filter) {
+                case 'today':
+                    $query->whereDate('created_at', today());
+                    break;
+                case 'yesterday':
+                    $query->whereDate('created_at', today()->subDay());
+                    break;
+                case 'last_week':
+                    $query->whereBetween('created_at', [now()->subWeek(), now()]);
+                    break;
+                case 'last_7_days':
+                    $query->whereBetween('created_at', [now()->subDays(7), now()]);
+                    break;
+                case 'last_month':
+                    $query->whereMonth('created_at', now()->subMonth()->month)
+                          ->whereYear('created_at', now()->subMonth()->year);
+                    break;
+                case 'current_month':
+                    $query->whereMonth('created_at', now()->month)
+                          ->whereYear('created_at', now()->year);
+                    break;
+                case 'custom':
+                    if ($request->filled(['from_date', 'to_date'])) {
+                        $query->whereBetween('created_at', [
+                            $request->from_date . ' 00:00:00',
+                            $request->to_date . ' 23:59:59'
+                        ]);
+                    }
+                    break;
+            }
+        }
+
+        // FILTER 2: Search (Name, Email, ID)
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('first_name', 'like', "%{$search}%")
+                  ->orWhere('last_name', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%")
+                  ->orWhere('id', 'like', "%{$search}%");
+            });
+        }
+
+        // FILTER 3: Service Type (via gigs)
+        if ($request->filled('service_type')) {
+            $query->whereHas('teacherGigs', function($q) use ($request) {
+                $q->where('service_type', $request->service_type);
+            });
+        }
+
+        // FILTER 4: Category
+        if ($request->filled('category_id')) {
+            $query->whereHas('teacherGigs', function($q) use ($request) {
+                $q->where('category', $request->category_id);
+            });
+        }
+
+        // FILTER 5: Location (Country/City)
+        if ($request->filled('location')) {
+            $location = $request->location;
+            $query->where(function($q) use ($location) {
+                $q->where('country', 'like', "%{$location}%")
+                  ->orWhere('city', 'like', "%{$location}%");
+            });
+        }
+
+        // Load relationships and calculate aggregates
+        $query->with([
+            'expertProfile',
+            'teacherGigs:id,user_id,title,service_type,service_role,category,category_name,sub_category,main_file',
+            'sellerCommission:id,seller_id,commission_rate,is_active',
+        ])
+        ->withCount([
+            'teacherGigs',
+            'bookOrders',
+            'sellerTransactions',
+        ])
+        ->withSum('sellerTransactions as total_earnings', 'seller_earnings')
+        ->withAvg('receivedReviews as average_rating', 'rating')
+        ->withCount('receivedReviews');
+
+        // Check if export is requested
+        if ($request->has('export') && $request->export == 'excel') {
+            return \Maatwebsite\Excel\Facades\Excel::download(
+                new \App\Exports\SellersExport($query->get(), $status),
+                'sellers_' . $status . '_' . now()->format('Y-m-d_His') . '.xlsx'
+            );
+        }
+
+        // Get paginated sellers
+        $sellers = $query->orderBy('created_at', 'desc')->paginate(20);
+
+        // Calculate Statistics for each status
+        $stats = [
+            'total_sellers' => User::where('role', 1)->count(),
+            'active_sellers' => User::where('role', 1)->where('status', User::STATUS_ACTIVE)->count(),
+            'hidden_sellers' => User::where('role', 1)->where('status', User::STATUS_HIDDEN)->count(),
+            'paused_sellers' => User::where('role', 1)->where('status', User::STATUS_PAUSED)->count(),
+            'banned_sellers' => User::where('role', 1)->where('status', User::STATUS_BANNED)->count(),
+            'deleted_sellers' => User::where('role', 1)->onlyTrashed()->count(),
+            'sellers_this_month' => User::where('role', 1)
+                ->whereMonth('created_at', now()->month)->count(),
+            'total_services' => \App\Models\TeacherGig::count(),
+            'total_orders' => \App\Models\BookOrder::count(),
+            'total_revenue' => \App\Models\Transaction::where('status', 'completed')
+                ->sum('total_amount'),
+        ];
+
+        // Get categories for filter dropdown
+        $categories = \App\Models\Category::orderBy('category')->get(['id', 'category']);
+
+        return view('Admin-Dashboard.all-sellers', compact('sellers', 'stats', 'categories', 'status'));
+    }
+
+    /**
+     * Update seller status (hide, pause, ban, activate)
+     */
+    public function updateSellerStatus(Request $request, $id)
+    {
+        if ($redirect = $this->AdmincheckAuth()) {
+            return $redirect;
+        }
+
+        $request->validate([
+            'status' => 'required|in:0,2,3,4', // 0=active, 2=hidden, 3=paused, 4=banned
+        ]);
+
+        try {
+            $seller = User::findOrFail($id);
+            $seller->status = $request->status;
+            $seller->save();
+
+            $statusText = [
+                0 => 'activated',
+                2 => 'hidden',
+                3 => 'paused',
+                4 => 'banned'
+            ];
+
+            return redirect()->back()->with('success', 'Seller ' . $statusText[$request->status] . ' successfully!');
+        } catch (\Exception $e) {
+            \Log::error('Failed to update seller status: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Failed to update seller status.');
+        }
+    }
+
+    /**
+     * Delete seller (soft delete)
+     */
+    public function deleteSeller($id)
+    {
+        if ($redirect = $this->AdmincheckAuth()) {
+            return $redirect;
+        }
+
+        try {
+            $seller = User::findOrFail($id);
+            $seller->delete(); // Soft delete
+
+            return redirect()->back()->with('success', 'Seller deleted successfully!');
+        } catch (\Exception $e) {
+            \Log::error('Failed to delete seller: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Failed to delete seller.');
+        }
+    }
+
+    /**
+     * Restore deleted seller
+     */
+    public function restoreSeller($id)
+    {
+        if ($redirect = $this->AdmincheckAuth()) {
+            return $redirect;
+        }
+
+        try {
+            $seller = User::withTrashed()->findOrFail($id);
+            $seller->restore();
+            $seller->status = User::STATUS_ACTIVE; // Set to active
+            $seller->save();
+
+            return redirect()->back()->with('success', 'Seller restored successfully!');
+        } catch (\Exception $e) {
+            \Log::error('Failed to restore seller: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Failed to restore seller.');
+        }
     }
 
     /**
      * All Services Management
      */
-    public function allServices()
+    public function allServices(Request $request)
     {
         if ($redirect = $this->AdmincheckAuth()) {
             return $redirect;
         }
 
-        $services = \App\Models\TeacherGig::with(['user', 'category'])
-            ->withAvg('all_reviews', 'rating')
-            ->orderBy('created_at', 'desc')
-            ->paginate(20);
+        // Handle Excel Export
+        if ($request->has('export')) {
+            return Excel::download(new \App\Exports\ServicesExport($request->all()), 'services-' . date('Y-m-d') . '.xlsx');
+        }
 
-        return view('Admin-Dashboard.all-services', compact('services'));
+        // Get filter parameters
+        $status = $request->get('status', 'all');
+        $search = $request->get('search');
+        $seller_id = $request->get('seller_id');
+        $service_type = $request->get('service_type');
+        $service_role = $request->get('service_role');
+        $category = $request->get('category');
+        $date_from = $request->get('date_from');
+        $date_to = $request->get('date_to');
+
+        // Base query
+        $query = \App\Models\TeacherGig::query();
+
+        // Load relationships with correct column names
+        $query->with([
+            'user:id,first_name,last_name,email,status,deleted_at',
+            'teacherGigData:id,gig_id,description',
+            'all_reviews:id,gig_id,rating,cmnt',
+        ])
+        ->withCount('all_reviews')
+        ->withAvg('all_reviews', 'rating')
+        ->withSum('transactions', 'seller_earnings');
+
+        // Status-based filtering
+        switch ($status) {
+            case 'newly_created':
+                $query->where('status', 0);
+                break;
+            case 'active':
+                $query->where('status', 1);
+                break;
+            case 'delivered':
+                $query->where('status', 2);
+                break;
+            case 'cancelled':
+                $query->where('status', 3);
+                break;
+            case 'completed':
+                $query->where('status', 4);
+                break;
+            case 'all':
+            default:
+                // No status filter
+                break;
+        }
+
+        // Seller ID filter (important for seller_id=5 parameter)
+        if ($seller_id) {
+            $query->where('user_id', $seller_id);
+        }
+
+        // Search filter (title, category_name, sub_category)
+        if ($search) {
+            $query->where(function($q) use ($search) {
+                $q->where('title', 'like', '%' . $search . '%')
+                  ->orWhere('category_name', 'like', '%' . $search . '%')
+                  ->orWhere('sub_category', 'like', '%' . $search . '%')
+                  ->orWhereHas('user', function($userQuery) use ($search) {
+                      $userQuery->where('name', 'like', '%' . $search . '%');
+                  });
+            });
+        }
+
+        // Service type filter
+        if ($service_type) {
+            $query->where('service_type', $service_type);
+        }
+
+        // Service role filter
+        if ($service_role) {
+            $query->where('service_role', $service_role);
+        }
+
+        // Category filter
+        if ($category) {
+            $query->where('category', $category);
+        }
+
+        // Date range filter
+        if ($date_from) {
+            $query->whereDate('created_at', '>=', $date_from);
+        }
+        if ($date_to) {
+            $query->whereDate('created_at', '<=', $date_to);
+        }
+
+        // Get paginated results
+        $services = $query->orderBy('created_at', 'desc')->paginate(20)->appends($request->query());
+
+        // Calculate statistics
+        $stats = [
+            'total_services' => \App\Models\TeacherGig::count(),
+            'newly_created' => \App\Models\TeacherGig::where('status', 0)->count(),
+            'active' => \App\Models\TeacherGig::where('status', 1)->count(),
+            'delivered' => \App\Models\TeacherGig::where('status', 2)->count(),
+            'cancelled' => \App\Models\TeacherGig::where('status', 3)->count(),
+            'completed' => \App\Models\TeacherGig::where('status', 4)->count(),
+            'total_revenue' => \App\Models\Transaction::where('service_type', 'service')->sum('total_admin_commission'),
+        ];
+
+        // Get unique categories from teacher_gigs table (using category column)
+        $categories = \App\Models\TeacherGig::whereNotNull('category')
+            ->distinct()
+            ->orderBy('category')
+            ->pluck('category');
+
+        // Get unique sellers (users with teacher_gigs)
+        $sellers = \App\Models\User::whereHas('teacherGigs')
+            ->orderBy('first_name')
+            ->get(['id', 'first_name', 'last_name']);
+
+        return view('Admin-Dashboard.all-services', compact('services', 'stats', 'categories', 'sellers'));
+    }
+
+    /**
+     * Update service status
+     */
+    public function updateServiceStatus(Request $request, $id)
+    {
+        if ($redirect = $this->AdmincheckAuth()) {
+            return $redirect;
+        }
+
+        try {
+            $service = \App\Models\TeacherGig::findOrFail($id);
+            $service->status = $request->status;
+            $service->save();
+
+            return redirect()->back()->with('success', 'Service status updated successfully!');
+        } catch (\Exception $e) {
+            \Log::error('Failed to update service status: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Failed to update service status.');
+        }
+    }
+
+    /**
+     * Set custom commission for service
+     */
+    public function setServiceCommission(Request $request, $id)
+    {
+        if ($redirect = $this->AdmincheckAuth()) {
+            return $redirect;
+        }
+
+        try {
+            $service = \App\Models\TeacherGig::findOrFail($id);
+
+            // Create or update service commission
+            \App\Models\ServiceCommission::updateOrCreate(
+                ['service_id' => $id],
+                [
+                    'commission_rate' => $request->commission_rate,
+                    'is_active' => $request->has('is_active') ? 1 : 0,
+                    'notes' => $request->notes,
+                ]
+            );
+
+            return redirect()->back()->with('success', 'Service commission updated successfully!');
+        } catch (\Exception $e) {
+            \Log::error('Failed to set service commission: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Failed to update service commission.');
+        }
+    }
+
+    /**
+     * Toggle service visibility (pause/unpause)
+     */
+    public function toggleServiceVisibility(Request $request, $id)
+    {
+        if ($redirect = $this->AdmincheckAuth()) {
+            return $redirect;
+        }
+
+        try {
+            $service = \App\Models\TeacherGig::findOrFail($id);
+
+            // Toggle between active (1) and paused (0)
+            $service->status = $service->status == 1 ? 0 : 1;
+            $service->save();
+
+            return redirect()->back()->with('success', 'Service visibility toggled successfully!');
+        } catch (\Exception $e) {
+            \Log::error('Failed to toggle service visibility: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Failed to toggle service visibility.');
+        }
     }
 
     /**
@@ -1799,44 +2188,282 @@ class AdminController extends Controller
     /**
      * Invoice & Statement
      */
-    public function invoice()
+    public function invoice(Request $request)
     {
         if ($redirect = $this->AdmincheckAuth()) {
             return $redirect;
         }
 
-        $transactions = \App\Models\Transaction::with(['seller', 'buyer', 'bookOrder'])
-            ->orderBy('created_at', 'desc')
-            ->paginate(20);
+        // Base query with relationships
+        $query = \App\Models\Transaction::with([
+            'seller:id,first_name,last_name,email',
+            'buyer:id,first_name,last_name,email',
+            'bookOrder.gig:id,title,service_role,service_type'
+        ]);
 
-        $monthlyRevenue = \App\Models\Transaction::where('status', 'completed')
-            ->whereMonth('created_at', now()->month)
-            ->sum('admin_commission');
+        // FILTER 1: Date Range Filter
+        if ($request->filled('date_filter')) {
+            switch ($request->date_filter) {
+                case 'today':
+                    $query->whereDate('created_at', today());
+                    break;
+                case 'yesterday':
+                    $query->whereDate('created_at', today()->subDay());
+                    break;
+                case 'last_week':
+                    $query->whereBetween('created_at', [now()->subWeek(), now()]);
+                    break;
+                case 'last_7_days':
+                    $query->whereBetween('created_at', [now()->subDays(7), now()]);
+                    break;
+                case 'last_month':
+                    $query->whereMonth('created_at', now()->subMonth()->month)
+                          ->whereYear('created_at', now()->subMonth()->year);
+                    break;
+                case 'current_month':
+                    $query->whereMonth('created_at', now()->month)
+                          ->whereYear('created_at', now()->year);
+                    break;
+                case 'custom':
+                    if ($request->filled(['from_date', 'to_date'])) {
+                        $query->whereBetween('created_at', [
+                            $request->from_date . ' 00:00:00',
+                            $request->to_date . ' 23:59:59'
+                        ]);
+                    }
+                    break;
+            }
+        }
 
-        return view('Admin-Dashboard.invoice', compact('transactions', 'monthlyRevenue'));
+        // FILTER 2: Search (Seller/Buyer name, Transaction ID)
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->whereHas('seller', function($q) use ($search) {
+                    $q->where('first_name', 'like', "%{$search}%")
+                      ->orWhere('last_name', 'like', "%{$search}%")
+                      ->orWhere('email', 'like', "%{$search}%");
+                })
+                ->orWhereHas('buyer', function($q) use ($search) {
+                    $q->where('first_name', 'like', "%{$search}%")
+                      ->orWhere('last_name', 'like', "%{$search}%")
+                      ->orWhere('email', 'like', "%{$search}%");
+                })
+                ->orWhere('stripe_transaction_id', 'like', "%{$search}%")
+                ->orWhere('id', 'like', "%{$search}%");
+            });
+        }
+
+        // FILTER 3: Service Type
+        if ($request->filled('service_type')) {
+            $query->where('service_type', $request->service_type);
+        }
+
+        // FILTER 4: Status Filter
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        // FILTER 5: Payout Status Filter
+        if ($request->filled('payout_status')) {
+            $query->where('payout_status', $request->payout_status);
+        }
+
+        // Check if export is requested
+        if ($request->has('export') && $request->export == 'excel') {
+            return \Maatwebsite\Excel\Facades\Excel::download(
+                new \App\Exports\TransactionsExport($query->get()),
+                'transactions_' . now()->format('Y-m-d_His') . '.xlsx'
+            );
+        }
+
+        // Get paginated transactions
+        $transactions = $query->orderBy('created_at', 'desc')->paginate(20);
+
+        // Calculate Statistics
+        $stats = [
+            'total_transactions' => \App\Models\Transaction::count(),
+            'monthly_revenue' => \App\Models\Transaction::where('status', 'completed')
+                ->whereMonth('created_at', now()->month)
+                ->sum('total_admin_commission'),
+            'total_revenue' => \App\Models\Transaction::where('status', 'completed')
+                ->sum('total_admin_commission'),
+            'pending_payouts' => \App\Models\Transaction::where('payout_status', 'pending')
+                ->where('status', 'completed')
+                ->sum('total_admin_commission'),
+            'transactions_this_month' => \App\Models\Transaction::whereMonth('created_at', now()->month)
+                ->count(),
+            'refunded_amount' => \App\Models\Transaction::where('status', 'refunded')
+                ->sum('total_amount'),
+        ];
+
+        return view('Admin-Dashboard.invoice', compact('transactions', 'stats'));
+    }
+
+    /**
+     * Download Transaction Invoice PDF
+     */
+    public function downloadInvoice($id)
+    {
+        if ($redirect = $this->AdmincheckAuth()) {
+            return $redirect;
+        }
+
+        $transaction = \App\Models\Transaction::with(['seller', 'buyer', 'bookOrder.gig'])
+            ->findOrFail($id);
+
+        $pdf = \PDF::loadView('Admin-Dashboard.TransactionInvoice', compact('transaction'));
+
+        return $pdf->download('invoice_' . $transaction->id . '_' . now()->format('Ymd') . '.pdf');
     }
 
     /**
      * Reviews & Ratings
      */
-    public function reviewsRatings()
+    public function reviewsRatings(Request $request)
     {
         if ($redirect = $this->AdmincheckAuth()) {
             return $redirect;
         }
 
-        $reviews = \App\Models\ServiceReviews::with(['user', 'teacher', 'gig', 'replies'])
-            ->orderBy('created_at', 'desc')
-            ->paginate(20);
+        // Base query with relationships
+        $query = \App\Models\ServiceReviews::with([
+            'user:id,first_name,last_name,email,profile',
+            'teacher:id,first_name,last_name,email,profile',
+            'gig:id,title,service_role,service_type,main_file',
+            'replies.user:id,first_name,last_name'
+        ])->whereNull('parent_id'); // Only parent reviews, not replies
 
+        // FILTER 1: Rating Filter
+        if ($request->filled('rating')) {
+            $query->where('rating', $request->rating);
+        }
+
+        // FILTER 2: Date Range Filter
+        if ($request->filled('date_filter')) {
+            switch ($request->date_filter) {
+                case 'today':
+                    $query->whereDate('created_at', today());
+                    break;
+                case 'yesterday':
+                    $query->whereDate('created_at', today()->subDay());
+                    break;
+                case 'last_week':
+                    $query->whereBetween('created_at', [now()->subWeek(), now()]);
+                    break;
+                case 'last_7_days':
+                    $query->whereBetween('created_at', [now()->subDays(7), now()]);
+                    break;
+                case 'last_month':
+                    $query->whereMonth('created_at', now()->subMonth()->month)
+                          ->whereYear('created_at', now()->subMonth()->year);
+                    break;
+                case 'current_month':
+                    $query->whereMonth('created_at', now()->month)
+                          ->whereYear('created_at', now()->year);
+                    break;
+                case 'custom':
+                    if ($request->filled(['from_date', 'to_date'])) {
+                        $query->whereBetween('created_at', [
+                            $request->from_date . ' 00:00:00',
+                            $request->to_date . ' 23:59:59'
+                        ]);
+                    }
+                    break;
+            }
+        }
+
+        // FILTER 3: Search (Buyer/Seller name, Service title, Review text)
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->whereHas('user', function($q) use ($search) {
+                    $q->where('first_name', 'like', "%{$search}%")
+                      ->orWhere('last_name', 'like', "%{$search}%")
+                      ->orWhere('email', 'like', "%{$search}%");
+                })
+                ->orWhereHas('teacher', function($q) use ($search) {
+                    $q->where('first_name', 'like', "%{$search}%")
+                      ->orWhere('last_name', 'like', "%{$search}%")
+                      ->orWhere('email', 'like', "%{$search}%");
+                })
+                ->orWhereHas('gig', function($q) use ($search) {
+                    $q->where('title', 'like', "%{$search}%");
+                })
+                ->orWhere('cmnt', 'like', "%{$search}%")
+                ->orWhere('id', 'like', "%{$search}%");
+            });
+        }
+
+        // FILTER 4: Service Type
+        if ($request->filled('service_type')) {
+            $query->whereHas('gig', function($q) use ($request) {
+                $q->where('service_type', $request->service_type);
+            });
+        }
+
+        // FILTER 5: With/Without Replies
+        if ($request->filled('has_replies')) {
+            if ($request->has_replies == 'yes') {
+                $query->has('replies');
+            } elseif ($request->has_replies == 'no') {
+                $query->doesntHave('replies');
+            }
+        }
+
+        // Check if export is requested
+        if ($request->has('export') && $request->export == 'excel') {
+            return \Maatwebsite\Excel\Facades\Excel::download(
+                new \App\Exports\ReviewsExport($query->get()),
+                'reviews_' . now()->format('Y-m-d_His') . '.xlsx'
+            );
+        }
+
+        // Get paginated reviews
+        $reviews = $query->orderBy('created_at', 'desc')->paginate(20);
+
+        // Enhanced Statistics
         $stats = [
-            'total_reviews' => \App\Models\ServiceReviews::count(),
-            'average_rating' => \App\Models\ServiceReviews::avg('rating'),
-            'five_star' => \App\Models\ServiceReviews::where('rating', 5)->count(),
-            'one_star' => \App\Models\ServiceReviews::where('rating', 1)->count(),
+            'total_reviews' => \App\Models\ServiceReviews::whereNull('parent_id')->count(),
+            'average_rating' => round(\App\Models\ServiceReviews::whereNull('parent_id')->avg('rating'), 2),
+            'five_star' => \App\Models\ServiceReviews::whereNull('parent_id')->where('rating', 5)->count(),
+            'four_star' => \App\Models\ServiceReviews::whereNull('parent_id')->where('rating', 4)->count(),
+            'three_star' => \App\Models\ServiceReviews::whereNull('parent_id')->where('rating', 3)->count(),
+            'two_star' => \App\Models\ServiceReviews::whereNull('parent_id')->where('rating', 2)->count(),
+            'one_star' => \App\Models\ServiceReviews::whereNull('parent_id')->where('rating', 1)->count(),
+            'total_replies' => \App\Models\ServiceReviews::whereNotNull('parent_id')->count(),
+            'reviews_this_month' => \App\Models\ServiceReviews::whereNull('parent_id')
+                ->whereMonth('created_at', now()->month)->count(),
+            'unanswered_reviews' => \App\Models\ServiceReviews::whereNull('parent_id')
+                ->doesntHave('replies')->count(),
         ];
 
         return view('Admin-Dashboard.reviews&rating', compact('reviews', 'stats'));
+    }
+
+    /**
+     * Delete a review
+     */
+    public function deleteReview($id)
+    {
+        if ($redirect = $this->AdmincheckAuth()) {
+            return $redirect;
+        }
+
+        try {
+            $review = \App\Models\ServiceReviews::findOrFail($id);
+
+            // Delete replies first
+            $review->replies()->delete();
+
+            // Delete the review
+            $review->delete();
+
+            return redirect()->back()->with('success', 'Review deleted successfully!');
+        } catch (\Exception $e) {
+            \Log::error('Failed to delete review: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Failed to delete review.');
+        }
     }
 
     /**

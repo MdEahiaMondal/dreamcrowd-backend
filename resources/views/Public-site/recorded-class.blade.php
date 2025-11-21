@@ -60,6 +60,7 @@
         <div class="row">
           <div class="col-lg-8 col-md-12">
             <section class="main-video">
+              @if(!empty($course) && isset($course[0]))
               <video style="height: 500px;"
                 src="assets/teacher/listing/data_{{$gig->user_id}}/course/{{$course[0]}}"
                 controls
@@ -67,11 +68,33 @@
                 muted
               ></video>
               <h5 class="title">{{$course[0]}}</h5>
+              @else
+              <div style="height: 500px; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center;">
+                <div class="text-center">
+                  <i class="fas fa-video fa-4x text-muted mb-3"></i>
+                  <p class="text-muted">No course video available</p>
+                </div>
+              </div>
+              @endif
               <h3>{{$gig->title}}</h3>
               <div class="design">
-                <span id="mydesign">{{$profile->first_name}} {{$profile->last_name}}&nbsp;&nbsp;</span
-                ><span>{{$profile->profession}}</span
-                ><span id="file">&nbsp;&nbsp;Following</span>
+                <span id="mydesign">
+                  @if($profile)
+                    {{$profile->first_name}} {{$profile->last_name}}&nbsp;&nbsp;
+                  @elseif($gig->user)
+                    {{$gig->user->first_name}} {{$gig->user->last_name}}&nbsp;&nbsp;
+                  @else
+                    Unknown Instructor&nbsp;&nbsp;
+                  @endif
+                </span>
+                <span>
+                  @if($profile && $profile->profession)
+                    {{$profile->profession}}
+                  @else
+                    Instructor
+                  @endif
+                </span>
+                <span id="file">&nbsp;&nbsp;Following</span>
               </div>
             </section>
           </div>
@@ -139,171 +162,179 @@
               </div>
             </div>
             <div class="Student-Reviews-heading">
-              <h4>Student Reviews</h4>
+              <h4>Student Reviews ({{ $totalReviews }})
+                @if($totalReviews > 0 && $averageRating)
+                  <span class="text-warning ms-2">
+                    ★ {{ number_format((float)$averageRating, 1) }}
+                  </span>
+                @endif
+              </h4>
             </div>
             <div class="row card_wrapper" style="margin-top: 80px">
               <div class="col-12">
+                @if($reviews->count() > 0)
                 <div class="owl-carousel card_carousel">
+                @foreach($reviews as $review)
                   <div class="card card-slider">
                     <div class="card-body">
                       <div class="d-flex">
-                        <img
-                          src="assets/public-site/asset/img/slidercommentimg1.png"
-                          class="rounded-circle"
-                        />
-                        <div class="d-flex flex-column">
-                          <div class="name">Thomas H.</div>
+                        @if($review->user && $review->user->profile && file_exists(public_path($review->user->profile)))
+                          <img src="/{{ $review->user->profile }}"
+                               class="rounded-circle"
+                               style="width: 50px; height: 50px; object-fit: cover;">
+                        @else
+                          <div class="rounded-circle review-profile"
+                               style="width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; background-color: #f0f0f0;">
+                            <h3 style="margin: 0;">{{ $review->user ? substr($review->user->first_name, 0, 1) : 'U' }}</h3>
+                          </div>
+                        @endif
+                        <div class="d-flex flex-column ms-3">
+                          <div class="name">
+                            {{ $review->user ? trim($review->user->first_name . ' ' . $review->user->last_name) : 'Anonymous' }}
+                          </div>
                           <p class="text-muted">Student</p>
+                          <div class="rating">
+                            @for($i = 1; $i <= 5; $i++)
+                              @if($i <= $review->rating)
+                                <i class="fas fa-star text-warning"></i>
+                              @else
+                                <i class="far fa-star text-muted"></i>
+                              @endif
+                            @endfor
+                          </div>
                         </div>
                       </div>
-                      <p class="card-text">
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                        Amet sollicitudin tristique ac praesent ullamcorper nisl
-                        eu accumsan.Lorem ipsum dolor sit amet, consectetur
-                        adipiscing elit. Amet sollicitudin tristique ac praesent
-                        ullamcorper nisl eu accumsan.
+                      <p class="card-text mt-3">
+                        {{ $review->cmnt ?? 'No comment provided.' }}
                       </p>
+                      <small class="text-muted">
+                        {{ $review->created_at->diffForHumans() }}
+                      </small>
                     </div>
                   </div>
-                  <div class="card card-slider">
-                    <div class="card-body">
-                      <div class="d-flex">
-                        <div class="rounded-circle review-profile">
-                          <h3>T</h3>
-                      </div>
-                        <div class="d-flex flex-column">
-                          <div class="name">Thomas H.</div>
-                          <p class="text-muted">Student</p>
+                @endforeach
+                </div>
+                @else
+                <div class="alert alert-info mt-3">
+                  <i class="fas fa-info-circle"></i> No reviews yet. Be the first to review this service!
+                </div>
+                @endif
+              </div>
+              </div>
+
+            <!-- Service Statistics Section -->
+            <div class="row mt-4">
+              <div class="col-md-12">
+                <div class="service-stats">
+                  <span class="badge bg-primary me-2">
+                    <i class="fas fa-eye"></i> {{ number_format((int)$gig->impressions) }} Views
+                  </span>
+                  <span class="badge bg-success me-2">
+                    <i class="fas fa-shopping-bag"></i> {{ number_format((int)$gig->orders) }} Orders
+                  </span>
+                  <span class="badge bg-info me-2">
+                    <i class="fas fa-star"></i> {{ number_format((int)$gig->reviews) }} Reviews
+                  </span>
+                  @if($gig->clicks)
+                    <span class="badge bg-warning me-2">
+                      <i class="fas fa-mouse-pointer"></i> {{ number_format((int)$gig->clicks) }} Clicks
+                    </span>
+                  @endif
+                </div>
+              </div>
+            </div>
+
+            <!-- Pricing Section -->
+            @if($gigPayment)
+            <div class="row mt-4">
+              <div class="col-md-12">
+                <div class="heading-start">
+                  <h4>Pricing</h4>
+                </div>
+                <div class="card">
+                  <div class="card-body">
+                    <div class="row">
+                      @if($gigPayment->payment_type)
+                        <div class="col-md-4">
+                          <p><strong>Payment Type:</strong> {{ ucfirst($gigPayment->payment_type) }}</p>
                         </div>
-                      </div>
-                      <p class="card-text">
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                        Amet sollicitudin tristique ac praesent ullamcorper nisl
-                        eu accumsan.Lorem ipsum dolor sit amet, consectetur
-                        adipiscing elit. Amet sollicitudin tristique ac praesent
-                        ullamcorper nisl eu accumsan.
-                      </p>
-                    </div>
-                  </div>
-                  <div class="card card-slider">
-                    <div class="card-body">
-                      <div class="d-flex">
-                        <img
-                          src="assets/public-site/asset/img/slidercommentimg1.png"
-                          class="rounded-circle"
-                        />
-                        <div class="d-flex flex-column">
-                          <div class="name">Thomas H.</div>
-                          <p class="text-muted">Student</p>
+                      @endif
+                      @if($gigPayment->rate)
+                        <div class="col-md-4">
+                          <p><strong>Standard Rate:</strong> ${{ number_format((float)$gigPayment->rate, 2) }}</p>
                         </div>
-                      </div>
-                      <p class="card-text">
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                        Amet sollicitudin tristique ac praesent ullamcorper nisl
-                        eu accumsan.Lorem ipsum dolor sit amet, consectetur
-                        adipiscing elit. Amet sollicitudin tristique ac praesent
-                        ullamcorper nisl eu accumsan.
-                      </p>
-                    </div>
-                  </div>
-                  <div class="card card-slider">
-                    <div class="card-body">
-                      <div class="d-flex">
-                        <img src="assets/public-site/asset/img/IMG1.png" class="rounded-circle" />
-                        <div class="d-flex flex-column">
-                          <div class="name">Thomas H.</div>
-                          <p class="text-muted">Student</p>
+                      @endif
+                      @if($gigPayment->public_rate)
+                        <div class="col-md-4">
+                          <p><strong>Group Rate:</strong> ${{ number_format((float)$gigPayment->public_rate, 2) }}</p>
                         </div>
-                      </div>
-                      <p class="card-text">
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                        Amet sollicitudin tristique ac praesent ullamcorper nisl
-                        eu accumsan.Lorem ipsum dolor sit amet, consectetur
-                        adipiscing elit. Amet sollicitudin tristique ac praesent
-                        ullamcorper nisl eu accumsan.
-                      </p>
-                    </div>
-                  </div>
-                  <div class="card card-slider">
-                    <div class="card-body">
-                      <div class="d-flex">
-                        <img
-                          src="assets/public-site/asset/img/slidercommentimg1.png"
-                          class="rounded-circle"
-                        />
-                        <div class="d-flex flex-column">
-                          <div class="name">Thomas H.</div>
-                          <p class="text-muted">Student</p>
+                      @endif
+                      @if($gigPayment->private_rate)
+                        <div class="col-md-4">
+                          <p><strong>Private Rate:</strong> ${{ number_format((float)$gigPayment->private_rate, 2) }}</p>
                         </div>
-                      </div>
-                      <p class="card-text">
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                        Amet sollicitudin tristique ac praesent ullamcorper nisl
-                        eu accumsan.Lorem ipsum dolor sit amet, consectetur
-                        adipiscing elit. Amet sollicitudin tristique ac praesent
-                        ullamcorper nisl eu accumsan.
-                      </p>
-                    </div>
-                  </div>
-                  <div class="card card-slider">
-                    <div class="card-body">
-                      <div class="d-flex">
-                        <img src="assets/public-site/asset/img/IMG1.png" class="rounded-circle" />
-                        <div class="d-flex flex-column">
-                          <div class="name">Thomas H.</div>
-                          <p class="text-muted">Student</p>
+                      @endif
+                      @if($gigPayment->duration)
+                        <div class="col-md-4">
+                          <p><strong>Duration:</strong> {{ $gigPayment->duration }} minutes</p>
                         </div>
-                      </div>
-                      <p class="card-text">
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                        Amet sollicitudin tristique ac praesent ullamcorper nisl
-                        eu accumsan.Lorem ipsum dolor sit amet, consectetur
-                        adipiscing elit. Amet sollicitudin tristique ac praesent
-                        ullamcorper nisl eu accumsan.
-                      </p>
-                    </div>
-                  </div>
-                  <div class="card card-slider">
-                    <div class="card-body">
-                      <div class="d-flex">
-                        <img
-                          src="assets/public-site/asset/img/slidercommentimg1.png"
-                          class="rounded-circle"
-                        />
-                        <div class="d-flex flex-column">
-                          <div class="name">Thomas H.</div>
-                          <p class="text-muted">Student</p>
-                        </div>
-                      </div>
-                      <p class="card-text">
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                        Amet sollicitudin tristique ac praesent ullamcorper nisl
-                        eu accumsan.Lorem ipsum dolor sit amet, consectetur
-                        adipiscing elit. Amet sollicitudin tristique ac praesent
-                        ullamcorper nisl eu accumsan.
-                      </p>
-                    </div>
-                  </div>
-                  <div class="card card-slider">
-                    <div class="card-body">
-                      <div class="d-flex">
-                        <img src="assets/public-site/asset/img/IMG1.png" class="rounded-circle" />
-                        <div class="d-flex flex-column">
-                          <div class="name">Thomas H.</div>
-                          <p class="text-muted">Student</p>
-                        </div>
-                      </div>
-                      <p class="card-text">
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                        Amet sollicitudin tristique ac praesent ullamcorper nisl
-                        eu accumsan.Lorem ipsum dolor sit amet, consectetur
-                        adipiscing elit. Amet sollicitudin tristique ac praesent
-                        ullamcorper nisl eu accumsan.
-                      </p>
+                      @endif
                     </div>
                   </div>
                 </div>
               </div>
+            </div>
+            @endif
+
+            <!-- Similar Services Section -->
+            @if($similarServices->count() > 0)
+            <div class="row mt-5">
+              <div class="col-md-12">
+                <div class="heading-start">
+                  <h4>Similar Services</h4>
+                </div>
+              </div>
+            </div>
+            <div class="row mt-3">
+              @foreach($similarServices as $similar)
+                <div class="col-md-3 mb-3">
+                  <div class="card h-100">
+                    @if($similar->main_file && file_exists(public_path($similar->main_file)))
+                      <img src="/{{ $similar->main_file }}"
+                           class="card-img-top"
+                           alt="{{ $similar->title }}"
+                           style="height: 200px; object-fit: cover;">
+                    @else
+                      <div class="card-img-top bg-light d-flex align-items-center justify-content-center"
+                           style="height: 200px;">
+                        <i class="fas fa-image fa-3x text-muted"></i>
+                      </div>
+                    @endif
+                    <div class="card-body">
+                      <h5 class="card-title">{{ Str::limit($similar->title, 40) }}</h5>
+                      <p class="card-text text-muted">
+                        @if($similar->user)
+                          <i class="fas fa-user"></i> {{ trim($similar->user->first_name . ' ' . $similar->user->last_name) }}
+                        @endif
+                      </p>
+                      @if($similar->all_reviews_avg_rating)
+                        <p class="card-text">
+                          <span class="text-warning">
+                            ★ {{ number_format((float)$similar->all_reviews_avg_rating, 1) }}
+                          </span>
+                          <small class="text-muted">({{ $similar->all_reviews_count }} reviews)</small>
+                        </p>
+                      @endif
+                      <a href="/course-service/{{ $similar->id }}" class="btn btn-primary btn-sm w-100">
+                        <i class="fas fa-eye"></i> View Details
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              @endforeach
+            </div>
+            @endif
+
             </div>
           </div>
         </div>

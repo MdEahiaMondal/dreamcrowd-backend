@@ -159,13 +159,20 @@ Route::controller(AdminController::class)->group(function () {
 
     // CRITICAL-2 FIX: Missing Admin Panel Routes =========
     Route::get('/admin/all-sellers', 'allSellers')->name('admin.all-sellers');
+    Route::post('/admin/sellers/{id}/status', 'updateSellerStatus')->name('admin.sellers.update-status');
+    Route::post('/admin/sellers/{id}/delete', 'deleteSeller')->name('admin.sellers.delete');
+    Route::post('/admin/sellers/{id}/restore', 'restoreSeller')->name('admin.sellers.restore');
     Route::get('/admin/all-services', 'allServices')->name('admin.all-services');
+    Route::post('/admin/services/{id}/status', 'updateServiceStatus')->name('admin.services.update-status');
+    Route::post('/admin/services/{id}/commission', 'setServiceCommission')->name('admin.services.set-commission');
+    Route::post('/admin/services/{id}/toggle-visibility', 'toggleServiceVisibility')->name('admin.services.toggle-visibility');
     Route::get('/admin/buyer-management', 'buyerManagement')->name('admin.buyer-management');
     Route::get('/admin/all-orders', 'allOrders')->name('admin.all-orders');
     Route::get('/admin/payout-details', 'payoutDetails')->name('admin.payout-details');
     Route::get('/admin/refund-details', 'refundDetails')->name('admin.refund-details');
     Route::get('/admin/invoice', 'invoice')->name('admin.invoice');
-    Route::get('/admin/reviews-ratings', 'reviewsRatings')->name('admin.reviews-ratings');
+    Route::get('/admin/reviews-ratings', 'reviewsRatings')->name('admin.reviews.ratings');
+    Route::post('/admin/reviews/{id}/delete', 'deleteReview')->name('admin.reviews.delete');
     Route::get('/admin/seller-reports', 'sellerReports')->name('admin.seller-reports');
     Route::get('/admin/buyer-reports', 'buyerReports')->name('admin.buyer-reports');
     // CRITICAL-2 FIX END =========

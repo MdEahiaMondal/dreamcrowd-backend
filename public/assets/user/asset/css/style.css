@@ -388,10 +388,6 @@
 .tabs {
   display: none;
 }
-.mb-2 {
-  margin-bottom: 0.5rem !important;
-  height: 752px;
-}
 .chat-side-bar {
   border-radius: 8px;
   height: 755px;

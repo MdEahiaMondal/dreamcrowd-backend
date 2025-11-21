@@ -4,12 +4,21 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, SoftDeletes;
+
+    /**
+     * Seller status constants
+     */
+    const STATUS_ACTIVE = 0;
+    const STATUS_HIDDEN = 2;
+    const STATUS_PAUSED = 3;
+    const STATUS_BANNED = 4;
 
     /**
      * The attributes that are mass assignable.
@@ -122,6 +131,14 @@ class User extends Authenticatable
     public function expertProfile()
     {
         return $this->hasOne(ExpertProfile::class, 'user_id');
+    }
+
+    /**
+     * Get reviews received by this seller/teacher
+     */
+    public function receivedReviews()
+    {
+        return $this->hasMany(\App\Models\ServiceReviews::class, 'teacher_id');
     }
 
     /**

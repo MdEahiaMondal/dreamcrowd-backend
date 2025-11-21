@@ -203,12 +203,12 @@
                 </ul>
             </li>
             <li>
-                <a href="{{ route('admin.reviews-ratings') }}">
+                <a href="{{ route('admin.reviews.ratings') }}">
                     <i class='bx bx-star icon' title="Reviews & Ratings"></i>
                     <span class="link_name">Reviews & Ratings</span>
                 </a>
                 <ul class="sub-menu blank">
-                    <li><a class="link_name" href="{{ route('admin.reviews-ratings') }}">Reviews & Ratings</a></li>
+                    <li><a class="link_name" href="{{ route('admin.reviews.ratings') }}">Reviews & Ratings</a></li>
                 </ul>
             </li>
             <li>

@@ -1054,7 +1054,7 @@ class BookingController extends Controller
                 'total_price' => $offer->total_amount,
                 'buyer_commission' => $commission['buyer_commission'],
                 'seller_commission' => $commission['seller_commission'],
-                'admin_commission' => $commission['admin_commission'],
+                'total_admin_commission' => $commission['admin_commission'],
                 'status' => 0, // Pending (needs seller approval)
                 'payment_status' => 'completed',
                 'stripe_transaction_id' => $session->payment_intent,
@@ -1079,9 +1079,9 @@ class BookingController extends Controller
                 'buyer_id' => $offer->buyer_id,
                 'seller_id' => $offer->seller_id,
                 'total_amount' => $offer->total_amount,
-                'buyer_commission' => $commission['buyer_commission'],
-                'seller_commission' => $commission['seller_commission'],
-                'admin_commission' => $commission['admin_commission'],
+                'buyer_commission_amount' => $commission['buyer_commission'] ?? 0,
+                'seller_commission_amount' => $commission['seller_commission'] ?? 0,
+                'total_admin_commission' => $commission['admin_commission'] ?? 0,
                 'stripe_transaction_id' => $session->payment_intent,
                 'status' => 'completed',
             ]);
