@@ -296,7 +296,11 @@ class AutoMarkDelivered extends Command
                     'delivered_at' => now()->toDateTimeString(),
                     'dispute_deadline' => $disputeDeadline
                 ],
-                sendEmail: true
+                sendEmail: true,
+                actorUserId: $order->teacher_id, // Seller who delivered
+                targetUserId: $order->user_id, // Buyer receiving notification
+                orderId: $order->id,
+                serviceId: $order->gig_id
             );
 
             // Notify seller
@@ -311,7 +315,11 @@ class AutoMarkDelivered extends Command
                     'buyer_name' => $buyerName,
                     'delivered_at' => now()->toDateTimeString()
                 ],
-                sendEmail: false
+                sendEmail: false,
+                actorUserId: $order->teacher_id, // Seller (system acting on their behalf)
+                targetUserId: $order->user_id, // Buyer
+                orderId: $order->id,
+                serviceId: $order->gig_id
             );
 
             Log::info("Delivery notifications sent for order #{$order->id}");

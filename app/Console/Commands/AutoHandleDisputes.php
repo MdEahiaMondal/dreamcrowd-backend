@@ -389,7 +389,11 @@ class AutoHandleDisputes extends Command
                     'refund_type' => $refundType,
                     'resolved_at' => now()->toDateTimeString()
                 ],
-                sendEmail: true
+                sendEmail: true,
+                actorUserId: $order->user_id, // Buyer who filed dispute
+                targetUserId: $order->teacher_id, // Seller (dispute against them)
+                orderId: $order->id,
+                serviceId: $order->gig_id
             );
 
             // Notify seller
@@ -406,7 +410,11 @@ class AutoHandleDisputes extends Command
                     'refund_type' => $refundType,
                     'resolved_at' => now()->toDateTimeString()
                 ],
-                sendEmail: true
+                sendEmail: true,
+                actorUserId: $order->user_id, // Buyer who filed dispute
+                targetUserId: $order->teacher_id, // Seller affected by refund
+                orderId: $order->id,
+                serviceId: $order->gig_id
             );
 
             // Notify admins
@@ -423,7 +431,11 @@ class AutoHandleDisputes extends Command
                         'refund_amount' => $refundAmount,
                         'resolved_at' => now()->toDateTimeString()
                     ],
-                    sendEmail: false
+                    sendEmail: false,
+                    actorUserId: $order->user_id, // Buyer who filed
+                    targetUserId: $order->teacher_id, // Seller
+                    orderId: $order->id,
+                    serviceId: $order->gig_id
                 );
             }
 

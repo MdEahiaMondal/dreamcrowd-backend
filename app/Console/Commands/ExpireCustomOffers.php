@@ -154,7 +154,10 @@ class ExpireCustomOffers extends Command
                     'seller_name' => $sellerName,
                     'expired_at' => now()->toDateTimeString()
                 ],
-                sendEmail: true
+                sendEmail: true,
+                actorUserId: $offer->seller_id,
+                targetUserId: $offer->buyer_id,
+                serviceId: $offer->gig_id
             );
 
             // Notify seller
@@ -169,7 +172,10 @@ class ExpireCustomOffers extends Command
                     'buyer_name' => $buyerName,
                     'expired_at' => now()->toDateTimeString()
                 ],
-                sendEmail: true
+                sendEmail: true,
+                actorUserId: $offer->seller_id,
+                targetUserId: $offer->buyer_id,
+                serviceId: $offer->gig_id
             );
 
             // Send expiry emails

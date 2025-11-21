@@ -716,7 +716,11 @@ class BookingController extends Controller
                     title: 'Coupon Used on Your Service',
                     message: $buyerName . ' used coupon code "' . $couponCode . '" on ' . $gig->title . '. Discount: $' . number_format($discountAmount, 2),
                     data: ['order_id' => $bookOrder->id, 'coupon_code' => $couponCode, 'discount_amount' => $discountAmount],
-                    sendEmail: false
+                    sendEmail: false,
+                    actorUserId: Auth::id(), // Buyer who used the coupon
+                    targetUserId: $gig->user_id, // Seller receiving notification
+                    orderId: $bookOrder->id,
+                    serviceId: $gig->id
                 );
 
                 // Track coupon usage in Google Analytics
@@ -752,7 +756,11 @@ class BookingController extends Controller
                     title: 'Trial Class Booked',
                     message: 'Your trial class for ' . $gig->title . ' with ' . $sellerName . ' has been booked successfully.',
                     data: ['order_id' => $bookOrder->id, 'gig_id' => $gig->id],
-                    sendEmail: false // Email already sent via sendTrialConfirmationEmail
+                    sendEmail: false, // Email already sent via sendTrialConfirmationEmail
+                    actorUserId: Auth::id(), // Buyer creating the order
+                    targetUserId: $gig->user_id, // Seller
+                    orderId: $bookOrder->id,
+                    serviceId: $gig->id
                 );
 
                 // Notify Seller
@@ -762,7 +770,11 @@ class BookingController extends Controller
                     title: 'Trial Class Booking Received',
                     message: $buyerName . ' has booked a trial class for ' . $gig->title . '.',
                     data: ['order_id' => $bookOrder->id, 'buyer_id' => Auth::id()],
-                    sendEmail: false // Email already sent
+                    sendEmail: false, // Email already sent
+                    actorUserId: Auth::id(), // Buyer who booked
+                    targetUserId: $gig->user_id, // Seller receiving notification
+                    orderId: $bookOrder->id,
+                    serviceId: $gig->id
                 );
             }
 
@@ -826,7 +838,11 @@ class BookingController extends Controller
                 title: 'New Order Received',
                 message: 'You have received a new order from ' . $buyerName . ' for ' . $serviceName,
                 data: ['order_id' => $orderId, 'amount' => $amount, 'buyer_id' => $buyerId],
-                sendEmail: true // Seller gets email + notification
+                sendEmail: true, // Seller gets email + notification
+                actorUserId: $buyerId, // Buyer who placed the order
+                targetUserId: $sellerId, // Seller receiving notification
+                orderId: $orderId,
+                serviceId: $gig->id
             );
 
             // To Buyer (Confirmation)
@@ -836,7 +852,11 @@ class BookingController extends Controller
                 title: 'Order Placed Successfully',
                 message: 'Your order has been placed successfully. Awaiting seller confirmation.',
                 data: ['order_id' => $orderId, 'seller_id' => $sellerId],
-                sendEmail: true // Buyer gets email + notification
+                sendEmail: true, // Buyer gets email + notification
+                actorUserId: $buyerId, // Buyer who placed the order
+                targetUserId: $sellerId, // Seller
+                orderId: $orderId,
+                serviceId: $gig->id
             );
 
             // To admin (Notify new order)
@@ -846,7 +866,11 @@ class BookingController extends Controller
                 title: 'Order Placed Successfully',
                 message: 'A new order has been placed by ' . $buyerName . ' for ' . $serviceName,
                 data: ['order_id' => $orderId, 'seller_id' => $sellerId],
-                sendEmail: true // Admin gets email + notification
+                sendEmail: true, // Admin gets email + notification
+                actorUserId: $buyerId, // Buyer who placed the order
+                targetUserId: $sellerId, // Seller
+                orderId: $orderId,
+                serviceId: $gig->id
             );
 
             return response()->json([
@@ -880,7 +904,10 @@ class BookingController extends Controller
                             'error' => 'Order creation failed',
                             'reference' => $paymentIntent->id
                         ],
-                        sendEmail: true
+                        sendEmail: true,
+                        actorUserId: Auth::id(), // Buyer who attempted purchase
+                        serviceId: $gig->id ?? null,
+                        isEmergency: true // Payment received but order failed - critical!
                     );
                 } catch (\Exception $notifError) {
                     \Log::error('Failed to send buyer notification: ' . $notifError->getMessage());
@@ -903,7 +930,10 @@ class BookingController extends Controller
                                 'gig_id' => $gig->id ?? null,
                                 'error' => $e->getMessage()
                             ],
-                            sendEmail: true
+                            sendEmail: true,
+                            actorUserId: Auth::id(), // Buyer who attempted purchase
+                            serviceId: $gig->id ?? null,
+                            isEmergency: true // Payment received but order failed - requires immediate attention!
                         );
                     }
                 } catch (\Exception $notifError) {

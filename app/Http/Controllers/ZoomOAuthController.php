@@ -211,7 +211,9 @@ class ZoomOAuthController extends Controller
                         'disconnected_at' => now()->toISOString(),
                         'reconnect_url' => route('teacher.zoom.connect')
                     ],
-                    sendEmail: true
+                    sendEmail: true,
+                    actorUserId: $user->id,
+                    targetUserId: $user->id
                 );
             } catch (\Exception $e) {
                 \Log::error('Failed to send Zoom disconnection notification: ' . $e->getMessage());

@@ -467,7 +467,12 @@ class AutoCancelPendingOrders extends Command
                     'cancellation_reason' => $reason,
                     'seller_id' => $sellerId
                 ],
-                sendEmail: true // Critical - buyer needs to know
+                sendEmail: true, // Critical - buyer needs to know
+                actorUserId: $sellerId, // Seller who failed to accept
+                targetUserId: $buyerId, // Buyer affected by cancellation
+                orderId: $orderId,
+                serviceId: $order->gig_id,
+                isEmergency: !$refundSuccess // Emergency if refund failed!
             );
 
             Log::info("Auto-cancel notification sent to buyer #{$buyerId} for order #{$orderId}");
@@ -483,7 +488,11 @@ class AutoCancelPendingOrders extends Command
                     'buyer_id' => $buyerId,
                     'cancellation_reason' => $reason
                 ],
-                sendEmail: true // Important - seller needs to improve response time
+                sendEmail: true, // Important - seller needs to improve response time
+                actorUserId: $sellerId, // Seller responsible for delay
+                targetUserId: $buyerId, // Buyer affected
+                orderId: $orderId,
+                serviceId: $order->gig_id
             );
 
             Log::info("Auto-cancel notification sent to seller #{$sellerId} for order #{$orderId}");
@@ -505,7 +514,12 @@ class AutoCancelPendingOrders extends Command
                         'refund_success' => $refundSuccess,
                         'cancellation_reason' => $reason
                     ],
-                    sendEmail: false // Admin gets notification only, not email spam
+                    sendEmail: false, // Admin gets notification only, not email spam
+                    actorUserId: $sellerId, // Seller responsible
+                    targetUserId: $buyerId, // Buyer affected
+                    orderId: $orderId,
+                    serviceId: $order->gig_id,
+                    isEmergency: !$refundSuccess // Emergency if refund failed - requires manual intervention!
                 );
 
                 Log::info("Auto-cancel notification sent to " . count($adminIds) . " admin(s) for order #{$orderId}");

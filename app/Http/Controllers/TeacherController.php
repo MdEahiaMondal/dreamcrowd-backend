@@ -883,7 +883,11 @@ class TeacherController extends Controller
                         'service_name' => $order->title,
                         'updated_at' => now()->toISOString()
                     ],
-                    sendEmail: false
+                    sendEmail: false,
+                    actorUserId: Auth::id(),
+                    targetUserId: $order->teacher_id,
+                    orderId: $order->id,
+                    serviceId: $order->gig_id
                 );
             } catch (\Exception $e) {
                 \Log::error('Failed to send review updated notification: ' . $e->getMessage());
@@ -921,7 +925,10 @@ class TeacherController extends Controller
                                 'average_rating' => ServiceReviews::where('teacher_id', $order->teacher_id)->avg('rating'),
                                 'achieved_at' => now()->toISOString()
                             ],
-                            sendEmail: true
+                            sendEmail: true,
+                            actorUserId: $order->teacher_id,
+                            targetUserId: $order->teacher_id,
+                            serviceId: $order->gig_id
                         );
                     } catch (\Exception $e) {
                         \Log::error('Failed to send milestone notification: ' . $e->getMessage());
@@ -955,7 +962,11 @@ class TeacherController extends Controller
                             'service_name' => $order->title,
                             'deleted_at' => now()->toISOString()
                         ],
-                        sendEmail: false
+                        sendEmail: false,
+                        actorUserId: Auth::id(),
+                        targetUserId: $order->teacher_id,
+                        orderId: $order->id,
+                        serviceId: $order->gig_id
                     );
                 } catch (\Exception $e) {
                     \Log::error('Failed to send review deleted notification: ' . $e->getMessage());

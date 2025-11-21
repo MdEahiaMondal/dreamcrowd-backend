@@ -171,7 +171,12 @@ class SendOrderApprovalReminders extends Command
                 'service_id' => $gig->id,
                 'hours_pending' => $hoursPending
             ],
-            sendEmail: true // Send email reminder
+            sendEmail: true, // Send email reminder
+            actorUserId: $buyer->id,
+            targetUserId: $seller->id,
+            orderId: $order->id,
+            serviceId: $gig->id,
+            isEmergency: $hoursPending >= 72 // Mark as emergency after 72 hours
         );
 
         Log::info("Seller reminder sent", [
@@ -217,7 +222,11 @@ class SendOrderApprovalReminders extends Command
                 'hours_pending' => $hoursPending,
                 'url' => $orderUrl
             ],
-            sendEmail: true // Send email notification
+            sendEmail: true, // Send email notification
+            actorUserId: $seller->id,
+            targetUserId: $buyer->id,
+            orderId: $order->id,
+            serviceId: $gig->id
         );
 
         Log::info("Buyer notification sent (48h pending)", [

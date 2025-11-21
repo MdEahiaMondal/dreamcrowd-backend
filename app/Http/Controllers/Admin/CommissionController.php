@@ -299,7 +299,9 @@ class CommissionController extends Controller
                         'updated_at' => now()->toISOString(),
                         'is_active' => $request->is_active
                     ],
-                    sendEmail: true
+                    sendEmail: true,
+                    actorUserId: Auth::id(),
+                    targetUserId: $seller->id
                 );
             }
 
@@ -396,7 +398,10 @@ class CommissionController extends Controller
                         'service_type' => $commission->service_type,
                         'updated_at' => now()->toISOString()
                     ],
-                    sendEmail: true
+                    sendEmail: true,
+                    actorUserId: Auth::id(),
+                    targetUserId: $gig->user_id,
+                    serviceId: $gig->id
                 );
             }
 
@@ -586,7 +591,9 @@ class CommissionController extends Controller
                         'reason' => $request->refund_reason,
                         'refunded_at' => now()->toISOString()
                     ],
-                    sendEmail: true
+                    sendEmail: true,
+                    actorUserId: Auth::id(),
+                    targetUserId: $transaction->buyer_id
                 );
             }
 
@@ -603,7 +610,9 @@ class CommissionController extends Controller
                         'reason' => $request->refund_reason,
                         'refunded_at' => now()->toISOString()
                     ],
-                    sendEmail: true
+                    sendEmail: true,
+                    actorUserId: Auth::id(),
+                    targetUserId: $transaction->seller_id
                 );
             }
 

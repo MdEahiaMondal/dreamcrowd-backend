@@ -2522,15 +2522,14 @@
                 <div class="col-md-12">
                     <p class="float-start">Total Amount: <span>$55.0</span></p>
                     <div class="float-end">
-                        <a
-                            href="#"
-                            type="button"
-                            class="btn contact-btn"
-                            data-bs-toggle="modal"
-                            id="contact-us"
-                            data-bs-target="#contact-me-modal"
-                        >Contact Me</a
-                        >
+                       @if (Auth::user())
+                        <a href="#" type="button" class="btn contact-btn" data-bs-toggle="modal" id="contact-us"
+                            data-bs-target="#contact-me-modal">Contact Me</a>
+                    @else
+                        <button data-bs-toggle="modal" data-bs-target="#exampleModal" class="btn booking-btn">
+                            Contact Me
+                        </button>
+                    @endif
 
                         <a href="../Public-site/payment.html" class="btn booking-btn">Complete Booking</a>
                     </div>

@@ -560,7 +560,9 @@ class AuthController extends Controller
                         'email' => $user->email,
                         'dashboard_url' => $user->role == 0 ? route('user.dashboard') : ($user->role == 1 ? route('teacher.dashboard') : route('admin.dashboard'))
                     ],
-                    sendEmail: false // User just verified email, don't spam
+                    sendEmail: false, // User just verified email, don't spam
+                    actorUserId: $user->id,
+                    targetUserId: $user->id
                 );
             } catch (\Exception $e) {
                 \Log::error('Failed to send email verification success notification: ' . $e->getMessage());

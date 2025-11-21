@@ -39,6 +39,10 @@ Route::middleware('auth')->group(function () {
     Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllAsRead']);
     Route::delete('/notifications/{id}', [NotificationController::class, 'delete']);
 
+    // Admin notification helper routes
+    Route::get('/notifications/search-users', [NotificationController::class, 'searchUsers']);
+    Route::post('/notifications/count-recipients', [NotificationController::class, 'countRecipients']);
+
     // Notification page routes (returns Blade views)
     Route::get('/admin/notifications', [NotificationController::class, 'adminIndex'])
         ->name('admin.notifications');
@@ -528,6 +532,13 @@ Route::controller(ClassManagementController::class)->group(function () {
 Route::controller(OrderManagementController::class)->group(function () {
     Route::get('/order-management', 'OrderManagement');
     Route::get('/client-management', 'ClientManagement');
+
+    // Order Details Routes =========
+    Route::get('/admin/order-details/{id}', 'adminOrderDetails')->name('admin.order.details');
+    Route::get('/teacher/order-details/{id}', 'teacherOrderDetails')->name('teacher.order.details');
+    Route::get('/user/order-details/{id}', 'userOrderDetails')->name('user.order.details');
+    // Order Details Routes END =========
+
     // Order Actions Routes Start =========
     Route::get('/active-order/{id}', 'ActiveOrder'); // transactions_update
     Route::post('/cancel-order', 'CancelOrder'); // transactions_update

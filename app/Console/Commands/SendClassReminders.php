@@ -174,7 +174,11 @@ class SendClassReminders extends Command
                             'gig_title' => $gig->title,
                             'reminder_type' => '24_hour'
                         ],
-                        sendEmail: true
+                        sendEmail: true,
+                        actorUserId: $seller->id,
+                        targetUserId: $buyer->id,
+                        orderId: $order->id,
+                        serviceId: $gig->id
                     );
 
                     // Notify seller
@@ -192,7 +196,11 @@ class SendClassReminders extends Command
                             'gig_title' => $gig->title,
                             'reminder_type' => '24_hour'
                         ],
-                        sendEmail: true
+                        sendEmail: true,
+                        actorUserId: $seller->id,
+                        targetUserId: $buyer->id,
+                        orderId: $order->id,
+                        serviceId: $gig->id
                     );
 
                     $remindersSent += 2; // Buyer + Seller
@@ -271,7 +279,11 @@ class SendClassReminders extends Command
                             'gig_title' => $gig->title,
                             'reminder_type' => '1_hour'
                         ],
-                        sendEmail: true
+                        sendEmail: true,
+                        actorUserId: $seller->id,
+                        targetUserId: $buyer->id,
+                        orderId: $order->id,
+                        serviceId: $gig->id
                     );
 
                     // Notify seller
@@ -289,7 +301,11 @@ class SendClassReminders extends Command
                             'gig_title' => $gig->title,
                             'reminder_type' => '1_hour'
                         ],
-                        sendEmail: true
+                        sendEmail: true,
+                        actorUserId: $seller->id,
+                        targetUserId: $buyer->id,
+                        orderId: $order->id,
+                        serviceId: $gig->id
                     );
 
                     $remindersSent += 2; // Buyer + Seller
@@ -365,7 +381,11 @@ class SendClassReminders extends Command
                             'gig_title' => $gig->title,
                             'reminder_type' => '3_day_recurring'
                         ],
-                        sendEmail: true
+                        sendEmail: true,
+                        actorUserId: $order->teacher_id,
+                        targetUserId: $buyer->id,
+                        orderId: $order->id,
+                        serviceId: $gig->id
                     );
 
                     $remindersSent++;

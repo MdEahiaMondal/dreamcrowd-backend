@@ -683,7 +683,10 @@ class ClassManagementController extends Controller
             title: 'Service Created Successfully',
             message: 'Your service "' . $gig->title . '" has been published and is now live on the platform.',
             data: ['gig_id' => $gig->id, 'gig_title' => $gig->title],
-            sendEmail: false
+            sendEmail: false,
+            actorUserId: Auth::id(),
+            targetUserId: Auth::id(),
+            serviceId: $gig->id
         );
 
         // Notify Admin (new service alert)
@@ -883,7 +886,10 @@ class ClassManagementController extends Controller
                             'status' => $gig->status,
                             'updated_at' => now()->toISOString()
                         ],
-                        sendEmail: false
+                        sendEmail: false,
+                        actorUserId: Auth::id(),
+                        targetUserId: Auth::id(),
+                        serviceId: $gig->id
                     );
                 } catch (\Exception $e) {
                     \Log::error('Failed to send service deactivation notification: ' . $e->getMessage());
@@ -1535,7 +1541,10 @@ class ClassManagementController extends Controller
                     'service_type' => $gig->service_type,
                     'updated_at' => now()->toISOString()
                 ],
-                sendEmail: false
+                sendEmail: false,
+                actorUserId: Auth::id(),
+                targetUserId: Auth::id(),
+                serviceId: $gig->id
             );
         } catch (\Exception $e) {
             \Log::error('Failed to send service updated notification: ' . $e->getMessage());

@@ -211,7 +211,11 @@ class AutoMarkCompleted extends Command
                     'service_name' => $serviceName,
                     'completed_at' => now()->toDateTimeString()
                 ],
-                sendEmail: true
+                sendEmail: true,
+                actorUserId: $order->teacher_id, // Seller who completed the service
+                targetUserId: $order->user_id, // Buyer receiving notification
+                orderId: $order->id,
+                serviceId: $order->gig_id
             );
 
             // Send review request notification to buyer
@@ -229,7 +233,11 @@ class AutoMarkCompleted extends Command
                     'review_url' => route('user.orders.review', $order->id),
                     'completed_at' => now()->toDateTimeString()
                 ],
-                sendEmail: false // In-app notification only for review requests
+                sendEmail: false, // In-app notification only for review requests
+                actorUserId: $order->user_id, // Buyer being asked to review
+                targetUserId: $order->teacher_id, // Seller being reviewed
+                orderId: $order->id,
+                serviceId: $order->gig_id
             );
 
             // Notify seller
@@ -245,7 +253,11 @@ class AutoMarkCompleted extends Command
                     'seller_payout' => $transaction ? $transaction->seller_earnings : null,
                     'completed_at' => now()->toDateTimeString()
                 ],
-                sendEmail: true
+                sendEmail: true,
+                actorUserId: $order->teacher_id, // Seller (system acting on their behalf)
+                targetUserId: $order->user_id, // Buyer
+                orderId: $order->id,
+                serviceId: $order->gig_id
             );
 
             // Notify admins
@@ -262,7 +274,11 @@ class AutoMarkCompleted extends Command
                         'buyer_id' => $order->user_id,
                         'completed_at' => now()->toDateTimeString()
                     ],
-                    sendEmail: false
+                    sendEmail: false,
+                    actorUserId: $order->teacher_id, // Seller
+                    targetUserId: $order->user_id, // Buyer
+                    orderId: $order->id,
+                    serviceId: $order->gig_id
                 );
             }
 

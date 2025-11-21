@@ -95,6 +95,20 @@ class BookOrder extends Model
     ];
 
     /**
+     * Appends - attributes to append to model
+     */
+    protected $appends = ['order_number'];
+
+    /**
+     * Get the order number attribute
+     * Generates a formatted order number based on the ID
+     */
+    public function getOrderNumberAttribute(): string
+    {
+        return 'ORD-' . str_pad($this->id, 6, '0', STR_PAD_LEFT);
+    }
+
+    /**
      * Get the transaction associated with this order
      */
     public function transaction(): \Illuminate\Database\Eloquent\Relations\HasOne

@@ -1217,7 +1217,11 @@ class OrderManagementController extends Controller
                 title: 'Order Accepted',
                 message: $sellerName . ' has accepted your order for ' . $serviceName,
                 data: ['order_id' => $orderId, 'start_date' => $startDate],
-                sendEmail: true // Email + notification
+                sendEmail: true, // Email + notification
+                actorUserId: Auth::user()->id,
+                targetUserId: $buyerId,
+                orderId: $orderId,
+                serviceId: $order->gig_id
             );
             
         } 
@@ -1539,7 +1543,11 @@ class OrderManagementController extends Controller
                 title: 'Order Cancelled Successfully',
                 message: 'You have successfully cancelled your order for ' . $serviceName . '. ' . $refundMessage,
                 data: ['order_id' => $orderId, 'refund_amount' => $cancelOrder->amount, 'cancellation_reason' => $reason],
-                sendEmail: true
+                sendEmail: true,
+                actorUserId: $buyerId,
+                targetUserId: $sellerId,
+                orderId: $orderId,
+                serviceId: $order->gig_id
             );
 
             // To Seller
@@ -1549,7 +1557,11 @@ class OrderManagementController extends Controller
                 title: 'Order Cancelled by Buyer',
                 message: $buyerName . ' has cancelled the order for ' . $serviceName . '. ' . $refundMessage,
                 data: ['order_id' => $orderId, 'cancellation_reason' => $reason, 'refund_amount' => $cancelOrder->amount],
-                sendEmail: true
+                sendEmail: true,
+                actorUserId: $buyerId,
+                targetUserId: $sellerId,
+                orderId: $orderId,
+                serviceId: $order->gig_id
             );
 
             // To admin
@@ -1584,7 +1596,11 @@ class OrderManagementController extends Controller
                 title: 'Order Cancelled by Seller',
                 message: $sellerName . ' has cancelled your order for ' . $serviceName . '. ' . $refundMessage,
                 data: ['order_id' => $orderId, 'refund_amount' => $cancelOrder->amount, 'cancellation_reason' => $reason],
-                sendEmail: true
+                sendEmail: true,
+                actorUserId: $sellerId,
+                targetUserId: $buyerId,
+                orderId: $orderId,
+                serviceId: $order->gig_id
             );
 
             // To Seller (Confirmation)
@@ -1594,7 +1610,11 @@ class OrderManagementController extends Controller
                 title: 'Order Cancelled Successfully',
                 message: 'You have successfully cancelled the order for ' . $serviceName . '. ' . $refundMessage,
                 data: ['order_id' => $orderId, 'refund_amount' => $cancelOrder->amount, 'cancellation_reason' => $reason],
-                sendEmail: true
+                sendEmail: true,
+                actorUserId: $sellerId,
+                targetUserId: $buyerId,
+                orderId: $orderId,
+                serviceId: $order->gig_id
             );
 
             // To admin
@@ -1652,7 +1672,11 @@ class OrderManagementController extends Controller
             title: 'Order Delivered',
             message: 'Your order has been marked as delivered. Please review if satisfied.',
             data: ['order_id' => $order->id],
-            sendEmail: false // Just notification
+            sendEmail: false, // Just notification
+            actorUserId: $order->teacher_id,
+            targetUserId: $order->user_id,
+            orderId: $order->id,
+            serviceId: $order->gig_id
         );
 
         
@@ -1738,7 +1762,11 @@ class OrderManagementController extends Controller
                 title: 'Refund Request Received',
                 message: Auth::user()->first_name . ' has requested a refund. You have 48 hours to respond.',
                 data: ['order_id' => $order->id, 'refund_amount' => $dispute->amount, 'dispute_id' => $dispute->id],
-                sendEmail: true
+                sendEmail: true,
+                actorUserId: Auth::id(),
+                targetUserId: $order->teacher_id,
+                orderId: $order->id,
+                serviceId: $order->gig_id
             );
 
             // To Buyer (Confirmation)
@@ -1748,7 +1776,11 @@ class OrderManagementController extends Controller
                 title: 'Refund Request Submitted',
                 message: 'Your refund request has been submitted. The seller has 48 hours to respond.',
                 data: ['order_id' => $order->id, 'refund_amount' => $dispute->amount],
-                sendEmail: true
+                sendEmail: true,
+                actorUserId: Auth::id(),
+                targetUserId: $order->teacher_id,
+                orderId: $order->id,
+                serviceId: $order->gig_id
             );
         }
 
@@ -1761,7 +1793,11 @@ class OrderManagementController extends Controller
                 title: 'Refund Disputed by Seller',
                 message: 'The seller has disputed your refund request. An admin will review your case.',
                 data: ['dispute_id' => $dispute->id, 'order_id' => $order->id],
-                sendEmail: true
+                sendEmail: true,
+                actorUserId: Auth::id(),
+                targetUserId: $order->user_id,
+                orderId: $order->id,
+                serviceId: $order->gig_id
             );
         }
 
@@ -1891,7 +1927,11 @@ class OrderManagementController extends Controller
                     'resolved_at' => now()->toISOString(),
                     'resolved_by' => 'admin'
                 ],
-                sendEmail: true
+                sendEmail: true,
+                actorUserId: $order->user_id,
+                targetUserId: $order->teacher_id,
+                orderId: $order->id,
+                serviceId: $order->gig_id
             );
 
             // Notify seller about dispute resolution
@@ -1908,7 +1948,11 @@ class OrderManagementController extends Controller
                     'resolved_at' => now()->toISOString(),
                     'resolved_by' => 'admin'
                 ],
-                sendEmail: true
+                sendEmail: true,
+                actorUserId: $order->user_id,
+                targetUserId: $order->teacher_id,
+                orderId: $order->id,
+                serviceId: $order->gig_id
             );
 
             \Log::info('Dispute resolved', [
@@ -2460,7 +2504,11 @@ class OrderManagementController extends Controller
             title: 'Reschedule Request Submitted',
             message: 'Your reschedule request for ' . $serviceName . ' has been submitted and is awaiting approval from ' . $sellerName . '.',
             data: ['order_id' => $order->id, 'reschedule_count' => count($classes)],
-            sendEmail: false
+            sendEmail: false,
+            actorUserId: $order->user_id,
+            targetUserId: $order->teacher_id,
+            orderId: $order->id,
+            serviceId: $order->gig_id
         );
 
         // Notify Teacher (action required)
@@ -2470,7 +2518,11 @@ class OrderManagementController extends Controller
             title: 'Reschedule Request Received',
             message: $buyerName . ' has requested to reschedule ' . count($classes) . ' class(es) for ' . $serviceName . '. Please review and respond.',
             data: ['order_id' => $order->id, 'buyer_id' => $order->user_id, 'reschedule_count' => count($classes)],
-            sendEmail: true
+            sendEmail: true,
+            actorUserId: $order->user_id,
+            targetUserId: $order->teacher_id,
+            orderId: $order->id,
+            serviceId: $order->gig_id
         );
 
         if ($gig->service_role == 'Class') {
@@ -2785,7 +2837,11 @@ class OrderManagementController extends Controller
             title: 'Reschedule Request Submitted',
             message: 'Your reschedule request for ' . $serviceName . ' has been submitted and is awaiting approval from ' . $buyerName . '.',
             data: ['order_id' => $order->id, 'reschedule_count' => count($classes)],
-            sendEmail: false
+            sendEmail: false,
+            actorUserId: $order->teacher_id,
+            targetUserId: $order->user_id,
+            orderId: $order->id,
+            serviceId: $order->gig_id
         );
 
         // Notify Buyer (action required)
@@ -2795,7 +2851,11 @@ class OrderManagementController extends Controller
             title: 'Seller Requested Reschedule',
             message: $sellerName . ' has requested to reschedule ' . count($classes) . ' class(es) for ' . $serviceName . '. Please review and respond.',
             data: ['order_id' => $order->id, 'seller_id' => $order->teacher_id, 'reschedule_count' => count($classes)],
-            sendEmail: true
+            sendEmail: true,
+            actorUserId: $order->teacher_id,
+            targetUserId: $order->user_id,
+            orderId: $order->id,
+            serviceId: $order->gig_id
         );
 
         if ($gig->service_role == 'Class') {
@@ -2862,7 +2922,11 @@ class OrderManagementController extends Controller
                 title: 'Reschedule Accepted',
                 message: $buyerName . ' has accepted your reschedule request.',
                 data: ['order_id' => $order->id],
-                sendEmail: false
+                sendEmail: false,
+                actorUserId: $order->user_id,
+                targetUserId: $order->teacher_id,
+                orderId: $order->id,
+                serviceId: $order->gig_id
             );
         }
 
@@ -2875,7 +2939,11 @@ class OrderManagementController extends Controller
                 title: 'Reschedule Accepted',
                 message: $sellerName . ' has accepted your reschedule request.',
                 data: ['order_id' => $order->id],
-                sendEmail: false
+                sendEmail: false,
+                actorUserId: $order->teacher_id,
+                targetUserId: $order->user_id,
+                orderId: $order->id,
+                serviceId: $order->gig_id
             );
         }
 
@@ -2932,7 +3000,11 @@ class OrderManagementController extends Controller
                 title: 'Reschedule Request Rejected',
                 message: $sellerName . ' has rejected your reschedule request for ' . $serviceName . '.',
                 data: ['order_id' => $order->id, 'rejected_by' => $order->teacher_id],
-                sendEmail: true
+                sendEmail: true,
+                actorUserId: $order->teacher_id,
+                targetUserId: $order->user_id,
+                orderId: $order->id,
+                serviceId: $order->gig_id
             );
         } elseif ($sellerRequested) {
             // Seller requested, buyer rejected
@@ -2943,7 +3015,11 @@ class OrderManagementController extends Controller
                 title: 'Reschedule Request Rejected',
                 message: $buyerName . ' has rejected your reschedule request for ' . $serviceName . '.',
                 data: ['order_id' => $order->id, 'rejected_by' => $order->user_id],
-                sendEmail: true
+                sendEmail: true,
+                actorUserId: $order->user_id,
+                targetUserId: $order->teacher_id,
+                orderId: $order->id,
+                serviceId: $order->gig_id
             );
         }
 
@@ -3026,7 +3102,10 @@ class OrderManagementController extends Controller
                                 'average_rating' => ServiceReviews::where('teacher_id', $order->teacher_id)->avg('rating'),
                                 'achieved_at' => now()->toISOString()
                             ],
-                            sendEmail: true
+                            sendEmail: true,
+                            actorUserId: $order->teacher_id,
+                            targetUserId: $order->teacher_id,
+                            serviceId: $order->gig_id
                         );
                     } catch (\Exception $e) {
                         \Log::error('Failed to send milestone notification: ' . $e->getMessage());
@@ -3066,7 +3145,11 @@ class OrderManagementController extends Controller
             title: 'New Review Received',
             message: 'You received a ' . $request->rating . '-star review from ' . Auth::user()->first_name,
             data: ['order_id' => $order->id, 'rating' => $request->rating],
-            sendEmail: false
+            sendEmail: false,
+            actorUserId: Auth::id(),
+            targetUserId: $order->teacher_id,
+            orderId: $order->id,
+            serviceId: $order->gig_id
         );
 
         return redirect()->back()->with('success', 'Thank you for your review!');
@@ -3264,6 +3347,153 @@ class OrderManagementController extends Controller
             \Log::error('Payment capture failed: ' . $e->getMessage());
             return ['success' => false, 'message' => $e->getMessage()];
         }
+    }
+
+    /**
+     * Admin Order Details Page
+     * Shows complete order information for admins
+     */
+    public function adminOrderDetails($id)
+    {
+        // Debug logging
+        \Log::info('Admin Order Details accessed', [
+            'user_id' => auth()->id(),
+            'user_role' => auth()->user()->role,
+            'order_id' => $id
+        ]);
+
+        // Check admin authorization
+        if (auth()->user()->role != 2) {
+            \Log::error('Admin access denied - wrong role', ['role' => auth()->user()->role]);
+            abort(403, 'Unauthorized access - Admin role required');
+        }
+
+        // Load order with existing relationships
+        $order = BookOrder::with([
+            'transaction',
+            'user:id,first_name,last_name,email,profile',
+            'teacher:id,first_name,last_name,email,profile',
+            'gig.teacherGigData',
+            'gig.category',
+            'classDates'
+        ])->findOrFail($id);
+
+        // Manually load related data that doesn't have relationships
+        $order->classReschedules = ClassReschedule::where('order_id', $id)->get();
+
+        $order->reviews = ServiceReviews::with(['user:id,first_name,last_name'])
+            ->where('order_id', $id)
+            ->whereNull('parent_id')
+            ->get();
+
+        $order->cancelOrder = CancelOrder::where('order_id', $id)->first();
+        $order->disputeOrder = DisputeOrder::where('order_id', $id)->first();
+
+        return view('Admin-Dashboard.order-details', compact('order'));
+    }
+
+    /**
+     * Teacher Order Details Page
+     * Shows order information for the teacher/seller
+     */
+    public function teacherOrderDetails($id)
+    {
+        // Debug logging
+        \Log::info('Teacher Order Details accessed', [
+            'user_id' => auth()->id(),
+            'user_role' => auth()->user()->role,
+            'order_id' => $id
+        ]);
+
+        // Check teacher authorization
+        if (auth()->user()->role != 1) {
+            \Log::error('Teacher access denied - wrong role', ['role' => auth()->user()->role]);
+            abort(403, 'Unauthorized access - Teacher role required');
+        }
+
+        // Load order with existing relationships
+        $order = BookOrder::with([
+            'transaction',
+            'user:id,first_name,last_name,email,profile',
+            'teacher:id,first_name,last_name,email,profile',
+            'gig.teacherGigData',
+            'gig.category',
+            'classDates'
+        ])->findOrFail($id);
+
+        // Verify this order belongs to the logged-in teacher
+        if ($order->teacher_id != auth()->id()) {
+            \Log::error('Teacher access denied - not their order', [
+                'teacher_id' => auth()->id(),
+                'order_teacher_id' => $order->teacher_id
+            ]);
+            abort(403, 'TEACHER: You do not have permission to view this order');
+        }
+
+        // Manually load related data that doesn't have relationships
+        $order->classReschedules = ClassReschedule::where('order_id', $id)->get();
+
+        $order->reviews = ServiceReviews::with(['user:id,first_name,last_name'])
+            ->where('order_id', $id)
+            ->whereNull('parent_id')
+            ->get();
+
+        $order->cancelOrder = CancelOrder::where('order_id', $id)->first();
+        $order->disputeOrder = DisputeOrder::where('order_id', $id)->first();
+
+        return view('Teacher-Dashboard.order-details', compact('order'));
+    }
+
+    /**
+     * User/Buyer Order Details Page
+     * Shows order information for the buyer
+     */
+    public function userOrderDetails($id)
+    {
+        // Debug logging
+        \Log::info('User Order Details accessed', [
+            'user_id' => auth()->id(),
+            'user_role' => auth()->user()->role,
+            'order_id' => $id
+        ]);
+
+        // Check user authorization (buyer)
+        if (auth()->user()->role != 0) {
+            \Log::error('User access denied - wrong role', ['role' => auth()->user()->role]);
+            abort(403, 'Unauthorized access - User role required');
+        }
+
+        // Load order with existing relationships
+        $order = BookOrder::with([
+            'transaction',
+            'user:id,first_name,last_name,email,profile',
+            'teacher:id,first_name,last_name,email,profile',
+            'gig.teacherGigData',
+            'gig.category',
+            'classDates'
+        ])->findOrFail($id);
+
+        // Verify this order belongs to the logged-in user
+        if ($order->user_id != auth()->id()) {
+            \Log::error('User access denied - not their order', [
+                'user_id' => auth()->id(),
+                'order_user_id' => $order->user_id
+            ]);
+            abort(403, 'USER: You do not have permission to view this order');
+        }
+
+        // Manually load related data that doesn't have relationships
+        $order->classReschedules = ClassReschedule::where('order_id', $id)->get();
+
+        $order->reviews = ServiceReviews::with(['user:id,first_name,last_name'])
+            ->where('order_id', $id)
+            ->whereNull('parent_id')
+            ->get();
+
+        $order->cancelOrder = CancelOrder::where('order_id', $id)->first();
+        $order->disputeOrder = DisputeOrder::where('order_id', $id)->first();
+
+        return view('User-Dashboard.order-details', compact('order'));
     }
 
 }

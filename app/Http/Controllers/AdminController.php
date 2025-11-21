@@ -303,7 +303,9 @@ class AdminController extends Controller
             title: 'Category Rejected',
             message: 'The category "' . $category->category . '" has been removed from your seller application. Please review your application or contact support for more information.',
             data: ['application_id' => $app->id, 'rejected_category' => $category->category, 'type' => $request->type],
-            sendEmail: true
+            sendEmail: true,
+            actorUserId: Auth::id(),
+            targetUserId: $app->user_id
         );
 
         if ($app) {
@@ -463,7 +465,9 @@ class AdminController extends Controller
                             'changed_at' => now()->toISOString(),
                             'reason' => 'Seller application rejected'
                         ],
-                        sendEmail: false
+                        sendEmail: false,
+                        actorUserId: Auth::id(),
+                        targetUserId: $expert->user_id
                     );
                 } catch (\Exception $e) {
                     \Log::error('Failed to send role change notification: ' . $e->getMessage());
@@ -477,7 +481,9 @@ class AdminController extends Controller
                 title: 'Seller Application Rejected',
                 message: 'Unfortunately, your seller application was not approved. Reason: ' . $request->reason,
                 data: ['rejection_reason' => $request->reason],
-                sendEmail: true
+                sendEmail: true,
+                actorUserId: Auth::id(),
+                targetUserId: $expert->user_id
             );
 
             if ($expert) {
@@ -514,7 +520,9 @@ class AdminController extends Controller
                             'changed_at' => now()->toISOString(),
                             'reason' => 'Seller application approved'
                         ],
-                        sendEmail: false
+                        sendEmail: false,
+                        actorUserId: Auth::id(),
+                        targetUserId: $expert->user_id
                     );
                 } catch (\Exception $e) {
                     \Log::error('Failed to send role change notification: ' . $e->getMessage());
@@ -541,7 +549,9 @@ class AdminController extends Controller
                 title: 'Seller Application Approved',
                 message: 'Congratulations! Your seller application has been approved. You can now start creating services and accepting orders.',
                 data: ['approved_at' => now()],
-                sendEmail: true
+                sendEmail: true,
+                actorUserId: Auth::id(),
+                targetUserId: $expert->user_id
             );
 
 
@@ -617,7 +627,9 @@ class AdminController extends Controller
                     'rejected_at' => now()->toISOString(),
                     'request_type' => $request->request_type ?? 'unknown'
                 ],
-                sendEmail: true
+                sendEmail: true,
+                actorUserId: Auth::id(),
+                targetUserId: $request->user_id
             );
         }
 
@@ -873,7 +885,9 @@ class AdminController extends Controller
                     'approved_at' => now()->toISOString(),
                     'request_type' => 'profile'
                 ],
-                sendEmail: true
+                sendEmail: true,
+                actorUserId: Auth::id(),
+                targetUserId: $user->id
             );
 
             if ($expert) {
@@ -1601,7 +1615,9 @@ class AdminController extends Controller
                 title: 'Payment Processed',
                 message: 'Your payment of $' . $amount . ' has been processed by admin and will be transferred to your account shortly.',
                 data: ['transaction_id' => $transaction->id, 'amount' => $amount],
-                sendEmail: true
+                sendEmail: true,
+                actorUserId: Auth::id(),
+                targetUserId: $transaction->seller_id
             );
 
             return redirect()->back()->with('success', 'Payout marked as completed successfully');
@@ -1645,7 +1661,9 @@ class AdminController extends Controller
                         title: 'Payment Processed',
                         message: 'Your payment of $' . $amount . ' has been processed and will be transferred to your account shortly.',
                         data: ['transaction_id' => $transaction->id, 'amount' => $amount],
-                        sendEmail: true
+                        sendEmail: true,
+                        actorUserId: Auth::id(),
+                        targetUserId: $transaction->seller_id
                     );
                 }
             } catch (\Exception $e) {

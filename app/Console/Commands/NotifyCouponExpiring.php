@@ -141,7 +141,9 @@ class NotifyCouponExpiring extends Command
                         'usage_count' => $coupon->usage_count,
                         'manage_url' => route('teacher.coupons')
                     ],
-                    sendEmail: true
+                    sendEmail: true,
+                    actorUserId: $recipient->id,
+                    targetUserId: $recipient->id
                 );
 
                 $this->info("Notified seller about coupon: {$coupon->coupon_code}");
@@ -205,7 +207,9 @@ class NotifyCouponExpiring extends Command
                             'total_discount' => $coupon->total_discount_given,
                             'create_new_url' => route('teacher.coupons')
                         ],
-                        sendEmail: true
+                        sendEmail: true,
+                        actorUserId: $recipient->id,
+                        targetUserId: $recipient->id
                     );
 
                     $this->info("Notified seller about expired coupon: {$coupon->coupon_code}");

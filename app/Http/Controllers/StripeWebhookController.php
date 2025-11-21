@@ -88,7 +88,9 @@ class StripeWebhookController extends Controller
                 title: 'Payment Confirmed',
                 message: 'Your payment of $' . $amount . ' has been successfully processed.',
                 data: ['transaction_id' => $transaction->id, 'amount' => $amount],
-                sendEmail: true
+                sendEmail: true,
+                actorUserId: $transaction->buyer_id,
+                targetUserId: $transaction->seller_id
             );
 
             // Notify Seller
@@ -98,7 +100,9 @@ class StripeWebhookController extends Controller
                 title: 'Payment Received',
                 message: 'Payment of $' . $amount . ' has been received for your service.',
                 data: ['transaction_id' => $transaction->id, 'amount' => $amount],
-                sendEmail: false
+                sendEmail: false,
+                actorUserId: $transaction->buyer_id,
+                targetUserId: $transaction->seller_id
             );
         }
     }
@@ -135,7 +139,10 @@ class StripeWebhookController extends Controller
                 title: 'Payment Failed',
                 message: 'Your payment of $' . $amount . ' could not be processed. Please update your payment method and try again.',
                 data: ['transaction_id' => $transaction->id, 'amount' => $amount, 'error' => $errorMessage],
-                sendEmail: true
+                sendEmail: true,
+                actorUserId: $transaction->buyer_id,
+                targetUserId: $transaction->seller_id,
+                isEmergency: true
             );
 
             // Notify Admin
@@ -200,7 +207,9 @@ class StripeWebhookController extends Controller
                 title: 'Payout Completed',
                 message: 'Your payout of $' . $amount . ' has been successfully processed and is on its way to your account.',
                 data: ['transaction_id' => $transaction->id, 'payout_id' => $payout->id, 'amount' => $amount],
-                sendEmail: true
+                sendEmail: true,
+                actorUserId: $transaction->seller_id,
+                targetUserId: $transaction->seller_id
             );
         }
     }
@@ -230,7 +239,10 @@ class StripeWebhookController extends Controller
                 title: 'Payout Failed',
                 message: 'Your payout of $' . $amount . ' could not be processed. Please update your bank account information. Reason: ' . $errorMessage,
                 data: ['transaction_id' => $transaction->id, 'payout_id' => $payout->id, 'amount' => $amount, 'error' => $errorMessage],
-                sendEmail: true
+                sendEmail: true,
+                actorUserId: $transaction->seller_id,
+                targetUserId: $transaction->seller_id,
+                isEmergency: true
             );
 
             // Notify Admin
@@ -308,7 +320,9 @@ class StripeWebhookController extends Controller
                         'verified_at' => now()->toISOString(),
                         'account_id' => $bankAccount->id
                     ],
-                    sendEmail: true
+                    sendEmail: true,
+                    actorUserId: $seller->id,
+                    targetUserId: $seller->id
                 );
 
                 \Log::info('Bank verification success notification sent', [
@@ -331,7 +345,10 @@ class StripeWebhookController extends Controller
                         'failed_at' => now()->toISOString(),
                         'retry_url' => route('teacher.bank.setup')
                     ],
-                    sendEmail: true
+                    sendEmail: true,
+                    actorUserId: $seller->id,
+                    targetUserId: $seller->id,
+                    isEmergency: true
                 );
 
                 \Log::warning('Bank verification failed notification sent', [
