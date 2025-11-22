@@ -1227,7 +1227,8 @@ class OrderManagementController extends Controller
                 actorUserId: Auth::user()->id,
                 targetUserId: $buyerId,
                 orderId: $orderId,
-                serviceId: $order->gig_id
+                serviceId: $order->gig_id,
+                emailTemplate: 'order-approved'
             );
 
             // To Admin (full names for tracking)
@@ -1349,7 +1350,8 @@ class OrderManagementController extends Controller
                 actorUserId: Auth::id(),
                 targetUserId: $order->user_id,
                 orderId: $order->id,
-                serviceId: $order->gig_id
+                serviceId: $order->gig_id,
+                emailTemplate: 'order-rejected'
             );
 
             // Notify Admin (full names for tracking)
@@ -1826,7 +1828,8 @@ class OrderManagementController extends Controller
             actorUserId: $order->teacher_id,
             targetUserId: $order->user_id,
             orderId: $order->id,
-            serviceId: $order->gig_id
+            serviceId: $order->gig_id,
+            emailTemplate: 'order-delivered'
         );
 
         // To Seller (confirmation)
@@ -1842,7 +1845,8 @@ class OrderManagementController extends Controller
             actorUserId: $order->teacher_id,
             targetUserId: $order->user_id,
             orderId: $order->id,
-            serviceId: $order->gig_id
+            serviceId: $order->gig_id,
+            emailTemplate: 'order-delivered'
         );
 
         // To Admin
@@ -2714,7 +2718,8 @@ class OrderManagementController extends Controller
             actorUserId: $order->user_id,
             targetUserId: $order->teacher_id,
             orderId: $order->id,
-            serviceId: $order->gig_id
+            serviceId: $order->gig_id,
+            emailTemplate: 'reschedule-request-seller'
         );
 
         // Notify Admin (full names for tracking)
@@ -3072,7 +3077,8 @@ class OrderManagementController extends Controller
             actorUserId: $order->teacher_id,
             targetUserId: $order->user_id,
             orderId: $order->id,
-            serviceId: $order->gig_id
+            serviceId: $order->gig_id,
+            emailTemplate: 'reschedule-request-buyer'
         );
 
         // Notify Admin (full names for tracking)
@@ -3169,7 +3175,8 @@ class OrderManagementController extends Controller
                 actorUserId: $order->user_id,
                 targetUserId: $order->teacher_id,
                 orderId: $order->id,
-                serviceId: $order->gig_id
+                serviceId: $order->gig_id,
+                emailTemplate: 'reschedule-approved'
             );
 
             // To Buyer (approver confirmation)
@@ -3183,7 +3190,8 @@ class OrderManagementController extends Controller
                 actorUserId: $order->user_id,
                 targetUserId: $order->teacher_id,
                 orderId: $order->id,
-                serviceId: $order->gig_id
+                serviceId: $order->gig_id,
+                emailTemplate: 'reschedule-approved'
             );
         }
 
@@ -3200,7 +3208,8 @@ class OrderManagementController extends Controller
                 actorUserId: $order->teacher_id,
                 targetUserId: $order->user_id,
                 orderId: $order->id,
-                serviceId: $order->gig_id
+                serviceId: $order->gig_id,
+                emailTemplate: 'reschedule-approved'
             );
 
             // To Seller (approver confirmation)
@@ -3214,7 +3223,8 @@ class OrderManagementController extends Controller
                 actorUserId: $order->teacher_id,
                 targetUserId: $order->user_id,
                 orderId: $order->id,
-                serviceId: $order->gig_id
+                serviceId: $order->gig_id,
+                emailTemplate: 'reschedule-approved'
             );
         }
 
@@ -3302,7 +3312,8 @@ class OrderManagementController extends Controller
                 actorUserId: $order->teacher_id,
                 targetUserId: $order->user_id,
                 orderId: $order->id,
-                serviceId: $order->gig_id
+                serviceId: $order->gig_id,
+                emailTemplate: 'reschedule-rejected'
             );
         } elseif ($sellerRequested) {
             // Seller requested, buyer rejected
@@ -3317,7 +3328,8 @@ class OrderManagementController extends Controller
                 actorUserId: $order->user_id,
                 targetUserId: $order->teacher_id,
                 orderId: $order->id,
-                serviceId: $order->gig_id
+                serviceId: $order->gig_id,
+                emailTemplate: 'reschedule-rejected'
             );
         }
 

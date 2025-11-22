@@ -307,7 +307,8 @@ class AutoMarkDelivered extends Command
                 actorUserId: $order->teacher_id, // Seller who delivered
                 targetUserId: $order->user_id, // Buyer receiving notification
                 orderId: $order->id,
-                serviceId: $order->gig_id
+                serviceId: $order->gig_id,
+                emailTemplate: 'order-delivered'
             );
 
             // Notify seller (masked buyer name for privacy)
@@ -327,7 +328,8 @@ class AutoMarkDelivered extends Command
                 actorUserId: $order->teacher_id, // Seller (system acting on their behalf)
                 targetUserId: $order->user_id, // Buyer
                 orderId: $order->id,
-                serviceId: $order->gig_id
+                serviceId: $order->gig_id,
+                emailTemplate: 'order-delivered'
             );
 
             // Notify Admin (full names for tracking)

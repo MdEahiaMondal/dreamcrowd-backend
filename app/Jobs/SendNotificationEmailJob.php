@@ -75,13 +75,20 @@ class SendNotificationEmailJob implements ShouldQueue
                 return;
             }
 
-            Mail::to($user->email)->send(new NotificationMail($this->emailData));
+            // Get custom template if specified, otherwise use default 'notification'
+            $emailTemplate = $this->emailData['email_template'] ?? null;
+
+            // Send email with custom template support
+            Mail::to($user->email)->send(
+                new NotificationMail($this->emailData, $this->notificationId, $emailTemplate)
+            );
 
             Log::info('Notification email sent successfully', [
                 'user_id' => $this->userId,
                 'email' => $user->email,
                 'notification_id' => $this->notificationId,
-                'title' => $this->emailData['title'] ?? 'N/A'
+                'title' => $this->emailData['title'] ?? 'N/A',
+                'template' => $emailTemplate ?? 'notification (default)'
             ]);
         } catch (\Exception $e) {
             Log::error('Failed to send notification email', [

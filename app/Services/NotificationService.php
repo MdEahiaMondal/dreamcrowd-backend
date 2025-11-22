@@ -25,6 +25,7 @@ class NotificationService
      * @param bool $isEmergency Emergency notification?
      * @param int|null $sentByAdminId Admin who sent
      * @param string|null $scheduledAt When to send
+     * @param string|null $emailTemplate Custom email template (e.g., 'order-delivered')
      * @return Notification|array|null
      */
     public function send(
@@ -40,7 +41,8 @@ class NotificationService
         $serviceId = null,
         $isEmergency = false,
         $sentByAdminId = null,
-        $scheduledAt = null
+        $scheduledAt = null,
+        $emailTemplate = null
     ) {
         // Handle multiple users
         if (is_array($userId)) {
@@ -59,7 +61,8 @@ class NotificationService
                     $serviceId,
                     $isEmergency,
                     $sentByAdminId,
-                    $scheduledAt
+                    $scheduledAt,
+                    $emailTemplate
                 );
             }
             return $notifications;
@@ -102,7 +105,8 @@ class NotificationService
                             'title' => $title,
                             'message' => $message,
                             'data' => is_string($data) ? json_decode($data, true) : $data,
-                            'is_emergency' => $isEmergency
+                            'is_emergency' => $isEmergency,
+                            'email_template' => $emailTemplate
                         ],
                         $notification->id
                     );
@@ -140,7 +144,8 @@ class NotificationService
         $orderId = null,
         $serviceId = null,
         $isEmergency = false,
-        $sentByAdminId = null
+        $sentByAdminId = null,
+        $emailTemplate = null
     ) {
         return $this->send(
             $userIds,
@@ -154,7 +159,9 @@ class NotificationService
             $orderId,
             $serviceId,
             $isEmergency,
-            $sentByAdminId
+            $sentByAdminId,
+            null,
+            $emailTemplate
         );
     }
 }
