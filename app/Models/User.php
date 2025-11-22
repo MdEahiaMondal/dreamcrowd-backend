@@ -43,6 +43,7 @@ class User extends Authenticatable
         'role',
         'admin_role',
         'status',
+        'auto_approve_enabled',
         'zoom_access_token',
         'zoom_refresh_token',
     ];

@@ -1233,6 +1233,104 @@ class OrderManagementController extends Controller
         }
     }
 
+    // Reject Pending Order ---------------
+    public function RejectOrder($id)
+    {
+        if (!Auth::check()) {
+            return redirect('/')->with('error', 'Login First!');
+        }
+
+        $order = BookOrder::find($id);
+
+        if (!$order || $order->status != 0) {
+            return redirect()->back()->with('error', 'Only pending orders can be rejected!');
+        }
+
+        // Only seller can reject their own orders
+        if (Auth::user()->role != 1 || $order->teacher_id != Auth::id()) {
+            return redirect()->back()->with('error', 'Only the seller can reject this order!');
+        }
+
+        try {
+            // Start database transaction
+            \DB::beginTransaction();
+
+            // Process refund via Stripe
+            $refundSuccess = false;
+            if (!empty($order->payment_id)) {
+                try {
+                    \Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
+                    $paymentIntent = \Stripe\PaymentIntent::retrieve($order->payment_id);
+
+                    // Cancel or refund depending on payment status
+                    if (in_array($paymentIntent->status, ['requires_payment_method', 'requires_capture', 'requires_confirmation', 'requires_action'])) {
+                        $paymentIntent->cancel();
+                        $refundSuccess = true;
+                    } elseif ($paymentIntent->status === 'succeeded') {
+                        \Stripe\Refund::create(['payment_intent' => $order->payment_id]);
+                        $refundSuccess = true;
+                    }
+                } catch (\Exception $e) {
+                    \Log::error("Stripe refund failed for rejected order #{$order->id}: " . $e->getMessage());
+                }
+            }
+
+            // Update order status
+            $order->status = 4; // Cancelled
+            $order->refund = $refundSuccess ? 1 : 0;
+            $order->payment_status = $refundSuccess ? 'refunded' : 'failed';
+            $order->action_date = now();
+            $order->save();
+
+            // Create cancel order record
+            $cancelOrder = new \App\Models\CancelOrder();
+            $cancelOrder->user_id = Auth::id();
+            $cancelOrder->user_role = 1; // Seller
+            $cancelOrder->order_id = $order->id;
+            $cancelOrder->reason = "Seller rejected the order request";
+            $cancelOrder->refund = $refundSuccess ? 1 : 0;
+            $cancelOrder->amount = $refundSuccess ? $order->finel_price : 0;
+            $cancelOrder->save();
+
+            // Update transaction status
+            $transaction = \App\Models\Transaction::where('stripe_transaction_id', $order->payment_id)->first();
+            if ($transaction) {
+                $transaction->status = $refundSuccess ? 'refunded' : 'failed';
+                $transaction->notes .= "\n[" . now()->format('Y-m-d H:i:s') . "] Order rejected by seller";
+                $transaction->save();
+            }
+
+            \DB::commit();
+
+            // Send notifications
+            $buyer = \App\Models\User::find($order->user_id);
+            $seller = Auth::user();
+            $serviceName = $order->title;
+            $sellerName = $seller->first_name . ' ' . strtoupper(substr($seller->last_name, 0, 1));
+
+            // Notify buyer
+            $this->notificationService->send(
+                userId: $order->user_id,
+                type: 'cancellation',
+                title: 'Order Request Rejected',
+                message: "Your order request for {$serviceName} has been declined by {$sellerName}. " . ($refundSuccess ? "Full refund of $" . number_format($order->finel_price, 2) . " has been processed." : "Please contact support regarding refund."),
+                data: ['order_id' => $order->id, 'refund_amount' => $refundSuccess ? $order->finel_price : 0],
+                sendEmail: true,
+                actorUserId: Auth::id(),
+                targetUserId: $order->user_id,
+                orderId: $order->id,
+                serviceId: $order->gig_id
+            );
+
+            return redirect()->back()->with('success', 'Order rejected and buyer has been refunded!');
+
+        } catch (\Exception $e) {
+            \DB::rollBack();
+            \Log::error("Failed to reject order #{$id}: " . $e->getMessage());
+            return redirect()->back()->with('error', 'Failed to reject order. Please try again.');
+        }
+    }
+
     // Cancel Order----------------
     public function CancelOrder(Request $request)
     {

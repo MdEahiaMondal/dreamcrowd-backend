@@ -294,6 +294,13 @@ class TeacherController extends Controller
         $profile->first_service = $request->first_service;
         $profile->save();
 
+        // Update auto_approve_enabled directly on User model (no approval required for business settings)
+        if ($request->has('auto_approve_enabled')) {
+            $user = Auth::user();
+            $user->auto_approve_enabled = $request->auto_approve_enabled;
+            $user->save();
+        }
+
         if ($profile) {
 
             $new_req = TeacherRequest::create([

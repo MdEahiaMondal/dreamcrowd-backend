@@ -464,6 +464,9 @@ class ClassManagementController extends Controller
         $gig->category = $request->category;
         $gig->sub_category = $request->sub_category;
 
+        // Set approval mode (default to manual if not specified)
+        $gig->approval_mode = $request->approval_mode ?? 'manual';
+
         $gig->save();
 
         // Track service creation in Google Analytics
@@ -1208,6 +1211,14 @@ class ClassManagementController extends Controller
                 $gigData->video = $videoData;
             }
 
+
+            // Update approval mode if provided (default to manual if not specified)
+            if ($request->has('approval_mode')) {
+                $gig->approval_mode = $request->approval_mode;
+            } elseif (!$gig->approval_mode) {
+                // Set default for existing gigs that don't have approval_mode yet
+                $gig->approval_mode = 'manual';
+            }
 
             $gig->status = 3;
             $gig->update();

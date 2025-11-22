@@ -831,6 +831,7 @@ class BookingController extends Controller
 
             $adminIds = \App\Models\User::where('role', 2)->pluck('id')->toArray();
 
+            // ============ STEP 1: SEND "ORDER PLACED" NOTIFICATIONS (ALWAYS) ============
             // To Seller
             $this->notificationService->send(
                 userId: $sellerId,
@@ -863,15 +864,83 @@ class BookingController extends Controller
             $this->notificationService->sendToMultipleUsers(
                 userIds: $adminIds,
                 type: 'order',
-                title: 'Order Placed Successfully',
+                title: 'Order Placed',
                 message: 'A new order has been placed by ' . $buyerName . ' for ' . $serviceName,
                 data: ['order_id' => $orderId, 'seller_id' => $sellerId],
-                sendEmail: true, // Admin gets email + notification
+                sendEmail: false, // Admin gets notification only
                 actorUserId: $buyerId, // Buyer who placed the order
                 targetUserId: $sellerId, // Seller
                 orderId: $orderId,
                 serviceId: $gig->id
             );
+
+            // ============ STEP 2: CHECK IF AUTO-APPROVE SHOULD HAPPEN ============
+            // Only for non-trial orders with status = 0
+            if (!$isFreeTrialClass && $bookOrder->status == 0) {
+                $seller = \App\Models\User::find($sellerId);
+                $shouldAutoApprove = false;
+
+                // Priority 1: Service-level instant approval
+                if (isset($gig->approval_mode) && $gig->approval_mode === 'instant') {
+                    $shouldAutoApprove = true;
+                }
+                // Priority 2: Seller-level auto-approve (if service not set to manual)
+                elseif ($seller && $seller->auto_approve_enabled && (!isset($gig->approval_mode) || $gig->approval_mode !== 'manual')) {
+                    $shouldAutoApprove = true;
+                }
+
+                if ($shouldAutoApprove) {
+                    // Auto-approve the order
+                    $bookOrder->status = 1; // Change to Active
+                    $bookOrder->action_date = now();
+                    $bookOrder->save();
+
+                    // Send ADDITIONAL auto-approval notification to buyer
+                    $sellerName = $seller->first_name . ' ' . strtoupper(substr($seller->last_name, 0, 1));
+                    $this->notificationService->send(
+                        userId: $buyerId,
+                        type: 'order',
+                        title: 'Order Automatically Approved',
+                        message: 'Your order for ' . $serviceName . ' has been automatically approved by ' . $sellerName . '.',
+                        data: ['order_id' => $orderId, 'service_id' => $gig->id],
+                        sendEmail: true,
+                        actorUserId: $sellerId,
+                        targetUserId: $buyerId,
+                        orderId: $orderId,
+                        serviceId: $gig->id
+                    );
+
+                    // Send confirmation to seller
+                    $buyerFirstName = Auth::user()->first_name;
+                    $buyerLastInitial = strtoupper(substr(Auth::user()->last_name, 0, 1));
+                    $this->notificationService->send(
+                        userId: $sellerId,
+                        type: 'order',
+                        title: 'Order Auto-Approved',
+                        message: 'Order from ' . $buyerFirstName . ' ' . $buyerLastInitial . ' for ' . $serviceName . ' was automatically approved based on your settings.',
+                        data: ['order_id' => $orderId, 'buyer_id' => $buyerId, 'service_id' => $gig->id],
+                        sendEmail: false, // In-app only for seller
+                        actorUserId: $buyerId,
+                        targetUserId: $sellerId,
+                        orderId: $orderId,
+                        serviceId: $gig->id
+                    );
+
+                    // Notify admin about auto-approval
+                    $this->notificationService->sendToMultipleUsers(
+                        userIds: $adminIds,
+                        type: 'order',
+                        title: 'Order Auto-Approved',
+                        message: 'Order from ' . $buyerName . ' for ' . $serviceName . ' was automatically approved',
+                        data: ['order_id' => $orderId, 'seller_id' => $sellerId, 'status' => 'active'],
+                        sendEmail: false,
+                        actorUserId: $buyerId,
+                        targetUserId: $sellerId,
+                        orderId: $orderId,
+                        serviceId: $gig->id
+                    );
+                }
+            }
 
             return response()->json([
                 'success' => true,

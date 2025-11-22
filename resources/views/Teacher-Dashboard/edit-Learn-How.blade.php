@@ -909,6 +909,43 @@
 
                     </div>
                 </div>
+
+                <!-- Order Approval Mode Section -->
+                <div class="col-md-12" style="margin-top: 30px;">
+                    <div class="row mainSelect">
+                        <div class="col-md-12">
+                            <h3 class="Select-Heading">Order Approval Settings</h3>
+                            <p style="color: #666; font-size: 14px; margin-bottom: 20px;">Choose how you want to handle incoming order requests for this service</p>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="custom-radio-wrapper" style="margin-bottom: 15px;">
+                                        <label class="custom-radio-label" style="display: flex; align-items: flex-start; padding: 15px; border: 2px solid #e0e0e0; border-radius: 8px; cursor: pointer; transition: all 0.3s;">
+                                            <input type="radio" name="approval_mode" value="manual" {{ (!isset($gig->approval_mode) || $gig->approval_mode == 'manual') ? 'checked' : '' }} style="margin-top: 5px; margin-right: 12px; width: 18px; height: 18px;">
+                                            <div>
+                                                <strong style="color: #0072b1; font-size: 16px;">Manual Approval (Recommended)</strong>
+                                                <p style="margin: 5px 0 0 0; color: #666; font-size: 13px;">You must review and approve each order before it becomes active. This gives you full control over which requests to accept.</p>
+                                            </div>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="custom-radio-wrapper" style="margin-bottom: 15px;">
+                                        <label class="custom-radio-label" style="display: flex; align-items: flex-start; padding: 15px; border: 2px solid #e0e0e0; border-radius: 8px; cursor: pointer; transition: all 0.3s;">
+                                            <input type="radio" name="approval_mode" value="instant" {{ (isset($gig->approval_mode) && $gig->approval_mode == 'instant') ? 'checked' : '' }} style="margin-top: 5px; margin-right: 12px; width: 18px; height: 18px;">
+                                            <div>
+                                                <strong style="color: #0072b1; font-size: 16px;">Instant Approval</strong>
+                                                <p style="margin: 5px 0 0 0; color: #666; font-size: 13px;">Orders are automatically approved when buyers book this service. Best for high-demand services where you accept all requests.</p>
+                                            </div>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="col-md-12">
                     <div class="Teacher-next-back-Section">
 

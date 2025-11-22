@@ -867,6 +867,28 @@
                                 </select>
                             </div>
                         @endif
+
+                        <!-- Order Management Preferences -->
+                        <div class="col-12 profile-form" style="margin-top: 30px; padding: 20px; background: #f8f9fa; border-radius: 8px;">
+                            <h6 style="margin-bottom: 15px; color: #333;">Order Management Preferences</h6>
+                            <div class="custom-switch-wrapper" style="display: flex; align-items: center; justify-content: space-between;">
+                                <div>
+                                    <label for="auto_approve_enabled" class="switch-label" style="font-weight: 500; margin-bottom: 5px;">Enable Auto-Approve for All Services</label>
+                                    <p style="font-size: 13px; color: #666; margin: 0;">When enabled, all incoming orders will be automatically approved. You can still set individual services to require manual approval.</p>
+                                </div>
+                                <div class="toggle-switch">
+                                    <input
+                                        type="checkbox"
+                                        id="auto_approve_enabled"
+                                        class="toggle-input"
+                                        @if (Auth::user()->auto_approve_enabled == 1) checked @endif
+                                    >
+                                    <span class="slider"></span>
+                                </div>
+                                <input type="hidden" name="auto_approve_enabled" id="auto_approve_enabled_val" value="{{ Auth::user()->auto_approve_enabled ?? 0 }}">
+                            </div>
+                        </div>
+
                         <button type="submit" class="btn rqst-send" style="width: max-content;">Send Request</button>
                     </div>
                 </div>
@@ -3803,6 +3825,11 @@
 <script>
     document.getElementById('show_full_name').addEventListener('change', function() {
         document.getElementById('show_full_name_val').value = this.checked ? 1 : 0;
+    });
+</script>
+<script>
+    document.getElementById('auto_approve_enabled').addEventListener('change', function() {
+        document.getElementById('auto_approve_enabled_val').value = this.checked ? 1 : 0;
     });
 </script>
 

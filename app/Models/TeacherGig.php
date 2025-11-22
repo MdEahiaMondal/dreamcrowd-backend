@@ -36,6 +36,7 @@ class TeacherGig extends Model
         'orders',
         'reviews',
         'status',
+        'approval_mode',
         'meeting_platform',
         'trial_type',
     ];

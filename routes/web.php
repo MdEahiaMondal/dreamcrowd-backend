@@ -541,6 +541,7 @@ Route::controller(OrderManagementController::class)->group(function () {
 
     // Order Actions Routes Start =========
     Route::get('/active-order/{id}', 'ActiveOrder'); // transactions_update
+    Route::get('/reject-order/{id}', 'RejectOrder'); // reject pending order
     Route::post('/cancel-order', 'CancelOrder'); // transactions_update
     Route::get('/deliver-order/{id}', 'DeliverOrder'); // transactions_update
     Route::post('/freelance-order-deliver', 'FreelanceOrderDeliver'); // transactions_update
