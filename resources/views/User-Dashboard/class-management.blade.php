@@ -240,7 +240,7 @@
                                                     <tr>
                                                         <td>
                                                             <div class="profile-sec">
-                                                                <img src="assets/profile/img/{{$order->profile_image}}"
+                                                                <img src="{{ asset('assets/profile/img/' . $order->profile_image) }}"
                                                                      alt="">
                                                                 <p>{{ $order->first_name }}  {{strtoupper(substr($order->last_name, 0, 1))}}
                                                                     .<br><span>{{ $order->profession }}</span></p>
@@ -535,7 +535,7 @@
                                                     <tr>
                                                         <td>
                                                             <div class="profile-sec">
-                                                                <img src="assets/profile/img/{{$order->profile_image}}"
+                                                                <img src="{{ asset('assets/profile/img/' . $order->profile_image) }}"
                                                                      alt="">
                                                                 <p>{{ $order->first_name }}  {{strtoupper(substr($order->last_name, 0, 1))}}
                                                                     .<br><span>{{ $order->profession }}</span></p>
@@ -829,7 +829,7 @@
                                                     <tr>
                                                         <td>
                                                             <div class="profile-sec">
-                                                                <img src="assets/profile/img/{{$order->profile_image}}"
+                                                                <img src="{{ asset('assets/profile/img/' . $order->profile_image) }}"
                                                                      alt="">
                                                                 <p>{{ $order->first_name }}  {{strtoupper(substr($order->last_name, 0, 1))}}
                                                                     .<br><span>{{ $order->profession }}</span></p>
@@ -1109,7 +1109,7 @@
                                                     <tr>
                                                         <td>
                                                             <div class="profile-sec">
-                                                                <img src="assets/profile/img/{{$order->profile_image}}"
+                                                                <img src="{{ asset('assets/profile/img/' . $order->profile_image) }}"
                                                                      alt="">
                                                                 <p>{{ $order->first_name }}  {{strtoupper(substr($order->last_name, 0, 1))}}
                                                                     .<br><span>{{ $order->profession }}</span></p>
@@ -1388,7 +1388,7 @@
                                                     <tr>
                                                         <td>
                                                             <div class="profile-sec">
-                                                                <img src="assets/profile/img/{{$order->profile_image}}"
+                                                                <img src="{{ asset('assets/profile/img/' . $order->profile_image) }}"
                                                                      alt="">
                                                                 <p>{{ $order->first_name }}  {{strtoupper(substr($order->last_name, 0, 1))}}
                                                                     .<br><span>{{ $order->profession }}</span></p>

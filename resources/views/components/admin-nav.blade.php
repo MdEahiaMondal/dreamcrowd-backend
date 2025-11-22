@@ -34,15 +34,20 @@
                     <div class="messageSectionAz"></div>
 
                     @if (Auth::user())
-                        @if (Auth::user()->profile == null)
-                            @php  $firstLetter = strtoupper(substr(Auth::user()->first_name, 0, 1));  @endphp
+                        @php
+                            $user = Auth::user();
+                            $hasProfile = $user->profile && trim($user->profile) !== '';
+                            $firstLetter = strtoupper(substr($user->first_name, 0, 1));
+                        @endphp
+
+                        @if (!$hasProfile)
                             <div class="img_profile"
                                 style="width: 50px; height: 50px; background: #28a745; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 20px; border-radius: 50%;">
                                 {{ $firstLetter }}
                             </div>
                         @else
                             <div class="img_profile" style="width: 50px; height: 50px;">
-                                <img src="{{ asset('assets/profile/img/' . Auth::user()->profile) }}"
+                                <img src="{{ asset('assets/profile/img/' . $user->profile) }}"
                                     style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
                             </div>
                         @endif

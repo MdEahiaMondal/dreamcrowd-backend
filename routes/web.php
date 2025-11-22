@@ -751,3 +751,13 @@ Route::get('/test-token', function() {
         'join_url' => $joinUrl,
     ]);
 });
+// =====================================================
+// EMAIL TEMPLATE PREVIEW ROUTES (Development/Testing)
+// =====================================================
+use App\Http\Controllers\EmailTestController;
+
+Route::prefix('test-emails')->group(function () {
+    Route::get('/', [EmailTestController::class, 'index'])->name('email-test.index');
+    Route::get('/{template}', [EmailTestController::class, 'preview'])->name('email-test.preview');
+});
+

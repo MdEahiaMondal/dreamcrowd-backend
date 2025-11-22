@@ -1205,17 +1205,23 @@ class OrderManagementController extends Controller
             $order->update();
 
             $buyerId = $order->user_id;
-            $sellerName = Auth::user()->first_name . ' ' . Auth::user()->last_name;
+            $seller = Auth::user();
+            $buyer = \App\Models\User::find($buyerId);
             $serviceName = $order->title;
             $orderId = $order->id;
             $startDate = ClassDate::where('order_id', $orderId)->min('user_date');
 
-            // To Buyer
+            // Privacy-protected names
+            $sellerMaskedName = \App\Helpers\NameHelper::getMaskedName($seller);
+            $sellerFullName = \App\Helpers\NameHelper::getFullName($seller);
+            $buyerFullName = \App\Helpers\NameHelper::getFullName($buyer);
+
+            // To Buyer (masked seller name for privacy)
             $this->notificationService->send(
                 userId: $buyerId,
                 type: 'order',
                 title: 'Order Accepted',
-                message: $sellerName . ' has accepted your order for ' . $serviceName,
+                message: $sellerMaskedName . ' has accepted your order for ' . $serviceName,
                 data: ['order_id' => $orderId, 'start_date' => $startDate],
                 sendEmail: true, // Email + notification
                 actorUserId: Auth::user()->id,
@@ -1223,7 +1229,27 @@ class OrderManagementController extends Controller
                 orderId: $orderId,
                 serviceId: $order->gig_id
             );
-            
+
+            // To Admin (full names for tracking)
+            $this->notificationService->sendToMultipleUsers(
+                userIds: $this->getAdminUserIds(),
+                type: 'order',
+                title: 'Order Approved by Seller',
+                message: $sellerFullName . ' approved order #' . $orderId . ' for "' . $serviceName . '" from buyer "' . $buyerFullName . '"',
+                data: [
+                    'order_id' => $orderId,
+                    'seller_name' => $sellerFullName,
+                    'buyer_name' => $buyerFullName,
+                    'service_name' => $serviceName,
+                    'amount' => $order->buyer_total,
+                ],
+                sendEmail: false,
+                actorUserId: Auth::user()->id,
+                targetUserId: $buyerId,
+                orderId: $orderId,
+                serviceId: $order->gig_id
+            );
+
         } 
 
         if ($order) {
@@ -1306,16 +1332,42 @@ class OrderManagementController extends Controller
             $buyer = \App\Models\User::find($order->user_id);
             $seller = Auth::user();
             $serviceName = $order->title;
-            $sellerName = $seller->first_name . ' ' . strtoupper(substr($seller->last_name, 0, 1));
 
-            // Notify buyer
+            // Privacy-protected names
+            $sellerMaskedName = \App\Helpers\NameHelper::getMaskedName($seller);
+            $sellerFullName = \App\Helpers\NameHelper::getFullName($seller);
+            $buyerFullName = \App\Helpers\NameHelper::getFullName($buyer);
+
+            // Notify buyer (masked seller name for privacy)
             $this->notificationService->send(
                 userId: $order->user_id,
                 type: 'cancellation',
                 title: 'Order Request Rejected',
-                message: "Your order request for {$serviceName} has been declined by {$sellerName}. " . ($refundSuccess ? "Full refund of $" . number_format($order->finel_price, 2) . " has been processed." : "Please contact support regarding refund."),
+                message: "Your order request for {$serviceName} has been declined by {$sellerMaskedName}. " . ($refundSuccess ? "Full refund of $" . number_format($order->finel_price, 2) . " has been processed." : "Please contact support regarding refund."),
                 data: ['order_id' => $order->id, 'refund_amount' => $refundSuccess ? $order->finel_price : 0],
                 sendEmail: true,
+                actorUserId: Auth::id(),
+                targetUserId: $order->user_id,
+                orderId: $order->id,
+                serviceId: $order->gig_id
+            );
+
+            // Notify Admin (full names for tracking)
+            $refundAmount = $order->buyer_total ?? 0;
+            $this->notificationService->sendToMultipleUsers(
+                userIds: $this->getAdminUserIds(),
+                type: 'order',
+                title: 'Order Rejected by Seller',
+                message: "Seller \"{$sellerFullName}\" rejected order #{$order->id} for \"{$serviceName}\" from buyer \"{$buyerFullName}\". Refund processed: £" . number_format($refundAmount, 2),
+                data: [
+                    'order_id' => $order->id,
+                    'seller_name' => $sellerFullName,
+                    'buyer_name' => $buyerFullName,
+                    'service_name' => $serviceName,
+                    'refund_amount' => $refundAmount,
+                    'refund_success' => $refundSuccess,
+                ],
+                sendEmail: false,
                 actorUserId: Auth::id(),
                 targetUserId: $order->user_id,
                 orderId: $order->id,
@@ -1768,16 +1820,52 @@ class OrderManagementController extends Controller
             userId: $order->user_id,
             type: 'delivery',
             title: 'Order Delivered',
-            message: 'Your order has been marked as delivered. Please review if satisfied.',
+            message: 'Your order has been marked as delivered. You have 48 hours to raise any concerns or request a refund.',
             data: ['order_id' => $order->id],
-            sendEmail: false, // Just notification
+            sendEmail: true, // Email + notification
             actorUserId: $order->teacher_id,
             targetUserId: $order->user_id,
             orderId: $order->id,
             serviceId: $order->gig_id
         );
 
-        
+        // To Seller (confirmation)
+        $seller = \App\Models\User::find($order->teacher_id);
+        $buyer = \App\Models\User::find($order->user_id);
+        $this->notificationService->send(
+            userId: $order->teacher_id,
+            type: 'delivery',
+            title: 'Order Marked as Delivered',
+            message: 'You have successfully marked order #' . $order->id . ' for "' . $order->title . '" as delivered. Buyer has 48 hours to review. Payment will be released after 48 hours if no disputes are raised.',
+            data: ['order_id' => $order->id],
+            sendEmail: true,
+            actorUserId: $order->teacher_id,
+            targetUserId: $order->user_id,
+            orderId: $order->id,
+            serviceId: $order->gig_id
+        );
+
+        // To Admin
+        $this->notificationService->sendToMultipleUsers(
+            userIds: $this->getAdminUserIds(),
+            type: 'delivery',
+            title: 'Order Delivered (Manual)',
+            message: "Seller \"{$seller->first_name} {$seller->last_name}\" marked order #{$order->id} for \"{$order->title}\" as delivered. Buyer: \"{$buyer->first_name} {$buyer->last_name}\". 48-hour dispute window active.",
+            data: [
+                'order_id' => $order->id,
+                'seller_name' => $seller->first_name . ' ' . $seller->last_name,
+                'buyer_name' => $buyer->first_name . ' ' . $buyer->last_name,
+                'service_name' => $order->title,
+                'delivery_method' => 'manual',
+            ],
+            sendEmail: false,
+            actorUserId: $order->teacher_id,
+            targetUserId: $order->user_id,
+            orderId: $order->id,
+            serviceId: $order->gig_id
+        );
+
+
         if ($order) {
             return redirect()->back()->with('success', 'Order Delivered Successfully!');
         } else {
@@ -2591,16 +2679,22 @@ class OrderManagementController extends Controller
         $order->update();
 
         // Send notifications
-        $buyerName = Auth::user()->first_name . ' ' . Auth::user()->last_name;
-        $sellerName = DB::table('users')->where('id', $order->teacher_id)->value(DB::raw("CONCAT(first_name, ' ', last_name)"));
+        $buyer = Auth::user();
+        $seller = User::find($order->teacher_id);
         $serviceName = $order->title;
+
+        // Privacy-protected names
+        $buyerMaskedName = \App\Helpers\NameHelper::getMaskedName($buyer);
+        $sellerMaskedName = \App\Helpers\NameHelper::getMaskedName($seller);
+        $buyerFullName = \App\Helpers\NameHelper::getFullName($buyer);
+        $sellerFullName = \App\Helpers\NameHelper::getFullName($seller);
 
         // Notify Buyer (confirmation)
         $this->notificationService->send(
             userId: $order->user_id,
             type: 'reschedule',
             title: 'Reschedule Request Submitted',
-            message: 'Your reschedule request for ' . $serviceName . ' has been submitted and is awaiting approval from ' . $sellerName . '.',
+            message: 'Your reschedule request for ' . $serviceName . ' has been submitted and is awaiting approval from ' . $sellerMaskedName . '.',
             data: ['order_id' => $order->id, 'reschedule_count' => count($classes)],
             sendEmail: false,
             actorUserId: $order->user_id,
@@ -2609,14 +2703,35 @@ class OrderManagementController extends Controller
             serviceId: $order->gig_id
         );
 
-        // Notify Teacher (action required)
+        // Notify Teacher (action required - masked buyer name for privacy)
         $this->notificationService->send(
             userId: $order->teacher_id,
             type: 'reschedule',
             title: 'Reschedule Request Received',
-            message: $buyerName . ' has requested to reschedule ' . count($classes) . ' class(es) for ' . $serviceName . '. Please review and respond.',
+            message: $buyerMaskedName . ' has requested to reschedule ' . count($classes) . ' class(es) for ' . $serviceName . '. Please review and respond.',
             data: ['order_id' => $order->id, 'buyer_id' => $order->user_id, 'reschedule_count' => count($classes)],
             sendEmail: true,
+            actorUserId: $order->user_id,
+            targetUserId: $order->teacher_id,
+            orderId: $order->id,
+            serviceId: $order->gig_id
+        );
+
+        // Notify Admin (full names for tracking)
+        $this->notificationService->sendToMultipleUsers(
+            userIds: $this->getAdminUserIds(),
+            type: 'reschedule',
+            title: 'Reschedule Request - Buyer',
+            message: "Buyer \"{$buyerFullName}\" requested reschedule for order #{$order->id} (\"{$serviceName}\"). Seller: \"{$sellerFullName}\". Awaiting seller approval.",
+            data: [
+                'order_id' => $order->id,
+                'requester' => 'buyer',
+                'buyer_name' => $buyerFullName,
+                'seller_name' => $sellerFullName,
+                'service_name' => $serviceName,
+                'reschedule_count' => count($classes),
+            ],
+            sendEmail: false,
             actorUserId: $order->user_id,
             targetUserId: $order->teacher_id,
             orderId: $order->id,
@@ -2923,17 +3038,21 @@ class OrderManagementController extends Controller
         $order->user_reschedule = 0;
         $order->update();
 
-        // Send notifications
-        $sellerName = Auth::user()->first_name . ' ' . Auth::user()->last_name;
-        $buyerName = DB::table('users')->where('id', $order->user_id)->value(DB::raw("CONCAT(first_name, ' ', last_name)"));
+        // Send notifications - Privacy protected
+        $seller = Auth::user();
+        $buyer = User::find($order->user_id);
+        $sellerMaskedName = \App\Helpers\NameHelper::getMaskedName($seller);
+        $buyerMaskedName = \App\Helpers\NameHelper::getMaskedName($buyer);
+        $sellerFullName = \App\Helpers\NameHelper::getFullName($seller);
+        $buyerFullName = \App\Helpers\NameHelper::getFullName($buyer);
         $serviceName = $order->title;
 
-        // Notify Teacher (confirmation)
+        // Notify Teacher (confirmation - masked buyer name for privacy)
         $this->notificationService->send(
             userId: $order->teacher_id,
             type: 'reschedule',
             title: 'Reschedule Request Submitted',
-            message: 'Your reschedule request for ' . $serviceName . ' has been submitted and is awaiting approval from ' . $buyerName . '.',
+            message: 'Your reschedule request for ' . $serviceName . ' has been submitted and is awaiting approval from ' . $buyerMaskedName . '.',
             data: ['order_id' => $order->id, 'reschedule_count' => count($classes)],
             sendEmail: false,
             actorUserId: $order->teacher_id,
@@ -2942,14 +3061,35 @@ class OrderManagementController extends Controller
             serviceId: $order->gig_id
         );
 
-        // Notify Buyer (action required)
+        // Notify Buyer (action required - masked seller name for privacy)
         $this->notificationService->send(
             userId: $order->user_id,
             type: 'reschedule',
             title: 'Seller Requested Reschedule',
-            message: $sellerName . ' has requested to reschedule ' . count($classes) . ' class(es) for ' . $serviceName . '. Please review and respond.',
+            message: $sellerMaskedName . ' has requested to reschedule ' . count($classes) . ' class(es) for ' . $serviceName . '. Please review and respond.',
             data: ['order_id' => $order->id, 'seller_id' => $order->teacher_id, 'reschedule_count' => count($classes)],
             sendEmail: true,
+            actorUserId: $order->teacher_id,
+            targetUserId: $order->user_id,
+            orderId: $order->id,
+            serviceId: $order->gig_id
+        );
+
+        // Notify Admin (full names for tracking)
+        $this->notificationService->sendToMultipleUsers(
+            userIds: $this->getAdminUserIds(),
+            type: 'reschedule',
+            title: 'Reschedule Request - Seller',
+            message: "Seller \"{$sellerFullName}\" requested reschedule for order #{$order->id} (\"{$serviceName}\"). Buyer: \"{$buyerFullName}\". Awaiting buyer approval.",
+            data: [
+                'order_id' => $order->id,
+                'requester' => 'seller',
+                'buyer_name' => $buyerFullName,
+                'seller_name' => $sellerFullName,
+                'service_name' => $serviceName,
+                'reschedule_count' => count($classes),
+            ],
+            sendEmail: false,
             actorUserId: $order->teacher_id,
             targetUserId: $order->user_id,
             orderId: $order->id,
@@ -3008,19 +3148,38 @@ class OrderManagementController extends Controller
         $order->user_reschedule = 0;
         $order->update();
 
-        $buyerName = User::find($order->user_id)->first_name . ' ' . User::find($order->user_id)->last_name;
-        $sellerName = User::find($order->teacher_id)->first_name . ' ' . User::find($order->teacher_id)->last_name;
+        // Privacy protection - masked names for buyer/seller, full names for admin
+        $buyer = User::find($order->user_id);
+        $seller = User::find($order->teacher_id);
+        $buyerMaskedName = \App\Helpers\NameHelper::getMaskedName($buyer);
+        $sellerMaskedName = \App\Helpers\NameHelper::getMaskedName($seller);
+        $buyerFullName = \App\Helpers\NameHelper::getFullName($buyer);
+        $sellerFullName = \App\Helpers\NameHelper::getFullName($seller);
 
         // If buyer accepted seller's reschedule
         if (Auth::user()->role == 0) {
-            // To Seller
+            // To Seller (requester - masked buyer name for privacy)
             $this->notificationService->send(
                 userId: $order->teacher_id,
                 type: 'reschedule',
                 title: 'Reschedule Accepted',
-                message: $buyerName . ' has accepted your reschedule request.',
+                message: $buyerMaskedName . ' has accepted your reschedule request for "' . $order->title . '".',
                 data: ['order_id' => $order->id],
-                sendEmail: false,
+                sendEmail: true,
+                actorUserId: $order->user_id,
+                targetUserId: $order->teacher_id,
+                orderId: $order->id,
+                serviceId: $order->gig_id
+            );
+
+            // To Buyer (approver confirmation)
+            $this->notificationService->send(
+                userId: $order->user_id,
+                type: 'reschedule',
+                title: 'Reschedule Request Approved',
+                message: 'You have approved the reschedule request for "' . $order->title . '".',
+                data: ['order_id' => $order->id],
+                sendEmail: true,
                 actorUserId: $order->user_id,
                 targetUserId: $order->teacher_id,
                 orderId: $order->id,
@@ -3030,20 +3189,57 @@ class OrderManagementController extends Controller
 
         // If seller accepted buyer's reschedule
         if (Auth::user()->role == 1) {
-            // To Buyer
+            // To Buyer (requester - masked seller name for privacy)
             $this->notificationService->send(
                 userId: $order->user_id,
                 type: 'reschedule',
                 title: 'Reschedule Accepted',
-                message: $sellerName . ' has accepted your reschedule request.',
+                message: $sellerMaskedName . ' has accepted your reschedule request for "' . $order->title . '".',
                 data: ['order_id' => $order->id],
-                sendEmail: false,
+                sendEmail: true,
+                actorUserId: $order->teacher_id,
+                targetUserId: $order->user_id,
+                orderId: $order->id,
+                serviceId: $order->gig_id
+            );
+
+            // To Seller (approver confirmation)
+            $this->notificationService->send(
+                userId: $order->teacher_id,
+                type: 'reschedule',
+                title: 'Reschedule Request Approved',
+                message: 'You have approved the reschedule request for "' . $order->title . '".',
+                data: ['order_id' => $order->id],
+                sendEmail: true,
                 actorUserId: $order->teacher_id,
                 targetUserId: $order->user_id,
                 orderId: $order->id,
                 serviceId: $order->gig_id
             );
         }
+
+        // Notify Admin (full names for tracking)
+        $requesterName = ($order->teacher_reschedule == 1) ? 'seller' : 'buyer';
+        $approverName = (Auth::user()->role == 0) ? 'buyer' : 'seller';
+        $this->notificationService->sendToMultipleUsers(
+            userIds: $this->getAdminUserIds(),
+            type: 'reschedule',
+            title: 'Reschedule Request Accepted',
+            message: "Reschedule accepted for order #{$order->id} (\"{$order->title}\"). Requested by {$requesterName}, approved by {$approverName}. Seller: \"{$sellerFullName}\", Buyer: \"{$buyerFullName}\".",
+            data: [
+                'order_id' => $order->id,
+                'buyer_name' => $buyerFullName,
+                'seller_name' => $sellerFullName,
+                'service_name' => $order->title,
+                'requester' => $requesterName,
+                'approver' => $approverName,
+            ],
+            sendEmail: false,
+            actorUserId: Auth::user()->id,
+            targetUserId: (Auth::user()->role == 0) ? $order->teacher_id : $order->user_id,
+            orderId: $order->id,
+            serviceId: $order->gig_id
+        );
 
         if ($classes) {
             return redirect()->back()->with('success', 'Reschedule Accepted Successfully');
@@ -3079,10 +3275,14 @@ class OrderManagementController extends Controller
         $buyerRequested = ($order->user_reschedule == 1);
         $sellerRequested = ($order->teacher_reschedule == 1);
 
-        $buyerName = DB::table('users')->where('id', $order->user_id)->value(DB::raw("CONCAT(first_name, ' ', last_name)"));
-        $sellerName = DB::table('users')->where('id', $order->teacher_id)->value(DB::raw("CONCAT(first_name, ' ', last_name)"));
+        // Privacy protection - masked names for buyer/seller, full names for admin
+        $buyer = User::find($order->user_id);
+        $seller = User::find($order->teacher_id);
+        $buyerMaskedName = \App\Helpers\NameHelper::getMaskedName($buyer);
+        $sellerMaskedName = \App\Helpers\NameHelper::getMaskedName($seller);
+        $buyerFullName = \App\Helpers\NameHelper::getFullName($buyer);
+        $sellerFullName = \App\Helpers\NameHelper::getFullName($seller);
         $serviceName = $order->title;
-        $rejectorName = Auth::user()->first_name . ' ' . Auth::user()->last_name;
 
         $order->teacher_reschedule = 0;
         $order->user_reschedule = 0;
@@ -3091,12 +3291,12 @@ class OrderManagementController extends Controller
         // Send notifications based on who requested
         if ($buyerRequested) {
             // Buyer requested, seller rejected
-            // Notify Buyer (requester)
+            // Notify Buyer (requester - masked seller name for privacy)
             $this->notificationService->send(
                 userId: $order->user_id,
                 type: 'reschedule',
                 title: 'Reschedule Request Rejected',
-                message: $sellerName . ' has rejected your reschedule request for ' . $serviceName . '.',
+                message: $sellerMaskedName . ' has rejected your reschedule request for ' . $serviceName . '.',
                 data: ['order_id' => $order->id, 'rejected_by' => $order->teacher_id],
                 sendEmail: true,
                 actorUserId: $order->teacher_id,
@@ -3106,13 +3306,13 @@ class OrderManagementController extends Controller
             );
         } elseif ($sellerRequested) {
             // Seller requested, buyer rejected
-            // Notify Seller (requester)
+            // Notify Seller (requester - masked buyer name for privacy)
             $this->notificationService->send(
                 userId: $order->teacher_id,
                 type: 'reschedule',
                 title: 'Reschedule Request Rejected',
-                message: $buyerName . ' has rejected your reschedule request for ' . $serviceName . '.',
-                data: ['order_id' => $order->id, 'rejected_by' => $order->user_id],
+                message: $buyerMaskedName . ' has rejected your reschedule request for ' . $serviceName . '.',
+                data: ['order_id' => $order->user_id, 'rejected_by' => $order->user_id],
                 sendEmail: true,
                 actorUserId: $order->user_id,
                 targetUserId: $order->teacher_id,
@@ -3120,6 +3320,29 @@ class OrderManagementController extends Controller
                 serviceId: $order->gig_id
             );
         }
+
+        // Notify Admin (full names for tracking)
+        $requesterName = $buyerRequested ? 'buyer' : 'seller';
+        $rejectorName = $buyerRequested ? 'seller' : 'buyer';
+        $this->notificationService->sendToMultipleUsers(
+            userIds: $this->getAdminUserIds(),
+            type: 'reschedule',
+            title: 'Reschedule Request Rejected',
+            message: "Reschedule rejected for order #{$order->id} (\"{$serviceName}\"). Requested by {$requesterName}, rejected by {$rejectorName}. Seller: \"{$sellerFullName}\", Buyer: \"{$buyerFullName}\".",
+            data: [
+                'order_id' => $order->id,
+                'buyer_name' => $buyerFullName,
+                'seller_name' => $sellerFullName,
+                'service_name' => $serviceName,
+                'requester' => $requesterName,
+                'rejector' => $rejectorName,
+            ],
+            sendEmail: false,
+            actorUserId: Auth::user()->id,
+            targetUserId: $buyerRequested ? $order->user_id : $order->teacher_id,
+            orderId: $order->id,
+            serviceId: $order->gig_id
+        );
 
         if ($reschedule) {
             return redirect()->back()->with('success', 'Reschedule Rejected Successfully');
@@ -3592,6 +3815,15 @@ class OrderManagementController extends Controller
         $order->disputeOrder = DisputeOrder::where('order_id', $id)->first();
 
         return view('User-Dashboard.order-details', compact('order'));
+    }
+
+    /**
+     * Get all admin user IDs
+     * @return array
+     */
+    private function getAdminUserIds(): array
+    {
+        return \App\Models\User::where('role', 2)->pluck('id')->toArray();
     }
 
 }

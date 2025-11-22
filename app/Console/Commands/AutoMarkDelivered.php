@@ -6,6 +6,7 @@ use App\Models\BookOrder;
 use App\Models\ClassDate;
 use App\Models\ClassReschedule;
 use App\Models\Transaction;
+use App\Models\User;
 use App\Services\NotificationService;
 use App\Services\GoogleAnalyticsService;
 use Carbon\Carbon;
@@ -281,7 +282,13 @@ class AutoMarkDelivered extends Command
     {
         try {
             $serviceName = $order->title ?? ($order->gig ? $order->gig->name : 'Service');
-            $buyerName = $order->user ? ($order->user->first_name . ' ' .  strtoupper(substr($order->user->last_name, 0, 1))) : 'Customer';
+
+            // Privacy protection - masked names for buyer/seller, full names for admin
+            $buyer = User::find($order->user_id);
+            $seller = User::find($order->teacher_id);
+            $buyerMaskedName = \App\Helpers\NameHelper::getMaskedName($buyer);
+            $buyerFullName = \App\Helpers\NameHelper::getFullName($buyer);
+            $sellerFullName = \App\Helpers\NameHelper::getFullName($seller);
             $disputeDeadline = now()->addHours(48)->format('F j, Y g:i A');
 
             // Notify buyer
@@ -303,24 +310,51 @@ class AutoMarkDelivered extends Command
                 serviceId: $order->gig_id
             );
 
-            // Notify seller
+            // Notify seller (masked buyer name for privacy)
             $this->notificationService->send(
                 userId: $order->teacher_id,
                 type: 'order_delivered',
-                title: 'Order Delivered',
-                message: "Your service \"{$serviceName}\" for {$buyerName} has been marked as delivered.",
+                title: 'Order Auto-Delivered',
+                message: "Your service \"{$serviceName}\" for {$buyerMaskedName} has been automatically marked as delivered. Buyer has 48 hours to review. Payment will be released after 48 hours if no disputes are raised.",
                 data: [
                     'order_id' => $order->id,
                     'service_name' => $serviceName,
-                    'buyer_name' => $buyerName,
-                    'delivered_at' => now()->toDateTimeString()
+                    'buyer_name' => $buyerMaskedName,
+                    'delivered_at' => now()->toDateTimeString(),
+                    'dispute_deadline' => $disputeDeadline
                 ],
-                sendEmail: false,
+                sendEmail: true,
                 actorUserId: $order->teacher_id, // Seller (system acting on their behalf)
                 targetUserId: $order->user_id, // Buyer
                 orderId: $order->id,
                 serviceId: $order->gig_id
             );
+
+            // Notify Admin (full names for tracking)
+            $adminUserIds = User::where('role', 2)->pluck('id')->toArray();
+
+            if (!empty($adminUserIds)) {
+                $this->notificationService->sendToMultipleUsers(
+                    userIds: $adminUserIds,
+                    type: 'order_delivered',
+                    title: 'Order Auto-Delivered',
+                    message: "Order #{$order->id} for \"{$serviceName}\" auto-delivered. Seller: \"{$sellerFullName}\", Buyer: \"{$buyerFullName}\". 48-hour dispute window active.",
+                    data: [
+                        'order_id' => $order->id,
+                        'seller_name' => $sellerFullName,
+                        'buyer_name' => $buyerFullName,
+                        'service_name' => $serviceName,
+                        'delivery_method' => 'automatic',
+                        'payment_type' => $order->payment_type,
+                        'delivered_at' => now()->toDateTimeString()
+                    ],
+                    sendEmail: false,
+                    actorUserId: $order->teacher_id,
+                    targetUserId: $order->user_id,
+                    orderId: $order->id,
+                    serviceId: $order->gig_id
+                );
+            }
 
             Log::info("Delivery notifications sent for order #{$order->id}");
 

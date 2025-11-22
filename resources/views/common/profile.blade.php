@@ -173,7 +173,7 @@
                         <label for="imageUpload"></label>
                         </div>
                         <div class="avatar-preview mx-auto" style="width: 120px; height: 120px; border-radius: 50%; overflow: hidden;">
-                        <div id="imagePreview" style="background-image: url('{{ $user->profile ? asset($user->profile) : 'http://i.pravatar.cc/150?img=7' }}'); width: 100%; height: 100%; background-size: cover; background-position: center;">
+                        <div id="imagePreview" style="background-image: url('{{ ($user->profile && trim($user->profile)) ? asset('assets/profile/img/' . $user->profile) : 'http://i.pravatar.cc/150?img=7' }}'); width: 100%; height: 100%; background-size: cover; background-position: center;">
                         </div>
                         </div>
                     </div>
