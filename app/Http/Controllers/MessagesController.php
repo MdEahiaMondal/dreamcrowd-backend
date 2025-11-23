@@ -188,6 +188,7 @@ class MessagesController extends Controller
                     'chat_id' => $chat->id,
                     'sender_id' => $chat->sender_id,
                     'receiver_id' => $chat->receiver_id,
+                    'is_custom_offer' => $chat->is_custom_offer,
                     'sms' => $chat->sms,
                     'files' => $chat->files,
                     'created_at' => $chat->created_at->toDateTimeString(),
@@ -397,6 +398,7 @@ class MessagesController extends Controller
                 'sender_id' => $chat->sender_id,
                 'receiver_id' => $chat->receiver_id,
                 'sms' => $chat->sms,
+                'is_custom_offer' => $chat->is_custom_offer,
                 'files' => $chat->files,
                 'created_at' => $chat->created_at->toDateTimeString(),
                 'time_ago' => $chat->created_at->diffForHumans(), // Relative time like '5 minutes ago'
@@ -671,7 +673,7 @@ class MessagesController extends Controller
             count: 1,
             message: ''
         );
-        
+
         return response()->json($response);
     }
 
@@ -1205,7 +1207,6 @@ class MessagesController extends Controller
     // Send Message from Dashboard Function ====
     public function TeacherSendMessage(Request $request)
     {
-        info('TeacherSendMessage called with request:');
 
         if (!Auth::user()) {
             return response()->json(['error' => 'Please LoginIn to Your Account!']);
@@ -1245,6 +1246,7 @@ class MessagesController extends Controller
         $chat->receiver_id = $request->reciver_id;
         $chat->type = 1;
         $chat->sender_role = 1;
+        $chat->is_custom_offer = $request->is_custom_offer ?? 0;
         $chat->receiver_role = $receiverRole;
         if ($request->sms == null) {
             $chat->sms = 'Files';
@@ -1330,6 +1332,7 @@ class MessagesController extends Controller
             'receiver_role' => $chat->receiver_role,
             'sms' => $chat->sms,
             'files' => $chat->files,
+            'is_custom_offer' => $chat->is_custom_offer,
             'created_at' => $chat->created_at->toDateTimeString(),
             'time_ago' => $chat->created_at->diffForHumans(), // Add the time ago field
         ];
@@ -2339,10 +2342,11 @@ class MessagesController extends Controller
 
 
 
-    
+
 
     public function sendCustomOffer(Request $request)
     {
+
         // Validation
         $request->validate([
             'buyer_id' => 'required|exists:users,id',
@@ -2393,22 +2397,22 @@ class MessagesController extends Controller
             ->where('status', 'pending')
             ->first();
 
-        if ($existingOffer) {
-            return response()->json([
-                'error' => 'You already have a pending offer for this service to this buyer.'
-            ], 400);
-        }
+        // if ($existingOffer) {
+        //     return response()->json([
+        //         'error' => 'You already have a pending offer for this service to this buyer.'
+        //     ], 400);
+        // }
 
         // Calculate total amount
         $totalAmount = collect($request->milestones)->sum('price');
 
         // Get chat_id
-        $chat = \App\Models\Chat::where(function($q) use ($request) {
+        $chat = \App\Models\Chat::where(function ($q) use ($request) {
             $q->where('sender_id', auth()->id())
-              ->where('receiver_id', $request->buyer_id);
-        })->orWhere(function($q) use ($request) {
+                ->where('receiver_id', $request->buyer_id);
+        })->orWhere(function ($q) use ($request) {
             $q->where('sender_id', $request->buyer_id)
-              ->where('receiver_id', auth()->id());
+                ->where('receiver_id', auth()->id());
         })->first();
 
         if (!$chat) {
@@ -2449,13 +2453,29 @@ class MessagesController extends Controller
         }
 
         // Send message in chat with offer card
-        
+
         // \App\Models\Message::create([
         //     'chat_id' => $chat->id,
         //     'sender_id' => auth()->id(),
         //     'reciver_id' => $request->buyer_id,
         //     'message' => 'Custom Offer: ' . $offer->gig->title,
         // ]);
+
+        // Create a new request with required parameters for SendSMS
+        $smsRequest = new \Illuminate\Http\Request([
+            'sender_id' => auth()->id(),
+            'sender_role' => 1,
+            'reciver_id' => $request->buyer_id,
+            'receiver_role' => 0,
+            'is_custom_offer' => $offer->id,
+            'type' => 0, 
+
+            'sms' => 'You have received a new custom offer for ' . $offer->gig->title . '. Please check your messages to view the offer.',
+        ]);
+
+        // Call SendSMS function
+        $this->TeacherSendMessage($smsRequest);
+
 
         // Send notification to buyer
         if (class_exists('\App\Services\NotificationService')) {
@@ -2496,7 +2516,7 @@ class MessagesController extends Controller
     }
 
 
-    
+
 
     public function viewCustomOffer($id)
     {
@@ -2596,7 +2616,6 @@ class MessagesController extends Controller
                 'success' => true,
                 'checkout_url' => $session->url
             ]);
-
         } catch (\Exception $e) {
             \Log::error('Stripe checkout creation failed: ' . $e->getMessage());
             return response()->json(['error' => 'Payment processing failed. Please try again.'], 500);

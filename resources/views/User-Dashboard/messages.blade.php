@@ -211,8 +211,7 @@
                         
                         @if ($hasMore)
                         <button class="btn btn-primary" style="margin:0 auto; background: #0072b1;display: flex; justify-content: center;align-items: center;" type="button" onclick="ReadMore();" id="ReadMore">Read More</button>
-                        @endif
-                         
+                        @endif                         
                         @foreach($completeChat as $message)
                             <li class="{{ $message['sender_id'] == Auth::user()->id ? 'repaly' : 'sender' }}">
                                 <p>{{$message['sms']}}</p>
@@ -739,7 +738,7 @@ $(document).ready(function() {
                 url: '/user-fetch-message',
                 data:{ sender_id:sender_id,reciver_id:reciver_id,sender_role:sender_role,reciver_role:reciver_role,type:type, search_name:search_name, sms_limit:sms_limit, _token: '{{csrf_token()}}'},
                 dataType: 'json',
-                success: function (response) {   
+                success: function (response) {                     
                    
                 
                  ShowDataFetched(response,active_list);
@@ -885,7 +884,11 @@ $(document).ready(function() {
               const sender_id = response['completeChat'][i].sender_id;
               const sms = response['completeChat'][i].sms;
               const files = response['completeChat'][i].files;
+              const is_custom_offer = response['completeChat'][i].is_custom_offer;
               const time_ago = response['completeChat'][i].time_ago;
+
+              console.log(is_custom_offer, 'fffff');
+              
 
               
               if (sender_id == user_id) {
@@ -897,7 +900,13 @@ $(document).ready(function() {
               }
 
               chat_div += ' <li class="'+chat_type+'">'+
-                          '<p>'+sms+'</p>';
+                    '<p>'+sms+'</p>';
+
+              if (is_custom_offer != 0) {
+                chat_div += '<div class="custom-offer-wrap" style="margin-top:8px;">' +
+                      '<button class="btn btn-sm btn-primary custom-offer-btn" data-offer-id="'+is_custom_offer+'">View Custom Offer</button>' +
+                      '</div>';
+              }
         if (files != null) {
         // Split the comma-separated files into an array
         const fileArray = files.split(',');

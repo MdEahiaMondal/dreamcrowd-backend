@@ -17,6 +17,7 @@ class Chat extends Model
         'files',
         'type',
         'status', 
+        'is_custom_offer',
     ];
 
     public function sender()
