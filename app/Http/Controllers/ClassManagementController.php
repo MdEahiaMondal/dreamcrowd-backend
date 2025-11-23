@@ -347,8 +347,13 @@ class ClassManagementController extends Controller
                     $gig->lesson_type = $request->lesson_type;
                     $gigData->recurring_type = $request->recurring_type;
 
-                    $gigData->meeting_platform = $request->meeting_platform;
-                    $gig->meeting_platform = $request->meeting_platform;
+                    // Validate and sanitize meeting_platform - only allow 'Zoom', 'Google', or null
+                    $meetingPlatform = $request->meeting_platform;
+                    if (!in_array($meetingPlatform, ['Zoom', 'Google'], true)) {
+                        $meetingPlatform = null;
+                    }
+                    $gigData->meeting_platform = $meetingPlatform;
+                    $gig->meeting_platform = $meetingPlatform;
 
                     if ($request->recurring_type == 'Trial') {
                         if ($request->class_type != 'Live') {
@@ -359,8 +364,13 @@ class ClassManagementController extends Controller
                             return back()->with('error', 'Trial class cannot be subscription');
                         }
 
-                        $gigData->trial_type = $request->trial_type;
-                        $gig->trial_type = $request->trial_type;
+                        // Validate and sanitize trial_type - only allow 'Free', 'Paid', or null
+                        $trialType = $request->trial_type;
+                        if (!in_array($trialType, ['Free', 'Paid'], true)) {
+                            $trialType = null;
+                        }
+                        $gigData->trial_type = $trialType;
+                        $gig->trial_type = $trialType;
                     }
 
                     if ($request->lesson_type == 'Group') {
@@ -407,8 +417,14 @@ class ClassManagementController extends Controller
 
                 if ($request->freelance_service == 'Consultation') {
                     $gigData->video_call = $request->video_call;
-                    $gigData->meeting_platform = $request->meeting_platform;
-                    $gig->meeting_platform = $request->meeting_platform;
+
+                    // Validate and sanitize meeting_platform - only allow 'Zoom', 'Google', or null
+                    $meetingPlatform = $request->meeting_platform;
+                    if (!in_array($meetingPlatform, ['Zoom', 'Google'], true)) {
+                        $meetingPlatform = null;
+                    }
+                    $gigData->meeting_platform = $meetingPlatform;
+                    $gig->meeting_platform = $meetingPlatform;
                 }
 
             } else {
@@ -1038,14 +1054,24 @@ class ClassManagementController extends Controller
 
                         // Update meeting platform for Live classes
                         if ($request->has('meeting_platform')) {
-                            $gigData->meeting_platform = $request->meeting_platform;
-                            $gig->meeting_platform = $request->meeting_platform;
+                            // Validate and sanitize meeting_platform - only allow 'Zoom', 'Google', or null
+                            $meetingPlatform = $request->meeting_platform;
+                            if (!in_array($meetingPlatform, ['Zoom', 'Google'], true)) {
+                                $meetingPlatform = null;
+                            }
+                            $gigData->meeting_platform = $meetingPlatform;
+                            $gig->meeting_platform = $meetingPlatform;
                         }
 
                         // Update trial type if recurring type is Trial
                         if ($request->recurring_type == 'Trial' && $request->has('trial_type')) {
-                            $gigData->trial_type = $request->trial_type;
-                            $gig->trial_type = $request->trial_type;
+                            // Validate and sanitize trial_type - only allow 'Free', 'Paid', or null
+                            $trialType = $request->trial_type;
+                            if (!in_array($trialType, ['Free', 'Paid'], true)) {
+                                $trialType = null;
+                            }
+                            $gigData->trial_type = $trialType;
+                            $gig->trial_type = $trialType;
                         } else {
                             $gigData->trial_type = null;
                             $gig->trial_type = null;
@@ -1112,8 +1138,14 @@ class ClassManagementController extends Controller
 
                     if ($request->freelance_service == 'Consultation') {
                         $gigData->video_call = $request->video_call;
-                        $gigData->meeting_platform = $request->meeting_platform;
-                        $gig->meeting_platform = $request->meeting_platform;
+
+                        // Validate and sanitize meeting_platform - only allow 'Zoom', 'Google', or null
+                        $meetingPlatform = $request->meeting_platform;
+                        if (!in_array($meetingPlatform, ['Zoom', 'Google'], true)) {
+                            $meetingPlatform = null;
+                        }
+                        $gigData->meeting_platform = $meetingPlatform;
+                        $gig->meeting_platform = $meetingPlatform;
                     } else {
                         $gigData->video_call = null;
                         $gigData->meeting_platform = null;

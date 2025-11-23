@@ -649,17 +649,13 @@ function generateTimeSlots(startTime, endTime, teacherTimeZone, minStartTime = n
 
     minStartTime.add(duration_booking, "hours");
 
-    // Track how many valid days we've added
-    let validDaysCount = 0;
-    let daysChecked = 0;
-    let maxDaysToCheck = 90; // Check up to 90 days to find 30 valid days
-
-    while (validDaysCount < 30 && daysChecked < maxDaysToCheck) {
-        let currentDate = moment(startDate).add(daysChecked, "days");
+    // Generate availability for 30 consecutive calendar days
+    for (let i = 0; i < 30; i++) {
+        let currentDate = moment(startDate).add(i, "days");
         let dayName = currentDate.format("dddd");
         let formattedDate = currentDate.format("YYYY-MM-DD");
 
-        // Only process days that are in the configured repeatDays
+        // Check if this day is in the configured repeatDays
         if (configuredDays.has(dayName)) {
             let currentDaySlots = [];
             let extendedSlots = [];
@@ -687,23 +683,20 @@ function generateTimeSlots(startTime, endTime, teacherTimeZone, minStartTime = n
                 }
             });
 
-            // Only add this day to availability if it has slots
-            if (currentDaySlots.length > 0) {
-                availability[validDaysCount] = currentDaySlots;
+            // Add slots for this configured day
+            availability[i] = currentDaySlots;
 
-                // Handle extended slots for next valid day
-                if (extendedSlots.length > 0 && validDaysCount + 1 < 30) {
-                    if (!availability[validDaysCount + 1]) {
-                        availability[validDaysCount + 1] = [];
-                    }
-                    availability[validDaysCount + 1] = [...extendedSlots, ...availability[validDaysCount + 1]];
+            // Handle extended slots for next day
+            if (extendedSlots.length > 0 && i + 1 < 30) {
+                if (!availability[i + 1]) {
+                    availability[i + 1] = [];
                 }
-
-                validDaysCount++;
+                availability[i + 1] = [...extendedSlots, ...availability[i + 1]];
             }
+        } else {
+            // Day is NOT configured - leave it as empty array (no time slots)
+            availability[i] = [];
         }
-
-        daysChecked++;
     }
 
     return availability;
@@ -781,10 +774,35 @@ function updateNavigationArrows() {
     let isFirstDateToday = currentViewDate.isSame(today, "day"); // Check if current view is today
     let isAtMaxAllowedDate = isSubscription && currentViewDate.isSame(maxAllowedDate, "day");
 
- 
+
     $("#myc-prev-week").toggle(!isFirstDateToday);
-   
+
     $("#myc-next-week").toggle(!(isSubscription && isAtMaxAllowedDate));
+}
+
+// Function to format all timeslots with time ranges
+function formatAllTimeslots() {
+    // Get duration in minutes
+    let durationMinutes = gigPayment.duration.split(":").reduce((h, m) => parseInt(h) * 60 + parseInt(m), 0);
+
+    // Format ALL timeslots with time ranges
+    $('.myc-available-time').each(function() {
+        let $slot = $(this);
+        let slotDate = $slot.data('date');
+        let slotTime = $slot.data('time');
+
+        // Parse the start time and calculate end time in user's timezone
+        let startTime = moment.tz(`${slotDate} ${slotTime}`, "YYYY-MM-DD HH:mm", userTimeZone);
+        let endTime = startTime.clone().add(durationMinutes, "minutes");
+
+        // Format times in 12-hour format with AM/PM
+        let formattedStart = startTime.format("h:mm A");
+        let formattedEnd = endTime.format("h:mm A");
+        let timeRange = `${formattedStart} - ${formattedEnd}`;
+
+        // Update the button to show time range
+        $slot.html(timeRange);
+    });
 }
 
 
@@ -966,7 +984,10 @@ $("#teacher_class_time").val(teacherupdatedClassTimeStr);
 
         $("#selected-dates").html(html);
         $("#selected_slots").val(selectedSlots.join("|*|"));
-       
+
+        // Update timeslot labels after updating selections
+        formatAllTimeslots();
+
     });
 }
 ,
@@ -1011,14 +1032,22 @@ $("#teacher_class_time").val(teacherupdatedClassTimeStr);
         $.each(selectedDates, function (date, times) {
             $.each(times, function (index, time) {
               selected_t_d = time.split(' ');
-              
+
                 $(`[data-date="${selected_t_d[0]}"][data-time="${selected_t_d[1]}"]`).addClass("selected");
             });
         });
+
+        // Update timeslot labels after reapplying selections
+        formatAllTimeslots();
     }, 100);
 }
 
     });
+
+    // Format all timeslots with time ranges on initial load
+    setTimeout(function() {
+        formatAllTimeslots();
+    }, 100);
 
     // Hide previous navigation arrow on page load (since the calendar starts from today)
     $("#myc-prev-week").hide();

@@ -726,6 +726,31 @@ function updateNavigationArrows() {
     $("#myc-next-week").toggle(!(isSubscription && isAtMaxAllowedDate));
 }
 
+// Function to format all timeslots with time ranges
+function formatAllTimeslots() {
+    // Get duration in minutes
+    let durationMinutes = gigPayment.duration.split(":").reduce((h, m) => parseInt(h) * 60 + parseInt(m), 0);
+
+    // Format ALL timeslots with time ranges
+    $('.myc-available-time').each(function() {
+        let $slot = $(this);
+        let slotDate = $slot.data('date');
+        let slotTime = $slot.data('time');
+
+        // Parse the start time and calculate end time in user's timezone
+        let startTime = moment.tz(`${slotDate} ${slotTime}`, "YYYY-MM-DD HH:mm", userTimeZone);
+        let endTime = startTime.clone().add(durationMinutes, "minutes");
+
+        // Format times in 12-hour format with AM/PM
+        let formattedStart = startTime.format("h:mm A");
+        let formattedEnd = endTime.format("h:mm A");
+        let timeRange = `${formattedStart} - ${formattedEnd}`;
+
+        // Update the button to show time range
+        $slot.html(timeRange);
+    });
+}
+
 
 
 
@@ -836,7 +861,7 @@ for (let i = selectedValues.length + 1; i <= totalClasses; i++) {
         if (hasError) {
 
               $('#new_cls' + selectedValues.length).html("Not Selected");
-              
+
           data.pop(); // Remove last clicked slot
             return; // Stop execution if any error occurred
         }
@@ -844,6 +869,9 @@ for (let i = selectedValues.length + 1; i <= totalClasses; i++) {
         $("#selected_slots").val(selectedSlots.join("|*|"));
         $("#class_time").val(selectedValues.join(","));
         $("#teacher_class_time").val(teacher_time_slots.join(","));
+
+        // Update timeslot labels after updating selections
+        formatAllTimeslots();
     });
 }
 ,
@@ -910,16 +938,25 @@ onClickNavigator: function (ev, instance) {
                 $(`[data-date="${selectedDate}"][data-time="${selectedTime}"]`).addClass("selected");
             });
         });
+
+        // Update timeslot labels after reapplying selections
+        formatAllTimeslots();
     }, 100);
 }
 
 
     });
 
+    // Format all timeslots with time ranges on initial load
+    setTimeout(function() {
+        formatAllTimeslots();
+    }, 100);
+
     // Hide previous navigation arrow on page load (since the calendar starts from today)
     $("#myc-prev-week").hide();
-    
- 
+
+
+
 
  
 
