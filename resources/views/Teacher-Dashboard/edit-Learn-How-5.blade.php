@@ -1049,7 +1049,7 @@ $('#SubCategories').append(div_main);
 
 
 {{-- Google Script CDN --}}
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCW5ygAl2FCqHzGt-N4CytVzgUjX8DLGY4&libraries=places"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key={{ config('services.google_maps.api_key') }}&libraries=places&loading=async"></script>
 
 {{-- Street Address Google Api Script Start --}}
 <script>

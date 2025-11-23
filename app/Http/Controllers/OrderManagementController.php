@@ -3019,7 +3019,6 @@ class OrderManagementController extends Controller
                 $class->update();
             }
         } else {
-            dd($classes, $newTeacherDates);
             // ✅ Create new reschedule records
             foreach ($classes as $index => $class) {
                 // Create new ClassReschedule record

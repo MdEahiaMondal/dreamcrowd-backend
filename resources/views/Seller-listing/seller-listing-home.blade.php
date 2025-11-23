@@ -3079,7 +3079,7 @@
 {{-- Live Location Google Api Get Script Start --}}
 {{-- CDN For Script --}}
 <script
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBMA8qhhaBOYY1uv0nUfsBGcE74w6JNY7M&libraries=places"></script>
+    src="https://maps.googleapis.com/maps/api/js?key={{ config('services.google_maps.api_key') }}&libraries=places&loading=async"></script>
 
 <script>
     function getLiveLocation() {
@@ -3218,9 +3218,7 @@
 
 
 {{-- Location write and search services Start Script --}}
-{{-- CDN Google Api --}}
-<script
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBMA8qhhaBOYY1uv0nUfsBGcE74w6JNY7M&libraries=places"></script>
+{{-- CDN Google Api - Already loaded above, removed duplicate --}}
 <script>
     $(document).ready(function () {
 

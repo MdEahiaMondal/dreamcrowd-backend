@@ -3176,13 +3176,27 @@ if (isValid) {
 
 {{-- Street Address Google Api Script Start --}}
 {{-- Google Script CDN --}}
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBMA8qhhaBOYY1uv0nUfsBGcE74w6JNY7M&libraries=places"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key={{ config('services.google_maps.api_key') }}&libraries=places&loading=async"></script>
 
 {{-- Get Live Location On CLick Icon Script Start --}}
 <script>
-  document.getElementById('location-icon').addEventListener('click', function () {
+  var expertGeocodingInProgress = false; // Flag to prevent multiple simultaneous calls
+  var locationIcon = document.getElementById('location-icon');
+
+  // Remove any existing listeners first to prevent duplicates
+  var newLocationIcon = locationIcon.cloneNode(true);
+  locationIcon.parentNode.replaceChild(newLocationIcon, locationIcon);
+
+  newLocationIcon.addEventListener('click', function () {
+    // Prevent multiple simultaneous geocoding requests
+    if (expertGeocodingInProgress) {
+        console.log('Geocoding already in progress, skipping...');
+        return;
+    }
+
     // Check if the browser supports Geolocation API
     if (navigator.geolocation) {
+        expertGeocodingInProgress = true; // Set flag
         navigator.geolocation.getCurrentPosition(function (position) {
             var latitude = position.coords.latitude;
             var longitude = position.coords.longitude;
@@ -3242,8 +3256,10 @@ if (isValid) {
                 } else {
                     console.log('Geocoder failed due to: ' + status);
                 }
+                expertGeocodingInProgress = false; // Reset flag after geocoding completes
             });
         }, function (error) {
+            expertGeocodingInProgress = false; // Reset flag on error
             console.log("Error occurred. Error code: " + error.code);
             switch (error.code) {
                 case error.PERMISSION_DENIED:

@@ -1851,7 +1851,7 @@
 {{-- Fetch Country City Zipcode Script Start ======= --}}
 {{-- CDN For Script --}}
 <script
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBMA8qhhaBOYY1uv0nUfsBGcE74w6JNY7M&libraries=places"></script>
+    src="https://maps.googleapis.com/maps/api/js?key={{ config('services.google_maps.api_key') }}&libraries=places&loading=async"></script>
 
 <script>
 
@@ -1914,11 +1914,20 @@
     //  Onclick Live Location Dedect ==== Start Script
 
     var locationInput = document.getElementById('street_address');
+    var geocodingInProgress = false; // Flag to prevent multiple simultaneous calls
 
     // When the input is clicked, detect and autofill the live location
-    locationInput.addEventListener('click', function () {
+    // Remove any existing listeners first to prevent duplicates
+    $(locationInput).off('click').on('click', function () {
+        // Prevent multiple simultaneous geocoding requests
+        if (geocodingInProgress) {
+            console.log('Geocoding already in progress, skipping...');
+            return;
+        }
+
         // Check if the browser supports Geolocation API
         if (navigator.geolocation) {
+            geocodingInProgress = true; // Set flag
             navigator.geolocation.getCurrentPosition(function (position) {
                 var latitude = position.coords.latitude;
                 var longitude = position.coords.longitude;
@@ -1988,8 +1997,10 @@
                     } else {
                         console.log('Geocoder failed due to: ' + status);
                     }
+                    geocodingInProgress = false; // Reset flag after geocoding completes
                 });
             }, function (error) {
+                geocodingInProgress = false; // Reset flag on error
                 console.log("Error occurred. Error code: " + error.code);
                 // Handle different error cases
                 switch (error.code) {
