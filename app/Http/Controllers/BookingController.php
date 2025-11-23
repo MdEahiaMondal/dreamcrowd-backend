@@ -200,7 +200,16 @@ class BookingController extends Controller
             $selectedDay = $selectedDateTime->format('l');
             $repeatDays = TeacherReapetDays::where(['gig_id' => $gig->id, 'day' => $selectedDay])->first();
             if (!$repeatDays) {
-                return response()->json(['error' => 'Invalid Selection']);
+                // Get configured days for this class to show in error message
+                $configuredDays = TeacherReapetDays::where('gig_id', $gig->id)
+                    ->pluck('day')
+                    ->toArray();
+
+                $daysString = implode(', ', $configuredDays);
+
+                return response()->json([
+                    'error' => "Invalid day selection. This class is only available on: {$daysString}. Please select a date on one of these days."
+                ]);
             }
 
             $startTime = Carbon::parse($repeatDays->start_time);

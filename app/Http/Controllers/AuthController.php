@@ -67,7 +67,7 @@ class AuthController extends Controller
         if ($request->email == null || $request->password == null || $request->c_password == null || $request->first_name == null || $request->last_name == null) {
             $response['error'] = true;
             $response['geterror'] = '';
-            $response['message'] = 'All Fields Are Required!';
+            $response['message'] = 'All fields are required';
             return response()->json($response);
             // return redirect()->back()->with('error','All Fields Are Required!');
         }
@@ -75,7 +75,7 @@ class AuthController extends Controller
         if ($request->password != $request->c_password) {
             $response['error'] = true;
             $response['geterror'] = 'c_password';
-            $response['message'] = 'Password did not Matched';
+            $response['message'] = 'Passwords do not match';
             return response()->json($response);
             // return redirect()->back()->with('error','Password did not Matched');
         }
@@ -85,7 +85,7 @@ class AuthController extends Controller
         if (!empty($user)) {
             $response['error'] = true;
             $response['geterror'] = 'email';
-            $response['message'] = 'This Email is Already Registered';
+            $response['message'] = 'This email is already registered';
             return response()->json($response);
             // return redirect()->back()->with('error','This Email is Already Registered!');
 
@@ -442,7 +442,7 @@ class AuthController extends Controller
         if (empty($user)) {
             $response['error'] = true;
             $response['geterror'] = 'email';
-            $response['message'] = 'This Email is not Registered Please Create an Account!';
+            $response['message'] = 'This email is not registered. Please create an account';
             return response()->json($response);
             // return redirect()->back()->with('error','This Email is not Registered Please Create an Account!');
 
@@ -568,7 +568,7 @@ class AuthController extends Controller
                 \Log::error('Failed to send email verification success notification: ' . $e->getMessage());
             }
 
-            return redirect('/')->with('success', 'your email has been successfully verified');
+            return redirect('/')->with('success', 'Your email has been successfully verified');
         } else {
             return redirect('/')->with('error', 'This Verification Link is Expired!');
         }
@@ -585,7 +585,7 @@ class AuthController extends Controller
         if (empty($user)) {
             $response['error'] = true;
             $response['geterror'] = 'email';
-            $response['message'] = 'This Email is not Registered!';
+            $response['message'] = 'This email is not registered';
             return response()->json($response);
             // return redirect()->back()->with('error','This Email is not Registered!');
 
@@ -689,7 +689,7 @@ class AuthController extends Controller
         if ($request->password != $request->c_password) {
             $response['error'] = true;
             $response['geterror'] = 'c_password';
-            $response['message'] = 'Password did not Matched!';
+            $response['message'] = 'Passwords do not match';
             return response()->json($response);
             // return redirect()->back()->with('error','Password did not Matched!');
         }

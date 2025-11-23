@@ -365,6 +365,21 @@ text-decoration: none;
                                         <div id="selected-dates"></div>
                                     </div>
 
+                                    <!-- Available Days Info -->
+                                    @if($repeatDays && count($repeatDays) > 0)
+                                    <div class="alert alert-info mb-3" style="background-color: #e7f3ff; border-left: 4px solid #2196F3; padding: 12px;">
+                                        <i class="fa fa-info-circle"></i>
+                                        <strong>Service Available Days:</strong>
+                                        @foreach($repeatDays as $index => $day)
+                                            <span class="badge badge-primary" style="background-color: #2196F3; margin: 0 4px; padding: 5px 10px;">
+                                                {{ $day->day }} ({{ \Carbon\Carbon::parse($day->start_time)->format('g:i A') }} - {{ \Carbon\Carbon::parse($day->end_time)->format('g:i A') }})
+                                            </span>
+                                        @endforeach
+                                        <br>
+                                        <small class="text-muted">You can only reschedule to dates on these days.</small>
+                                    </div>
+                                    @endif
+
                                       <div id="picker"></div>
                                   
                                       <input type="hidden" name="old_class_time" id="old_class_time" value="{{$class}}">
@@ -596,45 +611,62 @@ let blockedSlots = getBlockedSlots();
 // Function to generate availability slots
 // Generate availability slots
 function generateAvailability(startDate, teacherTimeZone) {
-    let availability = new Array(30).fill(null).map(() => []);
+    let availability = [];
 
-    for (let i = 0; i < 30; i++) {
-        let currentDate = moment(startDate).add(i, "days");
+    // Create a Set of configured day names for fast lookup
+    let configuredDays = new Set(repeatDays.map(rd => rd.day));
+
+    // Track how many valid days we've added
+    let validDaysCount = 0;
+    let daysChecked = 0;
+    let maxDaysToCheck = 90; // Check up to 90 days to find 30 valid days
+
+    while (validDaysCount < 30 && daysChecked < maxDaysToCheck) {
+        let currentDate = moment(startDate).add(daysChecked, "days");
         let dayName = currentDate.format("dddd");
         let formattedDate = currentDate.format("YYYY-MM-DD");
-        let nextDayIndex = i + 1;
 
-        let currentDaySlots = [];
-        let extendedSlots = [];
+        // Only process days that are in the configured repeatDays
+        if (configuredDays.has(dayName)) {
+            let currentDaySlots = [];
+            let extendedSlots = [];
 
-        repeatDays.forEach((repeatDay) => {
-            if (repeatDay.day === dayName) {
-                let slots = generateTimeSlots(repeatDay.start_time, repeatDay.end_time, teacherTimeZone);
+            repeatDays.forEach((repeatDay) => {
+                if (repeatDay.day === dayName) {
+                    let slots = generateTimeSlots(repeatDay.start_time, repeatDay.end_time, teacherTimeZone);
 
-                // Filter blocked slots (still in teacher time zone)
-                if (blockedSlots[formattedDate]) {
-                    slots = slots.filter((slot) => !blockedSlots[formattedDate].has(slot));
-                }
-
-                slots.forEach(slot => {
-                  if (slot === "00:00" || slot < "04:00") {
-                        extendedSlots.push(slot);
-                    } else {
-                        currentDaySlots.push(slot);
+                    // Filter blocked slots (still in teacher time zone)
+                    if (blockedSlots[formattedDate]) {
+                        slots = slots.filter((slot) => !blockedSlots[formattedDate].has(slot));
                     }
-                });
 
-                if (availability[i].length > 0) {
-                    currentDaySlots = [...availability[i], ...currentDaySlots];
+                    slots.forEach(slot => {
+                        if (slot === "00:00" || slot < "04:00") {
+                            extendedSlots.push(slot);
+                        } else {
+                            currentDaySlots.push(slot);
+                        }
+                    });
+                }
+            });
+
+            // Only add this day to availability if it has slots
+            if (currentDaySlots.length > 0) {
+                availability[validDaysCount] = currentDaySlots;
+
+                // Handle extended slots for next valid day
+                if (extendedSlots.length > 0 && validDaysCount + 1 < 30) {
+                    if (!availability[validDaysCount + 1]) {
+                        availability[validDaysCount + 1] = [];
+                    }
+                    availability[validDaysCount + 1] = [...extendedSlots, ...availability[validDaysCount + 1]];
                 }
 
-                availability[i] = currentDaySlots;
-
-                if (extendedSlots.length > 0 && nextDayIndex < 30) {
-                    availability[nextDayIndex] = [...extendedSlots, ...availability[nextDayIndex]];
-                }
+                validDaysCount++;
             }
-        });
+        }
+
+        daysChecked++;
     }
 
     return availability;

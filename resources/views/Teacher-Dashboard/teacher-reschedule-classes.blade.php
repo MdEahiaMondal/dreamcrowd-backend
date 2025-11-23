@@ -361,6 +361,21 @@ text-decoration: none;
                                         <div id="selected-dates"></div>
                                     </div>
 
+                                    <!-- Available Days Info -->
+                                    @if($repeatDays && count($repeatDays) > 0)
+                                    <div class="alert alert-info mb-3" style="background-color: #e7f3ff; border-left: 4px solid #2196F3; padding: 12px;">
+                                        <i class="fa fa-info-circle"></i>
+                                        <strong>Class Available Days:</strong>
+                                        @foreach($repeatDays as $index => $day)
+                                            <span class="badge badge-primary" style="background-color: #2196F3; margin: 0 4px; padding: 5px 10px;">
+                                                {{ $day->day }} ({{ \Carbon\Carbon::parse($day->start_time)->format('g:i A') }} - {{ \Carbon\Carbon::parse($day->end_time)->format('g:i A') }})
+                                            </span>
+                                        @endforeach
+                                        <br>
+                                        <small class="text-muted">You can only reschedule to dates on these days.</small>
+                                    </div>
+                                    @endif
+
                                       <div id="picker"></div>
                                    
                                       <input type="hidden" name="old_class_time" id="old_class_time" value="{{$class}}">
@@ -615,65 +630,80 @@ function generateTimeSlots(startTime, endTime, teacherTimeZone, minStartTime = n
  
 
   function generateAvailability(startDate, teacherTimeZone) {
-    let availability = new Array(30).fill(null).map(() => []);
+    let availability = [];
     let now = moment().tz(teacherTimeZone);
     let minStartTime = now.clone();
- 
 
-  var duration_booking;
+    // Create a Set of configured day names for fast lookup
+    let configuredDays = new Set(repeatDays.map(rd => rd.day));
 
-if (gigData.recurring_type === "OneDay") {
-  duration_booking = duration.class_oneday || 1;
-} else if (service_type === "Inperson") {
-  duration_booking = duration.class_inperson || 4;
-} else if (service_type === "Online") {
-  duration_booking = duration.class_online || 3;
-}
+    var duration_booking;
+
+    if (gigData.recurring_type === "OneDay") {
+        duration_booking = duration.class_oneday || 1;
+    } else if (service_type === "Inperson") {
+        duration_booking = duration.class_inperson || 4;
+    } else if (service_type === "Online") {
+        duration_booking = duration.class_online || 3;
+    }
 
     minStartTime.add(duration_booking, "hours");
 
-    for (let i = 0; i < 30; i++) {
-        let currentDate = moment(startDate).add(i, "days");
+    // Track how many valid days we've added
+    let validDaysCount = 0;
+    let daysChecked = 0;
+    let maxDaysToCheck = 90; // Check up to 90 days to find 30 valid days
+
+    while (validDaysCount < 30 && daysChecked < maxDaysToCheck) {
+        let currentDate = moment(startDate).add(daysChecked, "days");
         let dayName = currentDate.format("dddd");
         let formattedDate = currentDate.format("YYYY-MM-DD");
-        let nextDayIndex = i + 1;
 
-        let currentDaySlots = [];
-        let extendedSlots = [];
+        // Only process days that are in the configured repeatDays
+        if (configuredDays.has(dayName)) {
+            let currentDaySlots = [];
+            let extendedSlots = [];
 
-        repeatDays.forEach((repeatDay) => {
-            if (repeatDay.day === dayName) {
-                let slots = generateTimeSlots(
-                    repeatDay.start_time,
-                    repeatDay.end_time,
-                    teacherTimeZone,
-                    currentDate.isSame(now, 'day') ? minStartTime : null
-                );
-                
-                if (blockedSlots[formattedDate]) {
-                    slots = slots.filter((slot) => !blockedSlots[formattedDate].has(slot));
-           
-                }
-                
-                slots.forEach(slot => {
-                     if (slot === "00:00" || slot < "04:00") {
-                        extendedSlots.push(slot);
-                    } else {
-                        currentDaySlots.push(slot);
+            repeatDays.forEach((repeatDay) => {
+                if (repeatDay.day === dayName) {
+                    let slots = generateTimeSlots(
+                        repeatDay.start_time,
+                        repeatDay.end_time,
+                        teacherTimeZone,
+                        currentDate.isSame(now, 'day') ? minStartTime : null
+                    );
+
+                    if (blockedSlots[formattedDate]) {
+                        slots = slots.filter((slot) => !blockedSlots[formattedDate].has(slot));
                     }
-                });
-                
-                if (availability[i].length > 0) {
-                    currentDaySlots = [...availability[i], ...currentDaySlots];
-                }
-                
-                availability[i] = currentDaySlots;
 
-                if (extendedSlots.length > 0 && nextDayIndex < 30) {
-                    availability[nextDayIndex] = [...extendedSlots, ...availability[nextDayIndex]];
+                    slots.forEach(slot => {
+                        if (slot === "00:00" || slot < "04:00") {
+                            extendedSlots.push(slot);
+                        } else {
+                            currentDaySlots.push(slot);
+                        }
+                    });
                 }
+            });
+
+            // Only add this day to availability if it has slots
+            if (currentDaySlots.length > 0) {
+                availability[validDaysCount] = currentDaySlots;
+
+                // Handle extended slots for next valid day
+                if (extendedSlots.length > 0 && validDaysCount + 1 < 30) {
+                    if (!availability[validDaysCount + 1]) {
+                        availability[validDaysCount + 1] = [];
+                    }
+                    availability[validDaysCount + 1] = [...extendedSlots, ...availability[validDaysCount + 1]];
+                }
+
+                validDaysCount++;
             }
-        });
+        }
+
+        daysChecked++;
     }
 
     return availability;
