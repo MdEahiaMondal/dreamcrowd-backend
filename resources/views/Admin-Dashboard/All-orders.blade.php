@@ -319,7 +319,7 @@
                                         @endif
                                       </td>
                                       <td>
-                                        <a href="{{ route('shared.transaction-details', $order->id) }}"
+                                        <a href="{{ route('transaction.details', $order->id) }}"
                                            class="btn btn-sm btn-primary" target="_blank">
                                           <i class="fa fa-eye"></i> View
                                         </a>
