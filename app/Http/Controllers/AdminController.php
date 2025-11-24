@@ -2990,7 +2990,19 @@ class AdminController extends Controller
         $transaction = \App\Models\Transaction::with(['seller', 'buyer', 'bookOrder.gig'])
             ->findOrFail($id);
 
-        $pdf = \PDF::loadView('Admin-Dashboard.TransactionInvoice', compact('transaction'));
+        // Get company information from settings
+        $homeSettings = \App\Models\HomeDynamic::first();
+
+        $data = [
+            'transaction' => $transaction,
+            'companyName' => $homeSettings->company_name ?? 'Dreamcrowd',
+            'companyAddress' => $homeSettings->company_address ?? 'Your Company Address, City, Country',
+            'companyEmail' => $homeSettings->company_email ?? 'support@dreamcrowd.com',
+            'companyPhone' => $homeSettings->company_phone ?? '+1 234 567 8900',
+            'invoiceDate' => now()->format('d M Y'),
+        ];
+
+        $pdf = \PDF::loadView('Admin-Dashboard.TransactionInvoice', $data);
 
         return $pdf->download('invoice_' . $transaction->id . '_' . now()->format('Ymd') . '.pdf');
     }
