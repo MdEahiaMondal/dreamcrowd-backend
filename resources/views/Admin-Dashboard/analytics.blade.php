@@ -49,12 +49,12 @@
   </head>
   <body>
     <!-- ========== Sidebar Section Start ========== -->
-    @include('components.Admin.Sidebar')
+    <x-admin-sidebar/>
     <!-- ========== Sidebar Section End ========== -->
 
     <!-- ========== Main Content Section Start ========== -->
     <section class="home-section">
-      @include('components.Admin.Header')
+      <x-admin-nav/>
 
       <div class="home-content">
         <div class="container-fluid px-3">
