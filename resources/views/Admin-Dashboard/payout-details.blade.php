@@ -296,8 +296,8 @@
                                           <span class="payout-status-badge payout-approved">Approved</span>
                                         @elseif($payout->payout_status == 'completed')
                                           <span class="payout-status-badge payout-completed">Completed</span>
-                                          @if($payout->payout_date)
-                                            <br><small class="text-muted">{{ \Carbon\Carbon::parse($payout->payout_date)->format('M d, Y') }}</small>
+                                          @if($payout->payout_at)
+                                            <br><small class="text-muted">{{ \Carbon\Carbon::parse($payout->payout_at)->format('M d, Y') }}</small>
                                           @endif
                                         @elseif($payout->payout_status == 'failed')
                                           <span class="payout-status-badge payout-failed">Failed</span>
