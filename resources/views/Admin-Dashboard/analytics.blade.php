@@ -287,8 +287,8 @@
     </section>
 
     <!-- JavaScript -->
-    <script src="/assets/admin/libs/jquery/js/jquery-3.6.0.min.js"></script>
-    <script src="/assets/admin/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="/assets/admin/libs/jquery/jquery.js"></script>
+    <script src="/assets/admin/asset/js/bootstrap.min.js"></script>
     <script src="/assets/admin/asset/js/sidebar.js"></script>
 
     <script>
