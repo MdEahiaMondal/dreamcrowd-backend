@@ -29,6 +29,11 @@ class Kernel extends ConsoleKernel
             ->withoutOverlapping()
             ->runInBackground()
             ->appendOutputTo(storage_path('logs/auto-complete.log'));
+        $schedule->command('payouts:auto-process')
+            ->dailyAt('02:00')
+            ->withoutOverlapping()
+            ->runInBackground()
+            ->appendOutputTo(storage_path('logs/auto-payouts.log'));
         $schedule->command('disputes:process')
             ->dailyAt('03:00')
             ->withoutOverlapping()

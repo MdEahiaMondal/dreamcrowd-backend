@@ -3433,4 +3433,221 @@ class AdminController extends Controller
 
         return response()->json($stats);
     }
+
+    /**
+     * Analytics Dashboard - Refund, Payout, and Revenue Analytics
+     */
+    public function analyticsDashboard(Request $request)
+    {
+        if ($redirect = $this->AdmincheckAuth()) {
+            return $redirect;
+        }
+
+        // Date range filtering (default: last 30 days)
+        $startDate = $request->input('start_date', now()->subDays(30)->format('Y-m-d'));
+        $endDate = $request->input('end_date', now()->format('Y-m-d'));
+
+        // ============ REFUND ANALYTICS ============
+        $refundStats = $this->getRefundAnalytics($startDate, $endDate);
+
+        // ============ PAYOUT ANALYTICS ============
+        $payoutStats = $this->getPayoutAnalytics($startDate, $endDate);
+
+        // ============ ORDER ANALYTICS ============
+        $orderStats = $this->getOrderAnalytics($startDate, $endDate);
+
+        // ============ REVENUE ANALYTICS ============
+        $revenueStats = $this->getRevenueAnalytics($startDate, $endDate);
+
+        // ============ CHART DATA ============
+        $chartData = $this->prepareChartData($startDate, $endDate);
+
+        return view('Admin-Dashboard.analytics', compact(
+            'refundStats',
+            'payoutStats',
+            'orderStats',
+            'revenueStats',
+            'chartData',
+            'startDate',
+            'endDate'
+        ));
+    }
+
+    /**
+     * Get refund analytics for date range
+     */
+    protected function getRefundAnalytics($startDate, $endDate)
+    {
+        $disputes = \App\Models\DisputeOrder::whereBetween('created_at', [$startDate, $endDate]);
+
+        $totalDisputes = $disputes->count();
+        $approvedDisputes = (clone $disputes)->where('status', 1)->count();
+        $rejectedDisputes = (clone $disputes)->where('status', 2)->count();
+        $pendingDisputes = (clone $disputes)->where('status', 0)->count();
+
+        $totalRefundAmount = (clone $disputes)->where('status', 1)->sum('amount');
+        $averageRefundAmount = $approvedDisputes > 0 ? $totalRefundAmount / $approvedDisputes : 0;
+
+        $approvalRate = $totalDisputes > 0 ? ($approvedDisputes / $totalDisputes) * 100 : 0;
+        $rejectionRate = $totalDisputes > 0 ? ($rejectedDisputes / $totalDisputes) * 100 : 0;
+
+        // Average processing time (from creation to approval/rejection)
+        $avgProcessingTime = \App\Models\DisputeOrder::whereBetween('created_at', [$startDate, $endDate])
+            ->whereIn('status', [1, 2])
+            ->selectRaw('AVG(TIMESTAMPDIFF(HOUR, created_at, updated_at)) as avg_hours')
+            ->value('avg_hours') ?? 0;
+
+        return [
+            'total_disputes' => $totalDisputes,
+            'approved' => $approvedDisputes,
+            'rejected' => $rejectedDisputes,
+            'pending' => $pendingDisputes,
+            'total_refund_amount' => $totalRefundAmount,
+            'average_refund_amount' => $averageRefundAmount,
+            'approval_rate' => round($approvalRate, 2),
+            'rejection_rate' => round($rejectionRate, 2),
+            'avg_processing_hours' => round($avgProcessingTime, 1),
+        ];
+    }
+
+    /**
+     * Get payout analytics for date range
+     */
+    protected function getPayoutAnalytics($startDate, $endDate)
+    {
+        $transactions = \App\Models\Transaction::whereBetween('created_at', [$startDate, $endDate]);
+
+        $totalPayouts = (clone $transactions)->whereIn('payout_status', ['pending', 'completed', 'failed'])->count();
+        $pendingPayouts = (clone $transactions)->where('payout_status', 'pending')->count();
+        $completedPayouts = (clone $transactions)->where('payout_status', 'completed')->count();
+        $failedPayouts = (clone $transactions)->where('payout_status', 'failed')->count();
+
+        $totalPayoutAmount = (clone $transactions)->where('payout_status', 'completed')->sum('seller_earnings');
+        $pendingPayoutAmount = (clone $transactions)->where('payout_status', 'pending')->sum('seller_earnings');
+        $averagePayoutAmount = $completedPayouts > 0 ? $totalPayoutAmount / $completedPayouts : 0;
+
+        $completionRate = $totalPayouts > 0 ? ($completedPayouts / $totalPayouts) * 100 : 0;
+
+        // Top sellers by payout amount
+        $topSellers = \App\Models\Transaction::with('seller:id,name,email')
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->where('payout_status', 'completed')
+            ->selectRaw('seller_id, SUM(seller_earnings) as total_earnings, COUNT(*) as payout_count')
+            ->groupBy('seller_id')
+            ->orderBy('total_earnings', 'desc')
+            ->limit(10)
+            ->get();
+
+        return [
+            'total_payouts' => $totalPayouts,
+            'pending' => $pendingPayouts,
+            'completed' => $completedPayouts,
+            'failed' => $failedPayouts,
+            'total_payout_amount' => $totalPayoutAmount,
+            'pending_payout_amount' => $pendingPayoutAmount,
+            'average_payout_amount' => $averagePayoutAmount,
+            'completion_rate' => round($completionRate, 2),
+            'top_sellers' => $topSellers,
+        ];
+    }
+
+    /**
+     * Get order analytics for date range
+     */
+    protected function getOrderAnalytics($startDate, $endDate)
+    {
+        $orders = \App\Models\BookOrder::whereBetween('created_at', [$startDate, $endDate]);
+
+        $totalOrders = $orders->count();
+        $pendingOrders = (clone $orders)->where('status', 0)->count();
+        $activeOrders = (clone $orders)->where('status', 1)->count();
+        $deliveredOrders = (clone $orders)->where('status', 2)->count();
+        $completedOrders = (clone $orders)->where('status', 3)->count();
+        $cancelledOrders = (clone $orders)->where('status', 4)->count();
+
+        $completionRate = $totalOrders > 0 ? ($completedOrders / $totalOrders) * 100 : 0;
+        $cancellationRate = $totalOrders > 0 ? ($cancelledOrders / $totalOrders) * 100 : 0;
+
+        $disputeRate = $totalOrders > 0
+            ? (\App\Models\DisputeOrder::whereBetween('created_at', [$startDate, $endDate])->count() / $totalOrders) * 100
+            : 0;
+
+        return [
+            'total_orders' => $totalOrders,
+            'pending' => $pendingOrders,
+            'active' => $activeOrders,
+            'delivered' => $deliveredOrders,
+            'completed' => $completedOrders,
+            'cancelled' => $cancelledOrders,
+            'completion_rate' => round($completionRate, 2),
+            'cancellation_rate' => round($cancellationRate, 2),
+            'dispute_rate' => round($disputeRate, 2),
+        ];
+    }
+
+    /**
+     * Get revenue analytics for date range
+     */
+    protected function getRevenueAnalytics($startDate, $endDate)
+    {
+        $transactions = \App\Models\Transaction::whereBetween('created_at', [$startDate, $endDate])
+            ->where('status', 'completed');
+
+        $totalRevenue = $transactions->sum('total_amount');
+        $totalAdminCommission = (clone $transactions)->sum('total_admin_commission');
+        $totalSellerEarnings = (clone $transactions)->sum('seller_earnings');
+        $totalCouponDiscounts = (clone $transactions)->sum('coupon_discount');
+
+        $transactionCount = $transactions->count();
+        $averageOrderValue = $transactionCount > 0 ? $totalRevenue / $transactionCount : 0;
+
+        return [
+            'total_revenue' => $totalRevenue,
+            'total_admin_commission' => $totalAdminCommission,
+            'total_seller_earnings' => $totalSellerEarnings,
+            'total_coupon_discounts' => $totalCouponDiscounts,
+            'transaction_count' => $transactionCount,
+            'average_order_value' => $averageOrderValue,
+        ];
+    }
+
+    /**
+     * Prepare chart data for visualizations
+     */
+    protected function prepareChartData($startDate, $endDate)
+    {
+        // Daily revenue and commission data
+        $dailyData = \App\Models\Transaction::whereBetween('created_at', [$startDate, $endDate])
+            ->where('status', 'completed')
+            ->selectRaw('DATE(created_at) as date,
+                         SUM(total_amount) as revenue,
+                         SUM(total_admin_commission) as commission,
+                         COUNT(*) as orders')
+            ->groupBy('date')
+            ->orderBy('date')
+            ->get();
+
+        // Refund trends (daily)
+        $refundTrends = \App\Models\DisputeOrder::whereBetween('created_at', [$startDate, $endDate])
+            ->selectRaw('DATE(created_at) as date,
+                         COUNT(*) as total,
+                         SUM(CASE WHEN status = 1 THEN 1 ELSE 0 END) as approved,
+                         SUM(CASE WHEN status = 2 THEN 1 ELSE 0 END) as rejected')
+            ->groupBy('date')
+            ->orderBy('date')
+            ->get();
+
+        // Payout status distribution
+        $payoutDistribution = \App\Models\Transaction::whereBetween('created_at', [$startDate, $endDate])
+            ->selectRaw('payout_status, COUNT(*) as count, SUM(seller_earnings) as total_amount')
+            ->whereIn('payout_status', ['pending', 'completed', 'failed'])
+            ->groupBy('payout_status')
+            ->get();
+
+        return [
+            'daily_revenue' => $dailyData,
+            'refund_trends' => $refundTrends,
+            'payout_distribution' => $payoutDistribution,
+        ];
+    }
 }
