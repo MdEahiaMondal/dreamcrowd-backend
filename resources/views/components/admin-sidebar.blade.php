@@ -164,6 +164,7 @@
                     <li><a href="{{ route('admin.all-orders') }}">All Orders</a></li>
                     <li><a href="{{ route('admin.payout-details') }}">Payout Detail</a></li>
                     <li><a href="{{ route('admin.refund-details') }}">Refund Detail</a></li>
+                    <li><a href="{{ route('admin.payment-analytics') }}">Payment Analytics</a></li>
                 </ul>
             </li>
             <li>

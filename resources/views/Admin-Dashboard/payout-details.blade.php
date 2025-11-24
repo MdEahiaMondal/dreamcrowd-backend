@@ -222,6 +222,11 @@
                         <div class="col-auto">
                           <button type="submit" class="btn btn-primary">Apply Filter</button>
                         </div>
+                        <div class="col-auto">
+                          <a href="{{ route('admin.export.payouts', array_merge(request()->all(), ['view' => $view])) }}" class="btn btn-success">
+                            <i class="fa fa-download"></i> Export Excel
+                          </a>
+                        </div>
                       </div>
                     </form>
                   </div>

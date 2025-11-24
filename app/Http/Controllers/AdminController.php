@@ -3650,4 +3650,160 @@ class AdminController extends Controller
             'payout_distribution' => $payoutDistribution,
         ];
     }
+
+    /**
+     * Export Analytics Summary to Excel
+     */
+    public function exportAnalyticsSummary(Request $request)
+    {
+        if ($redirect = $this->AdmincheckAuth()) {
+            return $redirect;
+        }
+
+        // Date range filtering
+        $startDate = $request->input('start_date', now()->subDays(30)->format('Y-m-d'));
+        $endDate = $request->input('end_date', now()->format('Y-m-d'));
+
+        // Get all analytics data
+        $refundStats = $this->getRefundAnalytics($startDate, $endDate);
+        $payoutStats = $this->getPayoutAnalytics($startDate, $endDate);
+        $orderStats = $this->getOrderAnalytics($startDate, $endDate);
+        $revenueStats = $this->getRevenueAnalytics($startDate, $endDate);
+
+        $filename = 'analytics_summary_' . $startDate . '_to_' . $endDate . '.xlsx';
+
+        return \Maatwebsite\Excel\Facades\Excel::download(
+            new \App\Exports\AnalyticsSummaryExport($refundStats, $payoutStats, $orderStats, $revenueStats, $startDate, $endDate),
+            $filename
+        );
+    }
+
+    /**
+     * Export Transactions to Excel
+     */
+    public function exportTransactions(Request $request)
+    {
+        if ($redirect = $this->AdmincheckAuth()) {
+            return $redirect;
+        }
+
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
+        $status = $request->input('status');
+        $payoutStatus = $request->input('payout_status');
+
+        $query = \App\Models\Transaction::with(['seller', 'buyer', 'bookOrder.gig']);
+
+        if ($startDate && $endDate) {
+            $query->whereBetween('created_at', [$startDate, $endDate]);
+        }
+
+        if ($status) {
+            $query->where('status', $status);
+        }
+
+        if ($payoutStatus) {
+            $query->where('payout_status', $payoutStatus);
+        }
+
+        $transactions = $query->orderBy('created_at', 'desc')->get();
+
+        $filename = 'transactions_' . now()->format('Y-m-d_H-i-s') . '.xlsx';
+
+        return \Maatwebsite\Excel\Facades\Excel::download(
+            new \App\Exports\TransactionsExport($transactions),
+            $filename
+        );
+    }
+
+    /**
+     * Export Payouts to Excel
+     */
+    public function exportPayouts(Request $request)
+    {
+        if ($redirect = $this->AdmincheckAuth()) {
+            return $redirect;
+        }
+
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
+        $view = $request->input('view', 'pending');
+
+        $query = \App\Models\Transaction::with(['seller', 'buyer', 'bookOrder.gig']);
+
+        if ($startDate && $endDate) {
+            $query->whereBetween('created_at', [$startDate, $endDate]);
+        }
+
+        switch ($view) {
+            case 'pending':
+                $query->where('payout_status', 'pending')
+                    ->where('status', 'completed');
+                break;
+            case 'approved':
+                $query->where('payout_status', 'approved');
+                break;
+            case 'completed':
+                $query->where('payout_status', 'completed');
+                break;
+            case 'failed':
+                $query->where('payout_status', 'failed');
+                break;
+            default:
+                $query->whereIn('payout_status', ['pending', 'approved', 'completed', 'failed']);
+        }
+
+        $payouts = $query->orderBy('created_at', 'desc')->get();
+
+        $filename = 'payouts_' . $view . '_' . now()->format('Y-m-d_H-i-s') . '.xlsx';
+
+        return \Maatwebsite\Excel\Facades\Excel::download(
+            new \App\Exports\PayoutsExport($payouts),
+            $filename
+        );
+    }
+
+    /**
+     * Export Refunds to Excel
+     */
+    public function exportRefunds(Request $request)
+    {
+        if ($redirect = $this->AdmincheckAuth()) {
+            return $redirect;
+        }
+
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
+        $view = $request->input('view', 'pending_disputes');
+
+        $query = \App\Models\DisputeOrder::with(['user', 'order.gig.user']);
+
+        if ($startDate && $endDate) {
+            $query->whereBetween('created_at', [$startDate, $endDate]);
+        }
+
+        switch ($view) {
+            case 'pending_disputes':
+                $query->where('status', 0);
+                break;
+            case 'refunded':
+                $query->where('status', 1);
+                break;
+            case 'rejected':
+                $query->where('status', 2);
+                break;
+            default:
+                // all disputes
+                break;
+        }
+
+        $disputes = $query->orderBy('created_at', 'desc')->get();
+
+        $filename = 'refunds_' . $view . '_' . now()->format('Y-m-d_H-i-s') . '.xlsx';
+
+        return \Maatwebsite\Excel\Facades\Excel::download(
+            new \App\Exports\RefundsExport($disputes),
+            $filename
+        );
+    }
 }

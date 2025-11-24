@@ -80,6 +80,10 @@
                   </div>
                   <div style="margin-top: 20px;">
                     <button type="submit" class="btn btn-primary"><i class="fa fa-filter"></i> Filter</button>
+                    <a href="{{ route('admin.export.analytics-summary', ['start_date' => $startDate, 'end_date' => $endDate]) }}"
+                       class="btn btn-success ms-2">
+                      <i class="fa fa-download"></i> Export Excel
+                    </a>
                   </div>
                 </form>
               </div>

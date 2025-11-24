@@ -185,6 +185,10 @@ Route::controller(AdminController::class)->group(function () {
     Route::post('/admin/refund/approve/{dispute}', 'approveRefund')->name('admin.refund.approve');
     Route::post('/admin/refund/reject/{dispute}', 'rejectRefund')->name('admin.refund.reject');
     Route::get('/admin/payment-analytics', 'analyticsDashboard')->name('admin.payment-analytics');
+    Route::get('/admin/export/analytics-summary', 'exportAnalyticsSummary')->name('admin.export.analytics-summary');
+    Route::get('/admin/export/transactions', 'exportTransactions')->name('admin.export.transactions');
+    Route::get('/admin/export/payouts', 'exportPayouts')->name('admin.export.payouts');
+    Route::get('/admin/export/refunds', 'exportRefunds')->name('admin.export.refunds');
     Route::get('/admin/invoice', 'invoice')->name('admin.invoice');
     Route::get('/admin/invoice/download/{id}', 'downloadInvoice')->name('admin.invoice.download');
     Route::get('/admin/reviews-ratings', 'reviewsRatings')->name('admin.reviews.ratings');

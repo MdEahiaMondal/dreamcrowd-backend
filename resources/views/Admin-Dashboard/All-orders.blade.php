@@ -233,6 +233,13 @@
                       <label class="form-label">&nbsp;</label>
                       <button type="submit" class="btn btn-primary w-100"><i class="fa fa-filter"></i> Filter</button>
                     </div>
+                    <!-- Export Button -->
+                    <div class="col-md-1">
+                      <label class="form-label">&nbsp;</label>
+                      <a href="{{ route('admin.export.transactions', request()->all()) }}" class="btn btn-success w-100">
+                        <i class="fa fa-download"></i> Export
+                      </a>
+                    </div>
                   </div>
                 </form>
               </div>

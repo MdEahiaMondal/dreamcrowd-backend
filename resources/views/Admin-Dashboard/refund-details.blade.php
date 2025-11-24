@@ -190,23 +190,30 @@
               </div>
 
               <!-- VIEW TABS -->
-              <div class="view-tabs">
-                  <a href="{{ route('admin.refund-details', ['view' => 'pending_disputes']) }}"
-                     class="btn {{ $view == 'pending_disputes' ? 'btn-primary' : 'btn-outline-primary' }}">
-                      Pending Disputes ({{ $stats['pending_disputes'] ?? 0 }})
-                  </a>
-                  <a href="{{ route('admin.refund-details', ['view' => 'refunded']) }}"
-                     class="btn {{ $view == 'refunded' ? 'btn-success' : 'btn-outline-success' }}">
-                      Refunded ({{ $stats['refunded'] ?? 0 }})
-                  </a>
-                  <a href="{{ route('admin.refund-details', ['view' => 'rejected']) }}"
-                     class="btn {{ $view == 'rejected' ? 'btn-danger' : 'btn-outline-danger' }}">
-                      Rejected
-                  </a>
-                  <a href="{{ route('admin.refund-details', ['view' => 'all']) }}"
-                     class="btn {{ $view == 'all' ? 'btn-secondary' : 'btn-outline-secondary' }}">
-                      All Disputes
-                  </a>
+              <div class="view-tabs d-flex justify-content-between align-items-center">
+                  <div>
+                      <a href="{{ route('admin.refund-details', ['view' => 'pending_disputes']) }}"
+                         class="btn {{ $view == 'pending_disputes' ? 'btn-primary' : 'btn-outline-primary' }}">
+                          Pending Disputes ({{ $stats['pending_disputes'] ?? 0 }})
+                      </a>
+                      <a href="{{ route('admin.refund-details', ['view' => 'refunded']) }}"
+                         class="btn {{ $view == 'refunded' ? 'btn-success' : 'btn-outline-success' }}">
+                          Refunded ({{ $stats['refunded'] ?? 0 }})
+                      </a>
+                      <a href="{{ route('admin.refund-details', ['view' => 'rejected']) }}"
+                         class="btn {{ $view == 'rejected' ? 'btn-danger' : 'btn-outline-danger' }}">
+                          Rejected
+                      </a>
+                      <a href="{{ route('admin.refund-details', ['view' => 'all']) }}"
+                         class="btn {{ $view == 'all' ? 'btn-secondary' : 'btn-outline-secondary' }}">
+                          All Disputes
+                      </a>
+                  </div>
+                  <div>
+                      <a href="{{ route('admin.export.refunds', ['view' => $view]) }}" class="btn btn-success">
+                          <i class="fa fa-download"></i> Export Excel
+                      </a>
+                  </div>
               </div>
 
               <!-- Filter Date Section start from here -->
