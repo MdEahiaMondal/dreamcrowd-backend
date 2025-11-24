@@ -2216,43 +2216,240 @@ class AdminController extends Controller
     /**
      * All Orders Management
      */
-    public function allOrders()
+    public function allOrders(Request $request)
     {
         if ($redirect = $this->AdmincheckAuth()) {
             return $redirect;
         }
 
-        $orders = \App\Models\BookOrder::with(['user', 'teacher', 'gig'])
-            ->orderBy('created_at', 'desc')
-            ->paginate(20);
+        // Build query with eager loading
+        $query = \App\Models\BookOrder::with(['user', 'teacher', 'gig']);
+
+        // STATUS FILTER
+        $statusFilter = $request->get('status_filter', 'all');
+        if ($statusFilter !== 'all') {
+            $statusMap = [
+                'pending' => 0,
+                'active' => 1,
+                'delivered' => 2,
+                'completed' => 3,
+                'cancelled' => 4,
+            ];
+            if (isset($statusMap[$statusFilter])) {
+                $query->where('status', $statusMap[$statusFilter]);
+            }
+        }
+
+        // SERVICE TYPE FILTER
+        $serviceTypeFilter = $request->get('service_type_filter');
+        if ($serviceTypeFilter !== null && $serviceTypeFilter !== 'all') {
+            $query->whereHas('gig', function($q) use ($serviceTypeFilter) {
+                $q->where('service_type', $serviceTypeFilter);
+            });
+        }
+
+        // DATE RANGE FILTER
+        $dateFilter = $request->get('date_filter', 'lifetime');
+        $fromDate = $request->get('from_date');
+        $toDate = $request->get('to_date');
+
+        if ($dateFilter === 'today') {
+            $query->whereDate('created_at', \Carbon\Carbon::today());
+        } elseif ($dateFilter === 'yesterday') {
+            $query->whereDate('created_at', \Carbon\Carbon::yesterday());
+        } elseif ($dateFilter === 'last_week') {
+            $query->whereBetween('created_at', [
+                \Carbon\Carbon::now()->subWeek()->startOfWeek(),
+                \Carbon\Carbon::now()->subWeek()->endOfWeek()
+            ]);
+        } elseif ($dateFilter === 'last_7_days') {
+            $query->where('created_at', '>=', \Carbon\Carbon::now()->subDays(7));
+        } elseif ($dateFilter === 'last_month') {
+            $query->whereMonth('created_at', \Carbon\Carbon::now()->subMonth()->month)
+                  ->whereYear('created_at', \Carbon\Carbon::now()->subMonth()->year);
+        } elseif ($dateFilter === 'custom' && $fromDate && $toDate) {
+            $query->whereBetween('created_at', [
+                \Carbon\Carbon::parse($fromDate)->startOfDay(),
+                \Carbon\Carbon::parse($toDate)->endOfDay()
+            ]);
+        }
+
+        // SEARCH FILTER (Order ID, Buyer Name, Seller Name)
+        $search = $request->get('search');
+        if ($search) {
+            $query->where(function($q) use ($search) {
+                $q->where('id', 'like', '%' . $search . '%')
+                  ->orWhereHas('user', function($subQ) use ($search) {
+                      $subQ->where('name', 'like', '%' . $search . '%')
+                           ->orWhere('email', 'like', '%' . $search . '%');
+                  })
+                  ->orWhereHas('teacher', function($subQ) use ($search) {
+                      $subQ->where('name', 'like', '%' . $search . '%')
+                           ->orWhere('email', 'like', '%' . $search . '%');
+                  })
+                  ->orWhereHas('gig', function($subQ) use ($search) {
+                      $subQ->where('title', 'like', '%' . $search . '%');
+                  });
+            });
+        }
+
+        // Paginate results
+        $orders = $query->orderBy('created_at', 'desc')->paginate(20);
+
+        // COMPREHENSIVE STATISTICS
+        // Apply same filters to statistics calculations
+        $statsQuery = \App\Models\BookOrder::query();
+
+        // Apply same filters as main query for consistent stats
+        if ($statusFilter !== 'all') {
+            $statusMap = [
+                'pending' => 0,
+                'active' => 1,
+                'delivered' => 2,
+                'completed' => 3,
+                'cancelled' => 4,
+            ];
+            if (isset($statusMap[$statusFilter])) {
+                $statsQuery->where('status', $statusMap[$statusFilter]);
+            }
+        }
+        if ($serviceTypeFilter !== null && $serviceTypeFilter !== 'all') {
+            $statsQuery->whereHas('gig', function($q) use ($serviceTypeFilter) {
+                $q->where('service_type', $serviceTypeFilter);
+            });
+        }
+        if ($dateFilter === 'today') {
+            $statsQuery->whereDate('created_at', \Carbon\Carbon::today());
+        } elseif ($dateFilter === 'yesterday') {
+            $statsQuery->whereDate('created_at', \Carbon\Carbon::yesterday());
+        } elseif ($dateFilter === 'last_week') {
+            $statsQuery->whereBetween('created_at', [
+                \Carbon\Carbon::now()->subWeek()->startOfWeek(),
+                \Carbon\Carbon::now()->subWeek()->endOfWeek()
+            ]);
+        } elseif ($dateFilter === 'last_7_days') {
+            $statsQuery->where('created_at', '>=', \Carbon\Carbon::now()->subDays(7));
+        } elseif ($dateFilter === 'last_month') {
+            $statsQuery->whereMonth('created_at', \Carbon\Carbon::now()->subMonth()->month)
+                      ->whereYear('created_at', \Carbon\Carbon::now()->subMonth()->year);
+        } elseif ($dateFilter === 'custom' && $fromDate && $toDate) {
+            $statsQuery->whereBetween('created_at', [
+                \Carbon\Carbon::parse($fromDate)->startOfDay(),
+                \Carbon\Carbon::parse($toDate)->endOfDay()
+            ]);
+        }
+        if ($search) {
+            $statsQuery->where(function($q) use ($search) {
+                $q->where('id', 'like', '%' . $search . '%')
+                  ->orWhereHas('user', function($subQ) use ($search) {
+                      $subQ->where('name', 'like', '%' . $search . '%')
+                           ->orWhere('email', 'like', '%' . $search . '%');
+                  })
+                  ->orWhereHas('teacher', function($subQ) use ($search) {
+                      $subQ->where('name', 'like', '%' . $search . '%')
+                           ->orWhere('email', 'like', '%' . $search . '%');
+                  })
+                  ->orWhereHas('gig', function($subQ) use ($search) {
+                      $subQ->where('title', 'like', '%' . $search . '%');
+                  });
+            });
+        }
 
         // Order status counts
         $statusCounts = [
-            'pending' => \App\Models\BookOrder::where('status', 0)->count(),
-            'active' => \App\Models\BookOrder::where('status', 1)->count(),
-            'delivered' => \App\Models\BookOrder::where('status', 2)->count(),
-            'completed' => \App\Models\BookOrder::where('status', 3)->count(),
-            'cancelled' => \App\Models\BookOrder::where('status', 4)->count(),
+            'all' => (clone $statsQuery)->count(),
+            'pending' => (clone $statsQuery)->where('status', 0)->count(),
+            'active' => (clone $statsQuery)->where('status', 1)->count(),
+            'delivered' => (clone $statsQuery)->where('status', 2)->count(),
+            'completed' => (clone $statsQuery)->where('status', 3)->count(),
+            'cancelled' => (clone $statsQuery)->where('status', 4)->count(),
         ];
 
-        return view('Admin-Dashboard.All-orders', compact('orders', 'statusCounts'));
+        // Financial statistics
+        $stats = [
+            'total_orders' => $statusCounts['all'],
+            'total_revenue' => (clone $statsQuery)->sum('finel_price'),
+            'total_commission' => (clone $statsQuery)->sum('buyer_commission_amount'),
+            'total_refunded' => (clone $statsQuery)->where('refund', 1)->sum('finel_price'),
+            'pending_orders' => $statusCounts['pending'],
+            'active_orders' => $statusCounts['active'],
+            'completed_orders' => $statusCounts['completed'],
+            'cancelled_orders' => $statusCounts['cancelled'],
+        ];
+
+        return view('Admin-Dashboard.All-orders', compact('orders', 'statusCounts', 'stats', 'statusFilter'));
     }
 
     /**
-     * Payout Details
+     * Payout Details - Enhanced with filters and tabs
      */
-    public function payoutDetails()
+    public function payoutDetails(Request $request)
     {
         if ($redirect = $this->AdmincheckAuth()) {
             return $redirect;
         }
 
-        $payouts = \App\Models\Transaction::where('payout_status', 'pending')
-            ->where('status', 'completed')
-            ->with(['seller', 'buyer'])
-            ->orderBy('created_at', 'desc')
-            ->paginate(20);
+        // Determine view: pending, approved, completed, failed, all
+        $view = $request->get('view', 'pending');
 
+        // Build query with eager loading
+        $query = \App\Models\Transaction::with(['seller', 'buyer', 'order']);
+
+        // VIEW FILTER
+        if ($view === 'pending') {
+            $query->where('payout_status', 'pending')
+                  ->where('status', 'completed');
+        } elseif ($view === 'approved') {
+            $query->where('payout_status', 'approved');
+        } elseif ($view === 'completed') {
+            $query->where('payout_status', 'completed');
+        } elseif ($view === 'failed') {
+            $query->where('payout_status', 'failed');
+        }
+        // 'all' = no filter
+
+        // DATE RANGE FILTER
+        $dateFilter = $request->get('date_filter', 'lifetime');
+        $fromDate = $request->get('from_date');
+        $toDate = $request->get('to_date');
+
+        if ($dateFilter === 'today') {
+            $query->whereDate('created_at', \Carbon\Carbon::today());
+        } elseif ($dateFilter === 'yesterday') {
+            $query->whereDate('created_at', \Carbon\Carbon::yesterday());
+        } elseif ($dateFilter === 'last_week') {
+            $query->whereBetween('created_at', [
+                \Carbon\Carbon::now()->subWeek()->startOfWeek(),
+                \Carbon\Carbon::now()->subWeek()->endOfWeek()
+            ]);
+        } elseif ($dateFilter === 'last_7_days') {
+            $query->where('created_at', '>=', \Carbon\Carbon::now()->subDays(7));
+        } elseif ($dateFilter === 'last_month') {
+            $query->whereMonth('created_at', \Carbon\Carbon::now()->subMonth()->month)
+                  ->whereYear('created_at', \Carbon\Carbon::now()->subMonth()->year);
+        } elseif ($dateFilter === 'custom' && $fromDate && $toDate) {
+            $query->whereBetween('created_at', [
+                \Carbon\Carbon::parse($fromDate)->startOfDay(),
+                \Carbon\Carbon::parse($toDate)->endOfDay()
+            ]);
+        }
+
+        // SEARCH FILTER (Transaction ID, Seller Name, Seller Email)
+        $search = $request->get('search');
+        if ($search) {
+            $query->where(function($q) use ($search) {
+                $q->where('id', 'like', '%' . $search . '%')
+                  ->orWhereHas('seller', function($subQ) use ($search) {
+                      $subQ->where('name', 'like', '%' . $search . '%')
+                           ->orWhere('email', 'like', '%' . $search . '%');
+                  });
+            });
+        }
+
+        // Paginate results
+        $payouts = $query->orderBy('created_at', 'desc')->paginate(20);
+
+        // COMPREHENSIVE STATISTICS
         $stats = [
             'pending_amount' => \App\Models\Transaction::where('payout_status', 'pending')
                 ->where('status', 'completed')
@@ -2260,38 +2457,410 @@ class AdminController extends Controller
             'pending_count' => \App\Models\Transaction::where('payout_status', 'pending')
                 ->where('status', 'completed')
                 ->count(),
+            'approved_amount' => \App\Models\Transaction::where('payout_status', 'approved')
+                ->sum('seller_earnings'),
+            'approved_count' => \App\Models\Transaction::where('payout_status', 'approved')
+                ->count(),
             'completed_amount' => \App\Models\Transaction::where('payout_status', 'completed')
                 ->sum('seller_earnings'),
             'completed_count' => \App\Models\Transaction::where('payout_status', 'completed')
                 ->count(),
+            'failed_amount' => \App\Models\Transaction::where('payout_status', 'failed')
+                ->sum('seller_earnings'),
+            'failed_count' => \App\Models\Transaction::where('payout_status', 'failed')
+                ->count(),
+            'total_payouts' => \App\Models\Transaction::whereIn('payout_status', ['pending', 'approved', 'completed', 'failed'])
+                ->count(),
         ];
 
-        return view('Admin-Dashboard.payout-details', compact('payouts', 'stats'));
+        return view('Admin-Dashboard.payout-details', compact('payouts', 'stats', 'view'));
     }
 
     /**
-     * Refund Details
+     * Process Payout - Mark payout as completed
      */
-    public function refundDetails()
+    public function processPayout(Request $request, $transactionId)
     {
         if ($redirect = $this->AdmincheckAuth()) {
             return $redirect;
         }
 
-        $refunds = \App\Models\Transaction::where('status', 'refunded')
-            ->with(['seller', 'buyer', 'bookOrder'])
-            ->orderBy('updated_at', 'desc')
-            ->paginate(20);
+        \DB::beginTransaction();
 
+        try {
+            $transaction = \App\Models\Transaction::findOrFail($transactionId);
+
+            // Validate that the transaction is eligible for payout
+            if ($transaction->payout_status === 'completed') {
+                return back()->with('error', 'This payout has already been completed.');
+            }
+
+            if ($transaction->payout_status === 'failed') {
+                return back()->with('error', 'This payout was marked as failed. Cannot process failed payouts.');
+            }
+
+            if ($transaction->status !== 'completed' && $transaction->payout_status !== 'approved') {
+                return back()->with('error', 'This transaction is not eligible for payout yet.');
+            }
+
+            // Update payout status
+            $transaction->payout_status = 'completed';
+            $transaction->payout_date = now();
+            $transaction->admin_notes = ($transaction->admin_notes ?? '') . "\n[" . now()->format('Y-m-d H:i:s') . "] Payout processed by admin.";
+            $transaction->save();
+
+            \DB::commit();
+
+            // Send notification to seller
+            $notificationService = app(\App\Services\NotificationService::class);
+            $notificationService->send(
+                $transaction->seller_id,
+                'Payout Processed',
+                'Your payout of $' . number_format($transaction->seller_earnings, 2) . ' has been processed and sent to your account.',
+                'payment',
+                route('teacher.transaction')
+            );
+
+            return back()->with('success', 'Payout marked as completed successfully. Seller has been notified.');
+        } catch (\Exception $e) {
+            \DB::rollBack();
+            \Log::error('Admin payout processing failed: ' . $e->getMessage());
+            return back()->with('error', 'Payout processing failed: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Refund Details - Shows disputes that need admin review
+     * CRITICAL: This is where admin approves/rejects refunds
+     */
+    public function refundDetails(Request $request)
+    {
+        if ($redirect = $this->AdmincheckAuth()) {
+            return $redirect;
+        }
+
+        // Determine view: pending_disputes, refunded, rejected, all
+        $view = $request->get('view', 'pending_disputes');
+
+        if ($view === 'pending_disputes') {
+            // Show pending disputes that need admin action
+            $query = \App\Models\DisputeOrder::with([
+                'user',
+                'order.user',
+                'order.teacher',
+                'order.gig'
+            ])->where('status', 0); // Status 0 = Pending
+
+            // Only show disputes where:
+            // 1. Both buyer AND seller have disputed (needs admin review)
+            // 2. OR user disputed and auto-refund eligible but not processed yet
+            $query->whereHas('order', function($q) {
+                $q->where(function($subQ) {
+                    // Seller counter-disputed
+                    $subQ->where('user_dispute', 1)
+                         ->where('teacher_dispute', 1);
+                })
+                ->orWhere(function($subQ) {
+                    // User disputed but seller hasn't, auto-refund pending
+                    $subQ->where('user_dispute', 1)
+                         ->where('teacher_dispute', 0)
+                         ->where('auto_dispute_processed', 0);
+                });
+            });
+
+        } elseif ($view === 'refunded') {
+            // Show already refunded orders
+            $query = \App\Models\DisputeOrder::with([
+                'user',
+                'order.user',
+                'order.teacher',
+                'order.gig'
+            ])->where('status', 1); // Status 1 = Approved/Refunded
+
+        } elseif ($view === 'rejected') {
+            // Show rejected refund requests
+            $query = \App\Models\DisputeOrder::with([
+                'user',
+                'order.user',
+                'order.teacher',
+                'order.gig'
+            ])->where('status', 2); // Status 2 = Rejected
+
+        } else {
+            // All disputes
+            $query = \App\Models\DisputeOrder::with([
+                'user',
+                'order.user',
+                'order.teacher',
+                'order.gig'
+            ]);
+        }
+
+        // Search filter
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('reason', 'like', "%{$search}%")
+                  ->orWhereHas('order', function($orderQ) use ($search) {
+                      $orderQ->where('id', 'like', "%{$search}%")
+                             ->orWhere('title', 'like', "%{$search}%");
+                  });
+            });
+        }
+
+        $disputes = $query->orderBy('created_at', 'desc')->paginate(20);
+
+        // Statistics
         $stats = [
-            'total_refunded' => \App\Models\Transaction::where('status', 'refunded')
-                ->sum('total_amount'),
-            'refund_count' => \App\Models\Transaction::where('status', 'refunded')
-                ->count(),
             'pending_disputes' => \App\Models\DisputeOrder::where('status', 0)->count(),
+            'refunded' => \App\Models\DisputeOrder::where('status', 1)->count(),
+            'rejected' => \App\Models\DisputeOrder::where('status', 2)->count(),
+            'total_refunded_amount' => \App\Models\DisputeOrder::where('status', 1)->sum('amount'),
+            'pending_refund_amount' => \App\Models\DisputeOrder::where('status', 0)->sum('amount'),
         ];
 
-        return view('Admin-Dashboard.refund-details', compact('refunds', 'stats'));
+        return view('Admin-Dashboard.refund-details', compact('disputes', 'stats', 'view'));
+    }
+
+    /**
+     * Approve Refund Request - Admin Action
+     * CRITICAL: This triggers Stripe API refund automatically
+     */
+    public function approveRefund(Request $request, $disputeId)
+    {
+        if ($redirect = $this->AdmincheckAuth()) {
+            return $redirect;
+        }
+
+        \Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
+
+        $dispute = \App\Models\DisputeOrder::with('order')->findOrFail($disputeId);
+        $order = $dispute->order;
+
+        // Validate
+        if ($dispute->status != 0) {
+            return back()->with('error', 'This dispute has already been processed.');
+        }
+
+        if (!$order) {
+            return back()->with('error', 'Order not found.');
+        }
+
+        \DB::beginTransaction();
+
+        try {
+            // Process Stripe refund
+            $paymentIntent = \Stripe\PaymentIntent::retrieve($order->payment_id);
+
+            if ($dispute->refund_type == 0) {
+                // FULL REFUND
+                if (in_array($paymentIntent->status, ['requires_capture', 'requires_confirmation'])) {
+                    // Payment not captured yet, just cancel
+                    $paymentIntent->cancel();
+                } elseif ($paymentIntent->status === 'succeeded') {
+                    // Payment captured, issue refund
+                    \Stripe\Refund::create(['payment_intent' => $order->payment_id]);
+                }
+
+                $refundAmount = $order->finel_price;
+
+            } else {
+                // PARTIAL REFUND
+                $refundAmount = floatval($request->input('refund_amount', $dispute->amount));
+
+                if (!$refundAmount || $refundAmount > $order->finel_price) {
+                    return back()->with('error', 'Invalid refund amount.');
+                }
+
+                if ($paymentIntent->status === 'requires_capture') {
+                    $paymentIntent->capture();
+                }
+
+                if ($paymentIntent->status === 'succeeded') {
+                    \Stripe\Refund::create([
+                        'payment_intent' => $order->payment_id,
+                        'amount' => round($refundAmount * 100) // Stripe uses cents
+                    ]);
+                }
+            }
+
+            // Update dispute
+            $dispute->status = 1; // Approved
+            $dispute->amount = $refundAmount;
+            $dispute->save();
+
+            // Update order
+            $order->refund = 1;
+            $order->payment_status = 'refunded';
+            $order->status = 4; // Cancelled
+            $order->save();
+
+            // Update transaction
+            $transaction = \App\Models\Transaction::where('buyer_id', $order->user_id)
+                ->where('seller_id', $order->teacher_id)
+                ->first();
+
+            if ($transaction) {
+                if ($dispute->refund_type == 0) {
+                    // Full refund
+                    $transaction->markAsRefunded();
+                    $transaction->payout_status = 'failed';
+                } else {
+                    // Partial refund - recalculate commissions
+                    $remainingAmount = $transaction->total_amount - $refundAmount;
+                    $newSellerCommission = ($remainingAmount * $transaction->seller_commission_rate) / 100;
+                    $newBuyerCommission = ($remainingAmount * $transaction->buyer_commission_rate) / 100;
+
+                    $transaction->coupon_discount += $refundAmount;
+                    $transaction->seller_commission_amount = $newSellerCommission;
+                    $transaction->buyer_commission_amount = $newBuyerCommission;
+                    $transaction->total_admin_commission = $newSellerCommission + $newBuyerCommission;
+                    $transaction->seller_earnings = $remainingAmount - $newSellerCommission;
+                }
+
+                $transaction->notes .= "\n[" . now()->format('Y-m-d H:i:s') . "] Admin approved refund: $" . $refundAmount;
+                $transaction->save();
+            }
+
+            \DB::commit();
+
+            // Send notifications
+            $refundType = $dispute->refund_type == 0 ? 'Full' : 'Partial';
+            $notificationService = app(\App\Services\NotificationService::class);
+
+            // To Buyer
+            $notificationService->send(
+                userId: $order->user_id,
+                type: 'refund_approved',
+                title: 'Refund Approved ✅',
+                message: "Your refund request has been approved by admin. {$refundType} refund of $" . number_format($refundAmount, 2) . " has been processed.",
+                data: [
+                    'dispute_id' => $dispute->id,
+                    'order_id' => $order->id,
+                    'refund_amount' => $refundAmount,
+                    'refund_type' => $refundType
+                ],
+                sendEmail: true,
+                orderId: $order->id
+            );
+
+            // To Seller
+            $notificationService->send(
+                userId: $order->teacher_id,
+                type: 'refund_approved',
+                title: 'Refund Approved by Admin',
+                message: "Admin has approved the refund request for order #{$order->id}. {$refundType} refund of $" . number_format($refundAmount, 2) . " has been issued.",
+                data: [
+                    'dispute_id' => $dispute->id,
+                    'order_id' => $order->id,
+                    'refund_amount' => $refundAmount,
+                    'refund_type' => $refundType
+                ],
+                sendEmail: true,
+                orderId: $order->id
+            );
+
+            return back()->with('success', 'Refund approved successfully. ' . ucfirst($refundType) . ' refund of $' . number_format($refundAmount, 2) . ' has been processed.');
+
+        } catch (\Exception $e) {
+            \DB::rollBack();
+            \Log::error('Admin refund approval failed: ' . $e->getMessage());
+            return back()->with('error', 'Refund processing failed: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Reject Refund Request - Admin Action
+     * This releases payment to seller for payout
+     */
+    public function rejectRefund(Request $request, $disputeId)
+    {
+        if ($redirect = $this->AdmincheckAuth()) {
+            return $redirect;
+        }
+
+        $dispute = \App\Models\DisputeOrder::with('order')->findOrFail($disputeId);
+        $order = $dispute->order;
+
+        // Validate
+        if ($dispute->status != 0) {
+            return back()->with('error', 'This dispute has already been processed.');
+        }
+
+        $rejectReason = $request->input('reject_reason', 'Admin decision after review');
+
+        \DB::beginTransaction();
+
+        try {
+            // Update dispute
+            $dispute->status = 2; // Rejected
+            $dispute->admin_notes = $rejectReason;
+            $dispute->save();
+
+            // Update order - clear dispute flags
+            $order->user_dispute = 0;
+            $order->teacher_dispute = 0;
+
+            // If order was cancelled due to dispute, revert to previous status
+            if ($order->status == 4) {
+                $order->status = 2; // Back to Delivered
+            }
+            $order->save();
+
+            // Update transaction - release payment for seller
+            $transaction = \App\Models\Transaction::where('buyer_id', $order->user_id)
+                ->where('seller_id', $order->teacher_id)
+                ->first();
+
+            if ($transaction) {
+                $transaction->payout_status = 'approved'; // Seller will get paid
+                $transaction->status = 'completed';
+                $transaction->notes .= "\n[" . now()->format('Y-m-d H:i:s') . "] Admin rejected refund request. Payment released to seller.";
+                $transaction->save();
+            }
+
+            \DB::commit();
+
+            // Send notifications
+            $notificationService = app(\App\Services\NotificationService::class);
+
+            // To Buyer
+            $notificationService->send(
+                userId: $order->user_id,
+                type: 'refund_rejected',
+                title: 'Refund Request Rejected ❌',
+                message: "Your refund request has been reviewed and rejected by admin. Reason: {$rejectReason}",
+                data: [
+                    'dispute_id' => $dispute->id,
+                    'order_id' => $order->id,
+                    'reason' => $rejectReason
+                ],
+                sendEmail: true,
+                orderId: $order->id
+            );
+
+            // To Seller
+            $notificationService->send(
+                userId: $order->teacher_id,
+                type: 'refund_rejected',
+                title: 'Refund Request Rejected - Payment Released',
+                message: "Admin has rejected the refund request for order #{$order->id}. Your earnings have been released for payout.",
+                data: [
+                    'dispute_id' => $dispute->id,
+                    'order_id' => $order->id,
+                    'reason' => $rejectReason
+                ],
+                sendEmail: true,
+                orderId: $order->id
+            );
+
+            return back()->with('success', 'Refund request rejected successfully. Payment released to seller.');
+
+        } catch (\Exception $e) {
+            \DB::rollBack();
+            \Log::error('Admin refund rejection failed: ' . $e->getMessage());
+            return back()->with('error', 'Rejection processing failed: ' . $e->getMessage());
+        }
     }
 
     /**

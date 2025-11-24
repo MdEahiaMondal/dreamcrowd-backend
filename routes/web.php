@@ -180,8 +180,12 @@ Route::controller(AdminController::class)->group(function () {
     Route::get('/admin/buyers/{id}/details', 'viewBuyerDetails')->name('admin.buyers.details');
     Route::get('/admin/all-orders', 'allOrders')->name('admin.all-orders');
     Route::get('/admin/payout-details', 'payoutDetails')->name('admin.payout-details');
+    Route::post('/admin/payout/process/{transaction}', 'processPayout')->name('admin.payout.process');
     Route::get('/admin/refund-details', 'refundDetails')->name('admin.refund-details');
+    Route::post('/admin/refund/approve/{dispute}', 'approveRefund')->name('admin.refund.approve');
+    Route::post('/admin/refund/reject/{dispute}', 'rejectRefund')->name('admin.refund.reject');
     Route::get('/admin/invoice', 'invoice')->name('admin.invoice');
+    Route::get('/admin/invoice/download/{id}', 'downloadInvoice')->name('admin.invoice.download');
     Route::get('/admin/reviews-ratings', 'reviewsRatings')->name('admin.reviews.ratings');
     Route::post('/admin/reviews/{id}/delete', 'deleteReview')->name('admin.reviews.delete');
     Route::get('/admin/seller-reports', 'sellerReports')->name('admin.seller-reports');
