@@ -72,7 +72,7 @@
             <div class="row mb-4">
                 <div class="col-md-8">
                     <h2><i class='bx bx-grid-alt'></i> My Dashboard</h2>
-                    <p class="text-muted">Welcome back, {{ Auth::user()->name }}! Here's your activity overview.</p>
+                    <p class="text-muted">Welcome back, {{ (Auth::user()->first_name ?? '') . ' ' . (Auth::user()->last_name ?? '') }}! Here's your activity overview.</p>
                 </div>
                 <div class="col-md-4 text-end">
                     <button class="btn btn-danger me-2" onclick="exportPDF()">
@@ -308,7 +308,7 @@
                                                     @endif
                                                     <div>
                                                         <div class="fw-bold">{{ $booking->gig->title ?? 'N/A' }}</div>
-                                                        <small class="text-muted">{{ $booking->teacher->name ?? 'Unknown' }}</small>
+                                                        <small class="text-muted">{{ ($booking->teacher->first_name ?? '') . ' ' . ($booking->teacher->last_name ?? '') ?: 'Unknown' }}</small>
                                                     </div>
                                                 </div>
                                             </td>

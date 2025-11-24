@@ -366,7 +366,7 @@
                                         style="color: #999;">{{ $transaction->created_at->format('d M Y, h:i A') }}</small>
                                     <br>
                                     <small style="color: #666;">
-                                        <i class="fa-solid fa-user"></i> {{ $transaction->buyer->name ?? 'N/A' }}
+                                        <i class="fa-solid fa-user"></i> {{ ($transaction->buyer->first_name ?? '') . ' ' . ($transaction->buyer->last_name ?? '') ?: 'N/A' }}
                                     </small>
                                 </div>
 

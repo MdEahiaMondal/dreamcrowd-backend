@@ -334,7 +334,7 @@
                                             style="color: #999;">{{ $transaction->created_at->format('d M Y, h:i A') }}</small>
                                         <br>
                                         <small style="color: #666;">
-                                            <i class="fa-solid fa-user"></i> {{ $transaction->seller->name ?? 'N/A' }}
+                                            <i class="fa-solid fa-user"></i> {{ ($transaction->seller->first_name ?? '') . ' ' . ($transaction->seller->last_name ?? '') ?: 'N/A' }}
                                         </small>
                                         @if($transaction->coupon_discount > 0)
                                             <br>

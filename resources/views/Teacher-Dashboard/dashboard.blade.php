@@ -219,7 +219,7 @@
             <div class="row mb-4">
                 <div class="col-md-12">
                     <h2><i class='bx bx-grid-alt'></i> Teacher Dashboard</h2>
-                    <p class="text-muted">Welcome back, {{ Auth::user()->name }}! Here's your performance overview.</p>
+                    <p class="text-muted">Welcome back, {{ (Auth::user()->first_name ?? '') . ' ' . (Auth::user()->last_name ?? '') }}! Here's your performance overview.</p>
                 </div>
             </div>
 

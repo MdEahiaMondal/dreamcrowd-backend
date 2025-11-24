@@ -139,7 +139,7 @@
                     <div class="col-md-6">
                         <div style="background: #e3f2fd; padding: 15px; border-radius: 6px;">
                             <h6 style="color: #1976d2;"><i class="fa-solid fa-shopping-cart"></i> Buyer</h6>
-                            <p style="margin: 5px 0;"><strong>Name:</strong> {{ $transaction->buyer->name ?? 'N/A' }}</p>
+                            <p style="margin: 5px 0;"><strong>Name:</strong> {{ ($transaction->buyer->first_name ?? '') . ' ' . ($transaction->buyer->last_name ?? '') ?: 'N/A' }}</p>
                             <p style="margin: 5px 0;"><strong>Email:</strong> {{ $transaction->buyer->email ?? 'N/A' }}</p>
                         </div>
                     </div>
@@ -147,7 +147,7 @@
                     <div class="col-md-6">
                         <div style="background: #e8f5e9; padding: 15px; border-radius: 6px;">
                             <h6 style="color: #388e3c;"><i class="fa-solid fa-user-tie"></i> Seller</h6>
-                            <p style="margin: 5px 0;"><strong>Name:</strong> {{ $transaction->seller->name ?? 'N/A' }}</p>
+                            <p style="margin: 5px 0;"><strong>Name:</strong> {{ ($transaction->seller->first_name ?? '') . ' ' . ($transaction->seller->last_name ?? '') ?: 'N/A' }}</p>
                             <p style="margin: 5px 0;"><strong>Email:</strong> {{ $transaction->seller->email ?? 'N/A' }}</p>
                         </div>
                     </div>

@@ -77,7 +77,7 @@
             <div class="row mb-4">
                 <div class="col-md-8">
                     <h2><i class='bx bx-grid-alt'></i> My Dashboard</h2>
-                    <p class="text-muted">Welcome back, {{ Auth::user()->name }}! Here's your activity overview.</p>
+                    <p class="text-muted">Welcome back, {{ (Auth::user()->first_name ?? '') . ' ' . (Auth::user()->last_name ?? '') }}! Here's your activity overview.</p>
                 </div>
                 <div class="col-md-4 text-end d-none">
                     <button class="btn btn-danger me-2" onclick="exportPDF()">
