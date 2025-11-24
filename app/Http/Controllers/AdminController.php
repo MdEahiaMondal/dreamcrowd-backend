@@ -2393,7 +2393,7 @@ class AdminController extends Controller
         $view = $request->get('view', 'pending');
 
         // Build query with eager loading
-        $query = \App\Models\Transaction::with(['seller', 'buyer', 'order']);
+        $query = \App\Models\Transaction::with(['seller', 'buyer', 'bookOrder']);
 
         // VIEW FILTER
         if ($view === 'pending') {
@@ -3541,7 +3541,7 @@ class AdminController extends Controller
         $completionRate = $totalPayouts > 0 ? ($completedPayouts / $totalPayouts) * 100 : 0;
 
         // Top sellers by payout amount
-        $topSellers = \App\Models\Transaction::with('seller:id,name,email')
+        $topSellers = \App\Models\Transaction::with('seller:id,first_name,last_name,email')
             ->whereBetween('created_at', [$startDate, $endDate])
             ->where('payout_status', 'completed')
             ->selectRaw('seller_id, SUM(seller_earnings) as total_earnings, COUNT(*) as payout_count')
