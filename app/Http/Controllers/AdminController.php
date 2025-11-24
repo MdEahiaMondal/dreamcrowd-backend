@@ -1018,205 +1018,6 @@ class AdminController extends Controller
 
     // Seller Management END================
 
-    // Admin Management Start================
-
-    public function AdminManagement()
-    {
-
-        if ($redirect = $this->AdmincheckAuth()) {
-            return $redirect;
-        }
-
-
-        $admins = User::where('role', '=', 2)->where('admin_role', '<', Auth::user()->admin_role)->paginate(10);
-        return view("Admin-Dashboard.admin-management", compact('admins'));
-    }
-
-
-    // Create Admin ============
-    public function CreateAdmin(Request $request)
-    {
-
-        if ($redirect = $this->AdmincheckAuth()) {
-            return $redirect;
-        }
-
-
-        $password = $request->input('password');
-
-
-        if (strlen($password) < 8) {
-            return redirect()->back()->with('error', 'The password must be at least 8 characters long.');
-        }
-
-        if (!preg_match('/[A-Z]/', $password)) {
-            return redirect()->back()->with('error', 'The password must contain at least one uppercase letter.');
-        }
-        if (!preg_match('/[0-9]/', $password)) {
-            return redirect()->back()->with('error', 'The password must contain at least one number.');
-        }
-
-        if (!preg_match('/[\W_]/', $password)) {
-            return redirect()->back()->with('error', 'The password must contain at least one special character.');
-        }
-
-
-        if ($request->password != $request->c_password) {
-            return redirect()->back()->with('error', 'Password did not Matched!');
-        }
-
-
-        if ($request->email == null || $request->password == null || $request->c_password == null || $request->first_name == null || $request->last_name == null) {
-            return redirect()->back()->with('error', 'All Fields Are Required!');
-        }
-
-        if ($request->password != $request->c_password) {
-            return redirect()->back()->with('error', 'Password did not Matched');
-        }
-
-        $user = User::where(['email' => $request->email])->first();
-
-        if (!empty($user)) {
-            return redirect()->back()->with('error', 'This Email is Already Registered');
-        }
-
-        if ($request->role >= Auth::user()->admin_role) {
-            return redirect()->back()->with('error', 'You are Not Allowed to Add Admin in Heigher Rank!');
-        }
-
-
-        //  $userIp = $_SERVER['REMOTE_ADDR']; /* Live IP address */
-        // $userIp = $request->ip(); /* Live IP address */
-        //  $userIp = '162.159.24.227'; /* Static IP address */
-        //  $location = Location::get($userIp);
-        //  echo $location->countryName;
-        // echo $location->countryCode ;
-        // echo $location->cityName ;
-
-
-        $user = User::create([
-            'first_name' => $request->first_name,
-            'last_name' => $request->last_name,
-            'email' => $request->email,
-            'email_verify' => 'verified',
-            'password' => Hash::make($request->password),
-            // 'ip' => $userIp,
-            // 'city' => $location->cityName,
-            // 'country' => $location->countryName,
-            'status' => 1,
-            'role' => 2,
-            'admin_role' => $request->role,
-        ]);
-
-        if ($user) {
-            return redirect()->back()->with('success', 'New Admin Created Successfuly!');
-        } else {
-            return redirect()->back()->with('error', 'Something Error Please Try again Later!');
-        }
-    }
-
-    public function UpdateAdmin(Request $request)
-    {
-
-        if ($redirect = $this->AdmincheckAuth()) {
-            return $redirect;
-        }
-
-        if ($request->email == null || $request->first_name == null || $request->last_name == null) {
-            return redirect()->back()->with('error', 'Fields Are Required!');
-        }
-
-        if ($request->role >= Auth::user()->admin_role) {
-            return redirect()->back()->with('error', 'You are Not Allowed to Update Admin in Heigher Rank!');
-        }
-
-        $admin = User::find($request->id);
-
-        if ($request->email != $admin->email) {
-
-            $user = User::where(['email' => $request->email])->first();
-            if (!empty($user)) {
-                return redirect()->back()->with('error', 'This Email is Already Registered');
-            }
-            $admin->email = $request->email;
-        }
-
-        if ($request->password != null) {
-
-
-            $password = $request->input('password');
-
-
-            if (strlen($password) < 8) {
-                return redirect()->back()->with('error', 'The password must be at least 8 characters long.');
-            }
-
-            if (!preg_match('/[A-Z]/', $password)) {
-                return redirect()->back()->with('error', 'The password must contain at least one uppercase letter.');
-            }
-            if (!preg_match('/[0-9]/', $password)) {
-                return redirect()->back()->with('error', 'The password must contain at least one number.');
-            }
-
-            if (!preg_match('/[\W_]/', $password)) {
-                return redirect()->back()->with('error', 'The password must contain at least one special character.');
-            }
-
-
-            if ($request->password != $request->c_password) {
-                return redirect()->back()->with('error', 'Password did not Matched!');
-            }
-
-
-            if ($request->password != $request->c_password) {
-                return redirect()->back()->with('error', 'Password did not Matched');
-            }
-            $admin->password = Hash::make($request->password);
-        }
-
-        $admin->first_name = $request->first_name;
-        $admin->last_name = $request->last_name;
-        $admin->admin_role = $request->role;
-        $admin->update();
-
-        return redirect()->back()->with('success', 'Admin Details Updated Successfuly!');
-    }
-
-
-    // Delete Admin ===========
-    public function DeleteAdmin($id)
-    {
-
-        if ($redirect = $this->AdmincheckAuth()) {
-            return $redirect;
-        }
-
-        $admin = User::find($id);
-        $admin->delete();
-        return redirect()->back()->with('success', 'Admin Deleted Successfuly!');
-    }
-
-    // Block Admin ===========
-    public function BlockAdmin($id)
-    {
-
-        if ($redirect = $this->AdmincheckAuth()) {
-            return $redirect;
-        }
-
-        $admin = User::find($id);
-        if ($admin->status == 2) {
-            $admin->status = 1;
-            $admin->update();
-            return redirect()->back()->with('success', 'Admin Un Blocked Successfuly!');
-        } else {
-            $admin->status = 2;
-            $admin->update();
-            return redirect()->back()->with('success', 'Admin Blocked Successfuly!');
-        }
-    }
-
-    // Admin Management End================
 
     // Admin Profile Functions Start ================
     // Account Setting Functions Start =================
@@ -2105,21 +1906,311 @@ class AdminController extends Controller
     }
 
     /**
-     * Buyer Management
+     * Buyer Management - Enhanced with filters, search, and status tabs
      */
-    public function buyerManagement()
+    public function buyerManagement(Request $request)
     {
         if ($redirect = $this->AdmincheckAuth()) {
             return $redirect;
         }
 
-        $buyers = User::where('role', 0)
-            ->withCount('bookOrders')
-            ->withSum('buyerTransactions as total_spent', 'total_amount')
-            ->orderBy('created_at', 'desc')
-            ->paginate(20);
+        // Base query for buyers only
+        $query = User::buyersOnly()
+            ->withCount(['bookOrders'])
+            ->withSum('buyerTransactions as total_spent', 'total_amount');
 
-        return view('Admin-Dashboard.buyer-management', compact('buyers'));
+        // Status filter
+        $status = $request->input('status', 'all');
+        if ($status !== 'all') {
+            switch ($status) {
+                case 'active':
+                    $query->active();
+                    break;
+                case 'banned':
+                    $query->banned();
+                    break;
+                case 'inactive':
+                    $query->inactive();
+                    break;
+                case 'deleted':
+                    $query->onlyTrashed();
+                    break;
+            }
+        }
+
+        // Search filter
+        $search = $request->input('search');
+        if (!empty($search)) {
+            $query->search($search);
+        }
+
+        // Date range filter
+        $dateFilter = $request->input('date_filter');
+        if ($dateFilter) {
+            switch ($dateFilter) {
+                case 'today':
+                    $query->whereDate('created_at', today());
+                    break;
+                case 'yesterday':
+                    $query->whereDate('created_at', today()->subDay());
+                    break;
+                case 'last_week':
+                    $query->whereBetween('created_at', [now()->subWeek(), now()]);
+                    break;
+                case 'last_month':
+                    $query->whereBetween('created_at', [now()->subMonth(), now()]);
+                    break;
+                case 'custom':
+                    if ($request->date_from) {
+                        $query->whereDate('created_at', '>=', $request->date_from);
+                    }
+                    if ($request->date_to) {
+                        $query->whereDate('created_at', '<=', $request->date_to);
+                    }
+                    break;
+            }
+        }
+
+        // Sorting
+        $sort = $request->input('sort', 'date_desc');
+        switch ($sort) {
+            case 'name_asc':
+                $query->orderBy('first_name', 'asc');
+                break;
+            case 'name_desc':
+                $query->orderBy('first_name', 'desc');
+                break;
+            case 'date_asc':
+                $query->orderBy('created_at', 'asc');
+                break;
+            case 'date_desc':
+                $query->orderBy('created_at', 'desc');
+                break;
+            case 'spending':
+                $query->orderByDesc('total_spent');
+                break;
+            case 'orders':
+                $query->orderByDesc('book_orders_count');
+                break;
+            default:
+                $query->orderBy('created_at', 'desc');
+        }
+
+        // Pagination
+        $buyers = $query->paginate(20)->withQueryString();
+
+        // Statistics for dashboard cards
+        $stats = [
+            'total' => User::buyersOnly()->count(),
+            'active' => User::buyersOnly()->active()->count(),
+            'banned' => User::buyersOnly()->banned()->count(),
+            'inactive' => User::buyersOnly()->inactive()->count(),
+            'deleted' => User::buyersOnly()->onlyTrashed()->count(),
+        ];
+
+        return view('Admin-Dashboard.buyer-management', compact('buyers', 'stats', 'status', 'search', 'dateFilter', 'sort'));
+    }
+
+    /**
+     * Ban a buyer
+     */
+    public function banBuyer(Request $request, $id)
+    {
+        if ($redirect = $this->AdmincheckAuth()) {
+            return $redirect;
+        }
+
+        $request->validate([
+            'reason' => 'required|string|max:500',
+        ]);
+
+        try {
+            $buyer = User::findOrFail($id);
+            $buyer->ban($request->reason);
+
+            // Log activity
+            $activityService = app(\App\Services\BuyerActivityService::class);
+            $activityService->logAccountBanned($buyer->id, $request->reason);
+
+            return redirect()->back()->with('success', 'Buyer has been banned successfully.');
+        } catch (\Exception $e) {
+            \Log::error('Failed to ban buyer: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Failed to ban buyer.');
+        }
+    }
+
+    /**
+     * Unban a buyer
+     */
+    public function unbanBuyer($id)
+    {
+        if ($redirect = $this->AdmincheckAuth()) {
+            return $redirect;
+        }
+
+        try {
+            $buyer = User::findOrFail($id);
+            $buyer->unban();
+
+            // Log activity
+            $activityService = app(\App\Services\BuyerActivityService::class);
+            $activityService->logAccountUnbanned($buyer->id);
+
+            return redirect()->back()->with('success', 'Buyer has been unbanned successfully.');
+        } catch (\Exception $e) {
+            \Log::error('Failed to unban buyer: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Failed to unban buyer.');
+        }
+    }
+
+    /**
+     * Soft delete a buyer
+     */
+    public function deleteBuyer($id)
+    {
+        if ($redirect = $this->AdmincheckAuth()) {
+            return $redirect;
+        }
+
+        try {
+            $buyer = User::findOrFail($id);
+            $buyer->update(['status' => 3]); // deleted
+            $buyer->delete();
+
+            // Log activity
+            $activityService = app(\App\Services\BuyerActivityService::class);
+            $activityService->logAccountDeleted($buyer->id);
+
+            return redirect()->back()->with('success', 'Buyer has been deleted successfully.');
+        } catch (\Exception $e) {
+            \Log::error('Failed to delete buyer: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Failed to delete buyer.');
+        }
+    }
+
+    /**
+     * Restore a soft-deleted buyer
+     */
+    public function restoreBuyer($id)
+    {
+        if ($redirect = $this->AdmincheckAuth()) {
+            return $redirect;
+        }
+
+        try {
+            $buyer = User::withTrashed()->findOrFail($id);
+            $buyer->restore();
+            $buyer->markActive();
+
+            // Log activity
+            $activityService = app(\App\Services\BuyerActivityService::class);
+            $activityService->logAccountRestored($buyer->id);
+
+            return redirect()->back()->with('success', 'Buyer has been restored successfully.');
+        } catch (\Exception $e) {
+            \Log::error('Failed to restore buyer: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Failed to restore buyer.');
+        }
+    }
+
+    /**
+     * Bulk actions on buyers
+     */
+    public function bulkActionBuyers(Request $request)
+    {
+        if ($redirect = $this->AdmincheckAuth()) {
+            return $redirect;
+        }
+
+        $request->validate([
+            'action' => 'required|in:delete,activate,deactivate',
+            'buyer_ids' => 'required|array',
+            'buyer_ids.*' => 'exists:users,id',
+        ]);
+
+        try {
+            $buyers = User::whereIn('id', $request->buyer_ids)->get();
+            $activityService = app(\App\Services\BuyerActivityService::class);
+
+            foreach ($buyers as $buyer) {
+                switch ($request->action) {
+                    case 'delete':
+                        $buyer->update(['status' => 3]); // deleted
+                        $buyer->delete();
+                        $activityService->logAccountDeleted($buyer->id);
+                        break;
+                    case 'activate':
+                        $buyer->markActive();
+                        break;
+                    case 'deactivate':
+                        $buyer->markInactive();
+                        break;
+                }
+            }
+
+            $message = ucfirst($request->action) . ' action completed successfully for ' . count($buyers) . ' buyer(s).';
+            return redirect()->back()->with('success', $message);
+        } catch (\Exception $e) {
+            \Log::error('Failed to perform bulk action: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Failed to perform bulk action.');
+        }
+    }
+
+    /**
+     * Export buyers to Excel
+     */
+    public function exportBuyers(Request $request)
+    {
+        if ($redirect = $this->AdmincheckAuth()) {
+            return $redirect;
+        }
+
+        try {
+            $filters = [
+                'status' => $request->input('status'),
+                'search' => $request->input('search'),
+                'date_from' => $request->input('date_from'),
+                'date_to' => $request->input('date_to'),
+                'sort' => $request->input('sort'),
+            ];
+
+            return \Maatwebsite\Excel\Facades\Excel::download(
+                new \App\Exports\BuyersExport($filters),
+                'buyers_' . date('Y-m-d_H-i-s') . '.xlsx'
+            );
+        } catch (\Exception $e) {
+            \Log::error('Failed to export buyers: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Failed to export buyers.');
+        }
+    }
+
+    /**
+     * View buyer details
+     */
+    public function viewBuyerDetails($id)
+    {
+        if ($redirect = $this->AdmincheckAuth()) {
+            return $redirect;
+        }
+
+        try {
+            $buyer = User::withTrashed()
+                ->withCount(['bookOrders'])
+                ->withSum('buyerTransactions as total_spent', 'total_amount')
+                ->with(['bookOrders' => function($query) {
+                    $query->latest()->limit(10);
+                }])
+                ->findOrFail($id);
+
+            // Get recent activities
+            $activityService = app(\App\Services\BuyerActivityService::class);
+            $recentActivities = $activityService->getRecentActivities($buyer->id, 20);
+
+            return view('Admin-Dashboard.buyer-details', compact('buyer', 'recentActivities'));
+        } catch (\Exception $e) {
+            \Log::error('Failed to load buyer details: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Failed to load buyer details.');
+        }
     }
 
     /**
@@ -2536,5 +2627,241 @@ class AdminController extends Controller
         ];
 
         return view('Admin-Dashboard.Buyer-reports', compact('buyers', 'stats'));
+    }
+
+    // =====================================================================
+    // ADMIN MANAGEMENT METHODS
+    // =====================================================================
+
+    /**
+     * Display admin management page
+     */
+    public function adminManagement(Request $request)
+    {
+        if ($redirect = $this->AdmincheckAuth()) {
+            return $redirect;
+        }
+
+        $service = new \App\Services\AdminManagementService(new \App\Services\AdminActivityService());
+
+        // Get filters from request
+        $filters = [
+            'role' => $request->input('role'),
+            'search' => $request->input('search'),
+            'date_from' => $request->input('date_from'),
+            'date_to' => $request->input('date_to'),
+            'sort' => $request->input('sort', 'date_desc'),
+            'per_page' => $request->input('per_page', 20),
+        ];
+
+        $admins = $service->getAllAdmins($filters);
+        $stats = $service->getAdminStats();
+        $roles = \Spatie\Permission\Models\Role::orderBy('hierarchy_level')->get();
+
+        return view('Admin-Dashboard.admin-management', compact('admins', 'stats', 'roles', 'filters'));
+    }
+
+    /**
+     * Show form to create a new admin
+     */
+    public function createAdminForm()
+    {
+        if ($redirect = $this->AdmincheckAuth()) {
+            return $redirect;
+        }
+
+        // Get roles that the current admin can assign
+        $currentAdmin = auth()->user();
+        $roles = \Spatie\Permission\Models\Role::orderBy('hierarchy_level')->get();
+
+        // Filter roles based on hierarchy if not top super admin
+        if (!$currentAdmin->isTopSuperAdmin()) {
+            $currentRole = $currentAdmin->roles()->first();
+            if ($currentRole) {
+                $roles = $roles->filter(function($role) use ($currentRole) {
+                    return $role->hierarchy_level > $currentRole->hierarchy_level;
+                });
+            }
+        }
+
+        return view('Admin-Dashboard.admin-create', compact('roles'));
+    }
+
+    /**
+     * Store a new admin
+     */
+    public function storeAdmin(Request $request)
+    {
+        if ($redirect = $this->AdmincheckAuth()) {
+            return $redirect;
+        }
+
+        $request->validate([
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|string|min:8|confirmed',
+            'role' => 'required|exists:roles,name',
+        ]);
+
+        try {
+            $service = new \App\Services\AdminManagementService(new \App\Services\AdminActivityService());
+            $admin = $service->createAdmin($request->all(), auth()->user());
+
+            return redirect()->route('admin.admin-management')
+                ->with('success', 'Admin created successfully!');
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->withInput()
+                ->with('error', $e->getMessage());
+        }
+    }
+
+    /**
+     * Show form to edit an admin
+     */
+    public function editAdminForm($id)
+    {
+        if ($redirect = $this->AdmincheckAuth()) {
+            return $redirect;
+        }
+
+        $admin = User::with('roles')->findOrFail($id);
+        $currentAdmin = auth()->user();
+
+        // Check if current admin can manage this admin
+        if (!$currentAdmin->canManageAdmin($admin)) {
+            return redirect()->route('admin.admin-management')
+                ->with('error', 'You do not have permission to edit this admin');
+        }
+
+        // Get roles that can be assigned
+        $roles = \Spatie\Permission\Models\Role::orderBy('hierarchy_level')->get();
+
+        if (!$currentAdmin->isTopSuperAdmin()) {
+            $currentRole = $currentAdmin->roles()->first();
+            if ($currentRole) {
+                $roles = $roles->filter(function($role) use ($currentRole) {
+                    return $role->hierarchy_level > $currentRole->hierarchy_level;
+                });
+            }
+        }
+
+        return view('Admin-Dashboard.admin-edit', compact('admin', 'roles'));
+    }
+
+    /**
+     * Update an admin
+     */
+    public function updateAdmin(Request $request, $id)
+    {
+        if ($redirect = $this->AdmincheckAuth()) {
+            return $redirect;
+        }
+
+        $admin = User::findOrFail($id);
+
+        $request->validate([
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email,' . $id,
+            'password' => 'nullable|string|min:8|confirmed',
+            'role' => 'required|exists:roles,name',
+        ]);
+
+        try {
+            $service = new \App\Services\AdminManagementService(new \App\Services\AdminActivityService());
+            $service->updateAdmin($admin, $request->all(), auth()->user());
+
+            return redirect()->route('admin.admin-management')
+                ->with('success', 'Admin updated successfully!');
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->withInput()
+                ->with('error', $e->getMessage());
+        }
+    }
+
+    /**
+     * Delete an admin
+     */
+    public function deleteAdmin($id)
+    {
+        if ($redirect = $this->AdmincheckAuth()) {
+            return $redirect;
+        }
+
+        $admin = User::findOrFail($id);
+
+        try {
+            $service = new \App\Services\AdminManagementService(new \App\Services\AdminActivityService());
+            $service->deleteAdmin($admin, auth()->user());
+
+            return redirect()->route('admin.admin-management')
+                ->with('success', 'Admin deleted successfully!');
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', $e->getMessage());
+        }
+    }
+
+    /**
+     * Restore a deleted admin
+     */
+    public function restoreAdmin($id)
+    {
+        if ($redirect = $this->AdmincheckAuth()) {
+            return $redirect;
+        }
+
+        try {
+            $service = new \App\Services\AdminManagementService(new \App\Services\AdminActivityService());
+            $service->restoreAdmin($id, auth()->user());
+
+            return redirect()->route('admin.admin-management')
+                ->with('success', 'Admin restored successfully!');
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', $e->getMessage());
+        }
+    }
+
+    /**
+     * Get admin activities (AJAX)
+     */
+    public function getAdminActivities(Request $request)
+    {
+        if ($redirect = $this->AdmincheckAuth()) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        $service = new \App\Services\AdminActivityService();
+
+        $filters = [
+            'admin_id' => $request->input('admin_id'),
+            'target_admin_id' => $request->input('target_admin_id'),
+            'activity_type' => $request->input('activity_type'),
+            'date_from' => $request->input('date_from'),
+            'date_to' => $request->input('date_to'),
+        ];
+
+        $activities = $service->getRecentActivities($request->input('limit', 50), $filters);
+
+        return response()->json($activities);
+    }
+
+    /**
+     * Get admin statistics (AJAX)
+     */
+    public function getAdminStatistics()
+    {
+        if ($redirect = $this->AdmincheckAuth()) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        $service = new \App\Services\AdminManagementService(new \App\Services\AdminActivityService());
+        $stats = $service->getAdminStats();
+
+        return response()->json($stats);
     }
 }

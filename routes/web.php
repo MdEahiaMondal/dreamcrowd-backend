@@ -171,6 +171,13 @@ Route::controller(AdminController::class)->group(function () {
     Route::post('/admin/services/{id}/commission', 'setServiceCommission')->name('admin.services.set-commission');
     Route::post('/admin/services/{id}/toggle-visibility', 'toggleServiceVisibility')->name('admin.services.toggle-visibility');
     Route::get('/admin/buyer-management', 'buyerManagement')->name('admin.buyer-management');
+    Route::post('/admin/buyers/{id}/ban', 'banBuyer')->name('admin.buyers.ban');
+    Route::post('/admin/buyers/{id}/unban', 'unbanBuyer')->name('admin.buyers.unban');
+    Route::post('/admin/buyers/{id}/delete', 'deleteBuyer')->name('admin.buyers.delete');
+    Route::post('/admin/buyers/{id}/restore', 'restoreBuyer')->name('admin.buyers.restore');
+    Route::post('/admin/buyers/bulk-action', 'bulkActionBuyers')->name('admin.buyers.bulk-action');
+    Route::get('/admin/buyers/export', 'exportBuyers')->name('admin.buyers.export');
+    Route::get('/admin/buyers/{id}/details', 'viewBuyerDetails')->name('admin.buyers.details');
     Route::get('/admin/all-orders', 'allOrders')->name('admin.all-orders');
     Route::get('/admin/payout-details', 'payoutDetails')->name('admin.payout-details');
     Route::get('/admin/refund-details', 'refundDetails')->name('admin.refund-details');
@@ -181,12 +188,16 @@ Route::controller(AdminController::class)->group(function () {
     Route::get('/admin/buyer-reports', 'buyerReports')->name('admin.buyer-reports');
     // CRITICAL-2 FIX END =========
 
-    // Admin Management =========
-    Route::get('/admin-management', 'AdminManagement');
-    Route::post('/create-admin', 'CreateAdmin');
-    Route::post('/update-admin', 'UpdateAdmin');
-    Route::get('/delete-admin/{id}', 'DeleteAdmin');
-    Route::get('/block-admin/{id}', 'BlockAdmin');
+    // Admin Management (New RBAC System with Spatie Permissions) =========
+    Route::get('/admin-management', 'adminManagement')->name('admin.admin-management')->middleware('permission:admins.view');
+    Route::get('/admin/admins/create', 'createAdminForm')->name('admin.admins.create')->middleware('permission:admins.create');
+    Route::post('/admin/admins/store', 'storeAdmin')->name('admin.admins.store')->middleware(['permission:admins.create', 'admin.hierarchy']);
+    Route::get('/admin/admins/{id}/edit', 'editAdminForm')->name('admin.admins.edit')->middleware(['permission:admins.edit', 'admin.hierarchy']);
+    Route::post('/admin/admins/{id}/update', 'updateAdmin')->name('admin.admins.update')->middleware(['permission:admins.edit', 'admin.hierarchy']);
+    Route::post('/admin/admins/{id}/delete', 'deleteAdmin')->name('admin.admins.delete')->middleware(['permission:admins.delete', 'admin.hierarchy']);
+    Route::post('/admin/admins/{id}/restore', 'restoreAdmin')->name('admin.admins.restore')->middleware(['permission:admins.delete', 'admin.hierarchy']);
+    Route::get('/admin/activities', 'getAdminActivities')->name('admin.activities')->middleware('permission:admins.view_activity');
+    Route::get('/admin/statistics', 'getAdminStatistics')->name('admin.statistics')->middleware('permission:admins.view');
     // Admin Management =========
     // Account Setting ==========
     Route::get('/admin-profile', 'AdminProfile');
