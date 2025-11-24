@@ -2518,7 +2518,7 @@ class AdminController extends Controller
                 'Payout Processed',
                 'Your payout of $' . number_format($transaction->seller_earnings, 2) . ' has been processed and sent to your account.',
                 'payment',
-                route('teacher.transaction')
+                route('seller.transactions')
             );
 
             return back()->with('success', 'Payout marked as completed successfully. Seller has been notified.');
