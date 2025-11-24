@@ -323,11 +323,8 @@
                                            class="btn btn-sm btn-primary" target="_blank">
                                           <i class="fa fa-eye"></i> View
                                         </a>
-                                        @php
-                                          $transaction = \App\Models\Transaction::where('order_id', $order->id)->first();
-                                        @endphp
-                                        @if($transaction)
-                                          <a href="{{ route('admin.invoice.download', $transaction->id) }}"
+                                        @if($order->transaction)
+                                          <a href="{{ route('admin.invoice.download', $order->transaction->id) }}"
                                              class="btn btn-sm btn-success mt-1">
                                             <i class="fa fa-download"></i> Invoice
                                           </a>

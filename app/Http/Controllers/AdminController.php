@@ -2223,7 +2223,7 @@ class AdminController extends Controller
         }
 
         // Build query with eager loading
-        $query = \App\Models\BookOrder::with(['user', 'teacher', 'gig']);
+        $query = \App\Models\BookOrder::with(['user', 'teacher', 'gig', 'transaction']);
 
         // STATUS FILTER
         $statusFilter = $request->get('status_filter', 'all');
