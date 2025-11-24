@@ -2506,7 +2506,7 @@ class AdminController extends Controller
             // Update payout status
             $transaction->payout_status = 'completed';
             $transaction->payout_at = now();
-            $transaction->admin_notes = ($transaction->admin_notes ?? '') . "\n[" . now()->format('Y-m-d H:i:s') . "] Payout processed by admin.";
+            $transaction->notes = ($transaction->notes ?? '') . "\n[" . now()->format('Y-m-d H:i:s') . "] Payout processed by admin.";
             $transaction->save();
 
             \DB::commit();

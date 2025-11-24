@@ -96,7 +96,7 @@ class AutoProcessPayouts extends Command
                     // Update transaction
                     $transaction->payout_status = 'completed';
                     $transaction->payout_at = now();
-                    $transaction->admin_notes = ($transaction->admin_notes ?? '')
+                    $transaction->notes = ($transaction->notes ?? '')
                         . "\n[" . now()->format('Y-m-d H:i:s') . "] Payout auto-processed by system.";
                     $transaction->save();
 
