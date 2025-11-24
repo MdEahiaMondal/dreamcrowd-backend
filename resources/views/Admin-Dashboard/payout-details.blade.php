@@ -316,7 +316,7 @@
                                         @elseif($payout->payout_status == 'failed')
                                           <span class="badge bg-danger"><i class="fa fa-times"></i> Failed</span>
                                         @endif
-                                        <a href="{{ route('transaction.details', $payout->id) }}"
+                                        <a href="{{ route('admin.transaction.details', $payout->id) }}"
                                            class="btn btn-sm btn-primary mt-1" target="_blank">
                                           <i class="fa fa-eye"></i> View
                                         </a>

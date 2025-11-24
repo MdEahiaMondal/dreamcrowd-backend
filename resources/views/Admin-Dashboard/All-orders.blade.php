@@ -319,15 +319,17 @@
                                         @endif
                                       </td>
                                       <td>
-                                        <a href="{{ route('transaction.details', $order->id) }}"
-                                           class="btn btn-sm btn-primary" target="_blank">
-                                          <i class="fa fa-eye"></i> View
-                                        </a>
                                         @if($order->transaction)
+                                          <a href="{{ route('admin.transaction.details', $order->transaction->id) }}"
+                                             class="btn btn-sm btn-primary" target="_blank">
+                                            <i class="fa fa-eye"></i> View
+                                          </a>
                                           <a href="{{ route('admin.invoice.download', $order->transaction->id) }}"
                                              class="btn btn-sm btn-success mt-1">
                                             <i class="fa fa-download"></i> Invoice
                                           </a>
+                                        @else
+                                          <span class="text-muted small">No transaction</span>
                                         @endif
                                       </td>
                                     </tr>
