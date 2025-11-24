@@ -219,7 +219,7 @@
                     @forelse($payoutStats['top_sellers'] as $index => $seller)
                       <div class="top-seller-item">
                         <div>
-                          <strong>{{ $index + 1 }}. {{ $seller->seller->name ?? 'Unknown' }}</strong>
+                          <strong>{{ $index + 1 }}. {{ ($seller->seller->first_name ?? '') . ' ' . ($seller->seller->last_name ?? '') ?: 'Unknown' }}</strong>
                           <br><small class="text-muted">{{ $seller->payout_count }} payouts</small>
                         </div>
                         <div>

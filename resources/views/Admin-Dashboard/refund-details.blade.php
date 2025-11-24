@@ -333,11 +333,11 @@
                                       </td>
                                       <td>
                                         <div class="d-flex gap-2">
-                                          <span>{{ $dispute->order->teacher->name ?? 'N/A' }}</span>
+                                          <span>{{ ($dispute->order->teacher->first_name ?? '') . ' ' . ($dispute->order->teacher->last_name ?? '') ?: 'N/A' }}</span>
                                         </div>
                                       </td>
                                       <td class="online-class">
-                                        {{ $dispute->order->user->name ?? 'N/A' }}
+                                        {{ ($dispute->order->user->first_name ?? '') . ' ' . ($dispute->order->user->last_name ?? '') ?: 'N/A' }}
                                       </td>
                                       <td class="online-desc">
                                         @if($dispute->order->gig)
@@ -421,10 +421,10 @@
                                               <strong>Order ID:</strong> #{{ $dispute->order->id }}
                                             </div>
                                             <div class="info-row">
-                                              <strong>Buyer:</strong> {{ $dispute->order->user->name ?? 'N/A' }} ({{ $dispute->order->user->email ?? 'N/A' }})
+                                              <strong>Buyer:</strong> {{ ($dispute->order->user->first_name ?? '') . ' ' . ($dispute->order->user->last_name ?? '') ?: 'N/A' }} ({{ $dispute->order->user->email ?? 'N/A' }})
                                             </div>
                                             <div class="info-row">
-                                              <strong>Seller:</strong> {{ $dispute->order->teacher->name ?? 'N/A' }} ({{ $dispute->order->teacher->email ?? 'N/A' }})
+                                              <strong>Seller:</strong> {{ ($dispute->order->teacher->first_name ?? '') . ' ' . ($dispute->order->teacher->last_name ?? '') ?: 'N/A' }} ({{ $dispute->order->teacher->email ?? 'N/A' }})
                                             </div>
                                             <div class="info-row">
                                               <strong>Service:</strong> {{ $dispute->order->gig->title ?? 'N/A' }}

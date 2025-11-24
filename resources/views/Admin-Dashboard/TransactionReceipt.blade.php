@@ -293,7 +293,7 @@
         <h3>Buyer Information</h3>
         <div class="info-row">
             <span class="info-label">Name:</span>
-            <span class="info-value">{{ $transaction->buyer->name ?? 'N/A' }}</span>
+            <span class="info-value">{{ ($transaction->buyer->first_name ?? '') . ' ' . ($transaction->buyer->last_name ?? '') ?: 'N/A' }}</span>
         </div>
         <div class="info-row">
             <span class="info-label">Email:</span>
@@ -310,7 +310,7 @@
         <h3>Seller Information</h3>
         <div class="info-row">
             <span class="info-label">Name:</span>
-            <span class="info-value">{{ $transaction->seller->name ?? 'N/A' }}</span>
+            <span class="info-value">{{ ($transaction->seller->first_name ?? '') . ' ' . ($transaction->seller->last_name ?? '') ?: 'N/A' }}</span>
         </div>
         <div class="info-row">
             <span class="info-label">Email:</span>

@@ -274,11 +274,11 @@
                                     <tr>
                                       <td><strong>#{{ $order->id }}</strong></td>
                                       <td>
-                                        {{ $order->user->name ?? 'N/A' }}<br>
+                                        {{ ($order->user->first_name ?? '') . ' ' . ($order->user->last_name ?? '') ?: 'N/A' }}<br>
                                         <small class="text-muted">{{ $order->user->email ?? '' }}</small>
                                       </td>
                                       <td>
-                                        {{ $order->teacher->name ?? 'N/A' }}<br>
+                                        {{ ($order->teacher->first_name ?? '') . ' ' . ($order->teacher->last_name ?? '') ?: 'N/A' }}<br>
                                         <small class="text-muted">{{ $order->teacher->email ?? '' }}</small>
                                       </td>
                                       <td>

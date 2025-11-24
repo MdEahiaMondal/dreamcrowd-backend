@@ -90,7 +90,7 @@
                                         <option value="">-- Choose Seller --</option>
                                         @foreach($sellers as $seller)
                                             <option value="{{ $seller->id }}">
-                                                {{ $seller->name }} ({{ $seller->email }})
+                                                {{ ($seller->first_name ?? '') . ' ' . ($seller->last_name ?? '') }} ({{ $seller->email }})
                                             </option>
                                         @endforeach
                                     </select>

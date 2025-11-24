@@ -270,11 +270,11 @@
                                     <tr>
                                       <td><strong>#{{ $payout->id }}</strong></td>
                                       <td>
-                                        {{ $payout->seller->name ?? 'N/A' }}<br>
+                                        {{ ($payout->seller->first_name ?? '') . ' ' . ($payout->seller->last_name ?? '') ?: 'N/A' }}<br>
                                         <small class="text-muted">{{ $payout->seller->email ?? '' }}</small>
                                       </td>
                                       <td>
-                                        {{ $payout->buyer->name ?? 'N/A' }}<br>
+                                        {{ ($payout->buyer->first_name ?? '') . ' ' . ($payout->buyer->last_name ?? '') ?: 'N/A' }}<br>
                                         <small class="text-muted">{{ $payout->buyer->email ?? '' }}</small>
                                       </td>
                                       <td><strong>${{ number_format($payout->total_amount ?? 0, 2) }}</strong></td>
