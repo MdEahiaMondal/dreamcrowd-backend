@@ -577,10 +577,10 @@ Route::controller(OrderManagementController::class)->group(function () {
     Route::get('/reject-reschedule/{id}', 'RejectResheduleClass');
 
     // Dispute Order ==========
-    Route::post('/dispute-order', 'DisputeOrder');
+    Route::post('/dispute-order', 'DisputeOrder')->name('DisputeOrder');
     Route::get('/back-to-active/{id}', 'BackToActive');
     Route::post('/unsetissfied-delivery', 'UnSetisfiedDelivery');
-    Route::get('/accept-disputed-order/{id}', 'AcceptDisputedOrder');
+    Route::post('/accept-disputed-order', 'AcceptDisputedOrder')->name('AcceptDisputedOrder');
     Route::get('/start-job-active/{id}', 'StartJobActive');
     Route::get('/reviews', 'getAllReviews');
     Route::post('/submit-review', 'SubmitReview');
@@ -674,6 +674,10 @@ Route::middleware(['auth'])->group(function () {
     // Buyer Invoice Download
     Route::get('/transaction/{id}/invoice', [TransactionController::class, 'downloadInvoice'])
         ->name('transaction.invoice');
+
+    // Seller Invoice Download
+    Route::get('/seller/transaction/{id}/invoice', [TransactionController::class, 'downloadSellerInvoice'])
+        ->name('seller.transaction.invoice');
 
     // AJAX Filter
     Route::post('/transactions/filter', [TransactionController::class, 'filterTransactions'])

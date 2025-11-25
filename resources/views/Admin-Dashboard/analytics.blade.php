@@ -49,18 +49,18 @@
   </head>
   <body>
     <!-- ========== Sidebar Section Start ========== -->
-    <x-admin-sidebar/>
+    <x-admin-sidebar />
     <!-- ========== Sidebar Section End ========== -->
 
     <!-- ========== Main Content Section Start ========== -->
     <section class="home-section">
       <x-admin-nav/>
 
-      <div class="home-content">
-        <div class="container-fluid px-3">
+     <div class="container-fluid">
+            <div class="row dash-notification">
 
           <!-- Page Header -->
-          <div class="row mb-4">
+          
             <div class="col-12">
               <div class="d-flex justify-content-between align-items-center">
                 <div>

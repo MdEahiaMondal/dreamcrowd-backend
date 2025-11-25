@@ -105,6 +105,9 @@
       display: inline-block;
       margin: 0 5px;
     }
+    .modal-content{
+      width: 100% !important;
+    }
   </style>
   <body>
      {{-- ===========Admin Sidebar Start==================== --}}

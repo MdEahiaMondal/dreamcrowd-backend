@@ -424,6 +424,7 @@ class OrderManagementController extends Controller
             ->join('teacher_gigs', 'book_orders.gig_id', '=', 'teacher_gigs.id')
             ->join('teacher_gig_data', 'book_orders.gig_id', '=', 'teacher_gig_data.gig_id')
             ->join('class_dates', 'book_orders.id', '=', 'class_dates.order_id')
+            ->leftJoin('dispute_orders', 'book_orders.id', '=', 'dispute_orders.order_id')
             ->select(
                 'book_orders.id as order_id',
                 'expert_profiles.user_id',
@@ -447,6 +448,11 @@ class OrderManagementController extends Controller
                 'book_orders.user_dispute',
                 'book_orders.teacher_dispute',
                 'book_orders.status',
+                'dispute_orders.user_reason',
+                'dispute_orders.teacher_reason',
+                'dispute_orders.refund_type',
+                'dispute_orders.amount as dispute_amount',
+                'dispute_orders.status as dispute_status',
                 DB::raw('MIN(class_dates.user_date) as start_date'),
                 DB::raw('MAX(class_dates.user_date) as end_date')
             )
@@ -474,7 +480,12 @@ class OrderManagementController extends Controller
                 'book_orders.refund',
                 'book_orders.user_dispute',
                 'book_orders.teacher_dispute',
-                'book_orders.status'
+                'book_orders.status',
+                'dispute_orders.user_reason',
+                'dispute_orders.teacher_reason',
+                'dispute_orders.refund_type',
+                'dispute_orders.amount',
+                'dispute_orders.status'
             )->orderBy($this->sorting, 'desc')
             ->paginate($perPage);
 
@@ -1093,6 +1104,47 @@ class OrderManagementController extends Controller
             }
         }
 
+        // ✅ NEW: Get Pending Refund Requests for 48-Hour Countdown
+        $pendingRefunds = BookOrder::where('teacher_id', Auth::id())
+            ->where('user_dispute', 1)
+            ->where('teacher_dispute', 0)
+            ->with(['user', 'gig', 'disputeOrder'])
+            ->orderBy('action_date', 'asc')
+            ->get()
+            ->map(function ($order) {
+                // Calculate countdown
+                $actionDate = \Carbon\Carbon::parse($order->action_date);
+                $now = \Carbon\Carbon::now();
+                $hoursRemaining = 48 - $actionDate->diffInHours($now);
+
+                // Ensure hours remaining is non-negative
+                $order->hours_remaining = max(0, $hoursRemaining);
+                $order->minutes_remaining = max(0, ($hoursRemaining * 60) - (int)($hoursRemaining * 60));
+
+                // Calculate urgency level for color coding
+                if ($hoursRemaining > 24) {
+                    $order->urgency = 'low';
+                    $order->urgency_color = 'success'; // green
+                } elseif ($hoursRemaining > 6) {
+                    $order->urgency = 'medium';
+                    $order->urgency_color = 'warning'; // yellow
+                } else {
+                    $order->urgency = 'high';
+                    $order->urgency_color = 'danger'; // red
+                }
+
+                // Add flash class for very urgent (< 2 hours)
+                $order->is_flashing = $hoursRemaining < 2;
+
+                // Get buyer's dispute reason
+                if ($order->disputeOrder) {
+                    $order->buyer_reason = $order->disputeOrder->user_reason ?? $order->disputeOrder->reason ?? 'No reason provided';
+                } else {
+                    $order->buyer_reason = 'No reason provided';
+                }
+
+                return $order;
+            });
 
         return view('Teacher-Dashboard.client-managment', compact(
             'pendingOrders',
@@ -1101,7 +1153,8 @@ class OrderManagementController extends Controller
             'deliveredOrders',
             'completedOrders',
             'cancelledOrders',
-            'reschedule_hours'
+            'reschedule_hours',
+            'pendingRefunds'
         ));
     }
 
@@ -1889,33 +1942,49 @@ class OrderManagementController extends Controller
             return redirect()->back()->with('error', 'Order Not Found!');
         }
 
-        $dispute = new DisputeOrder();
+        // Check if there's an existing dispute for this order
+        $existingDispute = DisputeOrder::where('order_id', $order->id)->first();
 
-        if ($request->refund == 0) {
-            $dispute->amount = $order->finel_price;
+        if ($existingDispute) {
+            // UPDATE existing dispute record
+            $dispute = $existingDispute;
+
+            // Add reason based on who is disputing
+            if (Auth::user()->role == 1) {
+                // Teacher/Seller is counter-disputing
+                $dispute->teacher_reason = $request->reason;
+            } else {
+                // User/Buyer is disputing
+                $dispute->user_reason = $request->reason;
+            }
+
+            $dispute->save();
         } else {
-            $refundAmount = floatval($request->refund_amount);
-            $finalPrice = floatval($order->finel_price);
+            // CREATE new dispute record (first time)
+            $dispute = new DisputeOrder();
 
-            if ($refundAmount == null) {
-                return redirect()->back()->with('error', 'Add Refund Amount!');
+            // Set initial values
+            $dispute->user_id = Auth::user()->id;
+            $dispute->user_role = Auth::user()->role;
+            $dispute->order_id = $order->id;
+            $dispute->refund = 1;
+            $dispute->status = 0;
+
+            // Default to full refund if buyer initiates dispute without specifying
+            $dispute->refund_type = $request->refund ?? 0;
+            $dispute->amount = $request->refund_amount ?? $order->finel_price;
+
+            // Add reason based on who is disputing
+            if (Auth::user()->role == 1) {
+                $dispute->teacher_reason = $request->reason;
+            } else {
+                $dispute->user_reason = $request->reason;
             }
 
-            if ($refundAmount > $finalPrice) {
-                return redirect()->back()->with('error', 'Refund amount cannot exceed the final price!');
-            }
-
-            $dispute->amount = $request->refund_amount;
+            $dispute->save();
         }
 
-        $dispute->user_id = Auth::user()->id;
-        $dispute->user_role = Auth::user()->role;
-        $dispute->order_id = $order->id;
-        $dispute->refund = 1;
-        $dispute->refund_type = $request->refund;
-        $dispute->reason = $request->reason;
-        $dispute->save();
-
+        // Update order dispute flags
         if (Auth::user()->role == 1) {
             $order->teacher_dispute = 1;
         } else {
@@ -2011,7 +2080,7 @@ class OrderManagementController extends Controller
     // Dispute Order Function  ======END
 
     // Accept Disputed Order and Give Refund =====
-    public function AcceptDisputedOrder($id)
+    public function AcceptDisputedOrder(Request $request)
     {
         if (!Auth::check()) {
             return redirect('/')->with('error', 'Login First!');
@@ -2019,6 +2088,7 @@ class OrderManagementController extends Controller
 
         Stripe::setApiKey(env('STRIPE_SECRET'));
 
+        $id = $request->input('order_id');
         $order = BookOrder::where(['id' => $id, 'user_dispute' => 1, 'teacher_dispute' => 0])->first();
 
         if (!$order) {

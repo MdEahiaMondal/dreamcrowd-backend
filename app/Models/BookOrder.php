@@ -141,6 +141,14 @@ class BookOrder extends Model
     }
 
     /**
+     * Get the dispute order associated with this booking
+     */
+    public function disputeOrder()
+    {
+        return $this->hasOne(DisputeOrder::class, 'order_id');
+    }
+
+    /**
      * Check if order has an active Zoom meeting
      */
     public function hasActiveZoomMeeting()

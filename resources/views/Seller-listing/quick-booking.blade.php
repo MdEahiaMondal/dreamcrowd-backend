@@ -3112,6 +3112,16 @@
         let gigPayment = @json($gigPayment);
         let gigData = @json($gigData);
         let duration = @json($admin_duration);
+
+        // Set default duration if null
+        if (!duration) {
+            duration = {
+                class_oneday: 1,
+                class_inperson: 4,
+                class_online: 3
+            };
+        }
+
         let service_type = @json($gig->service_type);
         let bookedTimes = @json($bookedTimes) ||
             [];
@@ -3185,6 +3195,11 @@
             // Create a Set of configured day names for fast lookup
             let configuredDays = new Set(repeatDays.map(rd => rd.day));
 
+            // Safety check for duration object
+            if (!duration) {
+                duration = { class_oneday: 1, class_inperson: 4, class_online: 3 };
+            }
+
             if (gigData.recurring_type === "OneDay") {
                 var duration_booking = duration.class_oneday || 1;
             } else if (service_type === "Inperson") {
@@ -3204,7 +3219,6 @@
                 // Check if this day is in the configured repeatDays
                 if (configuredDays.has(dayName)) {
                     let currentDaySlots = [];
-                    let extendedSlots = [];
 
                     repeatDays.forEach((repeatDay) => {
                         if (repeatDay.day === dayName) {
@@ -3221,26 +3235,14 @@
                                 slots = slots.filter((slot) => !blockedSlots[formattedDate].has(slot));
                             }
 
-                            slots.forEach(slot => {
-                                if (slot === "00:00" || slot < "04:00") {
-                                    extendedSlots.push(slot);
-                                } else {
-                                    currentDaySlots.push(slot);
-                                }
-                            });
+                            // Keep ALL slots on the current configured day
+                            // Don't move timezone-converted slots to next day
+                            currentDaySlots.push(...slots);
                         }
                     });
 
                     // Add slots for this configured day
                     availability[i] = currentDaySlots;
-
-                    // Handle extended slots for next day
-                    if (extendedSlots.length > 0 && i + 1 < 30) {
-                        if (!availability[i + 1]) {
-                            availability[i + 1] = [];
-                        }
-                        availability[i + 1] = [...extendedSlots, ...availability[i + 1]];
-                    }
                 } else {
                     // Day is NOT configured - leave it as empty array (no time slots)
                     availability[i] = [];
@@ -3261,6 +3263,10 @@
             let now = moment().tz(userTimeZone);
             let minStartTime = now.clone();
 
+            // Safety check for duration object
+            if (!duration) {
+                duration = { class_oneday: 1, class_inperson: 4, class_online: 3 };
+            }
 
             if (gigData.recurring_type === "OneDay") {
                 var duration_booking = duration.class_oneday || 1;

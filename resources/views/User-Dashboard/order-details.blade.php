@@ -627,19 +627,83 @@
                                 <h3>Dispute Details</h3>
                             </div>
                             <div class="info-row">
-                                <span class="info-label">Dispute Date</span>
-                                <span class="info-value">{{ $order->disputeOrder->created_at->format('M d, Y H:i') }}</span>
+                                <span class="info-label">Dispute Filed</span>
+                                <span class="info-value">
+                                    {{ $order->disputeOrder->created_at->format('M d, Y') }}
+                                    <small style="color: #666;">at {{ $order->disputeOrder->created_at->format('h:i A') }}</small>
+                                </span>
                             </div>
-                            <div class="info-row">
-                                <span class="info-label">Reason</span>
-                                <span class="info-value">{{ $order->disputeOrder->reason ?? 'No reason provided' }}</span>
-                            </div>
-                            @if($order->disputeOrder->refund_amount)
+                            @if($order->disputeOrder->created_at != $order->disputeOrder->updated_at)
                                 <div class="info-row">
-                                    <span class="info-label">Refund Amount</span>
-                                    <span class="info-value"><strong>${{ number_format($order->disputeOrder->refund_amount, 2) }}</strong></span>
+                                    <span class="info-label">Last Updated</span>
+                                    <span class="info-value">
+                                        {{ $order->disputeOrder->updated_at->format('M d, Y') }}
+                                        <small style="color: #666;">at {{ $order->disputeOrder->updated_at->format('h:i A') }}</small>
+                                    </span>
                                 </div>
                             @endif
+                            <div class="info-row">
+                                <span class="info-label">Refund Type</span>
+                                <span class="info-value">
+                                    @if($order->disputeOrder->refund_type == 0)
+                                        <span class="badge bg-danger">Full Refund</span>
+                                    @else
+                                        <span class="badge bg-warning">Partial Refund</span>
+                                    @endif
+                                </span>
+                            </div>
+                            @if($order->disputeOrder->amount)
+                                <div class="info-row">
+                                    <span class="info-label">Refund Amount</span>
+                                    <span class="info-value"><strong>${{ number_format($order->disputeOrder->amount, 2) }}</strong></span>
+                                </div>
+                            @endif
+
+                            <!-- Timeline Style Display -->
+                            <div style="margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
+                                @if($order->disputeOrder->user_reason)
+                                    <div style="margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #dee2e6;">
+                                        <div style="display: flex; align-items: center; margin-bottom: 8px;">
+                                            <i class='bx bx-user-circle' style="font-size: 20px; color: #007bff; margin-right: 8px;"></i>
+                                            <strong style="color: #007bff;">Your Dispute Reason</strong>
+                                        </div>
+                                        <p style="margin: 0; padding-left: 28px; color: #333;">{{ $order->disputeOrder->user_reason }}</p>
+                                    </div>
+                                @endif
+
+                                @if($order->disputeOrder->teacher_reason)
+                                    <div style="margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #dee2e6;">
+                                        <div style="display: flex; align-items: center; margin-bottom: 8px;">
+                                            <i class='bx bx-store' style="font-size: 20px; color: #fd7e14; margin-right: 8px;"></i>
+                                            <strong style="color: #fd7e14;">Seller's Counter-Reason</strong>
+                                        </div>
+                                        <p style="margin: 0; padding-left: 28px; color: #333;">{{ $order->disputeOrder->teacher_reason }}</p>
+                                    </div>
+                                @endif
+
+                                @if($order->disputeOrder->admin_notes)
+                                    <div style="margin-bottom: 0;">
+                                        <div style="display: flex; align-items: center; margin-bottom: 8px;">
+                                            <i class='bx bx-shield-alt' style="font-size: 20px; color: #6f42c1; margin-right: 8px;"></i>
+                                            <strong style="color: #6f42c1;">Admin Decision & Notes</strong>
+                                        </div>
+                                        <p style="margin: 0; padding-left: 28px; color: #333;">{{ $order->disputeOrder->admin_notes }}</p>
+                                    </div>
+                                @endif
+                            </div>
+
+                            <div class="info-row" style="margin-top: 15px;">
+                                <span class="info-label">Current Status</span>
+                                <span class="info-value">
+                                    @if($order->disputeOrder->status == 0)
+                                        <span class="badge bg-warning">⏳ Pending Admin Review</span>
+                                    @elseif($order->disputeOrder->status == 1)
+                                        <span class="badge bg-success">✓ Approved - Refunded</span>
+                                    @else
+                                        <span class="badge bg-danger">✗ Rejected</span>
+                                    @endif
+                                </span>
+                            </div>
                         </div>
                     @endif
 
@@ -713,6 +777,11 @@
                             <a href="/order-management" class="btn btn-secondary">
                                 <i class='bx bx-arrow-back'></i> Back to Orders
                             </a>
+                            @if($order->transaction)
+                                <a href="{{ route('transaction.invoice', $order->transaction->id) }}" class="btn btn-info btn-action">
+                                    <i class='bx bx-download'></i> Download Invoice
+                                </a>
+                            @endif
                             <a href="/user-messages" class="btn btn-primary-custom btn-action">
                                 <i class='bx bx-message-dots'></i> Message Teacher
                             </a>

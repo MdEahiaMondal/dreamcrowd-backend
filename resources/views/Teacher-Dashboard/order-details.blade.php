@@ -661,6 +661,11 @@
                             <a href="/order-management" class="btn btn-secondary">
                                 <i class='bx bx-arrow-back'></i> Back to Orders
                             </a>
+                            @if($order->transaction)
+                                <a href="{{ route('seller.transaction.invoice', $order->transaction->id) }}" class="btn btn-info btn-action">
+                                    <i class='bx bx-download'></i> Download Invoice
+                                </a>
+                            @endif
                             <a href="/teacher-messages" class="btn btn-primary-custom btn-action">
                                 <i class='bx bx-message-dots'></i> Message Buyer
                             </a>

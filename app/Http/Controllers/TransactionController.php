@@ -376,4 +376,32 @@ class TransactionController extends Controller
 
         return response()->json($transactions);
     }
+
+    /**
+     * Seller/Teacher Invoice Download
+     */
+    public function downloadSellerInvoice($id)
+    {
+        if (!Auth::check() || Auth::user()->role != 1) {
+            return redirect('/')->with('error', 'Unauthorized access');
+        }
+
+        $transaction = Transaction::with(['buyer', 'seller', 'bookOrder'])
+            ->where('seller_id', Auth::id())
+            ->findOrFail($id);
+
+        $data = [
+            'transaction' => $transaction,
+            'companyName' => 'Dreamcrowd',
+            'companyAddress' => 'Your Company Address',
+            'companyEmail' => 'support@dreamcrowd.com',
+            'companyPhone' => '+1 234 567 8900',
+            'invoiceDate' => now()->format('d M Y'),
+        ];
+
+        $pdf = \PDF::loadView('user.transaction-invoice', $data);
+        $filename = 'seller_invoice_' . str_pad($transaction->id, 6, '0', STR_PAD_LEFT) . '.pdf';
+
+        return $pdf->download($filename);
+    }
 }

@@ -84,7 +84,9 @@ class MessagesController extends Controller
                         : 'Unknown';
                     $profileImage = $teacher && $teacher->profile
                         ? asset('assets/profile/img/' . $teacher->profile)
-                        : asset('assets/profile/avatars/(' . ucfirst(substr($teacher->first_name, 0, 1)) . ').jpg');
+                        : ($teacher
+                            ? asset('assets/profile/avatars/(' . ucfirst(substr($teacher->first_name, 0, 1)) . ').jpg')
+                            : asset('assets/profile/avatars/(U).jpg'));
 
                     // Count unseen messages from the Teacher
                     $unseenCount = Chat::where('sender_id', $chat->teacher)
@@ -150,11 +152,15 @@ class MessagesController extends Controller
                 $user = User::find($otheruserId);
 
 
-                $fullName = $user->first_name . ' ' . ucfirst(substr($user->first_name, 0, 1));
+                $fullName = $user
+                    ? $user->first_name . ' ' . ucfirst(substr($user->last_name, 0, 1))
+                    : 'Unknown User';
 
                 $profileImageMain = $user && $user->profile
                     ? asset('assets/profile/img/' . $user->profile)
-                    : asset('assets/profile/avatars/(' . ucfirst(substr($user->first_name, 0, 1)) . ').jpg');
+                    : ($user
+                        ? asset('assets/profile/avatars/(' . ucfirst(substr($user->first_name, 0, 1)) . ').jpg')
+                        : asset('assets/profile/avatars/(U).jpg'));
 
 
                 $completeChat = Chat::where(function ($query) use ($userId, $otheruserId, $userRole, $otheruserRole) {
@@ -273,7 +279,9 @@ class MessagesController extends Controller
                         : 'Unknown';
                     $profileImage = $teacher && $teacher->profile
                         ? asset('assets/profile/img/' . $teacher->profile)
-                        : asset('assets/profile/avatars/(' . ucfirst(substr($teacher->first_name, 0, 1)) . ').jpg');
+                        : ($teacher
+                            ? asset('assets/profile/avatars/(' . ucfirst(substr($teacher->first_name, 0, 1)) . ').jpg')
+                            : asset('assets/profile/avatars/(U).jpg'));
 
                     // Count unseen messages from the Teacher
                     $unseenCount = Chat::where('sender_id', $chat->teacher)
@@ -357,11 +365,15 @@ class MessagesController extends Controller
 
             $user = User::find($otheruserId);
 
-            $fullName = $user->first_name . ' ' . ucfirst(substr($user->first_name, 0, 1));
-            $profileName = $user->first_name . $user->last_name;
+            $fullName = $user
+                ? $user->first_name . ' ' . ucfirst(substr($user->last_name, 0, 1))
+                : 'Unknown User';
+            $profileName = $user ? $user->first_name . $user->last_name : 'Unknown';
             $profileImageMain = $user && $user->profile
                 ? asset('assets/profile/img/' . $user->profile)
-                : asset('assets/profile/avatars/(' . ucfirst(substr($user->first_name, 0, 1)) . ').jpg');
+                : ($user
+                    ? asset('assets/profile/avatars/(' . ucfirst(substr($user->first_name, 0, 1)) . ').jpg')
+                    : asset('assets/profile/avatars/(U).jpg'));
 
 
             $completeChat = Chat::where(function ($query) use ($userId, $otheruserId, $userRole, $otheruserRole) {
@@ -742,11 +754,15 @@ class MessagesController extends Controller
 
             $user = User::find($otheruserId);
 
-            $fullName = $user->first_name . ' ' . ucfirst(substr($user->first_name, 0, 1));
-            $profileName = $user->first_name . $user->last_name;
+            $fullName = $user
+                ? $user->first_name . ' ' . ucfirst(substr($user->last_name, 0, 1))
+                : 'Unknown User';
+            $profileName = $user ? $user->first_name . $user->last_name : 'Unknown';
             $profileImageMain = $user && $user->profile
                 ? asset('assets/profile/img/' . $user->profile)
-                : asset('assets/profile/avatars/(' . ucfirst(substr($user->first_name, 0, 1)) . ').jpg');
+                : ($user
+                    ? asset('assets/profile/avatars/(' . ucfirst(substr($user->first_name, 0, 1)) . ').jpg')
+                    : asset('assets/profile/avatars/(U).jpg'));
 
 
             $completeChat = Chat::where(function ($query) use ($userId, $otheruserId, $userRole, $otheruserRole) {
@@ -865,7 +881,9 @@ class MessagesController extends Controller
                         : 'Unknown';
                     $profileImage = $teacher && $teacher->profile
                         ? asset('assets/profile/img/' . $teacher->profile)
-                        : asset('assets/profile/avatars/(' . ucfirst(substr($teacher->first_name, 0, 1)) . ').jpg');
+                        : ($teacher
+                            ? asset('assets/profile/avatars/(' . ucfirst(substr($teacher->first_name, 0, 1)) . ').jpg')
+                            : asset('assets/profile/avatars/(U).jpg'));
 
                     // Count unseen messages from the Teacher
                     $unseenCount = Chat::where('sender_id', $chat->user)
@@ -931,11 +949,15 @@ class MessagesController extends Controller
                 $user = User::find($otheruserId);
 
 
-                $fullName = $user->first_name . ' ' . ucfirst(substr($user->first_name, 0, 1));
+                $fullName = $user
+                ? $user->first_name . ' ' . ucfirst(substr($user->last_name, 0, 1))
+                : 'Unknown User';
 
                 $profileImageMain = $user && $user->profile
                     ? asset('assets/profile/img/' . $user->profile)
-                    : asset('assets/profile/avatars/(' . ucfirst(substr($user->first_name, 0, 1)) . ').jpg');
+                    : ($user
+                        ? asset('assets/profile/avatars/(' . ucfirst(substr($user->first_name, 0, 1)) . ').jpg')
+                        : asset('assets/profile/avatars/(U).jpg'));
 
 
                 $completeChat = Chat::where(function ($query) use ($userId, $otheruserId, $userRole, $otheruserRole) {
@@ -1044,7 +1066,9 @@ class MessagesController extends Controller
                         : 'Unknown';
                     $profileImage = $teacher && $teacher->profile
                         ? asset('assets/profile/img/' . $teacher->profile)
-                        : asset('assets/profile/avatars/(' . ucfirst(substr($teacher->first_name, 0, 1)) . ').jpg');
+                        : ($teacher
+                            ? asset('assets/profile/avatars/(' . ucfirst(substr($teacher->first_name, 0, 1)) . ').jpg')
+                            : asset('assets/profile/avatars/(U).jpg'));
 
                     // Count unseen messages from the Teacher
                     $unseenCount = Chat::where('sender_id', $chat->user)
@@ -1128,11 +1152,15 @@ class MessagesController extends Controller
 
             $user = User::find($otheruserId);
 
-            $fullName = $user->first_name . ' ' . ucfirst(substr($user->first_name, 0, 1));
+            $fullName = $user
+                ? $user->first_name . ' ' . ucfirst(substr($user->last_name, 0, 1))
+                : 'Unknown User';
 
             $profileImageMain = $user && $user->profile
                 ? asset('assets/profile/img/' . $user->profile)
-                : asset('assets/profile/avatars/(' . ucfirst(substr($user->first_name, 0, 1)) . ').jpg');
+                : ($user
+                    ? asset('assets/profile/avatars/(' . ucfirst(substr($user->first_name, 0, 1)) . ').jpg')
+                    : asset('assets/profile/avatars/(U).jpg'));
 
 
             $completeChat = Chat::where(function ($query) use ($userId, $otheruserId, $userRole, $otheruserRole) {
@@ -1405,11 +1433,15 @@ class MessagesController extends Controller
 
             $user = User::find($otheruserId);
 
-            $fullName = $user->first_name . ' ' . ucfirst(substr($user->first_name, 0, 1));
+            $fullName = $user
+                ? $user->first_name . ' ' . ucfirst(substr($user->last_name, 0, 1))
+                : 'Unknown User';
 
             $profileImageMain = $user && $user->profile
                 ? asset('assets/profile/img/' . $user->profile)
-                : asset('assets/profile/avatars/(' . ucfirst(substr($user->first_name, 0, 1)) . ').jpg');
+                : ($user
+                    ? asset('assets/profile/avatars/(' . ucfirst(substr($user->first_name, 0, 1)) . ').jpg')
+                    : asset('assets/profile/avatars/(U).jpg'));
 
 
             $completeChat = Chat::where(function ($query) use ($userId, $otheruserId, $userRole, $otheruserRole) {
@@ -1605,7 +1637,7 @@ class MessagesController extends Controller
         });
 
         // Merge users with chats first, then users without chats
-        $chatList = $usersWithChats->merge($usersWithoutChats)->values();
+        $chatList = $usersWithChats->concat($usersWithoutChats)->values();
 
 
         // Get the first chat from the already fetched chat list
@@ -1616,16 +1648,18 @@ class MessagesController extends Controller
         $otheruserRole = $firstChat['teacher_role']; // Fetch the first chat user/teacher ID
         $block = $firstChat['block']; // Fetch the first chat user/teacher ID
         $block_by = $firstChat['block_by']; // Fetch the first chat user/teacher ID
-        $otherUser = User::find($otheruserId);
+        $otherUser = $otheruserId !== 'A' ? User::find($otheruserId) : null;
 
-        $otherUserRole = $otherUser->role; // 0 = User, 1 = Teacher, 2 = Admin
+        $otherUserRole = $otherUser ? $otherUser->role : $otheruserRole; // 0 = User, 1 = Teacher, 2 = Admin
         // Set Full Name and Profile Image
-        $fullName = $otherUserRole == 2 ? 'Admin' : $otherUser->first_name . ' ' . ucfirst(substr($otherUser->last_name, 0, 1)) . '';
+        $fullName = $otherUserRole == 2 ? 'Admin' : ($otherUser ? $otherUser->first_name . ' ' . ucfirst(substr($otherUser->last_name, 0, 1)) . '' : 'Unknown User');
         $profileImageMain = $otherUserRole == 2
             ? asset('assets/profile/avatars/(A).jpg')
-            : ($otherUser->profile
+            : ($otherUser && $otherUser->profile
                 ? asset('assets/profile/img/' . $otherUser->profile)
-                : asset('assets/profile/avatars/(' . strtoupper(substr($otherUser->first_name, 0, 1)) . ').jpg'));
+                : ($otherUser
+                    ? asset('assets/profile/avatars/(' . strtoupper(substr($otherUser->first_name, 0, 1)) . ').jpg')
+                    : asset('assets/profile/avatars/(U).jpg')));
 
         // Fetch complete chat history based on the first chat record
         $completeChat = Chat::where(function ($query) use ($userRole, $otheruserId, $otherUserRole) {
@@ -1765,7 +1799,7 @@ class MessagesController extends Controller
         });
 
         // Merge users with chats first, then users without chats
-        $chatList = $usersWithChats->merge($usersWithoutChats)->values();
+        $chatList = $usersWithChats->concat($usersWithoutChats)->values();
 
 
         // Determine participant details
@@ -1776,7 +1810,7 @@ class MessagesController extends Controller
         // Get the first chat from the already fetched chat list
         $firstChat = ChatList::where([$usertype => $otheruserId, 'admin' => 1])->first();
 
-        if ($firstChat) {
+        if ($firstChat && $otherUser) {
             $firstChat = [
                 'teacher_id' => $otherUser->id,
                 'teacher_role' => $otherUser->role,
@@ -1981,7 +2015,8 @@ class MessagesController extends Controller
         $userRole = 2; // Authenticated user's role
         $otheruserId = $request->id; // The other user's ID
         // If the ID is "A", it's an Admin (role = 2), otherwise it's a regular user (role = 1)
-        $otheruserRole = User::find($otheruserId)->role;
+        $otherUserModel = User::find($otheruserId);
+        $otheruserRole = $otherUserModel ? $otherUserModel->role : 0;
 
 
         // Fetch Chat Status Block List --------------Start
@@ -2017,12 +2052,16 @@ class MessagesController extends Controller
 
         $user = User::find($otheruserId);
 
-        $fullName = $user->first_name . ' ' . ucfirst(substr($user->last_name, 0, 1));
-        $profileName = $user->first_name . $user->last_name;
+        $fullName = $user
+            ? $user->first_name . ' ' . ucfirst(substr($user->last_name, 0, 1))
+            : 'Unknown User';
+        $profileName = $user ? $user->first_name . $user->last_name : 'Unknown';
 
         $profileImageMain = $user && $user->profile
             ? asset('assets/profile/img/' . $user->profile)
-            : asset('assets/profile/avatars/(' . ucfirst(substr($user->first_name, 0, 1)) . ').jpg');
+            : ($user
+                ? asset('assets/profile/avatars/(' . ucfirst(substr($user->first_name, 0, 1)) . ').jpg')
+                : asset('assets/profile/avatars/(U).jpg'));
 
 
         // Fetch chat where receiver_role is Admin (2) and Auth user is involved

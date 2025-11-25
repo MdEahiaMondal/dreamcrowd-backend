@@ -2539,32 +2539,32 @@
 </script>
 <!-- Upload script start -->
 <script>
-    var site_logo = 'assets/public-site/asset/img/<?php echo $home->site_logo; ?>';
-    var fav_icon = 'assets/public-site/asset/img/<?php echo $home->fav_icon; ?>';
-    var hero_image = 'assets/public-site/asset/img/<?php echo $home->hero_image; ?>';
-    var rating_1 = 'assets/public-site/asset/img/<?php echo $home->rating_image_1; ?>';
-    var rating_2 = 'assets/public-site/asset/img/<?php echo $home->rating_image_2; ?>';
-    var rating_3 = 'assets/public-site/asset/img/<?php echo $home->rating_image_3; ?>';
-    var rating_4 = 'assets/public-site/asset/img/<?php echo $home->rating_image_4; ?>';
-    var rating_5 = 'assets/public-site/asset/img/<?php echo $home->rating_image_5; ?>';
-    var rating_6 = 'assets/public-site/asset/img/<?php echo $home->rating_image_6; ?>';
-    var work_image_1 = 'assets/public-site/asset/img/<?php echo $home->work_image_1; ?>';
-    var work_image_2 = 'assets/public-site/asset/img/<?php echo $home->work_image_2; ?>';
-    var work_image_3 = 'assets/public-site/asset/img/<?php echo $home->work_image_3; ?>';
-    var category_image_1 = 'assets/public-site/asset/img/<?php echo $home->category_image_1; ?>';
-    var category_image_2 = 'assets/public-site/asset/img/<?php echo $home->category_image_2; ?>';
-    var category_image_3 = 'assets/public-site/asset/img/<?php echo $home->category_image_3; ?>';
-    var category_image_4 = 'assets/public-site/asset/img/<?php echo $home->category_image_4; ?>';
-    var category_image_5 = 'assets/public-site/asset/img/<?php echo $home->category_image_5; ?>';
-    var category_image_6 = 'assets/public-site/asset/img/<?php echo $home->category_image_6; ?>';
-    var category_image_7 = 'assets/public-site/asset/img/<?php echo $home->category_image_7; ?>';
-    var category_image_8 = 'assets/public-site/asset/img/<?php echo $home->category_image_8; ?>';
-    var banner_1_image = 'assets/public-site/asset/img/<?php echo $home2->banner_1_image; ?>';
-    var banner_2_image = 'assets/public-site/asset/img/<?php echo $home2->banner_2_image; ?>';
-    var review_image_1 = 'assets/public-site/asset/img/<?php echo $home2->review_image_1; ?>';
-    var review_image_2 = 'assets/public-site/asset/img/<?php echo $home2->review_image_2; ?>';
-    var review_image_3 = 'assets/public-site/asset/img/<?php echo $home2->review_image_3; ?>';
-    var review_image_4 = 'assets/public-site/asset/img/<?php echo $home2->review_image_4; ?>';
+    var site_logo = 'assets/public-site/asset/img/<?php echo $home ? $home->site_logo : ''; ?>';
+    var fav_icon = 'assets/public-site/asset/img/<?php echo $home ? $home->fav_icon : ''; ?>';
+    var hero_image = 'assets/public-site/asset/img/<?php echo $home ? $home->hero_image : ''; ?>';
+    var rating_1 = 'assets/public-site/asset/img/<?php echo $home ? $home->rating_image_1 : ''; ?>';
+    var rating_2 = 'assets/public-site/asset/img/<?php echo $home ? $home->rating_image_2 : ''; ?>';
+    var rating_3 = 'assets/public-site/asset/img/<?php echo $home ? $home->rating_image_3 : ''; ?>';
+    var rating_4 = 'assets/public-site/asset/img/<?php echo $home ? $home->rating_image_4 : ''; ?>';
+    var rating_5 = 'assets/public-site/asset/img/<?php echo $home ? $home->rating_image_5 : ''; ?>';
+    var rating_6 = 'assets/public-site/asset/img/<?php echo $home ? $home->rating_image_6 : ''; ?>';
+    var work_image_1 = 'assets/public-site/asset/img/<?php echo $home ? $home->work_image_1 : ''; ?>';
+    var work_image_2 = 'assets/public-site/asset/img/<?php echo $home ? $home->work_image_2 : ''; ?>';
+    var work_image_3 = 'assets/public-site/asset/img/<?php echo $home ? $home->work_image_3 : ''; ?>';
+    var category_image_1 = 'assets/public-site/asset/img/<?php echo $home ? $home->category_image_1 : ''; ?>';
+    var category_image_2 = 'assets/public-site/asset/img/<?php echo $home ? $home->category_image_2 : ''; ?>';
+    var category_image_3 = 'assets/public-site/asset/img/<?php echo $home ? $home->category_image_3 : ''; ?>';
+    var category_image_4 = 'assets/public-site/asset/img/<?php echo $home ? $home->category_image_4 : ''; ?>';
+    var category_image_5 = 'assets/public-site/asset/img/<?php echo $home ? $home->category_image_5 : ''; ?>';
+    var category_image_6 = 'assets/public-site/asset/img/<?php echo $home ? $home->category_image_6 : ''; ?>';
+    var category_image_7 = 'assets/public-site/asset/img/<?php echo $home ? $home->category_image_7 : ''; ?>';
+    var category_image_8 = 'assets/public-site/asset/img/<?php echo $home ? $home->category_image_8 : ''; ?>';
+    var banner_1_image = 'assets/public-site/asset/img/<?php echo $home2 ? $home2->banner_1_image : ''; ?>';
+    var banner_2_image = 'assets/public-site/asset/img/<?php echo $home2 ? $home2->banner_2_image : ''; ?>';
+    var review_image_1 = 'assets/public-site/asset/img/<?php echo $home2 ? $home2->review_image_1 : ''; ?>';
+    var review_image_2 = 'assets/public-site/asset/img/<?php echo $home2 ? $home2->review_image_2 : ''; ?>';
+    var review_image_3 = 'assets/public-site/asset/img/<?php echo $home2 ? $home2->review_image_3 : ''; ?>';
+    var review_image_4 = 'assets/public-site/asset/img/<?php echo $home2 ? $home2->review_image_4 : ''; ?>';
     // 1
     new Vue({
         el: "#upload-image",

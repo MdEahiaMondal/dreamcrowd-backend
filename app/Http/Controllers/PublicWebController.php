@@ -28,10 +28,19 @@ class PublicWebController extends Controller
         ->select('category')  // Select only the category field
         ->distinct()          // Ensure unique category names
         ->get();
+
+        // Initialize all gig and profile variables
         for ($i = 1; $i <= 8; $i++) {
-            $field = 'expert_link_' . $i;
-            $ids = explode('/', $home->$field);
-            if (!empty($ids[1])) {
+            ${'gig_' . $i} = null;
+            ${'profile_' . $i} = null;
+        }
+
+        // Only process expert links if $home exists
+        if ($home) {
+            for ($i = 1; $i <= 8; $i++) {
+                $field = 'expert_link_' . $i;
+                $ids = explode('/', $home->$field ?? '');
+                if (!empty($ids[1])) {
                 ${'gig_' . $i} = TeacherGig::query()
                     ->withAvg('all_reviews', 'rating')
                     ->where(['id' => $ids[1], 'status' => 1])
@@ -46,9 +55,10 @@ class PublicWebController extends Controller
                     ${'gig_' . $i} = null;
                     ${'profile_' . $i} = null;
                 }
-            } else {
-                ${'gig_' . $i} = null;
-                ${'profile_' . $i} = null;
+                } else {
+                    ${'gig_' . $i} = null;
+                    ${'profile_' . $i} = null;
+                }
             }
         }
 

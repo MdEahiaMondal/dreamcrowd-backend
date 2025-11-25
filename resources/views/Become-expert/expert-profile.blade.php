@@ -1809,8 +1809,8 @@
                                 />
                               </div>
                             </div>
-                              <input type="hidden" id="verification_center" value="{{$expert->verification_center}}">
                             @if ($expert)
+                              <input type="hidden" id="verification_center" value="{{$expert->verification_center}}">
                             @if ($expert->verification_center  == 1)
                                 
                             
@@ -3239,7 +3239,7 @@ if (isValid) {
 
                         // Set values for other fields (assuming these fields exist on your page)
                         document.getElementById('city').value = city;
-        // document.getElementById('country').value = country;
+        document.getElementById('country').value = country;
         document.getElementById('zip_code').value = postalCode;
         document.getElementById('country_code').value = countryCode;
         document.getElementById('latitude').value = latitude;
@@ -3342,6 +3342,7 @@ if (isValid) {
 
         // Populate these values into form fields
         document.getElementById('city').value = city;
+        document.getElementById('country').value = country;
         document.getElementById('zip_code').value = postalCode;
         document.getElementById('country_code').value = countryCode;
         document.getElementById('latitude').value = latitude;

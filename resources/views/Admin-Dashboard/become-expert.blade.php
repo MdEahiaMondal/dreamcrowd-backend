@@ -1842,12 +1842,12 @@ $("#input_fields_write_points").append(content_div);
 <!-- ================ side js start End=============== -->
 <!-- upload image js -->
 <script>
-  var hero_image = 'assets/expert/asset/img/<?php echo $expert->hero_image ?>';
-  var expert_image = 'assets/expert/asset/img/<?php echo $expert->expert_image ?>';
-  var previewImage1 = 'assets/expert/asset/img/<?php echo $expert->host_image_1 ?>';
-  var previewImage2 = 'assets/expert/asset/img/<?php echo $expert->host_image_2 ?>';
-  var previewImage3 = 'assets/expert/asset/img/<?php echo $expert->host_image_3 ?>';
-  var previewImage4 = 'assets/expert/asset/img/<?php echo $expert->host_image_4 ?>';
+  var hero_image = 'assets/expert/asset/img/<?php echo $expert ? $expert->hero_image : ''; ?>';
+  var expert_image = 'assets/expert/asset/img/<?php echo $expert ? $expert->expert_image : ''; ?>';
+  var previewImage1 = 'assets/expert/asset/img/<?php echo $expert ? $expert->host_image_1 : ''; ?>';
+  var previewImage2 = 'assets/expert/asset/img/<?php echo $expert ? $expert->host_image_2 : ''; ?>';
+  var previewImage3 = 'assets/expert/asset/img/<?php echo $expert ? $expert->host_image_3 : ''; ?>';
+  var previewImage4 = 'assets/expert/asset/img/<?php echo $expert ? $expert->host_image_4 : ''; ?>';
   
   
    // 2

@@ -63,66 +63,65 @@
                 </ul>
             </li>
 
-            @if (Auth::user()->admin_role >= 4)
 
-                <li>
-                    <div class="iocn-link">
-                        <a href="javascript:void(0)">
-                            <i class='bx bx-cog icon' title="Dynamic Management"></i>
-                            <span class="link_name">Dynamic Management</span>
-                        </a>
-                        <i class='bx bxs-chevron-down arrow'></i>
-                    </div>
-                    <ul class="sub-menu">
-                        <li><a class="link_name" href="#">Dynamic Management</a></li>
-                        <li><a href="/admin-home-dynamic">Home Page</a></li>
-                        <li><a href="/admin-category-dynamic">Categories</a></li>
-                        <li><a href="/admin-about-us-dynamic">About us</a></li>
-                        <li><a href="/admin-term-condition-dynamic">T&C and Privacy Policy</a></li>
-                        <li><a href="/admin-faq-dynamic">FAQ’s</a></li>
-                        <li><a href="/admin-social-media-dynamic">Social Media</a></li>
-                        <li><a href="/admin-become-expert-dynamic">Become an expert</a></li>
-                        <li><a href="/admin-site-banner-dynamic">Sellers Banner</a></li>
-                        {{-- <li><a href="/admin-contact-us-dynamic">Contact Us</a></li> --}}
-                        <li><a href="/admin-verification-center-dynamic">Verification Center</a></li>
-                        <li>
-                            <a href="/admin-languages-dynamic">Add Languages</a>
-                        </li>
-                        <li>
-                            <a href="/admin-keyword-suggessions">Keyword Suggessions</a>
-                        </li>
-                        <li>
-                            <a href="/admin-booking-duration">Booking Duration</a>
-                        </li>
-                    </ul>
-                </li>
+            <li>
+                <div class="iocn-link">
+                    <a href="javascript:void(0)">
+                        <i class='bx bx-cog icon' title="Dynamic Management"></i>
+                        <span class="link_name">Dynamic Management</span>
+                    </a>
+                    <i class='bx bxs-chevron-down arrow'></i>
+                </div>
+                <ul class="sub-menu">
+                    <li><a class="link_name" href="#">Dynamic Management</a></li>
+                    <li><a href="/admin-home-dynamic">Home Page</a></li>
+                    <li><a href="/admin-category-dynamic">Categories</a></li>
+                    <li><a href="/admin-about-us-dynamic">About us</a></li>
+                    <li><a href="/admin-term-condition-dynamic">T&C and Privacy Policy</a></li>
+                    <li><a href="/admin-faq-dynamic">FAQ’s</a></li>
+                    <li><a href="/admin-social-media-dynamic">Social Media</a></li>
+                    <li><a href="/admin-become-expert-dynamic">Become an expert</a></li>
+                    <li><a href="/admin-site-banner-dynamic">Sellers Banner</a></li>
+                    {{-- <li><a href="/admin-contact-us-dynamic">Contact Us</a></li> --}}
+                    <li><a href="/admin-verification-center-dynamic">Verification Center</a></li>
+                    <li>
+                        <a href="/admin-languages-dynamic">Add Languages</a>
+                    </li>
+                    <li>
+                        <a href="/admin-keyword-suggessions">Keyword Suggessions</a>
+                    </li>
+                    <li>
+                        <a href="/admin-booking-duration">Booking Duration</a>
+                    </li>
+                </ul>
+            </li>
 
 
-                <li>
-                    <div class="iocn-link">
-                        <a href="javascript:void(0)">
-                            <i class='bx bx-cog icon' title="Seller Setting"></i>
-                            <span class="link_name">Seller Setting</span>
-                        </a>
-                        <i class='bx bxs-chevron-down arrow'></i>
-                    </div>
-                    <ul class="sub-menu">
-                        <li>
-                            <a href="/admin-top-seller">Top Seller Tag</a>
-                        </li>
-                        <li>
-                            <a href="/admin-services-sorting">Services Sorting</a>
-                        </li>
-                        <li>
-                            <a href="/admin/commission-settings">Commission</a>
-                        </li>
-                        <li>
-                            <a href="/admin/commission-report">Commission Report</a>
-                        </li>
-                    </ul>
-                </li>
+            <li>
+                <div class="iocn-link">
+                    <a href="javascript:void(0)">
+                        <i class='bx bx-cog icon' title="Seller Setting"></i>
+                        <span class="link_name">Seller Setting</span>
+                    </a>
+                    <i class='bx bxs-chevron-down arrow'></i>
+                </div>
+                <ul class="sub-menu">
+                    <li>
+                        <a href="/admin-top-seller">Top Seller Tag</a>
+                    </li>
+                    <li>
+                        <a href="/admin-services-sorting">Services Sorting</a>
+                    </li>
+                    <li>
+                        <a href="/admin/commission-settings">Commission</a>
+                    </li>
+                    <li>
+                        <a href="/admin/commission-report">Commission Report</a>
+                    </li>
+                </ul>
+            </li>
 
-            @endif
+
             <!-- <li> -->
             <li>
                 <a href="/admin-host-guidline">
@@ -188,7 +187,7 @@
                     <i class='bx bxs-chevron-down arrow'></i>
                 </div>
                 <ul class="sub-menu">
-                    <li><a  href="/admin/coupons">Discount Codes</a></li>
+                    <li><a href="/admin/coupons">Discount Codes</a></li>
                     <li><a href="/admin/coupons/analytics">Coupons Analytics</a></li>
                 </ul>
             </li>
@@ -215,10 +214,7 @@
             <li>
                 <div class="iocn-link">
                     <a href="javascript:void(0)">
-                        <i
-                            class="bx bxs-user-x icon icon"
-                            title="Analytics & Reports"
-                        ></i>
+                        <i class="bx bxs-user-x icon icon" title="Analytics & Reports"></i>
                         <span class="link_name">Reports</span>
                     </a>
                     <i class="bx bxs-chevron-down arrow"></i>
@@ -280,7 +276,7 @@
 
 <!-- Modal -->
 <div class="modal fade logout-modal" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
-     aria-hidden="true">
+    aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-body p-0">
@@ -289,7 +285,7 @@
                     <center>
                         <button type="button" class="btn btn-no" data-bs-dismiss="modal">No</button>
                         <button type="button" class="btn btn-yes"><a style="color: white;text-decoration: none;"
-                                                                     href="/logout">Yes</a></button>
+                                href="/logout">Yes</a></button>
                     </center>
                 </div>
             </div>
