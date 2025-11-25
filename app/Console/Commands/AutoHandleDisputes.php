@@ -347,6 +347,7 @@ class AutoHandleDisputes extends Command
                 $newSellerCommission = ($remainingAmount * $transaction->seller_commission_rate) / 100;
                 $newBuyerCommission = ($remainingAmount * $transaction->buyer_commission_rate) / 100;
 
+                $transaction->status = 'refunded'; // Mark as refunded (partial)
                 $transaction->coupon_discount += $refundAmount;
                 $transaction->seller_commission_amount = $newSellerCommission;
                 $transaction->buyer_commission_amount = $newBuyerCommission;

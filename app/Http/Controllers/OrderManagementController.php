@@ -2000,7 +2000,8 @@ class OrderManagementController extends Controller
             ->first();
 
         if ($transaction) {
-            $transaction->status = 'refunded'; // Pending admin decision
+            // Set status to 'disputed' during active dispute (NOT 'refunded' yet)
+            $transaction->status = 'disputed';
             $transaction->notes .= "\n[" . now()->format('Y-m-d H:i:s') . "] Dispute filed by " . (Auth::user()->role == 1 ? 'Seller' : 'Buyer');
             $transaction->save();
 
@@ -2154,6 +2155,7 @@ class OrderManagementController extends Controller
                     $newSellerCommission = ($remainingAmount * $transaction->seller_commission_rate) / 100;
                     $newBuyerCommission = ($remainingAmount * $transaction->buyer_commission_rate) / 100;
 
+                    $transaction->status = 'refunded'; // Mark as refunded (partial)
                     $transaction->coupon_discount += $refundAmount;
                     $transaction->seller_commission_amount = $newSellerCommission;
                     $transaction->buyer_commission_amount = $newBuyerCommission;

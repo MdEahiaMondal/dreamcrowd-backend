@@ -790,6 +790,11 @@
                                     <i class='bx bx-star'></i> Leave a Review
                                 </a>
                             @endif
+                            @if(($order->status == 1 || $order->status == 2) && !$order->user_disputed && $order->status != 4)
+                                <button type="button" class="btn btn-danger-custom btn-action" data-bs-toggle="modal" data-bs-target="#disputeModal">
+                                    <i class='bx bx-error-circle'></i> Request Refund
+                                </button>
+                            @endif
                         </div>
                     </div>
 
@@ -811,11 +816,170 @@
         </div>
     </section>
 
+    <!-- Dispute/Refund Request Modal -->
+    @if(($order->status == 1 || $order->status == 2) && !$order->user_disputed && $order->status != 4)
+    <div class="modal fade" id="disputeModal" tabindex="-1" aria-labelledby="disputeModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header" style="background: linear-gradient(135deg, #dc3545 0%, #c82333 100%); color: white;">
+                    <h5 class="modal-title" id="disputeModalLabel">
+                        <i class='bx bx-error-circle'></i> Request Refund for Order #{{ $order->order_number }}
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="{{ route('DisputeOrder') }}" method="POST" id="disputeForm">
+                    @csrf
+                    <input type="hidden" name="order_id" value="{{ $order->id }}">
+
+                    <div class="modal-body">
+                        <div class="alert alert-warning d-flex align-items-start gap-2" style="font-size: 14px;">
+                            <i class='bx bx-info-circle' style="font-size: 20px; flex-shrink: 0;"></i>
+                            <div>
+                                <strong>Important:</strong> If the seller doesn't respond within 48 hours, your refund will be processed automatically.
+                                Please provide a clear reason for your refund request.
+                            </div>
+                        </div>
+
+                        <!-- Refund Type Selection -->
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Refund Type <span class="text-danger">*</span></label>
+                            <div class="d-flex gap-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="refund_type" id="fullRefund" value="0" checked onchange="toggleAmountField()">
+                                    <label class="form-check-label" for="fullRefund">
+                                        <strong>Full Refund</strong><br>
+                                        <small class="text-muted">Get back the entire amount (${{ number_format($order->finel_price, 2) }})</small>
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="refund_type" id="partialRefund" value="1" onchange="toggleAmountField()">
+                                    <label class="form-check-label" for="partialRefund">
+                                        <strong>Partial Refund</strong><br>
+                                        <small class="text-muted">Request a specific amount</small>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Refund Amount (shown for partial refund) -->
+                        <div class="mb-3" id="amountField" style="display: none;">
+                            <label for="refundAmount" class="form-label fw-bold">Refund Amount <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input type="number"
+                                       class="form-control"
+                                       id="refundAmount"
+                                       name="amount"
+                                       step="0.01"
+                                       min="0.01"
+                                       max="{{ $order->finel_price }}"
+                                       placeholder="Enter amount">
+                            </div>
+                            <small class="text-muted">Maximum refund amount: ${{ number_format($order->finel_price, 2) }}</small>
+                        </div>
+
+                        <!-- Reason -->
+                        <div class="mb-3">
+                            <label for="disputeReason" class="form-label fw-bold">Reason for Refund Request <span class="text-danger">*</span></label>
+                            <textarea class="form-control"
+                                      id="disputeReason"
+                                      name="reason"
+                                      rows="5"
+                                      required
+                                      placeholder="Please provide a detailed explanation for your refund request. Include specific details about why the service did not meet your expectations."></textarea>
+                            <small class="text-muted">Provide a clear and detailed explanation to help us process your request faster.</small>
+                        </div>
+
+                        <!-- Order Information Summary -->
+                        <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; border-left: 4px solid #667eea;">
+                            <h6 class="mb-2"><i class='bx bx-info-circle'></i> Order Information</h6>
+                            <div class="d-flex justify-content-between mb-1">
+                                <small class="text-muted">Service:</small>
+                                <small><strong>{{ $order->gig->teacherGigData->title ?? 'N/A' }}</strong></small>
+                            </div>
+                            <div class="d-flex justify-content-between mb-1">
+                                <small class="text-muted">Order Date:</small>
+                                <small>{{ $order->created_at->format('M d, Y') }}</small>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <small class="text-muted">Total Paid:</small>
+                                <small><strong>${{ number_format($order->finel_price, 2) }}</strong></small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <i class='bx bx-x'></i> Cancel
+                        </button>
+                        <button type="submit" class="btn btn-danger" id="submitDisputeBtn">
+                            <i class='bx bx-send'></i> Submit Refund Request
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    @endif
+
     <!-- jQuery -->
     <script src="/assets/admin/libs/jquery/js/jquery.min.js"></script>
     <!-- Bootstrap js -->
     <script src="/assets/admin/asset/js/bootstrap.min.js"></script>
     <script src="/assets/admin/asset/js/sidebar.js"></script>
+
+    <script>
+        // Toggle amount field visibility based on refund type selection
+        function toggleAmountField() {
+            const partialRefund = document.getElementById('partialRefund');
+            const amountField = document.getElementById('amountField');
+            const refundAmountInput = document.getElementById('refundAmount');
+
+            if (partialRefund && partialRefund.checked) {
+                amountField.style.display = 'block';
+                refundAmountInput.required = true;
+            } else {
+                amountField.style.display = 'none';
+                refundAmountInput.required = false;
+                refundAmountInput.value = ''; // Clear value when hidden
+            }
+        }
+
+        // Form validation before submission
+        document.getElementById('disputeForm')?.addEventListener('submit', function(e) {
+            const partialRefund = document.getElementById('partialRefund');
+            const refundAmount = document.getElementById('refundAmount');
+            const maxAmount = {{ $order->finel_price }};
+
+            if (partialRefund && partialRefund.checked) {
+                const amount = parseFloat(refundAmount.value);
+
+                if (!amount || amount <= 0) {
+                    e.preventDefault();
+                    alert('Please enter a valid refund amount.');
+                    refundAmount.focus();
+                    return false;
+                }
+
+                if (amount > maxAmount) {
+                    e.preventDefault();
+                    alert('Refund amount cannot exceed $' + maxAmount.toFixed(2));
+                    refundAmount.focus();
+                    return false;
+                }
+            }
+
+            // Confirm submission
+            const confirmed = confirm('Are you sure you want to submit this refund request? This action cannot be undone.');
+            if (!confirmed) {
+                e.preventDefault();
+                return false;
+            }
+
+            // Disable submit button to prevent double submission
+            document.getElementById('submitDisputeBtn').disabled = true;
+        });
+    </script>
 </body>
 
 </html>

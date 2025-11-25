@@ -411,6 +411,81 @@
                 </div>
             </div>
 
+            <!-- Pending Refund Request Alert (Buyer disputed, seller hasn't responded yet) -->
+            @if($order->user_disputed && !$order->teacher_disputed && $order->disputeOrder)
+                @php
+                    $disputeCreated = \Carbon\Carbon::parse($order->disputeOrder->created_at);
+                    $hoursElapsed = $disputeCreated->diffInHours(now());
+                    $hoursRemaining = max(0, 48 - $hoursElapsed);
+                    $minutesRemaining = max(0, (48 * 60) - $disputeCreated->diffInMinutes(now())) % 60;
+                @endphp
+                <div class="info-card" style="border: 3px solid #dc3545; background: linear-gradient(to right, #fff5f5, #fff);">
+                    <div class="d-flex align-items-start gap-3">
+                        <div style="font-size: 48px; color: #dc3545;">
+                            <i class='bx bx-error-circle'></i>
+                        </div>
+                        <div style="flex: 1;">
+                            <h3 style="color: #dc3545; margin-bottom: 10px;">
+                                <i class='bx bx-bell-ring' style="animation: shake 0.5s infinite;"></i> Urgent: Refund Request Pending
+                            </h3>
+                            <p style="font-size: 16px; margin-bottom: 15px; color: #333;">
+                                The buyer has requested a <strong>{{ $order->disputeOrder->refund_type == 0 ? 'FULL' : 'PARTIAL' }} REFUND</strong>
+                                of <strong style="color: #dc3545;">${{ number_format($order->disputeOrder->amount ?? $order->finel_price, 2) }}</strong>.
+                            </p>
+
+                            <!-- Countdown Timer -->
+                            <div style="background: #fff3cd; padding: 15px; border-radius: 8px; border-left: 4px solid #ffc107; margin-bottom: 15px;">
+                                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                                    <i class='bx bx-time-five' style="font-size: 24px; color: #856404;"></i>
+                                    <strong style="font-size: 18px; color: #856404;">Time Remaining to Respond:</strong>
+                                </div>
+                                <div style="font-size: 28px; font-weight: bold; color: #dc3545; font-family: monospace;">
+                                    {{ $hoursRemaining }}h {{ $minutesRemaining }}m
+                                </div>
+                                <small style="color: #856404;">
+                                    ⚠️ If you don't respond within 48 hours, the refund will be processed automatically
+                                </small>
+                            </div>
+
+                            <!-- Buyer's Reason -->
+                            @if($order->disputeOrder->user_reason)
+                                <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; border-left: 4px solid #007bff; margin-bottom: 15px;">
+                                    <strong style="color: #007bff; display: block; margin-bottom: 8px;">
+                                        <i class='bx bx-user-circle'></i> Buyer's Refund Reason:
+                                    </strong>
+                                    <p style="margin: 0; color: #333; font-style: italic;">"{{ $order->disputeOrder->user_reason }}"</p>
+                                </div>
+                            @endif
+
+                            <!-- Action Buttons -->
+                            <div class="d-flex gap-3 flex-wrap">
+                                <button type="button"
+                                        class="btn btn-success btn-lg"
+                                        onclick="acceptRefund()"
+                                        style="flex: 1; min-width: 200px;">
+                                    <i class='bx bx-check-circle'></i> Accept Refund & Process
+                                </button>
+                                <button type="button"
+                                        class="btn btn-danger btn-lg"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#counterDisputeModal"
+                                        style="flex: 1; min-width: 200px;">
+                                    <i class='bx bx-shield-x'></i> Counter-Dispute with Reason
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <style>
+                    @keyframes shake {
+                        0%, 100% { transform: translateX(0); }
+                        25% { transform: translateX(-5px); }
+                        75% { transform: translateX(5px); }
+                    }
+                </style>
+            @endif
+
             <!-- Dispute Alert -->
             @if($order->user_disputed || $order->teacher_disputed)
                 <div class="alert-custom alert-danger-custom">
@@ -601,19 +676,83 @@
                                 <h3>Dispute Details</h3>
                             </div>
                             <div class="info-row">
-                                <span class="info-label">Dispute Date</span>
-                                <span class="info-value">{{ $order->disputeOrder->created_at->format('M d, Y H:i') }}</span>
+                                <span class="info-label">Dispute Filed</span>
+                                <span class="info-value">
+                                    {{ $order->disputeOrder->created_at->format('M d, Y') }}
+                                    <small style="color: #666;">at {{ $order->disputeOrder->created_at->format('h:i A') }}</small>
+                                </span>
                             </div>
-                            <div class="info-row">
-                                <span class="info-label">Reason</span>
-                                <span class="info-value">{{ $order->disputeOrder->reason ?? 'No reason provided' }}</span>
-                            </div>
-                            @if($order->disputeOrder->refund_amount)
+                            @if($order->disputeOrder->created_at != $order->disputeOrder->updated_at)
                                 <div class="info-row">
-                                    <span class="info-label">Refund Amount</span>
-                                    <span class="info-value"><strong>${{ number_format($order->disputeOrder->refund_amount, 2) }}</strong></span>
+                                    <span class="info-label">Last Updated</span>
+                                    <span class="info-value">
+                                        {{ $order->disputeOrder->updated_at->format('M d, Y') }}
+                                        <small style="color: #666;">at {{ $order->disputeOrder->updated_at->format('h:i A') }}</small>
+                                    </span>
                                 </div>
                             @endif
+                            <div class="info-row">
+                                <span class="info-label">Refund Type</span>
+                                <span class="info-value">
+                                    @if($order->disputeOrder->refund_type == 0)
+                                        <span class="badge bg-danger">Full Refund</span>
+                                    @else
+                                        <span class="badge bg-warning">Partial Refund</span>
+                                    @endif
+                                </span>
+                            </div>
+                            @if($order->disputeOrder->amount)
+                                <div class="info-row">
+                                    <span class="info-label">Refund Amount</span>
+                                    <span class="info-value"><strong>${{ number_format($order->disputeOrder->amount, 2) }}</strong></span>
+                                </div>
+                            @endif
+
+                            <!-- Timeline Style Display -->
+                            <div style="margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
+                                @if($order->disputeOrder->user_reason)
+                                    <div style="margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #dee2e6;">
+                                        <div style="display: flex; align-items: center; margin-bottom: 8px;">
+                                            <i class='bx bx-user-circle' style="font-size: 20px; color: #007bff; margin-right: 8px;"></i>
+                                            <strong style="color: #007bff;">Buyer's Dispute Reason</strong>
+                                        </div>
+                                        <p style="margin: 0; padding-left: 28px; color: #333;">{{ $order->disputeOrder->user_reason }}</p>
+                                    </div>
+                                @endif
+
+                                @if($order->disputeOrder->teacher_reason)
+                                    <div style="margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #dee2e6;">
+                                        <div style="display: flex; align-items: center; margin-bottom: 8px;">
+                                            <i class='bx bx-store' style="font-size: 20px; color: #fd7e14; margin-right: 8px;"></i>
+                                            <strong style="color: #fd7e14;">Your Counter-Reason</strong>
+                                        </div>
+                                        <p style="margin: 0; padding-left: 28px; color: #333;">{{ $order->disputeOrder->teacher_reason }}</p>
+                                    </div>
+                                @endif
+
+                                @if($order->disputeOrder->admin_notes)
+                                    <div style="margin-bottom: 0;">
+                                        <div style="display: flex; align-items: center; margin-bottom: 8px;">
+                                            <i class='bx bx-shield-alt' style="font-size: 20px; color: #6f42c1; margin-right: 8px;"></i>
+                                            <strong style="color: #6f42c1;">Admin Decision & Notes</strong>
+                                        </div>
+                                        <p style="margin: 0; padding-left: 28px; color: #333;">{{ $order->disputeOrder->admin_notes }}</p>
+                                    </div>
+                                @endif
+                            </div>
+
+                            <div class="info-row" style="margin-top: 15px;">
+                                <span class="info-label">Current Status</span>
+                                <span class="info-value">
+                                    @if($order->disputeOrder->status == 0)
+                                        <span class="badge bg-warning">⏳ Pending Admin Review</span>
+                                    @elseif($order->disputeOrder->status == 1)
+                                        <span class="badge bg-success">✓ Approved - Refunded</span>
+                                    @else
+                                        <span class="badge bg-danger">✗ Rejected</span>
+                                    @endif
+                                </span>
+                            </div>
                         </div>
                     @endif
                 </div>
@@ -700,11 +839,159 @@
         </div>
     </section>
 
+    <!-- Counter-Dispute Modal -->
+    @if($order->user_disputed && !$order->teacher_disputed && $order->disputeOrder)
+    <div class="modal fade" id="counterDisputeModal" tabindex="-1" aria-labelledby="counterDisputeModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header" style="background: linear-gradient(135deg, #fd7e14 0%, #e8590c 100%); color: white;">
+                    <h5 class="modal-title" id="counterDisputeModalLabel">
+                        <i class='bx bx-shield-x'></i> Counter-Dispute for Order #{{ $order->order_number }}
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="{{ route('DisputeOrder') }}" method="POST" id="counterDisputeForm">
+                    @csrf
+                    <input type="hidden" name="order_id" value="{{ $order->id }}">
+
+                    <div class="modal-body">
+                        <div class="alert alert-warning d-flex align-items-start gap-2" style="font-size: 14px;">
+                            <i class='bx bx-info-circle' style="font-size: 20px; flex-shrink: 0;"></i>
+                            <div>
+                                <strong>Important:</strong> By submitting a counter-dispute, this case will be escalated to admin review.
+                                The admin will review both sides and make the final decision.
+                            </div>
+                        </div>
+
+                        <!-- Buyer's Original Reason (Read-only) -->
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Buyer's Refund Request Reason</label>
+                            <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; border-left: 4px solid #007bff;">
+                                <p style="margin: 0; font-style: italic; color: #333;">
+                                    "{{ $order->disputeOrder->user_reason }}"
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Seller's Counter Reason -->
+                        <div class="mb-3">
+                            <label for="counterReason" class="form-label fw-bold">
+                                Your Counter-Reason <span class="text-danger">*</span>
+                            </label>
+                            <textarea class="form-control"
+                                      id="counterReason"
+                                      name="reason"
+                                      rows="6"
+                                      required
+                                      placeholder="Explain why you believe the refund request is not justified. Provide specific details about the service delivered, evidence of completion, communication records, etc."></textarea>
+                            <small class="text-muted">
+                                Be specific and professional. Include any evidence that supports your case (e.g., proof of delivery, completion screenshots, communication logs).
+                            </small>
+                        </div>
+
+                        <!-- Order Information Summary -->
+                        <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; border-left: 4px solid #fd7e14;">
+                            <h6 class="mb-2"><i class='bx bx-info-circle'></i> Order Information</h6>
+                            <div class="d-flex justify-content-between mb-1">
+                                <small class="text-muted">Service:</small>
+                                <small><strong>{{ $order->gig->teacherGigData->title ?? 'N/A' }}</strong></small>
+                            </div>
+                            <div class="d-flex justify-content-between mb-1">
+                                <small class="text-muted">Requested Refund:</small>
+                                <small><strong style="color: #dc3545;">${{ number_format($order->disputeOrder->amount ?? $order->finel_price, 2) }}</strong></small>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <small class="text-muted">Your Potential Loss:</small>
+                                <small><strong style="color: #dc3545;">${{ number_format(($order->disputeOrder->amount ?? $order->finel_price) - $order->commission, 2) }}</strong></small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <i class='bx bx-x'></i> Cancel
+                        </button>
+                        <button type="submit" class="btn btn-danger" id="submitCounterDisputeBtn">
+                            <i class='bx bx-send'></i> Submit Counter-Dispute
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    @endif
+
     <!-- jQuery -->
     <script src="/assets/admin/libs/jquery/js/jquery.min.js"></script>
     <!-- Bootstrap js -->
     <script src="/assets/admin/asset/js/bootstrap.min.js"></script>
     <script src="/assets/admin/asset/js/sidebar.js"></script>
+
+    <script>
+        // Accept refund function
+        function acceptRefund() {
+            const confirmed = confirm(
+                '⚠️ Are you sure you want to ACCEPT this refund request?\n\n' +
+                'By accepting, you agree to:\n' +
+                '• Refund ${{ number_format($order->disputeOrder->amount ?? $order->finel_price, 2) }} to the buyer\n' +
+                '• Forfeit your earnings from this order\n\n' +
+                'This action CANNOT be undone!'
+            );
+
+            if (!confirmed) {
+                return false;
+            }
+
+            // Create and submit form to accept disputed order
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '{{ route("AcceptDisputedOrder") }}';
+
+            // Add CSRF token
+            const csrfInput = document.createElement('input');
+            csrfInput.type = 'hidden';
+            csrfInput.name = '_token';
+            csrfInput.value = '{{ csrf_token() }}';
+            form.appendChild(csrfInput);
+
+            // Add order ID
+            const orderIdInput = document.createElement('input');
+            orderIdInput.type = 'hidden';
+            orderIdInput.name = 'order_id';
+            orderIdInput.value = '{{ $order->id }}';
+            form.appendChild(orderIdInput);
+
+            document.body.appendChild(form);
+            form.submit();
+        }
+
+        // Counter-dispute form validation
+        document.getElementById('counterDisputeForm')?.addEventListener('submit', function(e) {
+            const reason = document.getElementById('counterReason').value.trim();
+
+            if (reason.length < 20) {
+                e.preventDefault();
+                alert('Please provide a more detailed explanation (at least 20 characters).');
+                document.getElementById('counterReason').focus();
+                return false;
+            }
+
+            // Confirm submission
+            const confirmed = confirm(
+                '⚠️ Submit Counter-Dispute?\n\n' +
+                'This will escalate the case to admin review. The admin will review both your reason and the buyer\'s reason before making a decision.\n\n' +
+                'Do you want to proceed?'
+            );
+
+            if (!confirmed) {
+                e.preventDefault();
+                return false;
+            }
+
+            // Disable submit button to prevent double submission
+            document.getElementById('submitCounterDisputeBtn').disabled = true;
+        });
+    </script>
 </body>
 
 </html>
