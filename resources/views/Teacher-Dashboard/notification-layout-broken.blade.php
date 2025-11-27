@@ -208,8 +208,7 @@
 @endpush
 
 @section('content')
-    <!-- Main Content -->
-    <div class="container-fluid py-4">
+    <div class="container-fluid">
             <div class="row dash-notification">
                 <div class="col-md-12">
                     <div class="dash">
@@ -365,17 +364,10 @@
                 </div>
             </div>
         </div>
-        <!-- =============================== MAIN CONTENT END HERE =========================== -->
-    </div>
 @endsection
 
 @push('scripts')
-        // Check if jQuery is loaded
-        if (typeof jQuery === 'undefined') {
-            console.error('jQuery is not loaded!');
-            alert('Error: jQuery library failed to load. Please refresh the page or check your internet connection.');
-        }
-    </script>
+    <script>
 
     <script>
         let currentPage = 1;

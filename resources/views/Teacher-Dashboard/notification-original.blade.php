@@ -1,7 +1,41 @@
-@extends('layout.app')
-@section('title', 'Teacher Dashboard | Notifications')
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
-@push('styles')
+    <!-- Animate css -->
+    <link rel="stylesheet" href="/assets/teacher/libs/animate/css/animate.css" />
+    <!-- AOS Animation css-->
+    <link rel="stylesheet" href="/assets/teacher/libs/aos/css/aos.css" />
+    <!-- Datatable css  -->
+    <link rel="stylesheet" href="/assets/teacher/libs/datatable/css/datatable.css" />
+
+    {{-- Fav Icon --}}
+    @php  $home = \App\Models\HomeDynamic::first(); @endphp
+    @if ($home)
+        <link rel="shortcut icon" href="/assets/public-site/asset/img/{{$home->fav_icon}}" type="image/x-icon">
+    @endif
+
+    <!-- Select2 css -->
+    <link href="/assets/teacher/libs/select2/css/select2.min.css" rel="stylesheet" />
+    <!-- Owl carousel css -->
+    <link href="/assets/teacher/libs/owl-carousel/css/owl.carousel.css" rel="stylesheet" />
+    <link href="/assets/teacher/libs/owl-carousel/css/owl.theme.green.css" rel="stylesheet" />
+    <!-- Bootstrap css -->
+    <link rel="stylesheet" type="text/css" href="/assets/teacher/asset/css/bootstrap.min.css" />
+    <link href="https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css" />
+    <!-- Fontawesome CDN -->
+    <script src="https://kit.fontawesome.com/be69b59144.js" crossorigin="anonymous"></script>
+    <!-- Default css -->
+    <link rel="stylesheet" type="text/css" href="/assets/teacher/asset/css/sidebar.css" />
+    <link rel="stylesheet" href="/assets/user/asset/css/style.css" />
+
+    <title>Teacher Dashboard | Notifications</title>
+
     <style>
         .notification-item {
             transition: all 0.3s ease;
@@ -205,11 +239,19 @@
             }
         }
     </style>
-@endpush
+</head>
+<body>
+    {{-- ===========Teacher Sidebar Start==================== --}}
+    <x-teacher-sidebar/>
+    {{-- ===========Teacher Sidebar End==================== --}}
 
-@section('content')
-    <!-- Main Content -->
-    <div class="container-fluid py-4">
+    <section class="home-section">
+        {{-- ===========Teacher NavBar Start==================== --}}
+        <x-teacher-nav/>
+        {{-- ===========Teacher NavBar End==================== --}}
+
+        <!-- =============================== MAIN CONTENT START HERE =========================== -->
+        <div class="container-fluid">
             <div class="row dash-notification">
                 <div class="col-md-12">
                     <div class="dash">
@@ -366,10 +408,18 @@
             </div>
         </div>
         <!-- =============================== MAIN CONTENT END HERE =========================== -->
-    </div>
-@endsection
+    </section>
 
-@push('scripts')
+    <!-- Scripts -->
+    <script src="/assets/teacher/libs/jquery/jquery.js"></script>
+    <!-- Fallback to CDN if local jQuery fails -->
+    <script>
+        window.jQuery || document.write('<script src="https://code.jquery.com/jquery-3.6.0.min.js"><\/script>');
+    </script>
+    <script src="/assets/teacher/asset/js/bootstrap.min.js"></script>
+    <script src="/assets/teacher/libs/aos/js/aos.js"></script>
+
+    <script>
         // Check if jQuery is loaded
         if (typeof jQuery === 'undefined') {
             console.error('jQuery is not loaded!');
@@ -769,4 +819,5 @@
             alert(title + ': ' + message);
         }
     </script>
-@endpush
+</body>
+</html>

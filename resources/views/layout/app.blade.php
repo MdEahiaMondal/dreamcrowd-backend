@@ -24,6 +24,7 @@
     <!-- Fontawesome CDN -->
     <script src="https://kit.fontawesome.com/be69b59144.js" crossorigin="anonymous"></script>
 
+    <link rel="stylesheet" href="/assets/user/asset/css/style.css" />
 
     {{-- Fav Icon --}}
     @php $home = \App\Models\HomeDynamic::first(); @endphp
