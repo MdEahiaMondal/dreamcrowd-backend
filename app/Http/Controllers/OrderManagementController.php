@@ -736,7 +736,7 @@ class OrderManagementController extends Controller
                 ->where('order_id', $order->order_id)
                 ->where(function ($query) use ($reschedule_hours) {
                     $query->where('teacher_date', '<', now()) // Past classes
-                    ->orWhereBetween('teacher_date', [now(), now()->addHours($reschedule_hours)]); // Next 12 hours
+                        ->orWhereBetween('teacher_date', [now(), now()->addHours($reschedule_hours)]); // Next 12 hours
                 })
                 ->select('teacher_date', 'teacher_attend', 'teacher_time_zone')
                 ->get();
@@ -844,7 +844,7 @@ class OrderManagementController extends Controller
                 ->where('order_id', $order->order_id)
                 ->where(function ($query) use ($reschedule_hours) {
                     $query->where('teacher_date', '<', now()) // Past classes
-                    ->orWhereBetween('teacher_date', [now(), now()->addHours($reschedule_hours)]); // Next 12 hours
+                        ->orWhereBetween('teacher_date', [now(), now()->addHours($reschedule_hours)]); // Next 12 hours
                 })
                 ->select('teacher_date', 'teacher_attend', 'teacher_time_zone')
                 ->get();
@@ -1169,9 +1169,9 @@ class OrderManagementController extends Controller
         }
 
         $order = BookOrder::find($id);
-//        $classes = ClassDate::where(['order_id' => $id])->get();
-//        $classes_ids = ClassDate::where(['order_id' => $id])->pluck('id');
-//        $reschedule = ClassReschedule::whereIn('class_id', $classes_ids)->where('order_id', '=', $id)->get();
+        //        $classes = ClassDate::where(['order_id' => $id])->get();
+        //        $classes_ids = ClassDate::where(['order_id' => $id])->pluck('id');
+        //        $reschedule = ClassReschedule::whereIn('class_id', $classes_ids)->where('order_id', '=', $id)->get();
 
         if ($order && $order->status == 0) {
 
@@ -1245,7 +1245,6 @@ class OrderManagementController extends Controller
 
                 // Update BookOrder payment status
                 $order->payment_status = 'completed';
-
             } catch (\Exception $e) {
                 \Log::error('Payment capture failed for order ' . $order->id . ': ' . $e->getMessage());
                 return redirect()->back()->with('error', 'Payment capture failed. Please contact support.');
@@ -1303,8 +1302,7 @@ class OrderManagementController extends Controller
                 orderId: $orderId,
                 serviceId: $order->gig_id
             );
-
-        } 
+        }
 
         if ($order) {
             return redirect()->back()->with('success', 'Order Activated Successfully!');
@@ -1430,7 +1428,6 @@ class OrderManagementController extends Controller
             );
 
             return redirect()->back()->with('success', 'Order rejected and buyer has been refunded!');
-
         } catch (\Exception $e) {
             \DB::rollBack();
             \Log::error("Failed to reject order #{$id}: " . $e->getMessage());
@@ -1488,7 +1485,6 @@ class OrderManagementController extends Controller
                         'order_id' => $order->id
                     ]);
                 }
-
             } catch (\Exception $e) {
                 \Log::error('Pending order cancellation failed: ' . $e->getMessage());
                 return redirect()->back()->with('error', 'Cancellation failed: ' . $e->getMessage());
@@ -1529,7 +1525,6 @@ class OrderManagementController extends Controller
                             'order_id' => $order->id
                         ]);
                     }
-
                 } else {
                     // Partial Refund
                     $refundAmount = floatval($request->refund_amount);
@@ -1584,7 +1579,6 @@ class OrderManagementController extends Controller
                         ]);
                     }
                 }
-
             } catch (\Exception $e) {
                 \Log::error('Teacher refund failed: ' . $e->getMessage());
                 return redirect()->back()->with('error', 'Refund failed: ' . $e->getMessage());
@@ -1633,7 +1627,6 @@ class OrderManagementController extends Controller
                             'transaction_id' => $transaction->id
                         ]);
                     }
-
                 } catch (\Exception $e) {
                     \Log::error('Full refund failed: ' . $e->getMessage());
                     return redirect()->back()->with('error', 'Refund failed: ' . $e->getMessage());
@@ -1684,7 +1677,6 @@ class OrderManagementController extends Controller
                             'refund_amount' => $refundAmount
                         ]);
                     }
-
                 } catch (\Exception $e) {
                     \Log::error('Partial refund failed: ' . $e->getMessage());
                     return redirect()->back()->with('error', 'Refund Failed: ' . $e->getMessage());
@@ -1728,7 +1720,7 @@ class OrderManagementController extends Controller
         $adminIds = \App\Models\User::where('role', 2)->pluck('id')->toArray();
 
 
-        if($authId == $buyerId){
+        if ($authId == $buyerId) {
             // Buyer cancelled - determine refund message
             $refundMessage = '';
             if ($cancelOrder->refund == 1) {
@@ -1778,8 +1770,7 @@ class OrderManagementController extends Controller
                 data: ['order_id' => $orderId, 'seller_id' => $sellerId, 'buyer_id' => $buyerId, 'refund_amount' => $cancelOrder->amount],
                 sendEmail: false
             );
-
-        }else{
+        } else {
             // Seller cancelled - determine refund message
             $refundMessage = '';
             if ($cancelOrder->refund == 1) {
@@ -1832,7 +1823,7 @@ class OrderManagementController extends Controller
                 sendEmail: false
             );
         }
-        
+
 
         if ($order) {
             return redirect()->back()->with('success', 'Order canceled successfully' . ($refundAmount > 0 ? ' and refund initiated.' : '.'));
@@ -2124,7 +2115,6 @@ class OrderManagementController extends Controller
                     $transaction->notes .= "\n[" . now()->format('Y-m-d H:i:s') . "] Dispute resolved - Full refund approved";
                     $transaction->save();
                 }
-
             } else {
                 // Partial refund
                 $refundAmount = floatval($dispute->amount);
@@ -2222,7 +2212,6 @@ class OrderManagementController extends Controller
                 'refund_type' => $dispute->refund_type == 0 ? 'full' : 'partial',
                 'amount' => $dispute->amount
             ]);
-
         } catch (\Exception $e) {
             \Log::error('Dispute refund failed: ' . $e->getMessage());
             return redirect()->back()->with('error', 'Refund failed for Order: ' . $e->getMessage());
@@ -2350,7 +2339,6 @@ class OrderManagementController extends Controller
         } else {
             return redirect()->back()->with('error', 'Something went rong,tryagain later!');
         }
-
     }
     // Back to Active END =====
 
@@ -2413,7 +2401,6 @@ class OrderManagementController extends Controller
         } else {
             return response()->json(['error' => 'Something went rong,tryagain later!']);
         }
-
     }
     // Back to Active UnSetisfied Start =====
 
@@ -2462,7 +2449,6 @@ class OrderManagementController extends Controller
             $order->save();
 
             return redirect()->back()->with('success', 'Job started successfully and payment captured.');
-
         } catch (\Exception $e) {
             \Log::error('Payment capture on job start failed: ' . $e->getMessage());
             return redirect()->back()->with('error', 'Failed to start job: ' . $e->getMessage());
@@ -2632,8 +2618,6 @@ class OrderManagementController extends Controller
         } else {
             return view('User-Dashboard.reschedule-freelance', compact('order', 'gig', 'class', 'user', 'gigData', 'gigPayment', 'first_class', 'profile', 'repeatDays', 'bookedTime', 'allOrders', 'bookedTimes', 'admin_duration', 'booking_type', 'teacher'));
         }
-
-
     }
     // Reshedule Class Function END=====
 
@@ -2729,7 +2713,6 @@ class OrderManagementController extends Controller
                     $class->teacher_date = $newTeacherDates[$index];
                     $class->update();
                 }
-
             }
         } else {
             // ✅ Create new reschedule records
@@ -2746,7 +2729,6 @@ class OrderManagementController extends Controller
                         'status' => 0
                     ]);
                 }
-
             }
         }
 
@@ -2822,8 +2804,6 @@ class OrderManagementController extends Controller
         } else {
             return redirect()->to('/order-management')->with('success', 'Extended Date Successfully!');
         }
-
-
     }
     // User Reshedule Update ======END
 
@@ -2876,7 +2856,6 @@ class OrderManagementController extends Controller
                         ->orWhere('teacher_date', '>', $cutoff);
                 })
                 ->get();
-
         }
 
 
@@ -2993,8 +2972,6 @@ class OrderManagementController extends Controller
         } else {
             return view('Teacher-Dashboard.teacher-reschedule-freelance', compact('order', 'gig', 'class', 'user', 'gigData', 'gigPayment', 'first_class', 'profile', 'repeatDays', 'bookedTime', 'allOrders', 'bookedTimes', 'admin_duration', 'booking_type', 'teacher'));
         }
-
-
     }
 
     // Teacher Reshedule Class Function END=====
@@ -3180,8 +3157,6 @@ class OrderManagementController extends Controller
         } else {
             return redirect()->to('/client-management')->with('success', 'Extended Date Successfully!');
         }
-
-
     }
     // Teacher Reshedule Update ======END
 
@@ -3327,8 +3302,6 @@ class OrderManagementController extends Controller
         } else {
             return redirect()->back()->with('error', 'Something went wrong,try again later!');
         }
-
-
     }
     // Reshedule Accept Function Update Main Class ======END
 
@@ -3432,8 +3405,6 @@ class OrderManagementController extends Controller
         } else {
             return redirect()->back()->with('error', 'Something went wrong, try again later!');
         }
-
-
     }
     // Reshedule Reject Function Update Main Class ======END
 
@@ -3708,9 +3679,9 @@ class OrderManagementController extends Controller
     {
         return Transaction::where('buyer_id', $order->user_id)
             ->where('seller_id', $order->teacher_id)
-            ->where(function($query) use ($order) {
+            ->where(function ($query) use ($order) {
                 $query->where('service_id', $order->gig_id)
-                    ->orWhereHas('bookOrder', function($q) use ($order) {
+                    ->orWhereHas('bookOrder', function ($q) use ($order) {
                         $q->where('id', $order->id);
                     });
             })
@@ -3746,7 +3717,6 @@ class OrderManagementController extends Controller
             }
 
             return ['success' => true, 'message' => 'Payment already captured'];
-
         } catch (\Exception $e) {
             \Log::error('Payment capture failed: ' . $e->getMessage());
             return ['success' => false, 'message' => $e->getMessage()];
@@ -3908,5 +3878,4 @@ class OrderManagementController extends Controller
     {
         return \App\Models\User::where('role', 2)->pluck('id')->toArray();
     }
-
 }

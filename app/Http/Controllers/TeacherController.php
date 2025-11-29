@@ -1002,9 +1002,6 @@ class TeacherController extends Controller
                     ->orWhere('rating', 'like', "%{$search}%")
                     ->orWhereHas('gig', function ($gigQuery) use ($search) {
                         $gigQuery->where('title', 'like', "%{$search}%");
-                    })
-                    ->orWhereHas('order', function ($orderQuery) use ($search) {
-                        $orderQuery->where('order_number', 'like', "%{$search}%");
                     });
             });
         }

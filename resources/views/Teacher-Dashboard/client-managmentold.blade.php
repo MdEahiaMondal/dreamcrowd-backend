@@ -1,7 +1,66 @@
-@extends('layout.app')
-@section('title', 'Client Management')
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="UTF-8">
+    <!-- View Point scale to 1.0 -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Animate css -->
+    <link rel="stylesheet" href="assets/user/libs/animate/css/animate.css"/>
+    <!-- AOS Animation css-->
+    <link rel="stylesheet" href="assets/user/libs/aos/css/aos.css"/>
+    <!-- Datatable css  -->
+    <link rel="stylesheet" href="assets/user/libs/datatable/css/datatable.css"/>
+    {{-- Fav Icon --}}
+    @php  $home = \App\Models\HomeDynamic::first(); @endphp
+    @if ($home)
+        <link rel="shortcut icon" href="assets/public-site/asset/img/{{$home->fav_icon}}" type="image/x-icon">
+    @endif
+    <!-- Select2 css -->
+    <link href="assets/user/libs/select2/css/select2.min.css" rel="stylesheet"/>
+    <!-- Owl carousel css -->
+    <link href="assets/user/libs/owl-carousel/css/owl.carousel.css" rel="stylesheet"/>
+    <link href="assets/user/libs/owl-carousel/css/owl.theme.green.css" rel="stylesheet"/>
+    <!-- Bootstrap css -->
+    <link rel="stylesheet" type="text/css" href="assets/user/asset/css/bootstrap.min.css"/>
+    <link href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css">
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+            integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <!-- Fontawesome CDN -->
+    <script src="https://kit.fontawesome.com/be69b59144.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0"/>
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+            integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.1.10/vue.min.js"></script>
 
-@push('styles')
+    {{-- =======Toastr CDN ======== --}}
+    <link rel="stylesheet" type="text/css"
+          href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+    {{-- =======Toastr CDN ======== --}}
+    <!-- Popper.js (required for Bootstrap 4 and above) -->
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+
+    <!-- Bootstrap JS -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.6.2/js/bootstrap.min.js"></script>
+
+    <!-- Defualt css -->
+    <link rel="stylesheet" type="text/css" href="assets/user/asset/css/sidebar.css"/>
+    <link rel="stylesheet" href="assets/user/asset/css/style.css">
+    <link rel="stylesheet" href="assets/user/asset/css/classmanagement.css">
+    <title>User Dashboard | Class Management</title>
+</head>
+<body>
+
+
 <style>
     .active_btn_css {
         border-radius: 4px;
@@ -29,11 +88,49 @@
         padding: 0px;
     }
 </style>
-@endpush
 
-@section('content')
-    <!-- Main Content -->
-    <div class="container-fluid py-4">
+
+@if (Session::has('error'))
+    <script>
+
+        toastr.options =
+            {
+                "closeButton": true,
+                "progressBar": true,
+                "timeOut": "10000", // 10 seconds
+                "extendedTimeOut": "4410000" // 10 seconds
+            }
+        toastr.error("{{ session('error') }}");
+
+
+    </script>
+@endif
+@if (Session::has('success'))
+    <script>
+
+        toastr.options =
+            {
+                "closeButton": true,
+                "progressBar": true,
+                "timeOut": "10000", // 10 seconds
+                "extendedTimeOut": "4410000" // 10 seconds
+            }
+        toastr.success("{{ session('success') }}");
+
+
+    </script>
+@endif
+
+
+{{-- ===========User Sidebar Start==================== --}}
+<x-teacher-sidebar/>
+{{-- ===========User Sidebar End==================== --}}
+<section class="home-section">
+    {{-- ===========User NavBar Start==================== --}}
+    <x-teacher-nav/>
+    {{-- ===========User NavBar End==================== --}}
+    <!-- =============================== MAIN CONTENT START HERE =========================== -->
+    <div class="container-fluid">s
         <div class="row">
             <div class="col-md-12 class-management-section">
                 <nav style="--bs-breadcrumb-divider: '>'" aria-label="breadcrumb">
@@ -2435,6 +2532,8 @@
 <!-- calendar js links -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.2/angular.min.js"></script>
+</body>
+</html>
 <!-- =============================================================================================================================================================== -->
 <!-- Service Modal Start from here -->
 <div class="modal fade" id="sell-service-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -3709,10 +3808,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.43/moment-timezone-with-data.min.js"></script>
 
 
-    </div>
-@endsection
-
-@push('scripts')
+{{-- Model Show with Action Button Script Start============ --}}
 <script>
 
 
@@ -5652,4 +5748,10 @@ $(document).ready(function() {
     animation: flash 1.5s infinite;
 }
 
-@endpush
+.flashing-badge .badge {
+    font-weight: bold;
+    box-shadow: 0 0 10px rgba(220, 53, 69, 0.5);
+}
+</style>
+
+</script>

@@ -34,6 +34,8 @@ class TransactionController extends Controller
         // Monthly earnings chart data (last 6 months)
         $monthlyData = $this->getSellerMonthlyData($sellerId);
 
+        // dd($monthlyData);
+
         return view('Teacher-Dashboard.transactions', compact('stats', 'transactions', 'monthlyData'));
     }
 

@@ -39,6 +39,28 @@
     @switch($role)
         @case(0)
             {{-- User --}}
+                        {{-- Teacher --}}
+            <!-- CSS Libraries -->
+            <!-- Animate css -->
+            <link rel="stylesheet" href="assets/teacher/libs/animate/css/animate.css" />
+            <!-- AOS Animation css-->
+            <link rel="stylesheet" href="assets/teacher/libs/aos/css/aos.css" />
+            <!-- Datatable css  -->
+            <link rel="stylesheet" href="assets/teacher/libs/datatable/css/datatable.css" />
+
+            <!-- Select2 css -->
+            <link href="assets/teacher/libs/select2/css/select2.min.css" rel="stylesheet" />
+            <!-- Owl carousel css -->
+            <link href="assets/teacher/libs/owl-carousel/css/owl.carousel.css" rel="stylesheet" />
+            <link href="assets/teacher/libs/owl-carousel/css/owl.theme.green.css" rel="stylesheet" />
+            <!-- Bootstrap css -->
+
+
+
+            <link rel="stylesheet" href="/assets/teacher/asset/css/bootstrap.min.css" />
+            <link rel="stylesheet" href="/assets/teacher/asset/css/sidebar.css" />
+            <link rel="stylesheet" href="/assets/teacher/asset/css/style.css">
+            <link rel="stylesheet" href="/assets/teacher/asset/css/Dashboard.css">
         @break
 
         @case(1)
@@ -144,6 +166,9 @@
     <script src="assets/teacher/asset/js/bootstrap.min.js"></script>
     <script src="assets/teacher/asset/js/script.js"></script>
 
+
+
+
     @switch($role)
         {{-- User --}}
         @case(0)
@@ -164,6 +189,27 @@
 
     <!-- JS Libraries -->
     @stack('scripts')
+<script>
+    const dropdown = document.querySelector(".dropdown");
+    const toggleBtn = dropdown.querySelector(".dropdown-toggle");
+    const menu = dropdown.querySelector(".dropdown-menu");
+
+    toggleBtn.addEventListener("click", function (e) {
+        e.preventDefault();
+
+        menu.classList.toggle("show");
+        toggleBtn.classList.toggle("show");
+    });
+
+    // Optional: click outside to close
+    document.addEventListener("click", function (e) {
+        if (!dropdown.contains(e.target)) {
+            menu.classList.remove("show");
+            toggleBtn.classList.remove("show");
+        }
+    });
+</script>
+
 
 </body>
 
