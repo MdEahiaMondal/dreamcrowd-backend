@@ -263,6 +263,14 @@
                                                                                 {{ $review->replies->isNotEmpty() ? 'View/Edit Reply' : 'Add Reply' }}
                                                                             </a>
                                                                         </li>
+                                                                        <li><hr class="dropdown-divider"></li>
+                                                                        <li>
+                                                                            <a class="dropdown-item report-review text-danger"
+                                                                                href="#"
+                                                                                data-review-id="{{ $review->id }}">
+                                                                                <i class="fa fa-flag"></i> Report Review
+                                                                            </a>
+                                                                        </li>
                                                                     </ul>
                                                                 </div>
                                                             </td>
@@ -395,6 +403,55 @@
                             </button>
                             <button type="submit" class="btn btn-primary" id="submit-reply-btn">
                                 <i class="fa fa-paper-plane"></i> Submit Reply
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Report Review Modal -->
+    <div class="modal fade" id="report-review-modal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title"><i class="fa fa-flag me-2"></i>Report Review</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <form id="report-form">
+                        @csrf
+                        <input type="hidden" id="report_review_id" name="review_id">
+
+                        <div class="alert alert-warning mb-3">
+                            <i class="fa fa-info-circle me-2"></i>
+                            Report this review if it contains abusive language, false claims, or violates our policies.
+                            Admin will review and take appropriate action.
+                        </div>
+
+                        <h6 class="mb-2">Reason for Report <span class="text-danger">*</span></h6>
+                        <select class="form-control mb-3" name="reason" id="report_reason" required>
+                            <option value="">Select a reason...</option>
+                            <option value="abusive_language">Abusive Language</option>
+                            <option value="false_claim">False Claim</option>
+                            <option value="spam">Spam</option>
+                            <option value="inappropriate">Inappropriate Content</option>
+                            <option value="other">Other</option>
+                        </select>
+
+                        <h6 class="mb-2">Additional Details <span class="text-muted">(optional)</span></h6>
+                        <textarea class="form-control mb-3" name="description" id="report_description"
+                            placeholder="Provide more details about why you're reporting this review..."
+                            rows="4" maxlength="1000"></textarea>
+                        <small class="text-muted"><span id="char-count">0</span>/1000 characters</small>
+
+                        <div class="d-flex justify-content-end gap-2 mt-3">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                Cancel
+                            </button>
+                            <button type="submit" class="btn btn-danger" id="submit-report-btn">
+                                <i class="fa fa-flag"></i> Submit Report
                             </button>
                         </div>
                     </form>
@@ -597,6 +654,75 @@
                 $('#parent_review_id').val('');
                 $('#reply_id').val('');
                 $('#is_edit_mode').val('0');
+            });
+
+            // ============ REPORT REVIEW FUNCTIONALITY ============
+
+            // Report review button click
+            $('.report-review').click(function(e) {
+                e.preventDefault();
+                let reviewId = $(this).data('review-id');
+                $('#report_review_id').val(reviewId);
+                $('#report-review-modal').modal('show');
+            });
+
+            // Character counter for description
+            $('#report_description').on('input', function() {
+                let count = $(this).val().length;
+                $('#char-count').text(count);
+            });
+
+            // Submit report form
+            $('#report-form').submit(function(e) {
+                e.preventDefault();
+
+                let reason = $('#report_reason').val();
+                if (!reason) {
+                    alert('Please select a reason for reporting.');
+                    return;
+                }
+
+                $('#submit-report-btn').prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i> Submitting...');
+
+                $.ajax({
+                    url: '/teacher-report-review',
+                    method: 'POST',
+                    data: {
+                        _token: '{{ csrf_token() }}',
+                        review_id: $('#report_review_id').val(),
+                        reason: reason,
+                        description: $('#report_description').val()
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            alert(response.message);
+                            $('#report-review-modal').modal('hide');
+                            // Optionally reload to update UI
+                            // location.reload();
+                        }
+                    },
+                    error: function(xhr) {
+                        if (xhr.status === 409) {
+                            alert(xhr.responseJSON?.message || 'You have already reported this review.');
+                        } else if (xhr.status === 422) {
+                            let errors = xhr.responseJSON?.errors;
+                            let errorMessage = errors ? Object.values(errors).join('\n') : 'Validation error';
+                            alert(errorMessage);
+                        } else {
+                            alert('Error: ' + (xhr.responseJSON?.message || 'Failed to submit report'));
+                        }
+                    },
+                    complete: function() {
+                        $('#submit-report-btn').prop('disabled', false).html('<i class="fa fa-flag"></i> Submit Report');
+                    }
+                });
+            });
+
+            // Clear report modal on close
+            $('#report-review-modal').on('hidden.bs.modal', function() {
+                $('#report-form')[0].reset();
+                $('#report_review_id').val('');
+                $('#char-count').text('0');
             });
         });
     </script>

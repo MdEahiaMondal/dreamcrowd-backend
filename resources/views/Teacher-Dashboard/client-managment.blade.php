@@ -1,14 +1,67 @@
-@extends('layout.app')
-@section('title', 'Client Management')
-
-@push('styles')
-<link href="assets/user/libs/owl-carousel/css/owl.carousel.css" rel="stylesheet"/>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="UTF-8">
+    <!-- View Point scale to 1.0 -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Animate css -->
+    <link rel="stylesheet" href="assets/user/libs/animate/css/animate.css"/>
+    <!-- AOS Animation css-->
+    <link rel="stylesheet" href="assets/user/libs/aos/css/aos.css"/>
+    <!-- Datatable css  -->
+    <link rel="stylesheet" href="assets/user/libs/datatable/css/datatable.css"/>
+    {{-- Fav Icon --}}
+    @php  $home = \App\Models\HomeDynamic::first(); @endphp
+    @if ($home)
+        <link rel="shortcut icon" href="assets/public-site/asset/img/{{$home->fav_icon}}" type="image/x-icon">
+    @endif
+    <!-- Select2 css -->
+    <link href="assets/user/libs/select2/css/select2.min.css" rel="stylesheet"/>
+    <!-- Owl carousel css -->
+    <link href="assets/user/libs/owl-carousel/css/owl.carousel.css" rel="stylesheet"/>
     <link href="assets/user/libs/owl-carousel/css/owl.theme.green.css" rel="stylesheet"/>
-     <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.1.10/vue.min.js"></script>
-         <link rel="stylesheet" href="assets/user/asset/css/classmanagement.css">
+    <!-- Bootstrap css -->
+    <link rel="stylesheet" type="text/css" href="assets/user/asset/css/bootstrap.min.css"/>
+    <link href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css">
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+            integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <!-- Fontawesome CDN -->
+    <script src="https://kit.fontawesome.com/be69b59144.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0"/>
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+            integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.1.10/vue.min.js"></script>
+
+    {{-- =======Toastr CDN ======== --}}
+    <link rel="stylesheet" type="text/css"
+          href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+    {{-- =======Toastr CDN ======== --}}
+    <!-- Popper.js (required for Bootstrap 4 and above) -->
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+
+    <!-- Bootstrap JS -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.6.2/js/bootstrap.min.js"></script>
+
+    <!-- Defualt css -->
+    <link rel="stylesheet" type="text/css" href="assets/user/asset/css/sidebar.css"/>
+    <link rel="stylesheet" href="assets/user/asset/css/style.css">
+    <link rel="stylesheet" href="assets/user/asset/css/classmanagement.css">
+    <title>User Dashboard | Class Management</title>
+</head>
+<body>
+
 
 <style>
-
     .active_btn_css {
         border-radius: 4px;
         background: #0072b1;
@@ -35,19 +88,60 @@
         padding: 0px;
     }
 </style>
-@endpush
 
-@section('content')
-    <!-- Main Content -->
-    <div class="container-fluid py-4">
+
+@if (Session::has('error'))
+    <script>
+
+        toastr.options =
+            {
+                "closeButton": true,
+                "progressBar": true,
+                "timeOut": "10000", // 10 seconds
+                "extendedTimeOut": "4410000" // 10 seconds
+            }
+        toastr.error("{{ session('error') }}");
+
+
+    </script>
+@endif
+@if (Session::has('success'))
+    <script>
+
+        toastr.options =
+            {
+                "closeButton": true,
+                "progressBar": true,
+                "timeOut": "10000", // 10 seconds
+                "extendedTimeOut": "4410000" // 10 seconds
+            }
+        toastr.success("{{ session('success') }}");
+
+
+    </script>
+@endif
+
+
+{{-- ===========User Sidebar Start==================== --}}
+<x-teacher-sidebar/>
+{{-- ===========User Sidebar End==================== --}}
+<section class="home-section">
+    {{-- ===========User NavBar Start==================== --}}
+    <x-teacher-nav/>
+    {{-- ===========User NavBar End==================== --}}
+    <!-- =============================== MAIN CONTENT START HERE =========================== -->
+    <div class="container-fluid">s
         <div class="row">
             <div class="col-md-12 class-management-section">
-                   <x-breadcrumbs :items="[
-                        ['label' => 'Dashboard', 'url' => '/teacher-dashboard'],
-                        ['label' => 'Client Management', 'url' => '#'],
-                    ]" />
-
-               
+                <nav style="--bs-breadcrumb-divider: '>'" aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="#">Dashboard</a></li>
+                        <li class="breadcrumb-item"><a href="#"> Client Management</a></li>
+                        {{-- <li class="breadcrumb-item active" aria-current="page">
+                          Pending Orders
+                        </li> --}}
+                    </ol>
+                </nav>
                 <div class="col-md-12 class-management">
                     <i class='bx bxs-graduation icon' title="Class Management"></i>
                     <h5>Client Management</h5>
@@ -55,30 +149,30 @@
 
                 {{-- ✅ NEW: Pending Refund Requests Alert --}}
                 @if($pendingRefunds->isNotEmpty())
-                <div class="alert alert-warning mb-4 shadow-sm" role="alert" style="border-left: 4px solid #ff9800;">
-                    <div class="d-flex align-items-center">
-                        <i class="bx bx-error-circle" style="font-size: 2.5rem; margin-right: 15px; color: #ff9800;"></i>
-                        <div>
-                            <h5 class="mb-1" style="color: #d84315;">
-                                <strong>⚠️ {{ $pendingRefunds->count() }} Pending Refund Request(s)</strong>
-                            </h5>
-                            <p class="mb-0">
-                                You have refund requests that require your response within <strong>48 hours</strong>.
-                                Failure to respond will result in automatic full refund to the buyer.
-                            </p>
+                    <div class="alert alert-warning mb-4 shadow-sm" role="alert" style="border-left: 4px solid #ff9800;">
+                        <div class="d-flex align-items-center">
+                            <i class="bx bx-error-circle" style="font-size: 2.5rem; margin-right: 15px; color: #ff9800;"></i>
+                            <div>
+                                <h5 class="mb-1" style="color: #d84315;">
+                                    <strong>⚠️ {{ $pendingRefunds->count() }} Pending Refund Request(s)</strong>
+                                </h5>
+                                <p class="mb-0">
+                                    You have refund requests that require your response within <strong>48 hours</strong>.
+                                    Failure to respond will result in automatic full refund to the buyer.
+                                </p>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                {{-- Pending Refunds Table --}}
-                <div class="card mb-4 shadow-sm">
-                    <div class="card-header bg-warning text-white">
-                        <h5 class="mb-0"><i class="bx bx-time-five"></i> Refund Requests - Awaiting Your Response</h5>
-                    </div>
-                    <div class="card-body p-0">
-                        <div class="table-responsive">
-                            <table class="table table-hover mb-0">
-                                <thead class="table-light">
+                    {{-- Pending Refunds Table --}}
+                    <div class="card mb-4 shadow-sm">
+                        <div class="card-header bg-warning text-white">
+                            <h5 class="mb-0"><i class="bx bx-time-five"></i> Refund Requests - Awaiting Your Response</h5>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table table-hover mb-0">
+                                    <thead class="table-light">
                                     <tr>
                                         <th>Order Details</th>
                                         <th>Buyer</th>
@@ -87,43 +181,43 @@
                                         <th width="150">Time Remaining</th>
                                         <th width="200">Actions</th>
                                     </tr>
-                                </thead>
-                                <tbody>
+                                    </thead>
+                                    <tbody>
                                     @foreach($pendingRefunds as $refund)
-                                    <tr>
-                                        <td>
-                                            <strong>Order #{{ $refund->id }}</strong><br>
-                                            <small class="text-muted">{{ $refund->title }}</small>
-                                        </td>
-                                        <td>
-                                            {{ $refund->user->first_name }} {{ $refund->user->last_name }}
-                                        </td>
-                                        <td>
+                                        <tr>
+                                            <td>
+                                                <strong>Order #{{ $refund->id }}</strong><br>
+                                                <small class="text-muted">{{ $refund->title }}</small>
+                                            </td>
+                                            <td>
+                                                {{ $refund->user->first_name }} {{ $refund->user->last_name }}
+                                            </td>
+                                            <td>
                                             <span class="badge bg-danger" style="font-size: 1.1em;">
                                                 ${{ number_format($refund->finel_price, 2) }}
                                             </span>
-                                        </td>
-                                        <td>
-                                            <div style="max-width: 300px;">
-                                                @if(strlen($refund->buyer_reason) > 100)
-                                                    <span class="reason-short-{{ $refund->id }}">
+                                            </td>
+                                            <td>
+                                                <div style="max-width: 300px;">
+                                                    @if(strlen($refund->buyer_reason) > 100)
+                                                        <span class="reason-short-{{ $refund->id }}">
                                                         {{ substr($refund->buyer_reason, 0, 100) }}...
                                                         <a href="javascript:void(0)" onclick="showFullReason({{ $refund->id }})" class="text-primary">Read More</a>
                                                     </span>
-                                                    <span class="reason-full-{{ $refund->id }}" style="display: none;">
+                                                        <span class="reason-full-{{ $refund->id }}" style="display: none;">
                                                         {{ $refund->buyer_reason }}
                                                         <a href="javascript:void(0)" onclick="hideFullReason({{ $refund->id }})" class="text-primary">Show Less</a>
                                                     </span>
-                                                @else
-                                                    {{ $refund->buyer_reason }}
-                                                @endif
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div class="countdown-badge
+                                                    @else
+                                                        {{ $refund->buyer_reason }}
+                                                    @endif
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="countdown-badge
                                                 @if($refund->is_flashing) flashing-badge @endif"
-                                                id="countdown-{{ $refund->id }}"
-                                                data-end-time="{{ \Carbon\Carbon::parse($refund->action_date)->addHours(48)->toIso8601String() }}">
+                                                     id="countdown-{{ $refund->id }}"
+                                                     data-end-time="{{ \Carbon\Carbon::parse($refund->action_date)->addHours(48)->toIso8601String() }}">
 
                                                 <span class="badge bg-{{ $refund->urgency_color }} p-2" style="font-size: 1em;">
                                                     ⏱️ <span class="countdown-text-{{ $refund->id }}">
@@ -131,82 +225,82 @@
                                                     </span>
                                                 </span>
 
-                                                @if($refund->urgency == 'high')
-                                                    <br><small class="text-danger"><strong>URGENT!</strong></small>
-                                                @elseif($refund->urgency == 'medium')
-                                                    <br><small class="text-warning">Moderate</small>
-                                                @endif
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div class="btn-group-vertical" role="group">
-                                                <form action="{{ route('AcceptDisputedOrder') }}" method="POST" class="mb-2" onsubmit="return confirm('Are you sure you want to ACCEPT this refund? The full amount will be refunded to the buyer immediately.');">
-                                                    @csrf
-                                                    <input type="hidden" name="order_id" value="{{ $refund->id }}">
-                                                    <button type="submit" class="btn btn-sm btn-success w-100">
-                                                        <i class="bx bx-check"></i> Accept Refund
-                                                    </button>
-                                                </form>
-
-                                                <button type="button" class="btn btn-sm btn-danger w-100"
-                                                    data-bs-toggle="modal"
-                                                    data-bs-target="#disputeModal{{ $refund->id }}">
-                                                    <i class="bx bx-message-square-x"></i> Dispute Refund
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
-
-                                    {{-- Dispute Modal --}}
-                                    <div class="modal fade" id="disputeModal{{ $refund->id }}" tabindex="-1" aria-hidden="true">
-                                        <div class="modal-dialog">
-                                            <div class="modal-content">
-                                                <div class="modal-header bg-danger text-white">
-                                                    <h5 class="modal-title">Dispute Refund Request - Order #{{ $refund->id }}</h5>
-                                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    @if($refund->urgency == 'high')
+                                                        <br><small class="text-danger"><strong>URGENT!</strong></small>
+                                                    @elseif($refund->urgency == 'medium')
+                                                        <br><small class="text-warning">Moderate</small>
+                                                    @endif
                                                 </div>
-                                                <form action="{{ route('DisputeOrder') }}" method="POST">
-                                                    @csrf
-                                                    <div class="modal-body">
+                                            </td>
+                                            <td>
+                                                <div class="btn-group-vertical" role="group">
+                                                    <form action="{{ route('AcceptDisputedOrder') }}" method="POST" class="mb-2" onsubmit="return confirm('Are you sure you want to ACCEPT this refund? The full amount will be refunded to the buyer immediately.');">
+                                                        @csrf
                                                         <input type="hidden" name="order_id" value="{{ $refund->id }}">
+                                                        <button type="submit" class="btn btn-sm btn-success w-100">
+                                                            <i class="bx bx-check"></i> Accept Refund
+                                                        </button>
+                                                    </form>
 
-                                                        <div class="alert alert-info">
-                                                            <strong>Buyer's Reason:</strong><br>
-                                                            {{ $refund->buyer_reason }}
-                                                        </div>
+                                                    <button type="button" class="btn btn-sm btn-danger w-100"
+                                                            data-bs-toggle="modal"
+                                                            data-bs-target="#disputeModal{{ $refund->id }}">
+                                                        <i class="bx bx-message-square-x"></i> Dispute Refund
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
 
-                                                        <div class="mb-3">
-                                                            <label for="reason{{ $refund->id }}" class="form-label">
-                                                                <strong>Your Counter-Reason:</strong> <span class="text-danger">*</span>
-                                                            </label>
-                                                            <textarea
-                                                                class="form-control"
-                                                                id="reason{{ $refund->id }}"
-                                                                name="reason"
-                                                                rows="5"
-                                                                required
-                                                                placeholder="Explain why you disagree with this refund request..."></textarea>
-                                                            <small class="text-muted">This will be sent to the admin for review. Payment will be held until admin makes a decision.</small>
-                                                        </div>
-
-                                                        <div class="alert alert-warning">
-                                                            <strong>Note:</strong> Once you dispute, the payment will be ON HOLD and an admin will review both sides before making a final decision.
-                                                        </div>
+                                        {{-- Dispute Modal --}}
+                                        <div class="modal fade" id="disputeModal{{ $refund->id }}" tabindex="-1" aria-hidden="true">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                    <div class="modal-header bg-danger text-white">
+                                                        <h5 class="modal-title">Dispute Refund Request - Order #{{ $refund->id }}</h5>
+                                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                                                     </div>
-                                                    <div class="modal-footer">
-                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                                                        <button type="submit" class="btn btn-danger">Submit Dispute</button>
-                                                    </div>
-                                                </form>
+                                                    <form action="{{ route('DisputeOrder') }}" method="POST">
+                                                        @csrf
+                                                        <div class="modal-body">
+                                                            <input type="hidden" name="order_id" value="{{ $refund->id }}">
+
+                                                            <div class="alert alert-info">
+                                                                <strong>Buyer's Reason:</strong><br>
+                                                                {{ $refund->buyer_reason }}
+                                                            </div>
+
+                                                            <div class="mb-3">
+                                                                <label for="reason{{ $refund->id }}" class="form-label">
+                                                                    <strong>Your Counter-Reason:</strong> <span class="text-danger">*</span>
+                                                                </label>
+                                                                <textarea
+                                                                    class="form-control"
+                                                                    id="reason{{ $refund->id }}"
+                                                                    name="reason"
+                                                                    rows="5"
+                                                                    required
+                                                                    placeholder="Explain why you disagree with this refund request..."></textarea>
+                                                                <small class="text-muted">This will be sent to the admin for review. Payment will be held until admin makes a decision.</small>
+                                                            </div>
+
+                                                            <div class="alert alert-warning">
+                                                                <strong>Note:</strong> Once you dispute, the payment will be ON HOLD and an admin will review both sides before making a final decision.
+                                                            </div>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                            <button type="submit" class="btn btn-danger">Submit Dispute</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
                                     @endforeach
-                                </tbody>
-                            </table>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
-                </div>
                 @endif
                 {{-- ✅ END: Pending Refund Requests Section --}}
 
@@ -284,7 +378,7 @@
                                 </div>
                             </div>
                         </div>
-                       
+
 
                         <p class="">
                         <div class="class-management-sec">
@@ -328,7 +422,7 @@
                                                                     <p class="text-sm" style="font-size: 12px">{{ $order->country }}</p>
 
                                                                 </div>
-                                                                    
+
                                                             </div>
                                                         </td>
                                                         <td>
@@ -2354,7 +2448,94 @@
         </div>
     </div>
 
-    <!-- Service Modal Start from here -->
+    <!-- radio js here -->
+    <script>
+        function showAdditionalOptions1() {
+            hideAllAdditionalOptions();
+            document.getElementById('additionalOptions1').style.display = 'block';
+        }
+
+        function showAdditionalOptions2() {
+            hideAllAdditionalOptions();
+            document.getElementById('additionalOptions2').style.display = 'block';
+        }
+
+        function showAdditionalOptions3() {
+            hideAllAdditionalOptions();
+            document.getElementById('additionalOptions3').style.display = 'block';
+        }
+
+        function showAdditionalOptions4() {
+            hideAllAdditionalOptions();
+            document.getElementById('additionalOptions4').style.display = 'block';
+        }
+
+        function hideAllAdditionalOptions() {
+            var elements = document.getElementsByClassName('additional-options');
+            for (var i = 0; i < elements.length; i++) {
+                elements[i].style.display = 'none';
+            }
+        }
+
+        // Call the function to show the additional options for the default checked radio button on page load
+        window.onload = function () {
+            showAdditionalOptions1();
+        };
+    </script>
+    <!-- modal hide show jquery here -->
+    <script>
+        $(document).ready(function () {
+            $(document).on("click", "#delete-account", function (e) {
+                e.preventDefault();
+                $("#exampleModal3").modal("show");
+                $("#delete-user-account").modal("hide");
+            });
+
+            $(document).on("click", "#delete-account", function (e) {
+                e.preventDefault();
+                $("#delete-user-account").modal("show");
+                $("#exampleModal3").modal("hide");
+            });
+        });
+    </script>
+    <!-- JavaScript to close the modal when Cancel button is clicked -->
+    <script>
+        // Wait for the document to load
+        document.addEventListener('DOMContentLoaded', function () {
+            // Get the Cancel button by its ID
+            var cancelButton = document.getElementById('cancelButton');
+
+            // Add a click event listener to the Cancel button
+            cancelButton.addEventListener('click', function () {
+                // Find the modal by its ID
+                var modal = document.getElementById('exampleModal3');
+
+                // Use Bootstrap's modal method to hide the modal
+                $(modal).modal('hide');
+            });
+        });
+    </script>
+    <!-- copyright section ended here -->
+</section>
+
+<!-- =============================== MAIN CONTENT END HERE =========================== -->
+
+
+<script src="assets/user/libs/jquery/jquery.js"></script>
+<script src="assets/user/libs/datatable/js/datatable.js"></script>
+<script src="assets/user/libs/datatable/js/datatablebootstrap.js"></script>
+<script src="assets/user/libs/select2/js/select2.min.js"></script>
+<script src="assets/user/libs/owl-carousel/js/owl.carousel.min.js"></script>
+<script src="assets/user/libs/aos/js/aos.js"></script>
+<script src="assets/user/asset/js/bootstrap.min.js"></script>
+<script src="assets/user/asset/js/script.js"></script>
+<!-- calendar js links -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.2/angular.min.js"></script>
+</body>
+</html>
+<!-- =============================================================================================================================================================== -->
+<!-- Service Modal Start from here -->
 <div class="modal fade" id="sell-service-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content service-modal">
@@ -3544,97 +3725,6 @@
 </div>
 <!-- logout -->
 
-    @endsection
-@push('scripts')
-    
-
-    <!-- radio js here -->
-    <script>
-        function showAdditionalOptions1() {
-            hideAllAdditionalOptions();
-            document.getElementById('additionalOptions1').style.display = 'block';
-        }
-
-        function showAdditionalOptions2() {
-            hideAllAdditionalOptions();
-            document.getElementById('additionalOptions2').style.display = 'block';
-        }
-
-        function showAdditionalOptions3() {
-            hideAllAdditionalOptions();
-            document.getElementById('additionalOptions3').style.display = 'block';
-        }
-
-        function showAdditionalOptions4() {
-            hideAllAdditionalOptions();
-            document.getElementById('additionalOptions4').style.display = 'block';
-        }
-
-        function hideAllAdditionalOptions() {
-            var elements = document.getElementsByClassName('additional-options');
-            for (var i = 0; i < elements.length; i++) {
-                elements[i].style.display = 'none';
-            }
-        }
-
-        // Call the function to show the additional options for the default checked radio button on page load
-        window.onload = function () {
-            showAdditionalOptions1();
-        };
-    </script>
-    <!-- modal hide show jquery here -->
-    <script>
-        $(document).ready(function () {
-            $(document).on("click", "#delete-account", function (e) {
-                e.preventDefault();
-                $("#exampleModal3").modal("show");
-                $("#delete-user-account").modal("hide");
-            });
-
-            $(document).on("click", "#delete-account", function (e) {
-                e.preventDefault();
-                $("#delete-user-account").modal("show");
-                $("#exampleModal3").modal("hide");
-            });
-        });
-    </script>
-    <!-- JavaScript to close the modal when Cancel button is clicked -->
-    <script>
-        // Wait for the document to load
-        document.addEventListener('DOMContentLoaded', function () {
-            // Get the Cancel button by its ID
-            var cancelButton = document.getElementById('cancelButton');
-
-            // Add a click event listener to the Cancel button
-            cancelButton.addEventListener('click', function () {
-                // Find the modal by its ID
-                var modal = document.getElementById('exampleModal3');
-
-                // Use Bootstrap's modal method to hide the modal
-                $(modal).modal('hide');
-            });
-        });
-    </script>
-    <!-- copyright section ended here -->
-</section>
-
-<!-- =============================== MAIN CONTENT END HERE =========================== -->
-
-
-<script src="assets/user/libs/jquery/jquery.js"></script>
-<script src="assets/user/libs/datatable/js/datatable.js"></script>
-<script src="assets/user/libs/datatable/js/datatablebootstrap.js"></script>
-<script src="assets/user/libs/select2/js/select2.min.js"></script>
-<script src="assets/user/libs/owl-carousel/js/owl.carousel.min.js"></script>
-<script src="assets/user/libs/aos/js/aos.js"></script>
-<script src="assets/user/asset/js/bootstrap.min.js"></script>
-<script src="assets/user/asset/js/script.js"></script>
-<!-- calendar js links -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.2/angular.min.js"></script>
-<!-- =============================================================================================================================================================== -->
-
-
 
 
 
@@ -3718,10 +3808,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.43/moment-timezone-with-data.min.js"></script>
 
 
-    </div>
-@endsection
-
-@push('scripts')
+{{-- Model Show with Action Button Script Start============ --}}
 <script>
 
 
@@ -5560,105 +5647,111 @@
 
 {{-- ✅ NEW: Countdown Timer JavaScript --}}
 <script>
-// Show/Hide full reason text
-function showFullReason(orderId) {
-    $('.reason-short-' + orderId).hide();
-    $('.reason-full-' + orderId).show();
-}
+    // Show/Hide full reason text
+    function showFullReason(orderId) {
+        $('.reason-short-' + orderId).hide();
+        $('.reason-full-' + orderId).show();
+    }
 
-function hideFullReason(orderId) {
-    $('.reason-full-' + orderId).hide();
-    $('.reason-short-' + orderId).show();
-}
+    function hideFullReason(orderId) {
+        $('.reason-full-' + orderId).hide();
+        $('.reason-short-' + orderId).show();
+    }
 
-// Countdown Timer Functionality
-function initializeCountdowns() {
-    const countdownElements = document.querySelectorAll('[id^="countdown-"]');
+    // Countdown Timer Functionality
+    function initializeCountdowns() {
+        const countdownElements = document.querySelectorAll('[id^="countdown-"]');
 
-    countdownElements.forEach(element => {
-        const endTimeStr = element.getAttribute('data-end-time');
-        if (!endTimeStr) return;
+        countdownElements.forEach(element => {
+            const endTimeStr = element.getAttribute('data-end-time');
+            if (!endTimeStr) return;
 
-        const endTime = new Date(endTimeStr);
-        const orderId = element.id.replace('countdown-', '');
+            const endTime = new Date(endTimeStr);
+            const orderId = element.id.replace('countdown-', '');
 
-        function updateCountdown() {
-            const now = new Date();
-            const diff = endTime - now;
+            function updateCountdown() {
+                const now = new Date();
+                const diff = endTime - now;
 
-            if (diff <= 0) {
-                // Time expired
+                if (diff <= 0) {
+                    // Time expired
+                    const textElement = document.querySelector('.countdown-text-' + orderId);
+                    const badgeElement = element.querySelector('.badge');
+
+                    if (textElement) {
+                        textElement.textContent = 'Time Expired!';
+                    }
+                    if (badgeElement) {
+                        badgeElement.className = 'badge bg-dark p-2';
+                    }
+
+                    return;
+                }
+
+                // Calculate hours and minutes remaining
+                const hoursRemaining = Math.floor(diff / (1000 * 60 * 60));
+                const minutesRemaining = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+
+                // Update countdown text
                 const textElement = document.querySelector('.countdown-text-' + orderId);
-                const badgeElement = element.querySelector('.badge');
-
                 if (textElement) {
-                    textElement.textContent = 'Time Expired!';
+                    textElement.textContent = hoursRemaining + 'h ' + minutesRemaining + 'm';
                 }
+
+                // Update badge color based on urgency
+                const badgeElement = element.querySelector('.badge');
                 if (badgeElement) {
-                    badgeElement.className = 'badge bg-dark p-2';
+                    if (hoursRemaining > 24) {
+                        badgeElement.className = 'badge bg-success p-2';
+                    } else if (hoursRemaining > 6) {
+                        badgeElement.className = 'badge bg-warning p-2';
+                    } else {
+                        badgeElement.className = 'badge bg-danger p-2';
+                    }
                 }
 
-                return;
-            }
-
-            // Calculate hours and minutes remaining
-            const hoursRemaining = Math.floor(diff / (1000 * 60 * 60));
-            const minutesRemaining = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-
-            // Update countdown text
-            const textElement = document.querySelector('.countdown-text-' + orderId);
-            if (textElement) {
-                textElement.textContent = hoursRemaining + 'h ' + minutesRemaining + 'm';
-            }
-
-            // Update badge color based on urgency
-            const badgeElement = element.querySelector('.badge');
-            if (badgeElement) {
-                if (hoursRemaining > 24) {
-                    badgeElement.className = 'badge bg-success p-2';
-                } else if (hoursRemaining > 6) {
-                    badgeElement.className = 'badge bg-warning p-2';
+                // Add flashing effect if < 2 hours
+                if (hoursRemaining < 2) {
+                    element.classList.add('flashing-badge');
                 } else {
-                    badgeElement.className = 'badge bg-danger p-2';
+                    element.classList.remove('flashing-badge');
                 }
             }
 
-            // Add flashing effect if < 2 hours
-            if (hoursRemaining < 2) {
-                element.classList.add('flashing-badge');
-            } else {
-                element.classList.remove('flashing-badge');
-            }
-        }
+            // Update immediately
+            updateCountdown();
 
-        // Update immediately
-        updateCountdown();
+            // Update every minute (60 seconds)
+            setInterval(updateCountdown, 60000);
+        });
+    }
 
-        // Update every minute (60 seconds)
-        setInterval(updateCountdown, 60000);
+    // Initialize countdowns when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+        initializeCountdowns();
     });
-}
 
-// Initialize countdowns when page loads
-document.addEventListener('DOMContentLoaded', function() {
-    initializeCountdowns();
-});
-
-// Also initialize if using jQuery
-$(document).ready(function() {
-    initializeCountdowns();
-});
+    // Also initialize if using jQuery
+    $(document).ready(function() {
+        initializeCountdowns();
+    });
 </script>
 
 {{-- ✅ NEW: Flashing Badge CSS Animation --}}
 <style>
-@keyframes flash {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.3; }
-}
+    @keyframes flash {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.3; }
+    }
 
-.flashing-badge {
-    animation: flash 1.5s infinite;
-}
+    .flashing-badge {
+        animation: flash 1.5s infinite;
+    }
 
-@endpush
+    .flashing-badge .badge {
+        font-weight: bold;
+        box-shadow: 0 0 10px rgba(220, 53, 69, 0.5);
+    }
+</style>
+
+</script>

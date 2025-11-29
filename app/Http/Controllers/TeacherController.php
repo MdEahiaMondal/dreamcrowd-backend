@@ -1252,4 +1252,96 @@ class TeacherController extends Controller
             'message' => 'Reply deleted successfully!'
         ]);
     }
+
+    /**
+     * Report a review as abusive/false
+     */
+    public function reportReview(Request $request)
+    {
+        if (!Auth::check() || Auth::user()->role != 1) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthorized access.'
+            ], 403);
+        }
+
+        $request->validate([
+            'review_id' => 'required|exists:service_reviews,id',
+            'reason' => 'required|in:abusive_language,false_claim,spam,inappropriate,other',
+            'description' => 'nullable|string|max:1000'
+        ]);
+
+        // Check if this review belongs to the seller
+        $review = ServiceReviews::where('id', $request->review_id)
+            ->where('teacher_id', Auth::id())
+            ->whereNull('parent_id')
+            ->first();
+
+        if (!$review) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Review not found or unauthorized.'
+            ], 404);
+        }
+
+        // Check if already reported
+        $existingReport = \App\Models\ReviewReport::where('review_id', $request->review_id)
+            ->where('reporter_id', Auth::id())
+            ->where('status', 'pending')
+            ->first();
+
+        if ($existingReport) {
+            return response()->json([
+                'success' => false,
+                'message' => 'You have already reported this review. Please wait for admin review.'
+            ], 409);
+        }
+
+        // Create report
+        $report = \App\Models\ReviewReport::create([
+            'review_id' => $request->review_id,
+            'reporter_id' => Auth::id(),
+            'reason' => $request->reason,
+            'description' => $request->description,
+            'status' => 'pending',
+        ]);
+
+        // Send notification to admin (optional - if notification service exists)
+        try {
+            $adminUsers = \App\Models\User::where('role', 2)->get();
+            foreach ($adminUsers as $admin) {
+                app(\App\Services\NotificationService::class)->send(
+                    userId: $admin->id,
+                    type: 'review_report',
+                    title: 'New Review Report',
+                    message: Auth::user()->first_name . ' has reported a review for "' . $this->getReasonLabel($request->reason) . '"',
+                    data: ['report_id' => $report->id, 'review_id' => $request->review_id],
+                    sendEmail: false
+                );
+            }
+        } catch (\Exception $e) {
+            \Log::error('Failed to send review report notification: ' . $e->getMessage());
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Report submitted successfully! Admin will review it soon.',
+            'report' => $report
+        ]);
+    }
+
+    /**
+     * Get human-readable reason label
+     */
+    private function getReasonLabel(string $reason): string
+    {
+        return match ($reason) {
+            'abusive_language' => 'Abusive Language',
+            'false_claim' => 'False Claim',
+            'spam' => 'Spam',
+            'inappropriate' => 'Inappropriate Content',
+            'other' => 'Other',
+            default => ucfirst($reason),
+        };
+    }
 }

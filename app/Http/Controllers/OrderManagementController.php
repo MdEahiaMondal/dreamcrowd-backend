@@ -3595,10 +3595,17 @@ class OrderManagementController extends Controller
             ->where('user_id', Auth::id())
             ->findOrFail($id);
 
+        // 24-hour edit rule: can edit if no reply exists OR within 24 hours of posting
+        $within24Hours = $review->created_at->diffInHours(now()) < 24;
+        $noReply = $review->replies->isEmpty();
+        $canEdit = $noReply || $within24Hours;
+
         return response()->json([
             'success' => true,
             'review' => $review,
-            'can_edit' => $review->replies->isEmpty(),
+            'can_edit' => $canEdit,
+            'within_24_hours' => $within24Hours,
+            'has_reply' => !$noReply,
             'service_title' => $this->getServiceTitle($review),
             'service_type' => $this->getServiceType($review),
             'service_image' => $this->getServiceImage($review)
@@ -3647,11 +3654,15 @@ class OrderManagementController extends Controller
             ->whereNull('parent_id')
             ->findOrFail($id);
 
-        // Check if seller has replied
-        if ($review->replies->isNotEmpty()) {
+        // 24-hour edit rule: can edit if no reply exists OR within 24 hours of posting
+        $within24Hours = $review->created_at->diffInHours(now()) < 24;
+        $noReply = $review->replies->isEmpty();
+
+        // If seller has replied AND more than 24 hours have passed, deny edit
+        if (!$noReply && !$within24Hours) {
             return response()->json([
                 'success' => false,
-                'message' => 'Cannot edit review after seller has replied.'
+                'message' => 'Cannot edit review after 24 hours when seller has replied.'
             ], 403);
         }
 

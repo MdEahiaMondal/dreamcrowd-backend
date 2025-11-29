@@ -212,6 +212,21 @@
                 </ul>
             </li>
             <li>
+                <a href="{{ route('admin.review.reports') }}">
+                    <i class='bx bx-flag icon' title="Review Reports"></i>
+                    <span class="link_name">Review Reports</span>
+                    @php
+                        $pendingReports = \App\Models\ReviewReport::where('status', 'pending')->count();
+                    @endphp
+                    @if($pendingReports > 0)
+                        <span class="badge bg-danger ms-2" style="font-size: 10px;">{{ $pendingReports }}</span>
+                    @endif
+                </a>
+                <ul class="sub-menu blank">
+                    <li><a class="link_name" href="{{ route('admin.review.reports') }}">Review Reports</a></li>
+                </ul>
+            </li>
+            <li>
                 <div class="iocn-link">
                     <a href="javascript:void(0)">
                         <i class="bx bxs-user-x icon icon" title="Analytics & Reports"></i>
