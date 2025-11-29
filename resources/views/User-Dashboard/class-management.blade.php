@@ -1618,30 +1618,28 @@
                                 <div class="col-md-11">
                                     <div class="search">
                                         <span class="fa fa-search"></span>
-                                        <input placeholder="Search service title, experts etc....">
+                                        <input placeholder="Search experts..." id="expert-search-input" onkeyup="filterExperts()">
                                     </div>
                                 </div>
                                 <div class="col-md-1 filter-sec">
                                     <div class="dropdown">
-                                        <button class="btn filter-btn" type="button" id="dropdownMenuButton1"
+                                        <button class="btn filter-btn" type="button" id="expertFilterBtn"
                                                 data-bs-toggle="dropdown" aria-expanded="false">
-                                    <span class="material-symbols-rounded">
-                                      tune
-                                      </span>
+                                            <span class="material-symbols-rounded">tune</span>
                                         </button>
-                                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                                            <h5>Servise Type</h5></li>
-                                            <a class="dropdown-item" href="#">
-                                                <li>Class</li>
+                                        <ul class="dropdown-menu" aria-labelledby="expertFilterBtn">
+                                            <h5>Filter</h5>
+                                            <a class="dropdown-item" href="#" onclick="filterExpertsBySubscription('all')">
+                                                <li>All Experts</li>
                                             </a>
-                                            <a class="dropdown-item" href="#">
-                                                <li>Freelance</li>
+                                            <a class="dropdown-item" href="#" onclick="filterExpertsBySubscription('active')">
+                                                <li>With Active Subscriptions</li>
                                             </a>
                                             <h5>Sorting</h5>
-                                            <a class="dropdown-item" href="#">
+                                            <a class="dropdown-item" href="#" onclick="sortExperts('asc')">
                                                 <li>A-Z</li>
                                             </a>
-                                            <a class="dropdown-item" href="#">
+                                            <a class="dropdown-item" href="#" onclick="sortExperts('desc')">
                                                 <li>Z-A</li>
                                             </a>
                                         </ul>
@@ -1649,41 +1647,45 @@
                                 </div>
                             </div>
                         </div>
-                        <p class="">
                         <div class="class-management-sec">
                             <div class="row">
-                                <div class="col-md-12 ">
+                                <div class="col-md-12">
                                     <div class="table-responsive">
-                                        <table class="table">
-                                            <tr>
+                                        <table class="table" id="experts-table">
+                                            @forelse($expertsWithOrders as $expert)
+                                            <tr class="expert-row" data-name="{{ strtolower($expert->first_name . ' ' . $expert->last_name) }}" data-subscriptions="{{ $expert->active_subscriptions }}">
                                                 <td>
                                                     <div class="row">
                                                         <div class="col-md-12">
                                                             <div class="float-start profile-section">
-                                                                <img src="assets/user/asset/img/expert-img.png" alt="">
-                                                                <p>Cameron W. <br><span>Graphic Designer</span></p>
+                                                                <img src="{{ asset('assets/profile/img/' . ($expert->profile_image ?? 'default.png')) }}" alt="{{ $expert->first_name }}" onerror="this.src='{{ asset('assets/user/asset/img/expert-img.png') }}'">
+                                                                <p>{{ $expert->first_name }} {{ strtoupper(substr($expert->last_name ?? '', 0, 1)) }}.
+                                                                    <br><span>{{ $expert->profession ?? 'Expert' }}</span>
+                                                                    @if($expert->active_subscriptions > 0)
+                                                                    <br><span class="badge bg-success">{{ $expert->active_subscriptions }} Active Subscription(s)</span>
+                                                                    @endif
+                                                                </p>
                                                             </div>
                                                             <div class="float-end expert-dropdown">
                                                                 <button class="btn action-btn" type="button"
-                                                                        id="dropdownMenuButton1"
                                                                         data-bs-toggle="dropdown" aria-expanded="false">
                                                                     ...
                                                                 </button>
-                                                                <ul class="dropdown-menu"
-                                                                    aria-labelledby="dropdownMenuButton1">
-                                                                    <a class="dropdown-item" href="#">
-                                                                        <li>Send Message</li>
+                                                                <ul class="dropdown-menu">
+                                                                    <a class="dropdown-item" href="/messages?user={{ $expert->teacher_id }}">
+                                                                        <li><i class="fa fa-envelope me-2"></i> Send Message</li>
                                                                     </a>
-                                                                    <a class="dropdown-item" href="#">
-                                                                        <li>View Profile</li>
+                                                                    <a class="dropdown-item" href="/professional-profile/{{ $expert->teacher_id }}/{{ urlencode($expert->first_name) }}">
+                                                                        <li><i class="fa fa-user me-2"></i> View Profile</li>
                                                                     </a>
-                                                                    <a class="dropdown-item" href="#" type="button"
-                                                                       class="btn btn-primary" data-bs-toggle="modal"
-                                                                       data-bs-target="#cancel-service-modal">
-                                                                        <li>Cancel Subscription</li>
+                                                                    @if($expert->active_subscriptions > 0)
+                                                                    <a class="dropdown-item text-danger" href="#"
+                                                                       onclick="showExpertSubscriptions({{ $expert->teacher_id }}, '{{ $expert->first_name }} {{ $expert->last_name }}')">
+                                                                        <li><i class="fa fa-times-circle me-2"></i> Cancel Subscription</li>
                                                                     </a>
+                                                                    @endif
                                                                     <a class="dropdown-item" href="#">
-                                                                        <li>Report Seller</li>
+                                                                        <li><i class="fa fa-flag me-2"></i> Report Seller</li>
                                                                     </a>
                                                                 </ul>
                                                             </div>
@@ -1691,194 +1693,37 @@
                                                     </div>
                                                 </td>
                                             </tr>
+                                            @empty
                                             <tr>
-                                                <td>
-                                                    <div class="row">
-                                                        <div class="col-md-12">
-                                                            <div class="float-start profile-section">
-                                                                <img src="assets/user/asset/img/expert-img1.png" alt="">
-                                                                <p>Guy H. <br><span>Graphic Designer</span></p>
-                                                            </div>
-                                                            <div class="float-end expert-dropdown">
-                                                                <button class="btn action-btn" type="button"
-                                                                        id="dropdownMenuButton1"
-                                                                        data-bs-toggle="dropdown" aria-expanded="false">
-                                                                    ...
-                                                                </button>
-                                                                <ul class="dropdown-menu"
-                                                                    aria-labelledby="dropdownMenuButton1">
-                                                                    <a class="dropdown-item" href="#">
-                                                                        <li>Send Message</li>
-                                                                    </a>
-                                                                    <a class="dropdown-item" href="#">
-                                                                        <li>View Profile</li>
-                                                                    </a>
-                                                                    <a class="dropdown-item" href="#" type="button"
-                                                                       class="btn btn-primary" data-bs-toggle="modal"
-                                                                       data-bs-target="#cancel-service-modal">
-                                                                        <li>Cancel Subscription</li>
-                                                                    </a>
-                                                                    <a class="dropdown-item" href="#">
-                                                                        <li>Report Seller</li>
-                                                                    </a>
-                                                                </ul>
-                                                            </div>
-                                                        </div>
-                                                    </div>
+                                                <td class="text-center py-5">
+                                                    <i class="fa fa-users fa-3x text-muted mb-3"></i>
+                                                    <p class="text-muted">No experts found. Book a service to see your experts here.</p>
                                                 </td>
                                             </tr>
-                                            <tr>
-                                                <td>
-                                                    <div class="row">
-                                                        <div class="col-md-12">
-                                                            <div class="float-start profile-section">
-                                                                <img src="assets/user/asset/img/expert-img3.png" alt="">
-                                                                <p>Floyd M. <br><span>Graphic Designer</span></p>
-                                                            </div>
-                                                            <div class="float-end expert-dropdown">
-                                                                <button class="btn action-btn" type="button"
-                                                                        id="dropdownMenuButton1"
-                                                                        data-bs-toggle="dropdown" aria-expanded="false">
-                                                                    ...
-                                                                </button>
-                                                                <ul class="dropdown-menu"
-                                                                    aria-labelledby="dropdownMenuButton1">
-                                                                    <a class="dropdown-item" href="#">
-                                                                        <li>Send Message</li>
-                                                                    </a>
-                                                                    <a class="dropdown-item" href="#">
-                                                                        <li>View Profile</li>
-                                                                    </a>
-                                                                    <a class="dropdown-item" href="#" type="button"
-                                                                       class="btn btn-primary" data-bs-toggle="modal"
-                                                                       data-bs-target="#cancel-service-modal">
-                                                                        <li>Cancel Subscription</li>
-                                                                    </a>
-                                                                    <a class="dropdown-item" href="#">
-                                                                        <li>Report Seller</li>
-                                                                    </a>
-                                                                </ul>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td>
-                                                    <div class="row">
-                                                        <div class="col-md-12">
-                                                            <div class="float-start profile-section">
-                                                                <img src="assets/user/asset/img/expert-img4.png" alt="">
-                                                                <p>Floyd M. <br><span>Graphic Designer</span></p>
-                                                            </div>
-                                                            <div class="float-end expert-dropdown">
-                                                                <button class="btn action-btn" type="button"
-                                                                        id="dropdownMenuButton1"
-                                                                        data-bs-toggle="dropdown" aria-expanded="false">
-                                                                    ...
-                                                                </button>
-                                                                <ul class="dropdown-menu"
-                                                                    aria-labelledby="dropdownMenuButton1">
-                                                                    <a class="dropdown-item" href="#">
-                                                                        <li>Send Message</li>
-                                                                    </a>
-                                                                    <a class="dropdown-item" href="#">
-                                                                        <li>View Profile</li>
-                                                                    </a>
-                                                                    <a class="dropdown-item" href="#" type="button"
-                                                                       class="btn btn-primary" data-bs-toggle="modal"
-                                                                       data-bs-target="#cancel-service-modal">
-                                                                        <li>Cancel Subscription</li>
-                                                                    </a>
-                                                                    <a class="dropdown-item" href="#">
-                                                                        <li>Report Seller</li>
-                                                                    </a>
-                                                                </ul>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td>
-                                                    <div class="row">
-                                                        <div class="col-md-12">
-                                                            <div class="float-start profile-section">
-                                                                <img src="assets/user/asset/img/expert-img-5.png"
-                                                                     alt="">
-                                                                <p>Cameron W. <br><span>Graphic Designer</span></p>
-                                                            </div>
-                                                            <div class="float-end expert-dropdown">
-                                                                <button class="btn action-btn" type="button"
-                                                                        id="dropdownMenuButton1"
-                                                                        data-bs-toggle="dropdown" aria-expanded="false">
-                                                                    ...
-                                                                </button>
-                                                                <ul class="dropdown-menu"
-                                                                    aria-labelledby="dropdownMenuButton1">
-                                                                    <a class="dropdown-item" href="#">
-                                                                        <li>Send Message</li>
-                                                                    </a>
-                                                                    <a class="dropdown-item" href="#">
-                                                                        <li>View Profile</li>
-                                                                    </a>
-                                                                    <a class="dropdown-item" href="#" type="button"
-                                                                       class="btn btn-primary" data-bs-toggle="modal"
-                                                                       data-bs-target="#cancel-service-modal">
-                                                                        <li>Cancel Subscription</li>
-                                                                    </a>
-                                                                    <a class="dropdown-item" href="#">
-                                                                        <li>Report Seller</li>
-                                                                    </a>
-                                                                </ul>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td>
-                                                    <div class="row">
-                                                        <div class="col-md-12">
-                                                            <div class="float-start profile-section">
-                                                                <img src="assets/user/asset/img/expert-img2.png" alt="">
-                                                                <p>Cameron W. <br><span>Graphic Designer</span></p>
-                                                            </div>
-                                                            <div class="float-end expert-dropdown">
-                                                                <button class="btn action-btn" type="button"
-                                                                        id="dropdownMenuButton1"
-                                                                        data-bs-toggle="dropdown" aria-expanded="false">
-                                                                    ...
-                                                                </button>
-                                                                <ul class="dropdown-menu"
-                                                                    aria-labelledby="dropdownMenuButton1">
-                                                                    <a class="dropdown-item" href="#">
-                                                                        <li>Send Message</li>
-                                                                    </a>
-                                                                    <a class="dropdown-item" href="#">
-                                                                        <li>View Profile</li>
-                                                                    </a>
-                                                                    <a class="dropdown-item" href="#" type="button"
-                                                                       class="btn btn-primary" data-bs-toggle="modal"
-                                                                       data-bs-target="#cancel-service-modal">
-                                                                        <li>Cancel Subscription</li>
-                                                                    </a>
-                                                                    <a class="dropdown-item" href="#">
-                                                                        <li>Report Seller</li>
-                                                                    </a>
-                                                                </ul>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                            </tr>
+                                            @endforelse
                                         </table>
                                     </div>
                                 </div>
                             </div>
                         </div>
+                    </section>
                 </div>
-                </p>
+
+                <!-- Expert Subscriptions Modal (for selecting which subscription to cancel) -->
+                <div class="modal fade" id="expert-subscriptions-modal" tabindex="-1">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Select Subscription to Cancel</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p>Select which subscription you want to cancel for <strong id="expert-name-display"></strong>:</p>
+                                <div id="expert-subscriptions-list"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <!-- pagination start from here -->
                 {{-- <div class="demo">
                           <nav class="pagination-outer" aria-label="Page navigation">
@@ -2194,6 +2039,14 @@
                             </button>
                         </div>
 
+                        <!-- Cancel Subscription Button (only for subscription orders) -->
+                        <div class="col-md-12 services-buttons all_actions_buttons" id="cancel_subscription" style="display: none;">
+                            <button type="button" class="btn btn-danger" id="cancel-subscription-btn"
+                                    onclick="openCancelSubscriptionModal();">
+                                <i class="fa fa-times-circle"></i> Cancel Subscription
+                            </button>
+                        </div>
+
                         <div class="col-md-12 dispute_main services-buttons all_actions_buttons" id="dispute3">
                             <button type="button" class="btn  dispute-btn" id="dispute-btn3"> Cancel & Dispute Order
                             </button>
@@ -2234,6 +2087,14 @@
                         <div class="col-md-12 services-buttons all_actions_buttons" id="cancel_session">
                             <button type="button" class="btn cancel-session-btn" id="cancel-session-btn"
                                     onclick="CancelModelShow(this.id);"> Cancel Order
+                            </button>
+                        </div>
+
+                        <!-- Cancel Subscription Button (only for subscription orders) -->
+                        <div class="col-md-12 services-buttons all_actions_buttons" id="cancel_subscription_session" style="display: none;">
+                            <button type="button" class="btn btn-danger" id="cancel-subscription-session-btn"
+                                    onclick="openCancelSubscriptionModal();">
+                                <i class="fa fa-times-circle"></i> Cancel Subscription
                             </button>
                         </div>
 
@@ -3030,6 +2891,120 @@
     </div>
 </div>
 <!-- Mark as completed Add Review Rating modal ended here -->
+
+<!-- Subscription Cancel Modal Start -->
+<div class="modal fade" id="subscription-cancel-modal" tabindex="-1" aria-labelledby="subscriptionCancelModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="subscriptionCancelModalLabel">Cancel Subscription</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Loading Spinner -->
+                <div id="subscription-cancel-loading" class="text-center py-4">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p class="mt-2">Loading cancellation details...</p>
+                </div>
+
+                <!-- Content (hidden initially) -->
+                <div id="subscription-cancel-content" style="display:none;">
+                    <form action="/cancel-subscription" method="POST" id="subscription-cancel-form">
+                        @csrf
+                        <input type="hidden" name="order_id" id="sub_cancel_order_id">
+
+                        <!-- Order Info -->
+                        <div class="alert alert-light border mb-3">
+                            <strong>Service:</strong> <span id="sub_cancel_service_name"></span><br>
+                            <strong>Total Price:</strong> $<span id="sub_cancel_price"></span>
+                        </div>
+
+                        <!-- Classes Breakdown Cards -->
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <div class="card bg-success text-white">
+                                    <div class="card-body text-center py-2">
+                                        <h3 class="mb-0" id="refundable_count">0</h3>
+                                        <small>Refundable Classes</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card bg-warning">
+                                    <div class="card-body text-center py-2">
+                                        <h3 class="mb-0" id="non_refundable_count">0</h3>
+                                        <small>Non-Refundable (&lt;12h)</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card bg-secondary text-white">
+                                    <div class="card-body text-center py-2">
+                                        <h3 class="mb-0" id="completed_count">0</h3>
+                                        <small>Completed</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Refund Amount -->
+                        <div class="alert alert-success">
+                            <h5 class="mb-1">Estimated Refund: $<span id="refund_amount">0.00</span></h5>
+                            <small class="text-muted">Classes less than 12 hours away are not eligible for refund.</small>
+                        </div>
+
+                        <!-- Class Lists (Collapsible) -->
+                        <div class="accordion mb-3" id="classesAccordion">
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="refundableHeader">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#refundableList" aria-expanded="false">
+                                        <i class="fa fa-check-circle text-success me-2"></i> Refundable Classes (>12 hours)
+                                    </button>
+                                </h2>
+                                <div id="refundableList" class="accordion-collapse collapse" aria-labelledby="refundableHeader">
+                                    <div class="accordion-body p-0">
+                                        <ul class="list-group list-group-flush" id="refundable_classes_ul"></ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="nonRefundableHeader">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#nonRefundableList" aria-expanded="false">
+                                        <i class="fa fa-times-circle text-danger me-2"></i> Non-Refundable Classes (&lt;12 hours)
+                                    </button>
+                                </h2>
+                                <div id="nonRefundableList" class="accordion-collapse collapse" aria-labelledby="nonRefundableHeader">
+                                    <div class="accordion-body p-0">
+                                        <ul class="list-group list-group-flush" id="non_refundable_classes_ul"></ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Reason (Required) -->
+                        <div class="mb-3">
+                            <label class="form-label"><strong>Cancellation Reason</strong> <span class="text-danger">*</span></label>
+                            <textarea name="reason" class="form-control" rows="3" required
+                                      minlength="10" placeholder="Please explain why you are cancelling this subscription (minimum 10 characters)..."></textarea>
+                            <small class="text-muted">This will be shared with the seller.</small>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Keep Subscription</button>
+                            <button type="submit" class="btn btn-danger">
+                                <i class="fa fa-times-circle me-1"></i> Confirm Cancellation
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Subscription Cancel Modal End -->
+
 <!-- Action Priority Class Modal Start From Here -->
 <div class="modal fade" id="class-priority-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -3624,6 +3599,19 @@
 
 
                 $('#active_class_main').show();
+
+                // Show Cancel Subscription button for subscription orders
+                if (payment_type == 'Subscription') {
+                    currentSubscriptionOrderId = order_id;
+                    currentSubscriptionServiceName = title;
+                    currentSubscriptionPrice = price;
+                    $('#cancel_subscription').show();
+                    $('#cancel_class').hide(); // Hide regular cancel button
+                } else {
+                    $('#cancel_subscription').hide();
+                    $('#cancel_class').show();
+                }
+
             } else {
                 if (freelance_service == 'Consultation') {
 
@@ -3640,6 +3628,19 @@
                     }
 
                     $('#active_consultation_main').show();
+
+                    // Show Cancel Subscription button for subscription orders
+                    if (payment_type == 'Subscription') {
+                        currentSubscriptionOrderId = order_id;
+                        currentSubscriptionServiceName = title;
+                        currentSubscriptionPrice = price;
+                        $('#cancel_subscription_session').show();
+                        $('#cancel_session').hide();
+                    } else {
+                        $('#cancel_subscription_session').hide();
+                        $('#cancel_session').show();
+                    }
+
                 } else {
                     $('#active_normal_main').show();
                 }
@@ -5079,6 +5080,211 @@
             }
         });
     });
+
+    // ============================================
+    // SUBSCRIPTION CANCELLATION FUNCTIONS
+    // ============================================
+
+    // Store current order data for subscription cancellation
+    var currentSubscriptionOrderId = null;
+    var currentSubscriptionServiceName = null;
+    var currentSubscriptionPrice = null;
+
+    // Open Cancel Subscription Modal
+    function openCancelSubscriptionModal(orderId, serviceName, price) {
+        // If called without params, use stored values from ActionModelShow
+        orderId = orderId || currentSubscriptionOrderId;
+        serviceName = serviceName || currentSubscriptionServiceName;
+        price = price || currentSubscriptionPrice;
+
+        if (!orderId) {
+            toastr.error('Order ID not found');
+            return;
+        }
+
+        // Close any open modals
+        $('#OrdersActionModel').modal('hide');
+
+        // Show loading state
+        $('#subscription-cancel-loading').show();
+        $('#subscription-cancel-content').hide();
+        $('#subscription-cancel-modal').modal('show');
+
+        // Set basic info
+        $('#sub_cancel_order_id').val(orderId);
+        $('#sub_cancel_service_name').text(serviceName || 'Service');
+        $('#sub_cancel_price').text(price ? parseFloat(price).toFixed(2) : '0.00');
+
+        // Fetch preview data via AJAX
+        $.ajax({
+            url: '/cancel-subscription/preview/' + orderId,
+            type: 'GET',
+            success: function(data) {
+                if (data.success) {
+                    populateCancelSubscriptionModal(data);
+                    $('#subscription-cancel-loading').hide();
+                    $('#subscription-cancel-content').show();
+                } else {
+                    toastr.error(data.message || 'Failed to load cancellation details');
+                    $('#subscription-cancel-modal').modal('hide');
+                }
+            },
+            error: function(xhr) {
+                var errorMsg = 'Failed to load cancellation details';
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    errorMsg = xhr.responseJSON.message;
+                }
+                toastr.error(errorMsg);
+                $('#subscription-cancel-modal').modal('hide');
+            }
+        });
+    }
+
+    // Populate the cancel subscription modal with data
+    function populateCancelSubscriptionModal(data) {
+        var breakdown = data.breakdown;
+        var order = data.order;
+
+        // Update service info
+        $('#sub_cancel_service_name').text(order.title);
+        $('#sub_cancel_price').text(parseFloat(order.finel_price).toFixed(2));
+
+        // Update counts
+        $('#refundable_count').text(breakdown.refundable_count);
+        $('#non_refundable_count').text(breakdown.non_refundable_count);
+        $('#completed_count').text(breakdown.completed_count);
+        $('#refund_amount').text(parseFloat(breakdown.refund_amount).toFixed(2));
+
+        // Populate refundable classes list
+        var refundableHtml = '';
+        if (breakdown.refundable_classes && breakdown.refundable_classes.length > 0) {
+            breakdown.refundable_classes.forEach(function(c) {
+                refundableHtml += '<li class="list-group-item d-flex justify-content-between align-items-center">' +
+                    '<span><i class="fa fa-check-circle text-success me-2"></i>' + formatSubscriptionDateTime(c.user_date) + '</span>' +
+                    '<span class="badge bg-success">$' + parseFloat(breakdown.price_per_class).toFixed(2) + ' Refund</span>' +
+                    '</li>';
+            });
+        } else {
+            refundableHtml = '<li class="list-group-item text-muted">No refundable classes</li>';
+        }
+        $('#refundable_classes_ul').html(refundableHtml);
+
+        // Populate non-refundable classes list
+        var nonRefundableHtml = '';
+        if (breakdown.non_refundable_classes && breakdown.non_refundable_classes.length > 0) {
+            breakdown.non_refundable_classes.forEach(function(c) {
+                nonRefundableHtml += '<li class="list-group-item d-flex justify-content-between align-items-center">' +
+                    '<span><i class="fa fa-times-circle text-danger me-2"></i>' + formatSubscriptionDateTime(c.user_date) + '</span>' +
+                    '<span class="badge bg-warning text-dark">< 12 hours</span>' +
+                    '</li>';
+            });
+        } else {
+            nonRefundableHtml = '<li class="list-group-item text-muted">No non-refundable classes</li>';
+        }
+        $('#non_refundable_classes_ul').html(nonRefundableHtml);
+    }
+
+    // Format date time for subscription modal
+    function formatSubscriptionDateTime(dateStr) {
+        if (!dateStr) return 'Unknown date';
+        var date = new Date(dateStr);
+        return date.toLocaleString('en-US', {
+            month: 'long',
+            day: 'numeric',
+            year: 'numeric',
+            hour: 'numeric',
+            minute: '2-digit'
+        });
+    }
+
+    // Show expert subscriptions modal (when clicking from Experts tab)
+    var activeSubscriptionOrders = @json($activeSubscriptionOrders ?? []);
+
+    function showExpertSubscriptions(teacherId, expertName) {
+        var subscriptions = activeSubscriptionOrders[teacherId] || [];
+
+        if (subscriptions.length === 0) {
+            toastr.info('No active subscriptions found for this expert');
+            return;
+        }
+
+        if (subscriptions.length === 1) {
+            // Only one subscription, open cancel modal directly
+            var sub = subscriptions[0];
+            openCancelSubscriptionModal(sub.order_id, sub.title, sub.finel_price);
+            return;
+        }
+
+        // Multiple subscriptions, show selection modal
+        $('#expert-name-display').text(expertName);
+
+        var listHtml = '';
+        subscriptions.forEach(function(sub) {
+            listHtml += '<div class="card mb-2">' +
+                '<div class="card-body d-flex justify-content-between align-items-center">' +
+                '<div>' +
+                '<strong>' + sub.title + '</strong><br>' +
+                '<small class="text-muted">$' + parseFloat(sub.finel_price).toFixed(2) + '</small>' +
+                '</div>' +
+                '<button class="btn btn-danger btn-sm" onclick="openCancelSubscriptionModal(' + sub.order_id + ', \'' + sub.title.replace(/'/g, "\\'") + '\', ' + sub.finel_price + '); $(\'#expert-subscriptions-modal\').modal(\'hide\');">' +
+                'Cancel' +
+                '</button>' +
+                '</div>' +
+                '</div>';
+        });
+
+        $('#expert-subscriptions-list').html(listHtml);
+        $('#expert-subscriptions-modal').modal('show');
+    }
+
+    // ============================================
+    // EXPERTS TAB FILTER/SEARCH FUNCTIONS
+    // ============================================
+
+    function filterExperts() {
+        var searchValue = $('#expert-search-input').val().toLowerCase();
+        $('.expert-row').each(function() {
+            var name = $(this).data('name');
+            if (name.indexOf(searchValue) > -1) {
+                $(this).show();
+            } else {
+                $(this).hide();
+            }
+        });
+    }
+
+    function filterExpertsBySubscription(filter) {
+        $('.expert-row').each(function() {
+            var subscriptions = parseInt($(this).data('subscriptions')) || 0;
+            if (filter === 'all') {
+                $(this).show();
+            } else if (filter === 'active' && subscriptions > 0) {
+                $(this).show();
+            } else if (filter === 'active' && subscriptions === 0) {
+                $(this).hide();
+            }
+        });
+    }
+
+    function sortExperts(direction) {
+        var $table = $('#experts-table');
+        var $rows = $table.find('.expert-row').get();
+
+        $rows.sort(function(a, b) {
+            var nameA = $(a).data('name');
+            var nameB = $(b).data('name');
+
+            if (direction === 'asc') {
+                return nameA.localeCompare(nameB);
+            } else {
+                return nameB.localeCompare(nameA);
+            }
+        });
+
+        $.each($rows, function(index, row) {
+            $table.append(row);
+        });
+    }
 
 
 </script>

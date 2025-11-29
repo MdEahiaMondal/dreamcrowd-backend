@@ -517,13 +517,55 @@ class OrderManagementController extends Controller
             }
         }
 
+        // Get all experts/teachers the user has booked from
+        $expertsWithOrders = DB::table('book_orders')
+            ->join('expert_profiles', 'book_orders.teacher_id', '=', 'expert_profiles.user_id')
+            ->select(
+                'expert_profiles.user_id as teacher_id',
+                'expert_profiles.first_name',
+                'expert_profiles.last_name',
+                'expert_profiles.profession',
+                'expert_profiles.profile_image',
+                DB::raw('SUM(CASE WHEN book_orders.status = 1 AND book_orders.payment_type = "Subscription" THEN 1 ELSE 0 END) as active_subscriptions'),
+                DB::raw('COUNT(book_orders.id) as total_orders')
+            )
+            ->where('book_orders.user_id', Auth::user()->id)
+            ->groupBy(
+                'expert_profiles.user_id',
+                'expert_profiles.first_name',
+                'expert_profiles.last_name',
+                'expert_profiles.profession',
+                'expert_profiles.profile_image'
+            )
+            ->having('total_orders', '>', 0)
+            ->get();
+
+        // Get active subscription orders for the Experts tab (to show in modal when clicking Cancel)
+        $activeSubscriptionOrders = DB::table('book_orders')
+            ->join('expert_profiles', 'book_orders.teacher_id', '=', 'expert_profiles.user_id')
+            ->join('teacher_gigs', 'book_orders.gig_id', '=', 'teacher_gigs.id')
+            ->select(
+                'book_orders.id as order_id',
+                'book_orders.teacher_id',
+                'book_orders.title',
+                'book_orders.finel_price',
+                'book_orders.created_at'
+            )
+            ->where('book_orders.user_id', Auth::user()->id)
+            ->where('book_orders.status', 1)
+            ->where('book_orders.payment_type', 'Subscription')
+            ->get()
+            ->groupBy('teacher_id');
+
         return view('User-Dashboard.class-management', compact(
             'pendingOrders',
             'activeOrders',
             'deliveredOrders',
             'completedOrders',
             'cancelledOrders',
-            'reschedule_hours'
+            'reschedule_hours',
+            'expertsWithOrders',
+            'activeSubscriptionOrders'
         ));
     }
 
@@ -3888,5 +3930,297 @@ class OrderManagementController extends Controller
     private function getAdminUserIds(): array
     {
         return \App\Models\User::where('role', 2)->pluck('id')->toArray();
+    }
+
+    /**
+     * Cancel Subscription Preview - Returns class breakdown for modal
+     * @param int $orderId
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function CancelSubscriptionPreview($orderId)
+    {
+        if (!Auth::user()) {
+            return response()->json(['success' => false, 'message' => 'Please login to your account'], 401);
+        }
+
+        $order = BookOrder::with(['classDates', 'gig', 'teacher'])
+            ->where('id', $orderId)
+            ->where('user_id', Auth::user()->id)
+            ->first();
+
+        if (!$order) {
+            return response()->json(['success' => false, 'message' => 'Order not found'], 404);
+        }
+
+        if ($order->status != 1) {
+            return response()->json(['success' => false, 'message' => 'Only active orders can be cancelled'], 400);
+        }
+
+        if ($order->payment_type != 'Subscription') {
+            return response()->json(['success' => false, 'message' => 'This is not a subscription order'], 400);
+        }
+
+        // Get all classes and categorize them
+        $now = now();
+        $classes = $order->classDates;
+
+        $completed = [];
+        $nonRefundable = [];
+        $refundable = [];
+
+        foreach ($classes as $class) {
+            $classTime = \Carbon\Carbon::parse($class->user_date);
+            $hoursUntil = $now->diffInHours($classTime, false);
+
+            $classData = [
+                'id' => $class->id,
+                'user_date' => $class->user_date,
+                'teacher_date' => $class->teacher_date,
+                'user_attend' => $class->user_attend,
+                'hours_until' => round($hoursUntil, 1)
+            ];
+
+            if ($hoursUntil <= 0) {
+                $completed[] = $classData;
+            } elseif ($hoursUntil <= 12) {
+                $nonRefundable[] = $classData;
+            } else {
+                $refundable[] = $classData;
+            }
+        }
+
+        $totalClasses = count($classes);
+        $pricePerClass = $totalClasses > 0 ? $order->finel_price / $totalClasses : 0;
+        $refundAmount = round($pricePerClass * count($refundable), 2);
+
+        return response()->json([
+            'success' => true,
+            'order' => [
+                'id' => $order->id,
+                'title' => $order->title,
+                'finel_price' => $order->finel_price,
+                'payment_type' => $order->payment_type,
+                'teacher_name' => $order->teacher->first_name ?? 'Unknown'
+            ],
+            'breakdown' => [
+                'total_classes' => $totalClasses,
+                'completed_count' => count($completed),
+                'completed_classes' => $completed,
+                'non_refundable_count' => count($nonRefundable),
+                'non_refundable_classes' => $nonRefundable,
+                'refundable_count' => count($refundable),
+                'refundable_classes' => $refundable,
+                'price_per_class' => round($pricePerClass, 2),
+                'refund_amount' => $refundAmount
+            ]
+        ]);
+    }
+
+    /**
+     * Cancel Subscription - Executes the cancellation with refund
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function CancelSubscription(Request $request)
+    {
+        if (!Auth::user()) {
+            return redirect()->to('/')->with('error', 'Please login to your account');
+        }
+
+        $request->validate([
+            'order_id' => 'required|integer',
+            'reason' => 'required|string|min:10'
+        ]);
+
+        $orderId = $request->input('order_id');
+        $reason = $request->input('reason');
+
+        $order = BookOrder::with(['classDates', 'transaction', 'teacher', 'user', 'gig'])
+            ->where('id', $orderId)
+            ->where('user_id', Auth::user()->id)
+            ->first();
+
+        if (!$order) {
+            return redirect()->back()->with('error', 'Order not found');
+        }
+
+        if ($order->status != 1) {
+            return redirect()->back()->with('error', 'Only active orders can be cancelled');
+        }
+
+        if ($order->payment_type != 'Subscription') {
+            return redirect()->back()->with('error', 'This is not a subscription order');
+        }
+
+        // Calculate refund
+        $now = now();
+        $classes = $order->classDates;
+
+        $completed = [];
+        $nonRefundable = [];
+        $refundable = [];
+
+        foreach ($classes as $class) {
+            $classTime = \Carbon\Carbon::parse($class->user_date);
+            $hoursUntil = $now->diffInHours($classTime, false);
+
+            if ($hoursUntil <= 0) {
+                $completed[] = $class;
+            } elseif ($hoursUntil <= 12) {
+                $nonRefundable[] = $class;
+            } else {
+                $refundable[] = $class;
+            }
+        }
+
+        $totalClasses = count($classes);
+        $pricePerClass = $totalClasses > 0 ? $order->finel_price / $totalClasses : 0;
+        $refundAmount = round($pricePerClass * count($refundable), 2);
+
+        // Process Stripe refund
+        $refundProcessed = false;
+        $stripeError = null;
+
+        if ($refundAmount > 0 && $order->payment_id) {
+            try {
+                \Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
+
+                $paymentIntent = \Stripe\PaymentIntent::retrieve($order->payment_id);
+
+                if ($refundAmount >= $order->finel_price) {
+                    // Full refund
+                    if ($paymentIntent->status === 'requires_capture') {
+                        $paymentIntent->cancel();
+                    } else {
+                        \Stripe\Refund::create(['payment_intent' => $order->payment_id]);
+                    }
+                } else {
+                    // Partial refund
+                    \Stripe\Refund::create([
+                        'payment_intent' => $order->payment_id,
+                        'amount' => round($refundAmount * 100) // Convert to cents
+                    ]);
+                }
+
+                $refundProcessed = true;
+            } catch (\Exception $e) {
+                \Log::error('Subscription cancellation Stripe refund failed: ' . $e->getMessage(), [
+                    'order_id' => $orderId,
+                    'refund_amount' => $refundAmount
+                ]);
+                $stripeError = $e->getMessage();
+            }
+        }
+
+        // Update order status
+        $order->status = 4; // Cancelled
+        $order->refund = $refundProcessed ? 1 : 0;
+        $order->action_date = now();
+        $order->save();
+
+        // Update transaction
+        if ($order->transaction) {
+            $transaction = $order->transaction;
+
+            if ($refundProcessed && $refundAmount >= $order->finel_price) {
+                $transaction->status = 'refunded';
+                $transaction->payout_status = 'failed';
+            } elseif ($refundProcessed) {
+                // Partial refund - adjust amounts
+                $remainingAmount = $order->finel_price - $refundAmount;
+                $transaction->coupon_discount = ($transaction->coupon_discount ?? 0) + $refundAmount;
+                $transaction->seller_earnings = $remainingAmount - ($remainingAmount * $transaction->seller_commission_rate / 100);
+                $transaction->total_admin_commission = ($remainingAmount * $transaction->seller_commission_rate / 100) + $transaction->buyer_commission_amount;
+                $transaction->notes = ($transaction->notes ?? '') . ' | Subscription cancelled with partial refund: $' . $refundAmount;
+            }
+
+            $transaction->save();
+        }
+
+        // Create cancel order record
+        CancelOrder::create([
+            'user_id' => Auth::user()->id,
+            'user_role' => 0, // User/Buyer
+            'order_id' => $orderId,
+            'reason' => $reason,
+            'refund' => $refundProcessed ? 1 : 0,
+            'refund_type' => ($refundAmount >= $order->finel_price) ? 0 : 1, // 0 = Full, 1 = Partial
+            'amount' => $refundAmount
+        ]);
+
+        // Cancel pending reschedules
+        ClassReschedule::where('order_id', $orderId)
+            ->where('status', 0)
+            ->update(['status' => 2]); // Rejected
+
+        // Get buyer and seller info for notifications
+        $buyer = $order->user;
+        $seller = $order->teacher;
+        $buyerProfile = ExpertProfile::where('user_id', $buyer->id)->first();
+        $sellerProfile = ExpertProfile::where('user_id', $seller->id)->first();
+
+        $buyerName = $buyerProfile ? $buyerProfile->first_name . ' ' . $buyerProfile->last_name : $buyer->email;
+        $sellerName = $sellerProfile ? $sellerProfile->first_name . ' ' . $sellerProfile->last_name : $seller->email;
+
+        // Prepare cancelled classes list
+        $cancelledClassesDates = collect($refundable)->merge($nonRefundable)->pluck('user_date')->toArray();
+        $refundableClassesDates = collect($refundable)->pluck('user_date')->toArray();
+        $nonRefundableClassesDates = collect($nonRefundable)->pluck('user_date')->toArray();
+
+        // Send notification to buyer
+        $this->notificationService->send(
+            userId: $buyer->id,
+            type: 'subscription_cancelled',
+            title: 'Subscription Cancelled',
+            message: 'Your subscription to "' . $order->title . '" has been cancelled.' . ($refundAmount > 0 ? ' Refund of $' . number_format($refundAmount, 2) . ' initiated.' : ''),
+            data: [
+                'order_id' => $orderId,
+                'service_name' => $order->title,
+                'refund_amount' => $refundAmount,
+                'refundable_classes' => $refundableClassesDates,
+                'non_refundable_classes' => $nonRefundableClassesDates,
+                'cancelled_classes' => $cancelledClassesDates,
+                'reason' => $reason
+            ],
+            sendEmail: true,
+            actorUserId: $buyer->id,
+            targetUserId: $seller->id,
+            orderId: $orderId,
+            serviceId: $order->gig_id,
+            emailTemplate: 'subscription-cancelled'
+        );
+
+        // Send notification to seller
+        $this->notificationService->send(
+            userId: $seller->id,
+            type: 'subscription_cancelled',
+            title: 'Subscription Cancelled by Buyer',
+            message: $buyerName . ' has cancelled their subscription to "' . $order->title . '".' . ($refundAmount > 0 ? ' Refund: $' . number_format($refundAmount, 2) : ''),
+            data: [
+                'order_id' => $orderId,
+                'service_name' => $order->title,
+                'buyer_name' => $buyerName,
+                'refund_amount' => $refundAmount,
+                'cancelled_classes' => $cancelledClassesDates,
+                'reason' => $reason
+            ],
+            sendEmail: true,
+            actorUserId: $buyer->id,
+            targetUserId: $seller->id,
+            orderId: $orderId,
+            serviceId: $order->gig_id,
+            emailTemplate: 'subscription-cancelled-seller'
+        );
+
+        if ($stripeError) {
+            return redirect()->to('/order-management')->with('error', 'Subscription cancelled but refund failed. Please contact support. Error: ' . $stripeError);
+        }
+
+        $successMessage = 'Subscription cancelled successfully.';
+        if ($refundAmount > 0) {
+            $successMessage .= ' Refund of $' . number_format($refundAmount, 2) . ' has been initiated.';
+        }
+
+        return redirect()->to('/order-management')->with('success', $successMessage);
     }
 }
