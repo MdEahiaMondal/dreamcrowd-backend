@@ -185,7 +185,7 @@
                                   <div
                                     id="imagePrevieww"
                                     style="
-                                      background-image: url('assets/profile/img/{{$app->profile_image}}');
+                                      background-image: url('{{ asset('assets/profile/img/' . $app->profile_image) }}');
                                       width: 100%;
                                     "
                                   ></div>

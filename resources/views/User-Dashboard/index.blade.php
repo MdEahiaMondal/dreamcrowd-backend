@@ -77,7 +77,7 @@
             <div class="row mb-4">
                 <div class="col-md-8">
                     <h2><i class='bx bx-grid-alt'></i> My Dashboard</h2>
-                    <p class="text-muted">Welcome back, {{ Auth::user()->name }}! Here's your activity overview.</p>
+                    <p class="text-muted">Welcome back, {{ (Auth::user()->first_name ?? '') . ' ' . (Auth::user()->last_name ?? '') }}! Here's your activity overview.</p>
                 </div>
                 <div class="col-md-4 text-end d-none">
                     <button class="btn btn-danger me-2" onclick="exportPDF()">
@@ -343,7 +343,13 @@
                                                     <div>
                                                         <div class="fw-bold">{{ $booking->gig->title ?? 'N/A' }}</div>
                                                         <small
-                                                            class="text-muted">{{ $booking->teacher->name ?? 'Unknown' }}</small>
+                                                            class="text-muted">
+                                                            @php
+                                                                $sellerName = $booking->teacher ? ($booking->teacher->first_name . ' ' .  strtoupper(substr($booking->teacher->last_name, 0, 1))) : 'the seller';
+
+                                                            @endphp
+                                                            {{ $sellerName ?? 'Unknown' }}
+                                                        </small>
                                                     </div>
                                                 </div>
                                             </td>

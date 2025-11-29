@@ -240,7 +240,7 @@
                                                     <tr>
                                                         <td>
                                                             <div class="profile-sec">
-                                                                <img src="assets/profile/img/{{$order->profile_image}}"
+                                                                <img src="{{ asset('assets/profile/img/' . $order->profile_image) }}"
                                                                      alt="">
                                                                 <p>{{ $order->first_name }}  {{strtoupper(substr($order->last_name, 0, 1))}}
                                                                     .<br><span>{{ $order->profession }}</span></p>
@@ -535,7 +535,7 @@
                                                     <tr>
                                                         <td>
                                                             <div class="profile-sec">
-                                                                <img src="assets/profile/img/{{$order->profile_image}}"
+                                                                <img src="{{ asset('assets/profile/img/' . $order->profile_image) }}"
                                                                      alt="">
                                                                 <p>{{ $order->first_name }}  {{strtoupper(substr($order->last_name, 0, 1))}}
                                                                     .<br><span>{{ $order->profession }}</span></p>
@@ -829,7 +829,7 @@
                                                     <tr>
                                                         <td>
                                                             <div class="profile-sec">
-                                                                <img src="assets/profile/img/{{$order->profile_image}}"
+                                                                <img src="{{ asset('assets/profile/img/' . $order->profile_image) }}"
                                                                      alt="">
                                                                 <p>{{ $order->first_name }}  {{strtoupper(substr($order->last_name, 0, 1))}}
                                                                     .<br><span>{{ $order->profession }}</span></p>
@@ -1109,7 +1109,7 @@
                                                     <tr>
                                                         <td>
                                                             <div class="profile-sec">
-                                                                <img src="assets/profile/img/{{$order->profile_image}}"
+                                                                <img src="{{ asset('assets/profile/img/' . $order->profile_image) }}"
                                                                      alt="">
                                                                 <p>{{ $order->first_name }}  {{strtoupper(substr($order->last_name, 0, 1))}}
                                                                     .<br><span>{{ $order->profession }}</span></p>
@@ -1388,7 +1388,7 @@
                                                     <tr>
                                                         <td>
                                                             <div class="profile-sec">
-                                                                <img src="assets/profile/img/{{$order->profile_image}}"
+                                                                <img src="{{ asset('assets/profile/img/' . $order->profile_image) }}"
                                                                      alt="">
                                                                 <p>{{ $order->first_name }}  {{strtoupper(substr($order->last_name, 0, 1))}}
                                                                     .<br><span>{{ $order->profession }}</span></p>
@@ -2527,8 +2527,9 @@
                                 <h5 class="mb-0 refund">Refund Reason</h5>
                                 <textarea class="form-control" name="reason" id="dispute_refund_reason"
                                           placeholder="explain why dispute order..." required></textarea>
-                                <button type="button" class="btn float-start cancel-button btn-outline-danger">Cancel
+                                <button type="button" class="btn float-start cancel-button btn-outline-danger" data-bs-dismiss="modal" aria-label="Close">Cancel
                                 </button>
+
                                 <button type="submit" class="btn float-end submit-button" id="submit-cancel-service">
                                     Submit
                                 </button>

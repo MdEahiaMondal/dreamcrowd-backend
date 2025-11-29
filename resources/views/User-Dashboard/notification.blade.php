@@ -145,31 +145,104 @@
             margin-bottom: 20px;
             opacity: 0.5;
         }
-        .notification-header {
-            margin-bottom: 20px;
-            padding: 20px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 8px;
-            color: white;
+
+        /* Statistics Cards */
+        .statistics-section {
+            margin-bottom: 30px;
         }
-        .stats-row {
-            display: flex;
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 20px;
-            margin-top: 10px;
-            flex-wrap: wrap;
+            margin-bottom: 20px;
         }
-        .stat-item {
-            flex: 1;
-            min-width: 150px;
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            padding: 20px;
+            color: white;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
         }
-        .stat-number {
-            font-size: 28px;
-            font-weight: bold;
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
         }
-        .stat-label {
-            font-size: 13px;
+
+        .stat-card.total {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .stat-card.unread {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .stat-card.emergency {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        }
+
+        .stat-card.today {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        .stat-card.week {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        }
+
+        .stat-card.email {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: rgba(255, 255, 255, 0.1);
+            transform: rotate(45deg);
+            transition: all 0.5s ease;
+        }
+
+        .stat-card:hover::before {
+            top: -60%;
+            right: -60%;
+        }
+
+        .stat-icon {
+            font-size: 36px;
+            margin-bottom: 10px;
             opacity: 0.9;
-            margin-top: 5px;
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: bold;
+            margin: 10px 0 5px 0;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+            font-weight: 500;
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
@@ -198,22 +271,55 @@
                             </div>
                         </div>
 
-                        <!-- Notification Header with Stats -->
-                        <div class="notification-header">
-                            <h2 style="margin: 0 0 5px 0;"><i class="bx bx-bell"></i> My Notifications</h2>
-                            <p style="margin: 5px 0; opacity: 0.9;">Stay updated with your bookings, classes, and more</p>
-                            <div class="stats-row">
-                                <div class="stat-item">
-                                    <div class="stat-number" id="total-count">0</div>
-                                    <div class="stat-label">Total</div>
+                        <!-- Statistics Section -->
+                        <div class="statistics-section">
+                            <div class="stats-grid">
+                                <div class="stat-card total">
+                                    <div class="stat-icon">
+                                        <i class="bx bx-bell"></i>
+                                    </div>
+                                    <div class="stat-value" id="stat-total">0</div>
+                                    <div class="stat-label">Total Notifications</div>
                                 </div>
-                                <div class="stat-item">
-                                    <div class="stat-number" id="unread-count">0</div>
+
+                                <div class="stat-card unread">
+                                    <div class="stat-icon">
+                                        <i class="bx bx-bell-off"></i>
+                                    </div>
+                                    <div class="stat-value" id="stat-unread">0</div>
                                     <div class="stat-label">Unread</div>
                                 </div>
-                                <div class="stat-item">
-                                    <div class="stat-number" id="today-count">0</div>
+
+                                <div class="stat-card emergency">
+                                    <div class="stat-icon">
+                                        <i class="bx bx-error-circle"></i>
+                                    </div>
+                                    <div class="stat-value" id="stat-emergency">0</div>
+                                    <div class="stat-label">Emergency</div>
+                                </div>
+
+                                <div class="stat-card today">
+                                    <div class="stat-icon">
+                                        <i class="bx bx-calendar-star"></i>
+                                    </div>
+                                    <div class="stat-value" id="stat-today">0</div>
                                     <div class="stat-label">Today</div>
+                                </div>
+
+                                <div class="stat-card week">
+                                    <div class="stat-icon">
+                                        <i class="bx bx-calendar-week"></i>
+                                    </div>
+                                    <div class="stat-value" id="stat-week">0</div>
+                                    <div class="stat-label">This Week</div>
+                                </div>
+
+                                <div class="stat-card email">
+                                    <div class="stat-icon">
+                                        <i class="bx bx-envelope"></i>
+                                    </div>
+                                    <div class="stat-value" id="stat-email">0</div>
+                                    <div class="stat-label">Email Sent</div>
                                 </div>
                             </div>
                         </div>
@@ -241,6 +347,14 @@
                                         <option value="">All</option>
                                         <option value="0">Unread</option>
                                         <option value="1">Read</option>
+                                    </select>
+                                </div>
+                                <div class="filter-group">
+                                    <label><i class="bx bx-flag"></i> Priority:</label>
+                                    <select id="filter-emergency">
+                                        <option value="">All</option>
+                                        <option value="0">Normal</option>
+                                        <option value="1">Urgent</option>
                                     </select>
                                 </div>
                                 <div class="filter-group">
@@ -325,13 +439,53 @@
         $(document).ready(function() {
             loadNotifications(1);
             updateUnreadCount();
-            updateTodayCount();
 
             // Auto-refresh every 30 seconds
             setInterval(function() {
                 updateUnreadCount();
             }, 30000);
+
+            // Add click handlers to stat cards for quick filtering
+            $('.stat-card.unread').on('click', function() {
+                $('#filter-read').val('0');
+                applyFilters();
+            });
+
+            $('.stat-card.emergency').on('click', function() {
+                $('#filter-emergency').val('1');
+                applyFilters();
+            });
         });
+
+        // Update statistics display
+        function updateStatistics(stats) {
+            // Animate the number changes
+            animateValue('stat-total', 0, stats.total, 800);
+            animateValue('stat-unread', 0, stats.unread, 800);
+            animateValue('stat-emergency', 0, stats.emergency, 800);
+            animateValue('stat-today', 0, stats.today, 800);
+            animateValue('stat-week', 0, stats.this_week, 800);
+            animateValue('stat-email', 0, stats.email_sent, 800);
+        }
+
+        // Animate number counting
+        function animateValue(id, start, end, duration) {
+            const obj = document.getElementById(id);
+            if (!obj) return;
+
+            const range = end - start;
+            const increment = range / (duration / 16);
+            let current = start;
+
+            const timer = setInterval(function() {
+                current += increment;
+                if ((increment > 0 && current >= end) || (increment < 0 && current <= end)) {
+                    current = end;
+                    clearInterval(timer);
+                }
+                obj.textContent = Math.floor(current);
+            }, 16);
+        }
 
         // Load notifications with pagination
         function loadNotifications(page = 1) {
@@ -343,7 +497,8 @@
 
             // Add filters
             if (currentFilters.type) url += '&type=' + currentFilters.type;
-            if (currentFilters.is_read !== undefined) url += '&is_read=' + currentFilters.is_read;
+            if (currentFilters.is_read !== undefined && currentFilters.is_read !== '') url += '&is_read=' + currentFilters.is_read;
+            if (currentFilters.is_emergency !== undefined && currentFilters.is_emergency !== '') url += '&is_emergency=' + currentFilters.is_emergency;
             if (currentFilters.date_from) url += '&date_from=' + currentFilters.date_from;
             if (currentFilters.date_to) url += '&date_to=' + currentFilters.date_to;
 
@@ -353,9 +508,13 @@
                 success: function(response) {
                     $('#loading').hide();
                     $('#notifications-container').show();
-                    renderNotifications(response.data);
-                    renderPagination(response);
-                    $('#total-count').text(response.total);
+                    renderNotifications(response.notifications.data);
+                    renderPagination(response.notifications);
+
+                    // Update statistics
+                    if (response.statistics) {
+                        updateStatistics(response.statistics);
+                    }
                 },
                 error: function(xhr) {
                     $('#loading').hide();
@@ -406,6 +565,55 @@
                     iconColor = isUnread ? '#ffc107' : '#999';
                 }
 
+                // Build actor → target display - WITH ARROW →
+                let actorTargetDisplay = '';
+                if (notification.actor && notification.target) {
+                    const actorName = (notification.actor.first_name + ' ' + notification.actor.last_name).trim();
+                    const targetName = (notification.target.first_name + ' ' + notification.target.last_name).trim();
+
+                    // Short format: "Shaki A → Gabriel A"
+                    const actorShort = actorName.split(' ')[0] + ' ' + (actorName.split(' ')[1]?.[0] || '');
+                    const targetShort = targetName.split(' ')[0] + ' ' + (targetName.split(' ')[1]?.[0] || '');
+
+                    actorTargetDisplay = `<span><i class="bx bx-transfer"></i> ${actorShort} → ${targetShort}</span>`;
+                } else if (notification.actor) {
+                    const actorName = (notification.actor.first_name + ' ' + notification.actor.last_name).trim();
+                    actorTargetDisplay = `<span><i class="bx bx-user"></i> From: ${actorName}</span>`;
+                } else if (notification.target) {
+                    const targetName = (notification.target.first_name + ' ' + notification.target.last_name).trim();
+                    actorTargetDisplay = `<span><i class="bx bx-user"></i> To: ${targetName}</span>`;
+                }
+
+                // Emergency badge
+                const emergencyBadge = notification.is_emergency ?
+                    '<span class="badge bg-danger" style="margin-left: 8px; font-size: 10px;"><i class="bx bx-error-circle"></i> URGENT</span>' : '';
+
+                // Email sent indicator
+                const emailIndicator = notification.sent_email ?
+                    '<span title="Email sent"><i class="bx bx-envelope text-success"></i></span>' :
+                    '<span title="Website only"><i class="bx bx-globe text-primary"></i></span>';
+
+                // Service information
+                let serviceInfo = '';
+                if (notification.service && notification.service.title) {
+                    const serviceTitle = notification.service.title.length > 50
+                        ? notification.service.title.substring(0, 50) + '...'
+                        : notification.service.title;
+                    serviceInfo = `<span><i class="bx bx-book-content"></i> ${serviceTitle}</span>`;
+                }
+
+                // Order information
+                let orderInfo = '';
+                if (notification.order && notification.order.order_number) {
+                    orderInfo = `<span><i class="bx bx-receipt"></i> Order #${notification.order.order_number}</span>`;
+                }
+
+                // View Order Details button
+                let viewOrderBtn = '';
+                if (notification.order_id && notification.order && notification.order.order_number) {
+                    viewOrderBtn = `<a href="/user/order-details/${notification.order_id}" class="btn btn-sm" style="background-color: #667eea; color: white; margin-top: 8px; padding: 5px 15px; border-radius: 4px; text-decoration: none; display: inline-block;"><i class="bx bx-show"></i> View Order Details</a>`;
+                }
+
                 const html = `
                     <div class="notification-item ${isUnread ? 'unread' : ''}" id="notification-${notification.id}">
                         <div class="d-flex align-items-start">
@@ -413,16 +621,24 @@
                                 <i class="fa ${iconClass}"></i>
                             </div>
                             <div style="flex: 1;">
-                                <h5 style="margin-bottom: 5px; font-size: 16px; font-weight: 600;">${notification.title}</h5>
+                                <h5 style="margin-bottom: 5px; font-size: 16px; font-weight: 600;">
+                                    ${notification.title}
+                                    ${emergencyBadge}
+                                </h5>
                                 <p style="margin-bottom: 8px; color: #555; line-height: 1.5;">${notification.message}</p>
                                 <div class="notification-meta">
                                     <span class="notification-type">${notification.type.replace(/_/g, ' ')}</span>
+                                    ${actorTargetDisplay}
+                                    ${serviceInfo}
+                                    ${orderInfo}
+                                    ${emailIndicator}
                                     <span><i class="bx bx-time"></i> ${timeAgo}</span>
                                     <span title="${createdAt}"><i class="bx bx-calendar-alt"></i> ${new Date(notification.created_at).toLocaleDateString()}</span>
                                     ${notification.read_at ?
                                         '<span style="color: #28a745;"><i class="bx bx-check-circle"></i> Read</span>' :
                                         '<span style="color: #ffc107;"><i class="bx bxs-circle" style="font-size: 8px;"></i> New</span>'}
                                 </div>
+                                ${viewOrderBtn}
                                 <div class="notification-actions">
                                     ${isUnread ?
                                         '<button class="btn-mark-read" onclick="markAsRead(' + notification.id + ')"><i class="bx bx-check"></i> Mark as Read</button>' : ''}
@@ -596,6 +812,7 @@
             currentFilters = {
                 type: $('#filter-type').val(),
                 is_read: $('#filter-read').val(),
+                is_emergency: $('#filter-emergency').val(),
                 date_from: $('#filter-date-from').val(),
                 date_to: $('#filter-date-to').val()
             };
@@ -606,6 +823,7 @@
         function clearFilters() {
             $('#filter-type').val('');
             $('#filter-read').val('');
+            $('#filter-emergency').val('');
             $('#filter-date-from').val('');
             $('#filter-date-to').val('');
             currentFilters = {};

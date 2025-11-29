@@ -156,7 +156,7 @@
                             <div class="stat-card" style="border-left-color: #dc3545;">
                                 <p style="margin: 0; color: #666;">Top Earning Seller</p>
                                 <h4 style="margin: 10px 0; color: #dc3545; font-size: 16px;">
-                                    {{ $topSeller->name ?? 'N/A' }}
+                                    {{ ($topSeller->first_name ?? '') . ' ' . ($topSeller->last_name ?? '') ?: 'N/A' }}
                                 </h4>
                                 <small style="color: #999;">${{ number_format($topSellerEarnings ?? 0, 2) }}
                                     earned</small>
@@ -260,8 +260,8 @@
                                             <small
                                                 style="color: #999;">{{ $transaction->created_at->format('h:i A') }}</small>
                                         </td>
-                                        <td>{{ $transaction->buyer->name ?? 'N/A' }}</td>
-                                        <td>{{ $transaction->seller->name ?? 'N/A' }}</td>
+                                        <td>{{ ($transaction->buyer->first_name ?? '') . ' ' . ($transaction->buyer->last_name ?? '') ?: 'N/A' }}</td>
+                                        <td>{{ ($transaction->seller->first_name ?? '') . ' ' . ($transaction->seller->last_name ?? '') ?: 'N/A' }}</td>
                                         <td>
                                             <span class="badge bg-info">{{ ucfirst($transaction->service_type) }}</span>
                                             #{{ $transaction->service_id }}

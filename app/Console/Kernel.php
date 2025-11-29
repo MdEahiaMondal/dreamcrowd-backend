@@ -29,6 +29,11 @@ class Kernel extends ConsoleKernel
             ->withoutOverlapping()
             ->runInBackground()
             ->appendOutputTo(storage_path('logs/auto-complete.log'));
+        $schedule->command('payouts:auto-process')
+            ->dailyAt('02:00')
+            ->withoutOverlapping()
+            ->runInBackground()
+            ->appendOutputTo(storage_path('logs/auto-payouts.log'));
         $schedule->command('disputes:process')
             ->dailyAt('03:00')
             ->withoutOverlapping()
@@ -39,6 +44,11 @@ class Kernel extends ConsoleKernel
             ->withoutOverlapping()
             ->runInBackground()
             ->appendOutputTo(storage_path('logs/trial-meetings.log'));
+        $schedule->command('custom-offers:expire')
+            ->hourly()
+            ->withoutOverlapping()
+            ->runInBackground()
+            ->appendOutputTo(storage_path('logs/custom-offers-expiry.log'));
 
         // =====================================================
         // ZOOM INTEGRATION SCHEDULED COMMANDS
@@ -67,6 +77,66 @@ class Kernel extends ConsoleKernel
 
         // =====================================================
         // END ZOOM INTEGRATION SCHEDULED COMMANDS
+        // =====================================================
+
+        // =====================================================
+        // CLASS REMINDERS SCHEDULED COMMANDS
+        // =====================================================
+
+        // Send class reminders (24 hours, 1 hour, and 3-day recurring reminders)
+        $schedule->command('reminders:send-class-reminders')
+            ->hourly()
+            ->withoutOverlapping()
+            ->runInBackground()
+            ->appendOutputTo(storage_path('logs/class-reminders.log'));
+
+        // =====================================================
+        // END CLASS REMINDERS SCHEDULED COMMANDS
+        // =====================================================
+
+        // =====================================================
+        // COUPON NOTIFICATIONS SCHEDULED COMMANDS
+        // =====================================================
+
+        // Notify about expiring and expired coupons (runs daily at 9 AM)
+        $schedule->command('coupons:notify-expiring')
+            ->dailyAt('09:00')
+            ->withoutOverlapping()
+            ->runInBackground()
+            ->appendOutputTo(storage_path('logs/coupon-notifications.log'));
+
+        // =====================================================
+        // END COUPON NOTIFICATIONS SCHEDULED COMMANDS
+        // =====================================================
+
+        // =====================================================
+        // ORDER APPROVAL REMINDERS SCHEDULED COMMAND
+        // =====================================================
+
+        // Send order approval reminders to sellers and notify buyers after 48h (runs daily at 10 AM)
+        $schedule->command('orders:send-approval-reminders')
+            ->dailyAt('10:00')
+            ->withoutOverlapping()
+            ->runInBackground()
+            ->appendOutputTo(storage_path('logs/order-approval-reminders.log'));
+
+        // =====================================================
+        // END ORDER APPROVAL REMINDERS SCHEDULED COMMAND
+        // =====================================================
+
+        // =====================================================
+        // DAILY SYSTEM REPORT SCHEDULED COMMAND
+        // =====================================================
+
+        // Send daily system information report via email (runs daily at 8:00 AM)
+        $schedule->command('reports:send-daily-system-report')
+            ->dailyAt('08:00')
+            ->withoutOverlapping()
+            ->runInBackground()
+            ->appendOutputTo(storage_path('logs/daily-system-report.log'));
+
+        // =====================================================
+        // END DAILY SYSTEM REPORT SCHEDULED COMMAND
         // =====================================================
     }
 

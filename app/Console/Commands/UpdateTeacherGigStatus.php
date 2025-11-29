@@ -66,7 +66,10 @@ class UpdateTeacherGigStatus extends Command
                 title: 'Service Ended',
                 message: 'Your service "' . $gig->title . '" has ended and is no longer available for booking.',
                 data: ['gig_id' => $gig->id, 'gig_title' => $gig->title, 'status' => 'ended'],
-                sendEmail: false
+                sendEmail: false,
+                actorUserId: $gig->user_id,
+                targetUserId: $gig->user_id,
+                serviceId: $gig->id
             );
             \Log::info("Gig ended notification sent to user #{$gig->user_id} for gig #{$gig->id}");
         } catch (\Exception $e) {

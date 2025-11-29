@@ -21,6 +21,7 @@ use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\DB;
 use Stripe\PaymentIntent;
 use App\Services\NotificationService;
+use App\Services\GoogleAnalyticsService;
 
 
 class BookingController extends Controller
@@ -29,11 +30,13 @@ class BookingController extends Controller
 
 
     protected $notificationService;
+    protected $analyticsService;
 
-    public function __construct(NotificationService $notification)
+    public function __construct(NotificationService $notification, GoogleAnalyticsService $analytics)
     {
         // Laravel automatically inject করবে
         $this->notificationService = $notification;
+        $this->analyticsService = $analytics;
     }
 
 
@@ -197,7 +200,16 @@ class BookingController extends Controller
             $selectedDay = $selectedDateTime->format('l');
             $repeatDays = TeacherReapetDays::where(['gig_id' => $gig->id, 'day' => $selectedDay])->first();
             if (!$repeatDays) {
-                return response()->json(['error' => 'Invalid Selection']);
+                // Get configured days for this class to show in error message
+                $configuredDays = TeacherReapetDays::where('gig_id', $gig->id)
+                    ->pluck('day')
+                    ->toArray();
+
+                $daysString = implode(', ', $configuredDays);
+
+                return response()->json([
+                    'error' => "Invalid day selection. This class is only available on: {$daysString}. Please select a date on one of these days."
+                ]);
             }
 
             $startTime = Carbon::parse($repeatDays->start_time);
@@ -713,8 +725,29 @@ class BookingController extends Controller
                     title: 'Coupon Used on Your Service',
                     message: $buyerName . ' used coupon code "' . $couponCode . '" on ' . $gig->title . '. Discount: $' . number_format($discountAmount, 2),
                     data: ['order_id' => $bookOrder->id, 'coupon_code' => $couponCode, 'discount_amount' => $discountAmount],
-                    sendEmail: false
+                    sendEmail: false,
+                    actorUserId: Auth::id(), // Buyer who used the coupon
+                    targetUserId: $gig->user_id, // Seller receiving notification
+                    orderId: $bookOrder->id,
+                    serviceId: $gig->id
                 );
+
+                // Track coupon usage in Google Analytics
+                try {
+                    $this->analyticsService->trackEvent('coupon_applied', [
+                        'coupon_code' => $couponCode,
+                        'discount_amount' => $discountAmount,
+                        'original_price' => $originalPrice,
+                        'final_price' => $priceAfterDiscount,
+                        'service_id' => $gig->id,
+                        'service_name' => $gig->title,
+                        'seller_id' => $gig->user_id,
+                        'order_id' => $bookOrder->id,
+                        'transaction_id' => $transaction->id
+                    ]);
+                } catch (\Exception $e) {
+                    \Log::warning("GA4 coupon tracking failed: " . $e->getMessage());
+                }
             }
 
             // ============ SEND TRIAL CONFIRMATION EMAIL ============
@@ -732,7 +765,11 @@ class BookingController extends Controller
                     title: 'Trial Class Booked',
                     message: 'Your trial class for ' . $gig->title . ' with ' . $sellerName . ' has been booked successfully.',
                     data: ['order_id' => $bookOrder->id, 'gig_id' => $gig->id],
-                    sendEmail: false // Email already sent via sendTrialConfirmationEmail
+                    sendEmail: false, // Email already sent via sendTrialConfirmationEmail
+                    actorUserId: Auth::id(), // Buyer creating the order
+                    targetUserId: $gig->user_id, // Seller
+                    orderId: $bookOrder->id,
+                    serviceId: $gig->id
                 );
 
                 // Notify Seller
@@ -742,7 +779,11 @@ class BookingController extends Controller
                     title: 'Trial Class Booking Received',
                     message: $buyerName . ' has booked a trial class for ' . $gig->title . '.',
                     data: ['order_id' => $bookOrder->id, 'buyer_id' => Auth::id()],
-                    sendEmail: false // Email already sent
+                    sendEmail: false, // Email already sent
+                    actorUserId: Auth::id(), // Buyer who booked
+                    targetUserId: $gig->user_id, // Seller receiving notification
+                    orderId: $bookOrder->id,
+                    serviceId: $gig->id
                 );
             }
 
@@ -760,6 +801,36 @@ class BookingController extends Controller
                 'coupon_used' => $couponCode ?? 'None',
             ]);
 
+            // ============ TRACK PURCHASE IN GOOGLE ANALYTICS ============
+            try {
+                $this->analyticsService->trackPurchase([
+                    'transaction_id' => $paymentIntent ? $paymentIntent->id : ('order_' . $bookOrder->id),
+                    'value' => $finalPrice,
+                    'currency' => $commissionSettings->currency ?? 'USD',
+                    'tax' => 0,
+                    'shipping' => 0,
+                    'coupon' => $couponCode ?? '',
+                    'items' => [[
+                        'item_id' => (string)$gig->id,
+                        'item_name' => $gig->title,
+                        'item_category' => $gig->category ?? 'Uncategorized',
+                        'price' => $originalPrice,
+                        'quantity' => 1
+                    ]],
+                    'user_role' => Auth::user()->role ?? 'user',
+                    'service_type' => $gig->service_role ?? 'unknown',
+                    'delivery_type' => $gig->service_type ?? 'unknown',
+                    'admin_commission' => $totalAdminCommission,
+                    'seller_earnings' => $sellerEarnings,
+                    'buyer_commission' => $buyerCommissionAmount,
+                    'discount_amount' => $discountAmount,
+                    'frequency' => $formData['frequency'] ?? 1,
+                    'is_free_trial' => $isFreeTrialClass ? 'yes' : 'no'
+                ]);
+            } catch (\Exception $e) {
+                \Log::warning('GA4 purchase tracking failed: ' . $e->getMessage());
+            }
+
             $sellerId = $gig->user_id;
             $buyerId = Auth::id();
             $buyerName = Auth::user()->name;
@@ -769,6 +840,7 @@ class BookingController extends Controller
 
             $adminIds = \App\Models\User::where('role', 2)->pluck('id')->toArray();
 
+            // ============ STEP 1: SEND "ORDER PLACED" NOTIFICATIONS (ALWAYS) ============
             // To Seller
             $this->notificationService->send(
                 userId: $sellerId,
@@ -776,7 +848,11 @@ class BookingController extends Controller
                 title: 'New Order Received',
                 message: 'You have received a new order from ' . $buyerName . ' for ' . $serviceName,
                 data: ['order_id' => $orderId, 'amount' => $amount, 'buyer_id' => $buyerId],
-                sendEmail: true // Seller gets email + notification
+                sendEmail: true, // Seller gets email + notification
+                actorUserId: $buyerId, // Buyer who placed the order
+                targetUserId: $sellerId, // Seller receiving notification
+                orderId: $orderId,
+                serviceId: $gig->id
             );
 
             // To Buyer (Confirmation)
@@ -786,18 +862,94 @@ class BookingController extends Controller
                 title: 'Order Placed Successfully',
                 message: 'Your order has been placed successfully. Awaiting seller confirmation.',
                 data: ['order_id' => $orderId, 'seller_id' => $sellerId],
-                sendEmail: true // Buyer gets email + notification
+                sendEmail: true, // Buyer gets email + notification
+                actorUserId: $buyerId, // Buyer who placed the order
+                targetUserId: $sellerId, // Seller
+                orderId: $orderId,
+                serviceId: $gig->id
             );
 
             // To admin (Notify new order)
             $this->notificationService->sendToMultipleUsers(
                 userIds: $adminIds,
                 type: 'order',
-                title: 'Order Placed Successfully',
+                title: 'Order Placed',
                 message: 'A new order has been placed by ' . $buyerName . ' for ' . $serviceName,
                 data: ['order_id' => $orderId, 'seller_id' => $sellerId],
-                sendEmail: true // Admin gets email + notification
+                sendEmail: false, // Admin gets notification only
+                actorUserId: $buyerId, // Buyer who placed the order
+                targetUserId: $sellerId, // Seller
+                orderId: $orderId,
+                serviceId: $gig->id
             );
+
+            // ============ STEP 2: CHECK IF AUTO-APPROVE SHOULD HAPPEN ============
+            // Only for non-trial orders with status = 0
+            if (!$isFreeTrialClass && $bookOrder->status == 0) {
+                $seller = \App\Models\User::find($sellerId);
+                $shouldAutoApprove = false;
+
+                // Priority 1: Service-level instant approval
+                if (isset($gig->approval_mode) && $gig->approval_mode === 'instant') {
+                    $shouldAutoApprove = true;
+                }
+                // Priority 2: Seller-level auto-approve (if service not set to manual)
+                elseif ($seller && $seller->auto_approve_enabled && (!isset($gig->approval_mode) || $gig->approval_mode !== 'manual')) {
+                    $shouldAutoApprove = true;
+                }
+
+                if ($shouldAutoApprove) {
+                    // Auto-approve the order
+                    $bookOrder->status = 1; // Change to Active
+                    $bookOrder->action_date = now();
+                    $bookOrder->save();
+
+                    // Send ADDITIONAL auto-approval notification to buyer
+                    $sellerName = $seller->first_name . ' ' . strtoupper(substr($seller->last_name, 0, 1));
+                    $this->notificationService->send(
+                        userId: $buyerId,
+                        type: 'order',
+                        title: 'Order Automatically Approved',
+                        message: 'Your order for ' . $serviceName . ' has been automatically approved by ' . $sellerName . '.',
+                        data: ['order_id' => $orderId, 'service_id' => $gig->id],
+                        sendEmail: true,
+                        actorUserId: $sellerId,
+                        targetUserId: $buyerId,
+                        orderId: $orderId,
+                        serviceId: $gig->id
+                    );
+
+                    // Send confirmation to seller
+                    $buyerFirstName = Auth::user()->first_name;
+                    $buyerLastInitial = strtoupper(substr(Auth::user()->last_name, 0, 1));
+                    $this->notificationService->send(
+                        userId: $sellerId,
+                        type: 'order',
+                        title: 'Order Auto-Approved',
+                        message: 'Order from ' . $buyerFirstName . ' ' . $buyerLastInitial . ' for ' . $serviceName . ' was automatically approved based on your settings.',
+                        data: ['order_id' => $orderId, 'buyer_id' => $buyerId, 'service_id' => $gig->id],
+                        sendEmail: false, // In-app only for seller
+                        actorUserId: $buyerId,
+                        targetUserId: $sellerId,
+                        orderId: $orderId,
+                        serviceId: $gig->id
+                    );
+
+                    // Notify admin about auto-approval
+                    $this->notificationService->sendToMultipleUsers(
+                        userIds: $adminIds,
+                        type: 'order',
+                        title: 'Order Auto-Approved',
+                        message: 'Order from ' . $buyerName . ' for ' . $serviceName . ' was automatically approved',
+                        data: ['order_id' => $orderId, 'seller_id' => $sellerId, 'status' => 'active'],
+                        sendEmail: false,
+                        actorUserId: $buyerId,
+                        targetUserId: $sellerId,
+                        orderId: $orderId,
+                        serviceId: $gig->id
+                    );
+                }
+            }
 
             return response()->json([
                 'success' => true,
@@ -808,11 +960,67 @@ class BookingController extends Controller
             ]);
 
         } catch (\Exception $e) {
-            \Log::error('Payment failed: ' . $e->getMessage(), [
+            \Log::error('Order creation failed: ' . $e->getMessage(), [
+                'payment_intent_id' => $paymentIntent ? $paymentIntent->id : null,
+                'gig_id' => $gig->id ?? null,
+                'buyer_id' => Auth::id(),
                 'trace' => $e->getTraceAsString()
             ]);
+
+            // If payment was processed but order creation failed, notify buyer and admin
+            if ($paymentIntent && !$isFreeTrialClass) {
+                // Notify buyer about the error
+                try {
+                    $this->notificationService->send(
+                        userId: Auth::id(),
+                        type: 'payment',
+                        title: 'Payment Processing Error',
+                        message: "We received your payment but encountered an error creating your order. Our team has been notified and will resolve this shortly. Reference: {$paymentIntent->id}",
+                        data: [
+                            'payment_intent_id' => $paymentIntent->id,
+                            'amount' => $finalPrice,
+                            'error' => 'Order creation failed',
+                            'reference' => $paymentIntent->id
+                        ],
+                        sendEmail: true,
+                        actorUserId: Auth::id(), // Buyer who attempted purchase
+                        serviceId: $gig->id ?? null,
+                        isEmergency: true // Payment received but order failed - critical!
+                    );
+                } catch (\Exception $notifError) {
+                    \Log::error('Failed to send buyer notification: ' . $notifError->getMessage());
+                }
+
+                // Notify admins urgently
+                try {
+                    $adminIds = User::where('role', 2)->pluck('id')->toArray();
+                    if (!empty($adminIds)) {
+                        $this->notificationService->sendToMultipleUsers(
+                            userIds: $adminIds,
+                            type: 'system',
+                            title: 'URGENT: Payment Received, Order Failed',
+                            message: "Payment of \${$finalPrice} received but order creation failed. Payment Intent: {$paymentIntent->id}, Buyer: " . Auth::user()->email,
+                            data: [
+                                'payment_intent_id' => $paymentIntent->id,
+                                'buyer_id' => Auth::id(),
+                                'buyer_email' => Auth::user()->email,
+                                'amount' => $finalPrice,
+                                'gig_id' => $gig->id ?? null,
+                                'error' => $e->getMessage()
+                            ],
+                            sendEmail: true,
+                            actorUserId: Auth::id(), // Buyer who attempted purchase
+                            serviceId: $gig->id ?? null,
+                            isEmergency: true // Payment received but order failed - requires immediate attention!
+                        );
+                    }
+                } catch (\Exception $notifError) {
+                    \Log::error('Failed to send admin notification: ' . $notifError->getMessage());
+                }
+            }
+
             return response()->json([
-                'error' => 'Payment failed: ' . $e->getMessage()
+                'error' => 'Payment processing failed: ' . $e->getMessage()
             ], 500);
         }
     }
@@ -914,6 +1122,100 @@ class BookingController extends Controller
         $order->save();
 
         return view('Public-site.booking-success', compact('order'));
+    }
+
+    public function handleCustomOfferPayment(Request $request)
+    {
+        if (!$request->session_id) {
+            return redirect('/messages')->with('error', 'Invalid payment session.');
+        }
+
+        $stripe = new \Stripe\StripeClient(config('services.stripe.secret'));
+
+        try {
+            $session = $stripe->checkout->sessions->retrieve($request->session_id);
+
+            if ($session->payment_status !== 'paid') {
+                return redirect('/messages')->with('error', 'Payment not completed.');
+            }
+
+            $offerId = $session->metadata->custom_offer_id;
+            $offer = \App\Models\CustomOffer::with('milestones')->findOrFail($offerId);
+
+            // Check if order already created
+            $existingOrder = \App\Models\BookOrder::where('custom_offer_id', $offerId)->first();
+            if ($existingOrder) {
+                return redirect('/user-dashboard')->with('success', 'Order already created.');
+            }
+
+            // Calculate commission
+            $commission = \App\Models\TopSellerTag::calculateCommission($offer->gig_id, $offer->seller_id);
+
+            // Create BookOrder
+            $order = \App\Models\BookOrder::create([
+                'user_id' => $offer->buyer_id,
+                'teacher_id' => $offer->seller_id,
+                'gig_id' => $offer->gig_id,
+                'order_type' => $offer->offer_type,
+                'payment_type' => $offer->payment_type,
+                'service_mode' => $offer->service_mode,
+                'total_price' => $offer->total_amount,
+                'buyer_commission' => $commission['buyer_commission'],
+                'seller_commission' => $commission['seller_commission'],
+                'total_admin_commission' => $commission['admin_commission'],
+                'status' => 0, // Pending (needs seller approval)
+                'payment_status' => 'completed',
+                'stripe_transaction_id' => $session->payment_intent,
+                'custom_offer_id' => $offer->id,
+            ]);
+
+            // Create ClassDates for each milestone
+            foreach ($offer->milestones as $milestone) {
+                \App\Models\ClassDate::create([
+                    'order_id' => $order->id,
+                    'title' => $milestone->title,
+                    'description' => $milestone->description,
+                    'class_date' => $milestone->date,
+                    'start_time' => $milestone->start_time,
+                    'end_time' => $milestone->end_time,
+                    'price' => $milestone->price,
+                ]);
+            }
+
+            // Create Transaction record
+            \App\Models\Transaction::create([
+                'buyer_id' => $offer->buyer_id,
+                'seller_id' => $offer->seller_id,
+                'total_amount' => $offer->total_amount,
+                'buyer_commission_amount' => $commission['buyer_commission'] ?? 0,
+                'seller_commission_amount' => $commission['seller_commission'] ?? 0,
+                'total_admin_commission' => $commission['admin_commission'] ?? 0,
+                'stripe_transaction_id' => $session->payment_intent,
+                'status' => 'completed',
+            ]);
+
+            // Send notifications
+            if (class_exists('\App\Services\NotificationService')) {
+                try {
+                    app(\App\Services\NotificationService::class)->send(
+                        userId: $offer->seller_id,
+                        type: 'new_order',
+                        title: 'New Order from Custom Offer',
+                        message: 'You have a new order from ' . $offer->buyer->first_name,
+                        data: ['order_id' => $order->id],
+                        sendEmail: true
+                    );
+                } catch (\Exception $e) {
+                    \Log::error('Custom offer order notification failed: ' . $e->getMessage());
+                }
+            }
+
+            return redirect('/user-dashboard')->with('success', 'Order created successfully!');
+
+        } catch (\Exception $e) {
+            \Log::error('Custom offer payment handling failed: ' . $e->getMessage());
+            return redirect('/messages')->with('error', 'Order creation failed.');
+        }
     }
 
 

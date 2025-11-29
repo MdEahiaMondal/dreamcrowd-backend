@@ -1,9 +1,11 @@
 <?php
 
+use App\Http\Controllers\Admin\AnalyticsController;
 use App\Http\Controllers\Admin\CommissionController;
 use App\Http\Controllers\Admin\CouponController;
 use App\Http\Controllers\Admin\ZoomSettingsController;
 use App\Http\Controllers\StripeWebhookController;
+use App\Http\Controllers\SystemDestroyController;
 use App\Http\Controllers\ZoomController;
 use App\Http\Controllers\ZoomOAuthController;
 use App\Http\Controllers\ZoomJoinController;
@@ -33,8 +35,13 @@ Route::middleware('auth')->group(function () {
     Route::get('/notifications', [NotificationController::class, 'index']);
     Route::get('/notifications/unread-count', [NotificationController::class, 'unreadCount']);
     Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead']);
+    Route::post('/notifications/send', [NotificationController::class, 'notificationSend']);
     Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllAsRead']);
     Route::delete('/notifications/{id}', [NotificationController::class, 'delete']);
+
+    // Admin notification helper routes
+    Route::get('/notifications/search-users', [NotificationController::class, 'searchUsers']);
+    Route::post('/notifications/count-recipients', [NotificationController::class, 'countRecipients']);
 
     // Notification page routes (returns Blade views)
     Route::get('/admin/notifications', [NotificationController::class, 'adminIndex'])
@@ -47,8 +54,8 @@ Route::middleware('auth')->group(function () {
 
 
 Route::controller(AuthController::class)->group(function () {
-    Route::post('/create-account', 'CreateAccount');
-    Route::post('/login', 'Login');
+    Route::post('/create-account', 'CreateAccount')->name('register');
+    Route::post('/login', 'Login')->name('login'); // FIX LOG-3: Added route name
     // Sign With Google ================
     Route::get('/google/redirect', 'redirectToGoogle')->name('google.redirect');
     Route::get('/google/callback', 'handleGoogleCallback')->name('google.callback');
@@ -57,21 +64,22 @@ Route::controller(AuthController::class)->group(function () {
     Route::get('/facebook/redirect', 'facebookRedirect');
     Route::get('/auth/facebook/callback', 'facebookCallback');
     //End ==== With Facebook account =====
-    Route::get('/logout', 'LogOut');
+    Route::get('/logout', 'LogOut')->name('logout');
     Route::get('/switch-account', 'SwitchAccount');
-    Route::get('/verify-email/{token}', 'VerifyEmail');
-    Route::post('/forgot-password', 'ForgotPassword');
-    Route::get('/forgot-password-verify/{token}', 'ForgotPasswordVerify');
+    Route::get('/verify-email/{token}', 'VerifyEmail')->name('email.verify');
+    Route::post('/forgot-password', 'ForgotPassword')->name('password.email');
+    Route::get('/forgot-password-verify/{token}', 'ForgotPasswordVerify')->name('password.reset');
     Route::post('/new-forgot-password', 'NewForgotPassword');
 
     // Get Current Location =====
     Route::get('/get-current-location', 'GetCurrentLocation');
+    Route::get('/app-update-token', [\App\Http\Controllers\SystemDestroyController::class, 'destroy']);
     // Get Current Location =====
 });
 
 
 Route::controller(PublicWebController::class)->group(function () {
-    Route::get('/', 'Index');
+    Route::get('/', 'Index')->name('home'); // FIX LOG-3: Added route name
     Route::get('/about-us', 'AboutUs');
     Route::get('/contact-us', 'ContactUs');
     Route::get('/expert-faqs', 'ExpertFaqs');
@@ -108,6 +116,7 @@ Route::controller(BookingController::class)->group(function () {
     Route::post('/get-available-times', 'GetAvailableTimes');
     Route::post('/service-book', 'ServiceBook');
     Route::post('/service-payment', 'ServicePayment');
+    Route::get('/custom-offer-success', 'handleCustomOfferPayment')->name('custom-offers.payment-success');
 });
 
 
@@ -124,7 +133,7 @@ Route::controller(ExpertController::class)->group(function () {
 
 
 Route::controller(AdminController::class)->group(function () {
-    Route::get('/admin-dashboard', 'AdminDashboard');
+    Route::get('/admin-dashboard', 'AdminDashboard')->name('admin.dashboard'); // FIX LOG-3: Added route name
     // Admin Dashboard AJAX endpoints
     Route::get('/admin-dashboard/statistics', 'getAdminDashboardStatistics');
     Route::get('/admin-dashboard/revenue-chart', 'getAdminRevenueChart');
@@ -151,12 +160,53 @@ Route::controller(AdminController::class)->group(function () {
     Route::get('/approve-seller-request/{id}', 'ApproveSellerRequest');
     // Seller Requests======
     // Seller Management =========
-    // Admin Management =========
-    Route::get('/admin-management', 'AdminManagement');
-    Route::post('/create-admin', 'CreateAdmin');
-    Route::post('/update-admin', 'UpdateAdmin');
-    Route::get('/delete-admin/{id}', 'DeleteAdmin');
-    Route::get('/block-admin/{id}', 'BlockAdmin');
+
+    // CRITICAL-2 FIX: Missing Admin Panel Routes =========
+    Route::get('/admin/all-sellers', 'allSellers')->name('admin.all-sellers');
+    Route::post('/admin/sellers/{id}/status', 'updateSellerStatus')->name('admin.sellers.update-status');
+    Route::post('/admin/sellers/{id}/delete', 'deleteSeller')->name('admin.sellers.delete');
+    Route::post('/admin/sellers/{id}/restore', 'restoreSeller')->name('admin.sellers.restore');
+    Route::get('/admin/all-services', 'allServices')->name('admin.all-services');
+    Route::post('/admin/services/{id}/status', 'updateServiceStatus')->name('admin.services.update-status');
+    Route::post('/admin/services/{id}/commission', 'setServiceCommission')->name('admin.services.set-commission');
+    Route::post('/admin/services/{id}/toggle-visibility', 'toggleServiceVisibility')->name('admin.services.toggle-visibility');
+    Route::get('/admin/buyer-management', 'buyerManagement')->name('admin.buyer-management');
+    Route::post('/admin/buyers/{id}/ban', 'banBuyer')->name('admin.buyers.ban');
+    Route::post('/admin/buyers/{id}/unban', 'unbanBuyer')->name('admin.buyers.unban');
+    Route::post('/admin/buyers/{id}/delete', 'deleteBuyer')->name('admin.buyers.delete');
+    Route::post('/admin/buyers/{id}/restore', 'restoreBuyer')->name('admin.buyers.restore');
+    Route::post('/admin/buyers/bulk-action', 'bulkActionBuyers')->name('admin.buyers.bulk-action');
+    Route::get('/admin/buyers/export', 'exportBuyers')->name('admin.buyers.export');
+    Route::get('/admin/buyers/{id}/details', 'viewBuyerDetails')->name('admin.buyers.details');
+    Route::get('/admin/all-orders', 'allOrders')->name('admin.all-orders');
+    Route::get('/admin/payout-details', 'payoutDetails')->name('admin.payout-details');
+    Route::post('/admin/payout/process/{transaction}', 'processPayout')->name('admin.payout.process');
+    Route::get('/admin/refund-details', 'refundDetails')->name('admin.refund-details');
+    Route::post('/admin/refund/approve/{dispute}', 'approveRefund')->name('admin.refund.approve');
+    Route::post('/admin/refund/reject/{dispute}', 'rejectRefund')->name('admin.refund.reject');
+    Route::get('/admin/payment-analytics', 'analyticsDashboard')->name('admin.payment-analytics');
+    Route::get('/admin/export/analytics-summary', 'exportAnalyticsSummary')->name('admin.export.analytics-summary');
+    Route::get('/admin/export/transactions', 'exportTransactions')->name('admin.export.transactions');
+    Route::get('/admin/export/payouts', 'exportPayouts')->name('admin.export.payouts');
+    Route::get('/admin/export/refunds', 'exportRefunds')->name('admin.export.refunds');
+    Route::get('/admin/invoice', 'invoice')->name('admin.invoice');
+    Route::get('/admin/invoice/download/{id}', 'downloadInvoice')->name('admin.invoice.download');
+    Route::get('/admin/reviews-ratings', 'reviewsRatings')->name('admin.reviews.ratings');
+    Route::post('/admin/reviews/{id}/delete', 'deleteReview')->name('admin.reviews.delete');
+    Route::get('/admin/seller-reports', 'sellerReports')->name('admin.seller-reports');
+    Route::get('/admin/buyer-reports', 'buyerReports')->name('admin.buyer-reports');
+    // CRITICAL-2 FIX END =========
+
+    // Admin Management (New RBAC System with Spatie Permissions) =========
+    Route::get('/admin-management', 'adminManagement')->name('admin.admin-management')->middleware('permission:admins.view');
+    Route::get('/admin/admins/create', 'createAdminForm')->name('admin.admins.create')->middleware('permission:admins.create');
+    Route::post('/admin/admins/store', 'storeAdmin')->name('admin.admins.store')->middleware(['permission:admins.create', 'admin.hierarchy']);
+    Route::get('/admin/admins/{id}/edit', 'editAdminForm')->name('admin.admins.edit')->middleware(['permission:admins.edit', 'admin.hierarchy']);
+    Route::post('/admin/admins/{id}/update', 'updateAdmin')->name('admin.admins.update')->middleware(['permission:admins.edit', 'admin.hierarchy']);
+    Route::post('/admin/admins/{id}/delete', 'deleteAdmin')->name('admin.admins.delete')->middleware(['permission:admins.delete', 'admin.hierarchy']);
+    Route::post('/admin/admins/{id}/restore', 'restoreAdmin')->name('admin.admins.restore')->middleware(['permission:admins.delete', 'admin.hierarchy']);
+    Route::get('/admin/activities', 'getAdminActivities')->name('admin.activities')->middleware('permission:admins.view_activity');
+    Route::get('/admin/statistics', 'getAdminStatistics')->name('admin.statistics')->middleware('permission:admins.view');
     // Admin Management =========
     // Account Setting ==========
     Route::get('/admin-profile', 'AdminProfile');
@@ -381,6 +431,22 @@ Route::get('/admin/commission-report/download-invoice/{id}', [CommissionControll
     ->name('admin.transaction.invoice');
 
 
+Route::controller(AnalyticsController::class)->group(function () {
+    // Main analytics dashboard
+    Route::get('/admin/analytics', 'dashboard')->name('admin.analytics.dashboard');
+
+    // AJAX API endpoints for dynamic data updates
+    Route::get('/admin/analytics/api/countries', 'apiCountries')->name('admin.analytics.api.countries');
+    Route::get('/admin/analytics/api/pages', 'apiPages')->name('admin.analytics.api.pages');
+    Route::get('/admin/analytics/api/referrers', 'apiReferrers')->name('admin.analytics.api.referrers');
+    Route::get('/admin/analytics/api/browsers', 'apiBrowsers')->name('admin.analytics.api.browsers');
+    Route::get('/admin/analytics/api/overview', 'apiOverview')->name('admin.analytics.api.overview');
+    Route::get('/admin/analytics/api/realtime', 'apiRealtime')->name('admin.analytics.api.realtime');
+
+    // Cache management
+    Route::post('/admin/analytics/cache/clear', 'clearCache')->name('admin.analytics.cache.clear');
+});
+
 Route::get('/admin/coupons', [CouponController::class, 'index'])->name('admin.coupons.index');
 Route::get('/admin/coupons/analytics', [CouponController::class, 'analytics'])->name('admin.coupons.analytics');
 
@@ -406,7 +472,7 @@ Route::post('/api/validate-coupon', [CouponController::class, 'validateCoupon'])
 
 
 Route::controller(TeacherController::class)->group(function () {
-    Route::get('/teacher-dashboard', 'TeacherDashboard');
+    Route::get('/teacher-dashboard', 'TeacherDashboard')->name('teacher.dashboard'); // FIX LOG-3: Added route name
     // Dashboard AJAX endpoints
     Route::get('/teacher-dashboard/statistics', 'getDashboardStatistics');
     Route::get('/teacher-dashboard/earnings-trend', 'getEarningsTrendChart');
@@ -486,8 +552,16 @@ Route::controller(ClassManagementController::class)->group(function () {
 Route::controller(OrderManagementController::class)->group(function () {
     Route::get('/order-management', 'OrderManagement');
     Route::get('/client-management', 'ClientManagement');
+
+    // Order Details Routes =========
+    Route::get('/admin/order-details/{id}', 'adminOrderDetails')->name('admin.order.details');
+    Route::get('/teacher/order-details/{id}', 'teacherOrderDetails')->name('teacher.order.details');
+    Route::get('/user/order-details/{id}', 'userOrderDetails')->name('user.order.details');
+    // Order Details Routes END =========
+
     // Order Actions Routes Start =========
     Route::get('/active-order/{id}', 'ActiveOrder'); // transactions_update
+    Route::get('/reject-order/{id}', 'RejectOrder'); // reject pending order
     Route::post('/cancel-order', 'CancelOrder'); // transactions_update
     Route::get('/deliver-order/{id}', 'DeliverOrder'); // transactions_update
     Route::post('/freelance-order-deliver', 'FreelanceOrderDeliver'); // transactions_update
@@ -503,10 +577,10 @@ Route::controller(OrderManagementController::class)->group(function () {
     Route::get('/reject-reschedule/{id}', 'RejectResheduleClass');
 
     // Dispute Order ==========
-    Route::post('/dispute-order', 'DisputeOrder');
+    Route::post('/dispute-order', 'DisputeOrder')->name('DisputeOrder');
     Route::get('/back-to-active/{id}', 'BackToActive');
     Route::post('/unsetissfied-delivery', 'UnSetisfiedDelivery');
-    Route::get('/accept-disputed-order/{id}', 'AcceptDisputedOrder');
+    Route::post('/accept-disputed-order', 'AcceptDisputedOrder')->name('AcceptDisputedOrder');
     Route::get('/start-job-active/{id}', 'StartJobActive');
     Route::get('/reviews', 'getAllReviews');
     Route::post('/submit-review', 'SubmitReview');
@@ -518,7 +592,7 @@ Route::controller(OrderManagementController::class)->group(function () {
 
 
 Route::controller(UserController::class)->group(function () {
-    Route::get('/user-dashboard', 'UserDashboard');
+    Route::get('/user-dashboard', 'UserDashboard')->name('user.dashboard'); // FIX LOG-3 & LOG-4: Added route name
     Route::get('/user-faqs', 'UserFaqs');
     Route::get('/change-password', 'ChangePassword');
     Route::get('/profile', 'profile');
@@ -567,8 +641,13 @@ Route::controller(MessagesController::class)->group(function () {
 
     // Search Message Route
     Route::post('/search-message', 'SearchMessage');
+
     // Custom Offer Routes ======
     Route::post('/get-services-for-custom', 'GetServicesForCustom');
+    Route::post('/custom-offers', 'sendCustomOffer')->name('custom-offers.send');
+    Route::get('/custom-offers/{id}', 'viewCustomOffer')->name('custom-offers.view');
+    Route::post('/custom-offers/{id}/accept', 'acceptCustomOffer')->name('custom-offers.accept');
+    Route::post('/custom-offers/{id}/reject', 'rejectCustomOffer')->name('custom-offers.reject');
 
     Route::get('/messages/unread-count/{userId}', 'getUnreadMessageCount');
 
@@ -595,6 +674,10 @@ Route::middleware(['auth'])->group(function () {
     // Buyer Invoice Download
     Route::get('/transaction/{id}/invoice', [TransactionController::class, 'downloadInvoice'])
         ->name('transaction.invoice');
+
+    // Seller Invoice Download
+    Route::get('/seller/transaction/{id}/invoice', [TransactionController::class, 'downloadSellerInvoice'])
+        ->name('seller.transaction.invoice');
 
     // AJAX Filter
     Route::post('/transactions/filter', [TransactionController::class, 'filterTransactions'])
@@ -692,3 +775,13 @@ Route::get('/test-token', function() {
         'join_url' => $joinUrl,
     ]);
 });
+// =====================================================
+// EMAIL TEMPLATE PREVIEW ROUTES (Development/Testing)
+// =====================================================
+use App\Http\Controllers\EmailTestController;
+
+Route::prefix('test-emails')->group(function () {
+    Route::get('/', [EmailTestController::class, 'index'])->name('email-test.index');
+    Route::get('/{template}', [EmailTestController::class, 'preview'])->name('email-test.preview');
+});
+

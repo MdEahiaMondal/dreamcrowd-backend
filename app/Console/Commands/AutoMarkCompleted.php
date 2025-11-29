@@ -6,6 +6,7 @@ use App\Models\BookOrder;
 use App\Models\Transaction;
 use App\Models\User;
 use App\Services\NotificationService;
+use App\Services\GoogleAnalyticsService;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
@@ -17,11 +18,13 @@ class AutoMarkCompleted extends Command
     protected $description = 'Mark BookOrders as Completed 48 hours after delivery';
 
     protected $notificationService;
+    protected $analyticsService;
 
-    public function __construct(NotificationService $notificationService)
+    public function __construct(NotificationService $notificationService, GoogleAnalyticsService $analyticsService)
     {
         parent::__construct();
         $this->notificationService = $notificationService;
+        $this->analyticsService = $analyticsService;
     }
 
     public function handle()
@@ -125,6 +128,22 @@ class AutoMarkCompleted extends Command
 
             DB::commit();
 
+            // Track order status change in Google Analytics
+            try {
+                $this->analyticsService->trackEvent('order_status_change', [
+                    'order_id' => $order->id,
+                    'from_status' => 'Delivered',
+                    'to_status' => 'Completed',
+                    'order_value' => $order->finel_price ?? 0,
+                    'service_id' => $order->gig_id,
+                    'payment_type' => $order->payment_type,
+                    'trigger' => 'automated',
+                    'ready_for_payout' => true
+                ]);
+            } catch (\Exception $e) {
+                Log::warning("GA4 order status tracking failed for order #{$order->id}: " . $e->getMessage());
+            }
+
             Log::info("Order #{$order->id} auto-completed successfully", [
                 'delivered_at' => $order->action_date,
                 'completed_at' => now()->toDateTimeString()
@@ -174,7 +193,7 @@ class AutoMarkCompleted extends Command
     {
         try {
             $serviceName = $order->title ?? ($order->gig ? $order->gig->name : 'Service');
-            $buyerName = $order->user ? ($order->user->first_name . ' ' . $order->user->last_name) : 'Customer';
+            $buyerName = $order->user ? ($order->user->first_name . ' ' .  strtoupper(substr($order->user->last_name, 0, 1))) : 'Customer';
 
             // Get transaction for seller payout info
             $transaction = Transaction::where('buyer_id', $order->user_id)
@@ -192,7 +211,33 @@ class AutoMarkCompleted extends Command
                     'service_name' => $serviceName,
                     'completed_at' => now()->toDateTimeString()
                 ],
-                sendEmail: true
+                sendEmail: true,
+                actorUserId: $order->teacher_id, // Seller who completed the service
+                targetUserId: $order->user_id, // Buyer receiving notification
+                orderId: $order->id,
+                serviceId: $order->gig_id
+            );
+
+            // Send review request notification to buyer
+            $sellerName = $order->teacher ? ($order->teacher->first_name . ' ' .  strtoupper(substr($order->teacher->last_name, 0, 1))) : 'the seller';
+            $this->notificationService->send(
+                userId: $order->user_id,
+                type: 'review',
+                title: 'Leave a Review',
+                message: "How was your experience with {$sellerName}? Share your feedback to help others!",
+                data: [
+                    'order_id' => $order->id,
+                    'service_name' => $serviceName,
+                    'seller_id' => $order->teacher_id,
+                    'seller_name' => $sellerName,
+                    'review_url' => route('user.orders.review', $order->id),
+                    'completed_at' => now()->toDateTimeString()
+                ],
+                sendEmail: false, // In-app notification only for review requests
+                actorUserId: $order->user_id, // Buyer being asked to review
+                targetUserId: $order->teacher_id, // Seller being reviewed
+                orderId: $order->id,
+                serviceId: $order->gig_id
             );
 
             // Notify seller
@@ -208,7 +253,11 @@ class AutoMarkCompleted extends Command
                     'seller_payout' => $transaction ? $transaction->seller_earnings : null,
                     'completed_at' => now()->toDateTimeString()
                 ],
-                sendEmail: true
+                sendEmail: true,
+                actorUserId: $order->teacher_id, // Seller (system acting on their behalf)
+                targetUserId: $order->user_id, // Buyer
+                orderId: $order->id,
+                serviceId: $order->gig_id
             );
 
             // Notify admins
@@ -225,7 +274,11 @@ class AutoMarkCompleted extends Command
                         'buyer_id' => $order->user_id,
                         'completed_at' => now()->toDateTimeString()
                     ],
-                    sendEmail: false
+                    sendEmail: false,
+                    actorUserId: $order->teacher_id, // Seller
+                    targetUserId: $order->user_id, // Buyer
+                    orderId: $order->id,
+                    serviceId: $order->gig_id
                 );
             }
 

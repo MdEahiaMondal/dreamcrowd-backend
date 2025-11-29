@@ -534,8 +534,8 @@ Dreamcrowd has you covered!"
 
 {{-- Image Upload Script Start ========= --}}
 <script>
- var cover_image_1 = 'assets/public-site/asset/img/<?php echo $about->cover_image_1 ?>';
-    var cover_image_2 = 'assets/public-site/asset/img/<?php echo $about->cover_image_2 ?>';
+ var cover_image_1 = 'assets/public-site/asset/img/<?php echo $about ? $about->cover_image_1 : ''; ?>';
+    var cover_image_2 = 'assets/public-site/asset/img/<?php echo $about ? $about->cover_image_2 : ''; ?>';
     
     
   // 2

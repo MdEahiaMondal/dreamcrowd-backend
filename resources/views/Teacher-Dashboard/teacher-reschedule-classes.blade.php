@@ -361,6 +361,21 @@ text-decoration: none;
                                         <div id="selected-dates"></div>
                                     </div>
 
+                                    <!-- Available Days Info -->
+                                    @if($repeatDays && count($repeatDays) > 0)
+                                    <div class="alert alert-info mb-3" style="background-color: #e7f3ff; border-left: 4px solid #2196F3; padding: 12px;">
+                                        <i class="fa fa-info-circle"></i>
+                                        <strong>Class Available Days:</strong>
+                                        @foreach($repeatDays as $index => $day)
+                                            <span class="badge badge-primary" style="background-color: #2196F3; margin: 0 4px; padding: 5px 10px;">
+                                                {{ $day->day }} ({{ \Carbon\Carbon::parse($day->start_time)->format('g:i A') }} - {{ \Carbon\Carbon::parse($day->end_time)->format('g:i A') }})
+                                            </span>
+                                        @endforeach
+                                        <br>
+                                        <small class="text-muted">You can only reschedule to dates on these days.</small>
+                                    </div>
+                                    @endif
+
                                       <div id="picker"></div>
                                    
                                       <input type="hidden" name="old_class_time" id="old_class_time" value="{{$class}}">
@@ -615,65 +630,73 @@ function generateTimeSlots(startTime, endTime, teacherTimeZone, minStartTime = n
  
 
   function generateAvailability(startDate, teacherTimeZone) {
-    let availability = new Array(30).fill(null).map(() => []);
+    let availability = [];
     let now = moment().tz(teacherTimeZone);
     let minStartTime = now.clone();
- 
 
-  var duration_booking;
+    // Create a Set of configured day names for fast lookup
+    let configuredDays = new Set(repeatDays.map(rd => rd.day));
 
-if (gigData.recurring_type === "OneDay") {
-  duration_booking = duration.class_oneday || 1;
-} else if (service_type === "Inperson") {
-  duration_booking = duration.class_inperson || 4;
-} else if (service_type === "Online") {
-  duration_booking = duration.class_online || 3;
-}
+    var duration_booking;
+
+    if (gigData.recurring_type === "OneDay") {
+        duration_booking = duration.class_oneday || 1;
+    } else if (service_type === "Inperson") {
+        duration_booking = duration.class_inperson || 4;
+    } else if (service_type === "Online") {
+        duration_booking = duration.class_online || 3;
+    }
 
     minStartTime.add(duration_booking, "hours");
 
+    // Generate availability for 30 consecutive calendar days
     for (let i = 0; i < 30; i++) {
         let currentDate = moment(startDate).add(i, "days");
         let dayName = currentDate.format("dddd");
         let formattedDate = currentDate.format("YYYY-MM-DD");
-        let nextDayIndex = i + 1;
 
-        let currentDaySlots = [];
-        let extendedSlots = [];
+        // Check if this day is in the configured repeatDays
+        if (configuredDays.has(dayName)) {
+            let currentDaySlots = [];
+            let extendedSlots = [];
 
-        repeatDays.forEach((repeatDay) => {
-            if (repeatDay.day === dayName) {
-                let slots = generateTimeSlots(
-                    repeatDay.start_time,
-                    repeatDay.end_time,
-                    teacherTimeZone,
-                    currentDate.isSame(now, 'day') ? minStartTime : null
-                );
-                
-                if (blockedSlots[formattedDate]) {
-                    slots = slots.filter((slot) => !blockedSlots[formattedDate].has(slot));
-           
-                }
-                
-                slots.forEach(slot => {
-                     if (slot === "00:00" || slot < "04:00") {
-                        extendedSlots.push(slot);
-                    } else {
-                        currentDaySlots.push(slot);
+            repeatDays.forEach((repeatDay) => {
+                if (repeatDay.day === dayName) {
+                    let slots = generateTimeSlots(
+                        repeatDay.start_time,
+                        repeatDay.end_time,
+                        teacherTimeZone,
+                        currentDate.isSame(now, 'day') ? minStartTime : null
+                    );
+
+                    if (blockedSlots[formattedDate]) {
+                        slots = slots.filter((slot) => !blockedSlots[formattedDate].has(slot));
                     }
-                });
-                
-                if (availability[i].length > 0) {
-                    currentDaySlots = [...availability[i], ...currentDaySlots];
-                }
-                
-                availability[i] = currentDaySlots;
 
-                if (extendedSlots.length > 0 && nextDayIndex < 30) {
-                    availability[nextDayIndex] = [...extendedSlots, ...availability[nextDayIndex]];
+                    slots.forEach(slot => {
+                        if (slot === "00:00" || slot < "04:00") {
+                            extendedSlots.push(slot);
+                        } else {
+                            currentDaySlots.push(slot);
+                        }
+                    });
                 }
+            });
+
+            // Add slots for this configured day
+            availability[i] = currentDaySlots;
+
+            // Handle extended slots for next day
+            if (extendedSlots.length > 0 && i + 1 < 30) {
+                if (!availability[i + 1]) {
+                    availability[i + 1] = [];
+                }
+                availability[i + 1] = [...extendedSlots, ...availability[i + 1]];
             }
-        });
+        } else {
+            // Day is NOT configured - leave it as empty array (no time slots)
+            availability[i] = [];
+        }
     }
 
     return availability;
@@ -751,10 +774,35 @@ function updateNavigationArrows() {
     let isFirstDateToday = currentViewDate.isSame(today, "day"); // Check if current view is today
     let isAtMaxAllowedDate = isSubscription && currentViewDate.isSame(maxAllowedDate, "day");
 
- 
+
     $("#myc-prev-week").toggle(!isFirstDateToday);
-   
+
     $("#myc-next-week").toggle(!(isSubscription && isAtMaxAllowedDate));
+}
+
+// Function to format all timeslots with time ranges
+function formatAllTimeslots() {
+    // Get duration in minutes
+    let durationMinutes = gigPayment.duration.split(":").reduce((h, m) => parseInt(h) * 60 + parseInt(m), 0);
+
+    // Format ALL timeslots with time ranges
+    $('.myc-available-time').each(function() {
+        let $slot = $(this);
+        let slotDate = $slot.data('date');
+        let slotTime = $slot.data('time');
+
+        // Parse the start time and calculate end time in user's timezone
+        let startTime = moment.tz(`${slotDate} ${slotTime}`, "YYYY-MM-DD HH:mm", userTimeZone);
+        let endTime = startTime.clone().add(durationMinutes, "minutes");
+
+        // Format times in 12-hour format with AM/PM
+        let formattedStart = startTime.format("h:mm A");
+        let formattedEnd = endTime.format("h:mm A");
+        let timeRange = `${formattedStart} - ${formattedEnd}`;
+
+        // Update the button to show time range
+        $slot.html(timeRange);
+    });
 }
 
 
@@ -936,7 +984,10 @@ $("#teacher_class_time").val(teacherupdatedClassTimeStr);
 
         $("#selected-dates").html(html);
         $("#selected_slots").val(selectedSlots.join("|*|"));
-       
+
+        // Update timeslot labels after updating selections
+        formatAllTimeslots();
+
     });
 }
 ,
@@ -981,14 +1032,22 @@ $("#teacher_class_time").val(teacherupdatedClassTimeStr);
         $.each(selectedDates, function (date, times) {
             $.each(times, function (index, time) {
               selected_t_d = time.split(' ');
-              
+
                 $(`[data-date="${selected_t_d[0]}"][data-time="${selected_t_d[1]}"]`).addClass("selected");
             });
         });
+
+        // Update timeslot labels after reapplying selections
+        formatAllTimeslots();
     }, 100);
 }
 
     });
+
+    // Format all timeslots with time ranges on initial load
+    setTimeout(function() {
+        formatAllTimeslots();
+    }, 100);
 
     // Hide previous navigation arrow on page load (since the calendar starts from today)
     $("#myc-prev-week").hide();

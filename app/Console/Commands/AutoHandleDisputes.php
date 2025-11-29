@@ -9,6 +9,7 @@ use App\Models\DisputeOrder;
 use App\Models\Transaction;
 use App\Models\User;
 use App\Services\NotificationService;
+use App\Services\GoogleAnalyticsService;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 use Stripe\PaymentIntent;
@@ -22,11 +23,13 @@ class AutoHandleDisputes extends Command
     protected $description = 'Automatically refund to user if only user disputed after 48 hours of cancellation';
 
     protected $notificationService;
+    protected $analyticsService;
 
-    public function __construct(NotificationService $notificationService)
+    public function __construct(NotificationService $notificationService, GoogleAnalyticsService $analyticsService)
     {
         parent::__construct();
         $this->notificationService = $notificationService;
+        $this->analyticsService = $analyticsService;
     }
 
     public function handle()
@@ -185,6 +188,28 @@ class AutoHandleDisputes extends Command
 
             DB::commit();
 
+            // Track refund in Google Analytics
+            try {
+                $refundAmount = $dispute->refund_type == 0 ? $order->finel_price : floatval($dispute->amount);
+                $transaction = Transaction::where('buyer_id', $order->user_id)
+                    ->where('seller_id', $order->teacher_id)
+                    ->first();
+
+                $this->analyticsService->trackRefund(
+                    $order->payment_id ?? ('order_' . $order->id),
+                    $refundAmount,
+                    'USD'
+                );
+
+                Log::info("GA4 refund tracked for order #{$order->id}", [
+                    'transaction_id' => $order->payment_id,
+                    'refund_amount' => $refundAmount,
+                    'refund_type' => $dispute->refund_type == 0 ? 'full' : 'partial'
+                ]);
+            } catch (\Exception $e) {
+                Log::warning("GA4 refund tracking failed for order #{$order->id}: " . $e->getMessage());
+            }
+
             Log::info("Auto-dispute processed successfully for order #{$order->id}");
 
             return [
@@ -322,6 +347,7 @@ class AutoHandleDisputes extends Command
                 $newSellerCommission = ($remainingAmount * $transaction->seller_commission_rate) / 100;
                 $newBuyerCommission = ($remainingAmount * $transaction->buyer_commission_rate) / 100;
 
+                $transaction->status = 'refunded'; // Mark as refunded (partial)
                 $transaction->coupon_discount += $refundAmount;
                 $transaction->seller_commission_amount = $newSellerCommission;
                 $transaction->buyer_commission_amount = $newBuyerCommission;
@@ -364,7 +390,11 @@ class AutoHandleDisputes extends Command
                     'refund_type' => $refundType,
                     'resolved_at' => now()->toDateTimeString()
                 ],
-                sendEmail: true
+                sendEmail: true,
+                actorUserId: $order->user_id, // Buyer who filed dispute
+                targetUserId: $order->teacher_id, // Seller (dispute against them)
+                orderId: $order->id,
+                serviceId: $order->gig_id
             );
 
             // Notify seller
@@ -381,7 +411,11 @@ class AutoHandleDisputes extends Command
                     'refund_type' => $refundType,
                     'resolved_at' => now()->toDateTimeString()
                 ],
-                sendEmail: true
+                sendEmail: true,
+                actorUserId: $order->user_id, // Buyer who filed dispute
+                targetUserId: $order->teacher_id, // Seller affected by refund
+                orderId: $order->id,
+                serviceId: $order->gig_id
             );
 
             // Notify admins
@@ -398,7 +432,11 @@ class AutoHandleDisputes extends Command
                         'refund_amount' => $refundAmount,
                         'resolved_at' => now()->toDateTimeString()
                     ],
-                    sendEmail: false
+                    sendEmail: false,
+                    actorUserId: $order->user_id, // Buyer who filed
+                    targetUserId: $order->teacher_id, // Seller
+                    orderId: $order->id,
+                    serviceId: $order->gig_id
                 );
             }
 

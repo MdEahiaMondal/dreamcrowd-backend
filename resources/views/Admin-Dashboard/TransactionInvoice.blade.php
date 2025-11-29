@@ -358,13 +358,13 @@
     <div class="parties-section">
         <div class="party-box">
             <h3>BILLED TO (Buyer)</h3>
-            <p><strong>{{ $transaction->buyer->name ?? 'N/A' }}</strong></p>
+            <p><strong>{{ ($transaction->buyer->first_name ?? '') . ' ' . ($transaction->buyer->last_name ?? '') ?: 'N/A' }}</strong></p>
             <p>Email: {{ $transaction->buyer->email ?? 'N/A' }}</p>
             <p>Customer ID: #{{ $transaction->buyer_id }}</p>
         </div>
         <div class="party-box">
             <h3>SERVICE PROVIDED BY (Seller)</h3>
-            <p><strong>{{ $transaction->seller->name ?? 'N/A' }}</strong></p>
+            <p><strong>{{ ($transaction->seller->first_name ?? '') . ' ' . ($transaction->seller->last_name ?? '') ?: 'N/A' }}</strong></p>
             <p>Email: {{ $transaction->seller->email ?? 'N/A' }}</p>
             <p>Seller ID: #{{ $transaction->seller_id }}</p>
         </div>

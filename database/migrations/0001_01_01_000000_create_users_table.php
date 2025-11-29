@@ -22,7 +22,7 @@ return new class extends Migration
             $table->string('city')->nullable();
             $table->string('zip_code')->nullable();
             $table->string('email')->unique();
-            $table->string('email_verify')->unique();
+            $table->string('email_verify')->nullable();  // Fixed: Removed unique() - multiple users can be 'verified'
             $table->string('email_code')->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');

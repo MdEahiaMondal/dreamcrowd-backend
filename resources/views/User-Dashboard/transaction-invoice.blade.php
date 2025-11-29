@@ -131,13 +131,13 @@
 <div class="parties">
     <div class="party-box">
         <h3>BILLED TO</h3>
-        <p><strong>{{ $transaction->buyer->name ?? 'N/A' }}</strong></p>
+        <p><strong>{{ ($transaction->buyer->first_name ?? '') . ' ' . ($transaction->buyer->last_name ?? '') ?: 'N/A' }}</strong></p>
         <p>{{ $transaction->buyer->email ?? 'N/A' }}</p>
     </div>
 
     <div class="party-box" style="margin-left: 3%;">
         <h3>SERVICE BY</h3>
-        <p><strong>{{ $transaction->seller->name ?? 'N/A' }}</strong></p>
+        <p><strong>{{ ($transaction->seller->first_name ?? '') . ' ' . ($transaction->seller->last_name ?? '') ?: 'N/A' }}</strong></p>
         <p>{{ $transaction->seller->email ?? 'N/A' }}</p>
     </div>
 </div>

@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Mail\ForgotPassword;
 use App\Mail\VerifyMail;
+use App\Services\NotificationService;
+use App\Services\GoogleAnalyticsService;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Stevebauman\Location\Facades\Location;
@@ -17,10 +19,14 @@ use Illuminate\Http\Request;
 class AuthController extends Controller
 {
     public $IP;
+    protected $notificationService;
+    protected $analyticsService;
 
-    public function __construct()
+    public function __construct(NotificationService $notificationService, GoogleAnalyticsService $analyticsService)
     {
         $this->IP = $_SERVER['REMOTE_ADDR'];
+        $this->notificationService = $notificationService;
+        $this->analyticsService = $analyticsService;
         // public $IP =  '162.159.24.227';
     }
 
@@ -61,7 +67,7 @@ class AuthController extends Controller
         if ($request->email == null || $request->password == null || $request->c_password == null || $request->first_name == null || $request->last_name == null) {
             $response['error'] = true;
             $response['geterror'] = '';
-            $response['message'] = 'All Fields Are Required!';
+            $response['message'] = 'All fields are required';
             return response()->json($response);
             // return redirect()->back()->with('error','All Fields Are Required!');
         }
@@ -69,7 +75,7 @@ class AuthController extends Controller
         if ($request->password != $request->c_password) {
             $response['error'] = true;
             $response['geterror'] = 'c_password';
-            $response['message'] = 'Password did not Matched';
+            $response['message'] = 'Passwords do not match';
             return response()->json($response);
             // return redirect()->back()->with('error','Password did not Matched');
         }
@@ -79,7 +85,7 @@ class AuthController extends Controller
         if (!empty($user)) {
             $response['error'] = true;
             $response['geterror'] = 'email';
-            $response['message'] = 'This Email is Already Registered';
+            $response['message'] = 'This email is already registered';
             return response()->json($response);
             // return redirect()->back()->with('error','This Email is Already Registered!');
 
@@ -129,6 +135,18 @@ class AuthController extends Controller
                 );
             } catch (\Exception $e) {
                 \Log::error("Failed to send welcome notification: " . $e->getMessage());
+            }
+
+            // Track signup in Google Analytics
+            try {
+                $this->analyticsService->trackEvent('sign_up', [
+                    'method' => 'email',
+                    'user_id' => $user->id,
+                    'country' => @$location->countryName ?? 'unknown',
+                    'city' => @$location->cityName ?? 'unknown'
+                ]);
+            } catch (\Exception $e) {
+                \Log::warning("GA4 signup tracking failed: " . $e->getMessage());
             }
 
             // Auth::login($user);
@@ -204,6 +222,18 @@ class AuthController extends Controller
                     'google_id' => $googleUser->id,
                     'status' => 1,
                     'password' => Hash::make(rand(100000, 999999))]);
+
+                // Track Google signup in Google Analytics
+                try {
+                    $this->analyticsService->trackEvent('sign_up', [
+                        'method' => 'google',
+                        'user_id' => $user->id,
+                        'country' => $location->countryName ?? 'unknown',
+                        'city' => $location->cityName ?? 'unknown'
+                    ]);
+                } catch (\Exception $e) {
+                    \Log::warning("GA4 Google signup tracking failed: " . $e->getMessage());
+                }
             } else {
                 if ($user->status == 2) {
                     return redirect()->back()->with('error', 'Your Account is Blocked!');
@@ -217,6 +247,17 @@ class AuthController extends Controller
             }
 
             Auth::login($user);
+
+            // Track Google login in Google Analytics (signup flow)
+            try {
+                $this->analyticsService->trackEvent('login', [
+                    'method' => 'google',
+                    'user_id' => $user->id,
+                    'user_role' => $user->role ?? 'user'
+                ]);
+            } catch (\Exception $e) {
+                \Log::warning("GA4 Google login tracking failed: " . $e->getMessage());
+            }
 
             return redirect('/');
 
@@ -237,6 +278,17 @@ class AuthController extends Controller
                 }
             }
             Auth::login($user);
+
+            // Track Google login in Google Analytics (login flow)
+            try {
+                $this->analyticsService->trackEvent('login', [
+                    'method' => 'google',
+                    'user_id' => $user->id,
+                    'user_role' => $user->role ?? 'user'
+                ]);
+            } catch (\Exception $e) {
+                \Log::warning("GA4 Google login tracking failed: " . $e->getMessage());
+            }
 
             return redirect('/');
         }
@@ -303,6 +355,18 @@ class AuthController extends Controller
                     'facebook_id' => $facebookUser->id,
                     'status' => 1,
                     'password' => Hash::make(rand(100000, 999999))]);
+
+                // Track Facebook signup in Google Analytics
+                try {
+                    $this->analyticsService->trackEvent('sign_up', [
+                        'method' => 'facebook',
+                        'user_id' => $user->id,
+                        'country' => $location->countryName ?? 'unknown',
+                        'city' => $location->cityName ?? 'unknown'
+                    ]);
+                } catch (\Exception $e) {
+                    \Log::warning("GA4 Facebook signup tracking failed: " . $e->getMessage());
+                }
             } else {
                 if ($user->status == 2) {
                     return redirect()->back()->with('error', 'Your Account is Blocked!');
@@ -316,6 +380,17 @@ class AuthController extends Controller
             }
 
             Auth::login($user);
+
+            // Track Facebook login in Google Analytics (signup flow)
+            try {
+                $this->analyticsService->trackEvent('login', [
+                    'method' => 'facebook',
+                    'user_id' => $user->id,
+                    'user_role' => $user->role ?? 'user'
+                ]);
+            } catch (\Exception $e) {
+                \Log::warning("GA4 Facebook login tracking failed: " . $e->getMessage());
+            }
 
             return redirect('/');
 
@@ -337,6 +412,17 @@ class AuthController extends Controller
             }
             Auth::login($user);
 
+            // Track Facebook login in Google Analytics (login flow)
+            try {
+                $this->analyticsService->trackEvent('login', [
+                    'method' => 'facebook',
+                    'user_id' => $user->id,
+                    'user_role' => $user->role ?? 'user'
+                ]);
+            } catch (\Exception $e) {
+                \Log::warning("GA4 Facebook login tracking failed: " . $e->getMessage());
+            }
+
             return redirect('/');
         }
 
@@ -356,7 +442,7 @@ class AuthController extends Controller
         if (empty($user)) {
             $response['error'] = true;
             $response['geterror'] = 'email';
-            $response['message'] = 'This Email is not Registered Please Create an Account!';
+            $response['message'] = 'This email is not registered. Please create an account';
             return response()->json($response);
             // return redirect()->back()->with('error','This Email is not Registered Please Create an Account!');
 
@@ -388,6 +474,17 @@ class AuthController extends Controller
         }
 
         Auth::login($user);
+
+        // Track login in Google Analytics
+        try {
+            $this->analyticsService->trackEvent('login', [
+                'method' => 'email',
+                'user_id' => $user->id,
+                'user_role' => $user->role ?? 'user'
+            ]);
+        } catch (\Exception $e) {
+            \Log::warning("GA4 login tracking failed: " . $e->getMessage());
+        }
 
         if (isset($request->remember) && !empty($request->remember)) {
             setcookie("email", $request->email, time() + 86400);
@@ -448,7 +545,30 @@ class AuthController extends Controller
             $user->update();
             Auth::login($user);
 
-            return redirect('/')->with('success', 'your email has been successfully verified');
+            // Send email verification success notification
+            try {
+                $roleName = $user->role == 0 ? 'Buyer' : ($user->role == 1 ? 'Seller' : 'Admin');
+
+                $this->notificationService->send(
+                    userId: $user->id,
+                    type: 'account',
+                    title: 'Email Verified Successfully',
+                    message: "Welcome to DreamCrowd! Your email has been verified and your {$roleName} account is now active.",
+                    data: [
+                        'verified_at' => now()->toISOString(),
+                        'role' => $user->role,
+                        'email' => $user->email,
+                        'dashboard_url' => $user->role == 0 ? route('user.dashboard') : ($user->role == 1 ? route('teacher.dashboard') : route('admin.dashboard'))
+                    ],
+                    sendEmail: false, // User just verified email, don't spam
+                    actorUserId: $user->id,
+                    targetUserId: $user->id
+                );
+            } catch (\Exception $e) {
+                \Log::error('Failed to send email verification success notification: ' . $e->getMessage());
+            }
+
+            return redirect('/')->with('success', 'Your email has been successfully verified');
         } else {
             return redirect('/')->with('error', 'This Verification Link is Expired!');
         }
@@ -465,7 +585,7 @@ class AuthController extends Controller
         if (empty($user)) {
             $response['error'] = true;
             $response['geterror'] = 'email';
-            $response['message'] = 'This Email is not Registered!';
+            $response['message'] = 'This email is not registered';
             return response()->json($response);
             // return redirect()->back()->with('error','This Email is not Registered!');
 
@@ -569,7 +689,7 @@ class AuthController extends Controller
         if ($request->password != $request->c_password) {
             $response['error'] = true;
             $response['geterror'] = 'c_password';
-            $response['message'] = 'Password did not Matched!';
+            $response['message'] = 'Passwords do not match';
             return response()->json($response);
             // return redirect()->back()->with('error','Password did not Matched!');
         }

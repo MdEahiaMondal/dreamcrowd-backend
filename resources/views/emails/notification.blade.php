@@ -1,59 +1,48 @@
-<!DOCTYPE html>
-<html>
+@extends('emails.layouts.base')
 
-<head>
-    <meta name="csrf-token" content="{{ csrf_token() }}">
+@section('title', $notification['title'] ?? 'Notification')
 
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            line-height: 1.6;
-        }
+@section('header_title', $notification['title'] ?? 'Notification')
 
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        .header {
-            background: #4CAF50;
-            color: white;
-            padding: 20px;
-            text-align: center;
-        }
-
-        .content {
-            background: #f9f9f9;
-            padding: 20px;
-            margin-top: 20px;
-        }
-
-        .footer {
-            text-align: center;
-            margin-top: 20px;
-            color: #666;
-        }
-    </style>
-</head>
-
-<body data-user-id="{{ auth()->id() }}">
-    <div class="container">
-        <div class="header">
-            <h2>{{ $notification['title'] }}</h2>
+@section('content')
+    @if(isset($notification['is_emergency']) && $notification['is_emergency'])
+        <div class="alert-box">
+            <p><strong>⚠ Important Notification</strong></p>
         </div>
-        <div class="content">
-            <p>{{ $notification['message'] }}</p>
-        </div>
-        <div class="footer">
-            <p>&copy; {{ date('Y') }} {{ config('app.name') }}. All rights reserved.</p>
-        </div>
-    </div>
-    <!-- Include Pusher JS -->
-    <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
+    @endif
 
-    <!-- Include your notification script -->
-    <script src="{{ asset('js/notifications.js') }}"></script>
-</body>
+    <p class="lead">Hello,</p>
 
-</html>
+    <p>{!! nl2br(e($notification['message'])) !!}</p>
+
+    @if(isset($notification['data']) && is_array($notification['data']))
+        @if(count($notification['data']) > 0)
+            <div class="info-box">
+                <p><strong>Details:</strong></p>
+                @foreach($notification['data'] as $key => $value)
+                    @if(!in_array($key, ['order_id', 'service_id', 'seller_id', 'buyer_id']) && !is_array($value))
+                        <p><strong>{{ ucfirst(str_replace('_', ' ', $key)) }}:</strong> {{ $value }}</p>
+                    @endif
+                @endforeach
+            </div>
+        @endif
+    @endif
+
+    @if(isset($notification['data']['order_id']))
+        <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
+            <tr>
+                <td align="center">
+                    <a href="{{ url('/user-application-details/' . $notification['data']['order_id']) }}" class="btn btn-primary">
+                        View Order Details
+                    </a>
+                </td>
+            </tr>
+        </table>
+    @endif
+
+    <div class="divider"></div>
+
+    <p style="color: #777; font-size: 13px;">
+        <em>This notification was sent because an action occurred on your {{ config('app.name', 'DreamCrowd') }} account. If you have any questions, please contact our support team.</em>
+    </p>
+@endsection

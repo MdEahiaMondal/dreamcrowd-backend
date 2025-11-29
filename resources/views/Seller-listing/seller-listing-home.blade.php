@@ -2522,15 +2522,14 @@
                 <div class="col-md-12">
                     <p class="float-start">Total Amount: <span>$55.0</span></p>
                     <div class="float-end">
-                        <a
-                            href="#"
-                            type="button"
-                            class="btn contact-btn"
-                            data-bs-toggle="modal"
-                            id="contact-us"
-                            data-bs-target="#contact-me-modal"
-                        >Contact Me</a
-                        >
+                       @if (Auth::user())
+                        <a href="#" type="button" class="btn contact-btn" data-bs-toggle="modal" id="contact-us"
+                            data-bs-target="#contact-me-modal">Contact Me</a>
+                    @else
+                        <button data-bs-toggle="modal" data-bs-target="#exampleModal" class="btn booking-btn">
+                            Contact Me
+                        </button>
+                    @endif
 
                         <a href="../Public-site/payment.html" class="btn booking-btn">Complete Booking</a>
                     </div>
@@ -3080,7 +3079,7 @@
 {{-- Live Location Google Api Get Script Start --}}
 {{-- CDN For Script --}}
 <script
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBMA8qhhaBOYY1uv0nUfsBGcE74w6JNY7M&libraries=places"></script>
+    src="https://maps.googleapis.com/maps/api/js?key={{ config('services.google_maps.api_key') }}&libraries=places&loading=async"></script>
 
 <script>
     function getLiveLocation() {
@@ -3219,9 +3218,7 @@
 
 
 {{-- Location write and search services Start Script --}}
-{{-- CDN Google Api --}}
-<script
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBMA8qhhaBOYY1uv0nUfsBGcE74w6JNY7M&libraries=places"></script>
+{{-- CDN Google Api - Already loaded above, removed duplicate --}}
 <script>
     $(document).ready(function () {
 

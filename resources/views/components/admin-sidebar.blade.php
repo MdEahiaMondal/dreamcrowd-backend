@@ -29,7 +29,7 @@
 
             <li>
                 <div class="iocn-link">
-                    <a href="#">
+                    <a href="javascript:void(0)">
                         <i class='bx bx-user icon' title="Seller Management"></i>
                         <span class="link_name">Seller Management</span>
                     </a>
@@ -37,20 +37,20 @@
                 </div>
                 <ul class="sub-menu">
                     <li><a class="link_name" href="#">Seller Management</a></li>
-                    <li><a href="all-sellers.html">All Sellers</a></li>
+                    <li><a href="{{ route('admin.all-sellers') }}">All Sellers</a></li>
                     <li><a href="/all-application">All Applications</a></li>
                     <li><a href="/seller-request">Seller Requests</a></li>
-                    <li><a href="all-services.html">All Services</a></li>
+                    <li><a href="{{ route('admin.all-services') }}">All Services</a></li>
                 </ul>
             </li>
             <!-- <li> -->
             <li>
-                <a href="buyer-management.html">
+                <a href="{{ route('admin.buyer-management') }}">
                     <i class='bx bx-user icon' title="Buyer Management"></i>
                     <span class="link_name">Buyer Management</span>
                 </a>
                 <ul class="sub-menu blank">
-                    <li><a class="link_name" href="buyer-management.html">Buyer Management</a></li>
+                    <li><a class="link_name" href="{{ route('admin.buyer-management') }}">Buyer Management</a></li>
                 </ul>
             </li>
             <li>
@@ -63,66 +63,65 @@
                 </ul>
             </li>
 
-            @if (Auth::user()->admin_role >= 4)
 
-                <li>
-                    <div class="iocn-link">
-                        <a href="#">
-                            <i class='bx bx-cog icon' title="Dynamic Management"></i>
-                            <span class="link_name">Dynamic Management</span>
-                        </a>
-                        <i class='bx bxs-chevron-down arrow'></i>
-                    </div>
-                    <ul class="sub-menu">
-                        <li><a class="link_name" href="#">Dynamic Management</a></li>
-                        <li><a href="/admin-home-dynamic">Home Page</a></li>
-                        <li><a href="/admin-category-dynamic">Categories</a></li>
-                        <li><a href="/admin-about-us-dynamic">About us</a></li>
-                        <li><a href="/admin-term-condition-dynamic">T&C and Privacy Policy</a></li>
-                        <li><a href="/admin-faq-dynamic">FAQ’s</a></li>
-                        <li><a href="/admin-social-media-dynamic">Social Media</a></li>
-                        <li><a href="/admin-become-expert-dynamic">Become an expert</a></li>
-                        <li><a href="/admin-site-banner-dynamic">Sellers Banner</a></li>
-                        {{-- <li><a href="/admin-contact-us-dynamic">Contact Us</a></li> --}}
-                        <li><a href="/admin-verification-center-dynamic">Verification Center</a></li>
-                        <li>
-                            <a href="/admin-languages-dynamic">Add Languages</a>
-                        </li>
-                        <li>
-                            <a href="/admin-keyword-suggessions">Keyword Suggessions</a>
-                        </li>
-                        <li>
-                            <a href="/admin-booking-duration">Booking Duration</a>
-                        </li>
-                    </ul>
-                </li>
+            <li>
+                <div class="iocn-link">
+                    <a href="javascript:void(0)">
+                        <i class='bx bx-cog icon' title="Dynamic Management"></i>
+                        <span class="link_name">Dynamic Management</span>
+                    </a>
+                    <i class='bx bxs-chevron-down arrow'></i>
+                </div>
+                <ul class="sub-menu">
+                    <li><a class="link_name" href="#">Dynamic Management</a></li>
+                    <li><a href="/admin-home-dynamic">Home Page</a></li>
+                    <li><a href="/admin-category-dynamic">Categories</a></li>
+                    <li><a href="/admin-about-us-dynamic">About us</a></li>
+                    <li><a href="/admin-term-condition-dynamic">T&C and Privacy Policy</a></li>
+                    <li><a href="/admin-faq-dynamic">FAQ’s</a></li>
+                    <li><a href="/admin-social-media-dynamic">Social Media</a></li>
+                    <li><a href="/admin-become-expert-dynamic">Become an expert</a></li>
+                    <li><a href="/admin-site-banner-dynamic">Sellers Banner</a></li>
+                    {{-- <li><a href="/admin-contact-us-dynamic">Contact Us</a></li> --}}
+                    <li><a href="/admin-verification-center-dynamic">Verification Center</a></li>
+                    <li>
+                        <a href="/admin-languages-dynamic">Add Languages</a>
+                    </li>
+                    <li>
+                        <a href="/admin-keyword-suggessions">Keyword Suggessions</a>
+                    </li>
+                    <li>
+                        <a href="/admin-booking-duration">Booking Duration</a>
+                    </li>
+                </ul>
+            </li>
 
 
-                <li>
-                    <div class="iocn-link">
-                        <a href="#">
-                            <i class='bx bx-cog icon' title="Seller Setting"></i>
-                            <span class="link_name">Seller Setting</span>
-                        </a>
-                        <i class='bx bxs-chevron-down arrow'></i>
-                    </div>
-                    <ul class="sub-menu">
-                        <li>
-                            <a href="/admin-top-seller">Top Seller Tag</a>
-                        </li>
-                        <li>
-                            <a href="/admin-services-sorting">Services Sorting</a>
-                        </li>
-                        <li>
-                            <a href="/admin/commission-settings">Commission</a>
-                        </li>
-                        <li>
-                            <a href="/admin/commission-report">Commission Report</a>
-                        </li>
-                    </ul>
-                </li>
+            <li>
+                <div class="iocn-link">
+                    <a href="javascript:void(0)">
+                        <i class='bx bx-cog icon' title="Seller Setting"></i>
+                        <span class="link_name">Seller Setting</span>
+                    </a>
+                    <i class='bx bxs-chevron-down arrow'></i>
+                </div>
+                <ul class="sub-menu">
+                    <li>
+                        <a href="/admin-top-seller">Top Seller Tag</a>
+                    </li>
+                    <li>
+                        <a href="/admin-services-sorting">Services Sorting</a>
+                    </li>
+                    <li>
+                        <a href="/admin/commission-settings">Commission</a>
+                    </li>
+                    <li>
+                        <a href="/admin/commission-report">Commission Report</a>
+                    </li>
+                </ul>
+            </li>
 
-            @endif
+
             <!-- <li> -->
             <li>
                 <a href="/admin-host-guidline">
@@ -153,7 +152,7 @@
             </li>
             <li>
                 <div class="iocn-link">
-                    <a href="#">
+                    <a href="javascript:void(0)">
                         <i class='bx bx-credit-card-front icon' title="Payment Management"></i>
                         <span class="link_name">Payment Management</span>
                     </a>
@@ -161,18 +160,19 @@
                 </div>
                 <ul class="sub-menu">
                     <li><a class="link_name" href="#">Payment Management</a></li>
-                    <li><a href="All-orders.html">All Orders</a></li>
-                    <li><a href="payout-details.html">Payout Detail</a></li>
-                    <li><a href="refund-details.html">Refund Detail</a></li>
+                    <li><a href="{{ route('admin.all-orders') }}">All Orders</a></li>
+                    <li><a href="{{ route('admin.payout-details') }}">Payout Detail</a></li>
+                    <li><a href="{{ route('admin.refund-details') }}">Refund Detail</a></li>
+                    <li><a href="{{ route('admin.payment-analytics') }}">Payment Analytics</a></li>
                 </ul>
             </li>
             <li>
-                <a href="invoice.html">
+                <a href="{{ route('admin.invoice') }}">
                     <i class='bx bx-file' title="Invoice & Statement"></i>
                     <span class="link_name">Invoice & Statement</span>
                 </a>
                 <ul class="sub-menu blank">
-                    <li><a class="link_name" href="invoice.html">Invoice & Statement</a></li>
+                    <li><a class="link_name" href="{{ route('admin.invoice') }}">Invoice & Statement</a></li>
                 </ul>
             </li>
 
@@ -180,14 +180,14 @@
 
             <li>
                 <div class="iocn-link">
-                    <a href="/admin/coupons">
+                    <a href="javascript:void(0)">
                         <i class='bx bx-credit-card-front icon' title="Discount Codes"></i>
                         <span class="link_name">Discount Codes</span>
                     </a>
                     <i class='bx bxs-chevron-down arrow'></i>
                 </div>
                 <ul class="sub-menu">
-                    <li><a  href="/admin/coupons">Discount Codes</a></li>
+                    <li><a href="/admin/coupons">Discount Codes</a></li>
                     <li><a href="/admin/coupons/analytics">Coupons Analytics</a></li>
                 </ul>
             </li>
@@ -203,21 +203,18 @@
                 </ul>
             </li>
             <li>
-                <a href="reviews&rating.html">
+                <a href="{{ route('admin.reviews.ratings') }}">
                     <i class='bx bx-star icon' title="Reviews & Ratings"></i>
                     <span class="link_name">Reviews & Ratings</span>
                 </a>
                 <ul class="sub-menu blank">
-                    <li><a class="link_name" href="reviews&rating.html">Reviews & Ratings</a></li>
+                    <li><a class="link_name" href="{{ route('admin.reviews.ratings') }}">Reviews & Ratings</a></li>
                 </ul>
             </li>
             <li>
                 <div class="iocn-link">
-                    <a href="#">
-                        <i
-                            class="bx bxs-user-x icon icon"
-                            title="Analytics & Reports"
-                        ></i>
+                    <a href="javascript:void(0)">
+                        <i class="bx bxs-user-x icon icon" title="Analytics & Reports"></i>
                         <span class="link_name">Reports</span>
                     </a>
                     <i class="bx bxs-chevron-down arrow"></i>
@@ -225,16 +222,16 @@
                 <ul class="sub-menu">
                     <li><a class="link_name" href="#">Reports</a></li>
                     <li>
-                        <a href="seller-reports.html">Seller Reports</a>
+                        <a href="{{ route('admin.seller-reports') }}">Seller Reports</a>
                     </li>
                     <li>
-                        <a href="Buyer-reports .html">Buyer Reports</a>
+                        <a href="{{ route('admin.buyer-reports') }}">Buyer Reports</a>
                     </li>
                 </ul>
             </li>
             <li>
                 <div class="iocn-link">
-                    <a href="#">
+                    <a href="javascript:void(0)">
                         <i class='bx bx-video icon' title="Zoom Integration"></i>
                         <span class="link_name">Zoom Integration</span>
                     </a>
@@ -279,7 +276,7 @@
 
 <!-- Modal -->
 <div class="modal fade logout-modal" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
-     aria-hidden="true">
+    aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-body p-0">
@@ -288,7 +285,7 @@
                     <center>
                         <button type="button" class="btn btn-no" data-bs-dismiss="modal">No</button>
                         <button type="button" class="btn btn-yes"><a style="color: white;text-decoration: none;"
-                                                                     href="/logout">Yes</a></button>
+                                href="/logout">Yes</a></button>
                     </center>
                 </div>
             </div>

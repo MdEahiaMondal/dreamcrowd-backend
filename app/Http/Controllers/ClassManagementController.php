@@ -12,6 +12,8 @@ use App\Models\TeacherGigData;
 use App\Models\TeacherGigPayment;
 use App\Models\TeacherReapetDays;
 use App\Models\TopSellerTag;
+use App\Services\NotificationService;
+use App\Services\GoogleAnalyticsService;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -21,6 +23,14 @@ use Illuminate\Support\Facades\Storage;
 
 class ClassManagementController extends Controller
 {
+    protected $notificationService;
+    protected $analyticsService;
+
+    public function __construct(NotificationService $notificationService, GoogleAnalyticsService $analyticsService)
+    {
+        $this->notificationService = $notificationService;
+        $this->analyticsService = $analyticsService;
+    }
 
     // Authentication Check Function Start====
 
@@ -337,8 +347,13 @@ class ClassManagementController extends Controller
                     $gig->lesson_type = $request->lesson_type;
                     $gigData->recurring_type = $request->recurring_type;
 
-                    $gigData->meeting_platform = $request->meeting_platform;
-                    $gig->meeting_platform = $request->meeting_platform;
+                    // Validate and sanitize meeting_platform - only allow 'Zoom', 'Google', or null
+                    $meetingPlatform = $request->meeting_platform;
+                    if (!in_array($meetingPlatform, ['Zoom', 'Google'], true)) {
+                        $meetingPlatform = null;
+                    }
+                    $gigData->meeting_platform = $meetingPlatform;
+                    $gig->meeting_platform = $meetingPlatform;
 
                     if ($request->recurring_type == 'Trial') {
                         if ($request->class_type != 'Live') {
@@ -349,8 +364,13 @@ class ClassManagementController extends Controller
                             return back()->with('error', 'Trial class cannot be subscription');
                         }
 
-                        $gigData->trial_type = $request->trial_type;
-                        $gig->trial_type = $request->trial_type;
+                        // Validate and sanitize trial_type - only allow 'Free', 'Paid', or null
+                        $trialType = $request->trial_type;
+                        if (!in_array($trialType, ['Free', 'Paid'], true)) {
+                            $trialType = null;
+                        }
+                        $gigData->trial_type = $trialType;
+                        $gig->trial_type = $trialType;
                     }
 
                     if ($request->lesson_type == 'Group') {
@@ -397,8 +417,14 @@ class ClassManagementController extends Controller
 
                 if ($request->freelance_service == 'Consultation') {
                     $gigData->video_call = $request->video_call;
-                    $gigData->meeting_platform = $request->meeting_platform;
-                    $gig->meeting_platform = $request->meeting_platform;
+
+                    // Validate and sanitize meeting_platform - only allow 'Zoom', 'Google', or null
+                    $meetingPlatform = $request->meeting_platform;
+                    if (!in_array($meetingPlatform, ['Zoom', 'Google'], true)) {
+                        $meetingPlatform = null;
+                    }
+                    $gigData->meeting_platform = $meetingPlatform;
+                    $gig->meeting_platform = $meetingPlatform;
                 }
 
             } else {
@@ -454,7 +480,26 @@ class ClassManagementController extends Controller
         $gig->category = $request->category;
         $gig->sub_category = $request->sub_category;
 
+        // Set approval mode (default to manual if not specified)
+        $gig->approval_mode = $request->approval_mode ?? 'manual';
+
         $gig->save();
+
+        // Track service creation in Google Analytics
+        try {
+            $this->analyticsService->trackEvent('create_service', [
+                'service_id' => $gig->id,
+                'service_name' => $gig->title,
+                'service_role' => $gig->service_role ?? 'unknown',
+                'service_type' => $gig->service_type ?? 'unknown',
+                'payment_type' => $gig->payment_type ?? 'unknown',
+                'category' => $category->category ?? 'unknown',
+                'seller_id' => Auth::user()->id,
+                'user_role' => Auth::user()->role ?? 'teacher'
+            ]);
+        } catch (\Exception $e) {
+            \Log::warning("GA4 service creation tracking failed: " . $e->getMessage());
+        }
 
         $gigData->gig_id = $gig->id;
         $gigData->category = $request->category;
@@ -657,7 +702,10 @@ class ClassManagementController extends Controller
             title: 'Service Created Successfully',
             message: 'Your service "' . $gig->title . '" has been published and is now live on the platform.',
             data: ['gig_id' => $gig->id, 'gig_title' => $gig->title],
-            sendEmail: false
+            sendEmail: false,
+            actorUserId: Auth::id(),
+            targetUserId: Auth::id(),
+            serviceId: $gig->id
         );
 
         // Notify Admin (new service alert)
@@ -840,6 +888,33 @@ class ClassManagementController extends Controller
         $gig->update();
         if ($gig) {
 
+            // Send notification when service is deactivated (hidden or deleted)
+            if ($action == 'hide' || $action == 'delete') {
+                try {
+                    $actionText = $action == 'hide' ? 'hidden' : 'deactivated';
+
+                    $this->notificationService->send(
+                        userId: Auth::id(),
+                        type: 'gig',
+                        title: 'Service ' . ucfirst($actionText),
+                        message: "Your service '{$gig->title}' has been {$actionText} and is no longer visible to buyers.",
+                        data: [
+                            'gig_id' => $gig->id,
+                            'gig_title' => $gig->title,
+                            'action' => $action,
+                            'status' => $gig->status,
+                            'updated_at' => now()->toISOString()
+                        ],
+                        sendEmail: false,
+                        actorUserId: Auth::id(),
+                        targetUserId: Auth::id(),
+                        serviceId: $gig->id
+                    );
+                } catch (\Exception $e) {
+                    \Log::error('Failed to send service deactivation notification: ' . $e->getMessage());
+                }
+            }
+
             if ($action == 'hide') {
                 return redirect()->back()->with('success', 'Your Service Sent to Hide!');
             } elseif ($action == 'delete') {
@@ -979,14 +1054,24 @@ class ClassManagementController extends Controller
 
                         // Update meeting platform for Live classes
                         if ($request->has('meeting_platform')) {
-                            $gigData->meeting_platform = $request->meeting_platform;
-                            $gig->meeting_platform = $request->meeting_platform;
+                            // Validate and sanitize meeting_platform - only allow 'Zoom', 'Google', or null
+                            $meetingPlatform = $request->meeting_platform;
+                            if (!in_array($meetingPlatform, ['Zoom', 'Google'], true)) {
+                                $meetingPlatform = null;
+                            }
+                            $gigData->meeting_platform = $meetingPlatform;
+                            $gig->meeting_platform = $meetingPlatform;
                         }
 
                         // Update trial type if recurring type is Trial
                         if ($request->recurring_type == 'Trial' && $request->has('trial_type')) {
-                            $gigData->trial_type = $request->trial_type;
-                            $gig->trial_type = $request->trial_type;
+                            // Validate and sanitize trial_type - only allow 'Free', 'Paid', or null
+                            $trialType = $request->trial_type;
+                            if (!in_array($trialType, ['Free', 'Paid'], true)) {
+                                $trialType = null;
+                            }
+                            $gigData->trial_type = $trialType;
+                            $gig->trial_type = $trialType;
                         } else {
                             $gigData->trial_type = null;
                             $gig->trial_type = null;
@@ -1053,8 +1138,14 @@ class ClassManagementController extends Controller
 
                     if ($request->freelance_service == 'Consultation') {
                         $gigData->video_call = $request->video_call;
-                        $gigData->meeting_platform = $request->meeting_platform;
-                        $gig->meeting_platform = $request->meeting_platform;
+
+                        // Validate and sanitize meeting_platform - only allow 'Zoom', 'Google', or null
+                        $meetingPlatform = $request->meeting_platform;
+                        if (!in_array($meetingPlatform, ['Zoom', 'Google'], true)) {
+                            $meetingPlatform = null;
+                        }
+                        $gigData->meeting_platform = $meetingPlatform;
+                        $gig->meeting_platform = $meetingPlatform;
                     } else {
                         $gigData->video_call = null;
                         $gigData->meeting_platform = null;
@@ -1152,6 +1243,14 @@ class ClassManagementController extends Controller
                 $gigData->video = $videoData;
             }
 
+
+            // Update approval mode if provided (default to manual if not specified)
+            if ($request->has('approval_mode')) {
+                $gig->approval_mode = $request->approval_mode;
+            } elseif (!$gig->approval_mode) {
+                // Set default for existing gigs that don't have approval_mode yet
+                $gig->approval_mode = 'manual';
+            }
 
             $gig->status = 3;
             $gig->update();
@@ -1471,6 +1570,28 @@ class ClassManagementController extends Controller
 
         $gig->update();
 
+        // Send notification for service edited and republished
+        try {
+            $this->notificationService->send(
+                userId: Auth::id(),
+                type: 'gig',
+                title: 'Service Updated Successfully',
+                message: "Your service '{$gig->title}' has been updated and is now live with the new changes.",
+                data: [
+                    'gig_id' => $gig->id,
+                    'gig_title' => $gig->title,
+                    'service_role' => $gig->service_role,
+                    'service_type' => $gig->service_type,
+                    'updated_at' => now()->toISOString()
+                ],
+                sendEmail: false,
+                actorUserId: Auth::id(),
+                targetUserId: Auth::id(),
+                serviceId: $gig->id
+            );
+        } catch (\Exception $e) {
+            \Log::error('Failed to send service updated notification: ' . $e->getMessage());
+        }
 
         if ($payment) {
             return redirect()->to('/class-management')->with('success', 'Your Service Published Successfuly!');

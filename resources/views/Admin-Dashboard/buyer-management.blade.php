@@ -1,66 +1,66 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- Required meta tags -->
     <meta charset="UTF-8">
-    <!-- View Point scale to 1.0 -->
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Animate css -->
-    <link rel="stylesheet" href="assets/admin/libs/animate/css/animate.css" />
-    <!-- AOS Animation css-->
-    <link rel="stylesheet" href="assets/admin/libs/aos/css/aos.css" />
-    <!-- Datatable css  -->
-    <link rel="stylesheet" href="assets/admin/libs/datatable/css/datatable.css" />
-     {{-- Fav Icon --}}
-     @php  $home = \App\Models\HomeDynamic::first(); @endphp
-     @if ($home)
-         <link rel="shortcut icon" href="assets/public-site/asset/img/{{$home->fav_icon}}" type="image/x-icon">
-     @endif
-     <!-- Select2 css -->
-    <link href="assets/admin/libs/select2/css/select2.min.css" rel="stylesheet" />
-    <!-- Owl carousel css -->
-    <link href="assets/admin/libs/owl-carousel/css/owl.carousel.css" rel="stylesheet" />
-    <link href="assets/admin/libs/owl-carousel/css/owl.theme.green.css" rel="stylesheet" />
-    <!-- Bootstrap css -->
-    <link rel="stylesheet" type="text/css" href="assets/admin/asset/css/bootstrap.min.css" />
-     <link href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css' rel='stylesheet'>
-     <link rel="stylesheet" href="https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css">
-    <!-- Fontawesome CDN -->
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <link rel="stylesheet" href="/assets/admin/libs/animate/css/animate.css" />
+    <link rel="stylesheet" href="/assets/admin/libs/aos/css/aos.css" />
+    <link rel="stylesheet" href="/assets/admin/libs/datatable/css/datatable.css" />
+    @php  $home = \App\Models\HomeDynamic::first(); @endphp
+    @if ($home)
+        <link rel="shortcut icon" href="/assets/public-site/asset/img/{{$home->fav_icon}}" type="image/x-icon">
+    @endif
+    <link href="/assets/admin/libs/select2/css/select2.min.css" rel="stylesheet" />
+    <link href="/assets/admin/libs/owl-carousel/css/owl.carousel.css" rel="stylesheet" />
+    <link href="/assets/admin/libs/owl-carousel/css/owl.theme.green.css" rel="stylesheet" />
+    <link rel="stylesheet" type="text/css" href="/assets/admin/asset/css/bootstrap.min.css" />
+    <link href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css' rel='stylesheet'>
     <script src="https://kit.fontawesome.com/be69b59144.js" crossorigin="anonymous"></script>
-     <!-- jquery script -->
-     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-    <!-- Defualt css -->
-    <link rel="stylesheet" type="text/css" href="assets/admin/asset/css/sidebar.css" />
-    <link rel="stylesheet" href="assets/admin/asset/css/style.css">
-    <link rel="stylesheet" href="assets/admin/asset/css/buyer.css">
-    <!-- <link rel="stylesheet" href="../User-Dashboard/assets/css/style.css"> -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="/assets/admin/asset/css/sidebar.css" />
+    <link rel="stylesheet" href="/assets/admin/asset/css/style.css">
+    <link rel="stylesheet" href="/assets/admin/asset/css/buyer.css">
     <title>Super Admin Dashboard | Buyer Management</title>
 </head>
 <body>
 
-    {{-- ===========Admin Sidebar Start==================== --}}
     <x-admin-sidebar/>
-    {{-- ===========Admin Sidebar End==================== --}}
+
     <section class="home-section">
-       {{-- ===========Admin NavBar Start==================== --}}
        <x-admin-nav/>
-       {{-- ===========Admin NavBar End==================== --}}
-              <!-- =============================== MAIN CONTENT START HERE =========================== -->
-              <div class="container-fluid">
-                <div class="row dash-notification">
-                  <div class="col-md-12"> 
-                      <div class="dash">
-                          <div class="row">
-                              <div class="col-md-12">
-                                  <div class="dash-top">
-                                  <h1 class="dash-title">Dashboard</h1>
-                                  <i class="fa-solid fa-chevron-right"></i>
-                                  <span class="min-title">Buyer Management</span>
-                                  </div>
-                              </div>
+
+       <div class="container-fluid">
+        <div class="row dash-notification">
+          <div class="col-md-12">
+              <div class="dash">
+                  <div class="row">
+                      <div class="col-md-12">
+                          <div class="dash-top">
+                              <h1 class="dash-title">Dashboard</h1>
+                              <i class="fa-solid fa-chevron-right"></i>
+                              <span class="min-title">Buyer Management</span>
                           </div>
-                          <!-- Blue MASSEGES section -->
+                      </div>
+                  </div>
+
+                  <!-- Success/Error Messages -->
+                  @if(session('success'))
+                      <div class="alert alert-success alert-dismissible fade show" role="alert">
+                          {{ session('success') }}
+                          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                      </div>
+                  @endif
+
+                  @if(session('error'))
+                      <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                          {{ session('error') }}
+                          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                      </div>
+                  @endif
+
+                  <!-- Blue MESSAGES section -->
                   <div class="user-notification">
                       <div class="row">
                           <div class="col-md-12">
@@ -71,1829 +71,396 @@
                           </div>
                       </div>
                   </div>
-                 <!-- Filter Date Section -->
-              <div class="date-section">
-                <div class="row">
-                  <div class="col-md-8">
-                    <div class="user-all-seller-drop">
-                      <!-- first drop dawon  -->
-                      <form>
-                        <div class="row align-items-center calendar-sec">
-                          <div class="col-auto date-selection">
-                            <div class="date-sec">
-                              <i class="fa-solid fa-calendar-days"></i>
-                              <select class="form-select" id="dateFilter">
-                                <option value="today">Today</option>
-                                <option value="yesterday">Yesterday</option>
-                                <option value="today">Last Week</option>
-                                <option value="today">Last 7 days</option>
-                                <option value="today">Lifetime</option>
-                                <option value="lastMonth">Last Month</option>
-                                <option value="custom">Any Date</option>
-                              </select>
-                            </div>
-                          </div>
-                          <div
-                            class="col-auto"
-                            id="fromDateFields"
-                            style="display: none"
-                          >
-                            <div class="row">
-                              <label
-                                for="inputEmail3"
-                                class="col-sm-3 col-form-label"
-                                >From:</label
-                              >
-                              <div class="col-sm-9">
-                                <input
-                                  type="date"
-                                  class="form-control"
-                                  id="fromDate"
-                                />
-                              </div>
-                            </div>
-                          </div>
-                          <div
-                            class="col-auto"
-                            id="toDateFields"
-                            style="display: none"
-                          >
-                            <div class="row">
-                              <label
-                                for="inputEmail3"
-                                class="col-sm-2 col-form-label"
-                                >To:</label
-                              >
-                              <div class="col-sm-10">
-                                <input
-                                  type="date"
-                                  class="form-control"
-                                  id="fromDate"
-                                />
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </form>
-                      <!-- sceond drop -->
-                      <form>
-                        <div class="row align-items-center calendar-sec">
-                          <div class="col-auto date-selection">
-                            <div class="date-sec filter-drop">
-                              <i
-                                class="bx bx-filter icon"
-                                title="Analytics &amp; Reports"
-                              ></i>
-                              <select class="form-select" id="dateFilter">
-                                <option value="">Sort by Date</option>
-                                <option value="">Top Reviews</option>
-                                <option value="">Top Sellers</option>
-                                <option value="">Class Online</option>
-                                <option value="">Freelance Online</option>
-                                <option value="">Class In-Person</option>
-                                <option value="">Freelance In-Person</option>
-                                <option value="">Trending</option>
-                              </select>
-                            </div>
-                          </div>
-                          <div
-                            class="col-auto"
-                            id="fromDateFields"
-                            style="display: none"
-                          >
-                            <div class="row">
-                              <label
-                                for="inputEmail3"
-                                class="col-sm-3 col-form-label"
-                                >From:</label
-                              >
-                              <div class="col-sm-9">
-                                <input
-                                  type="date"
-                                  class="form-control"
-                                  id="fromDate"
-                                />
-                              </div>
-                            </div>
-                          </div>
-                          <div
-                            class="col-auto"
-                            id="toDateFields"
-                            style="display: none"
-                          >
-                            <div class="row">
-                              <label
-                                for="inputEmail3"
-                                class="col-sm-2 col-form-label"
-                                >To:</label
-                              >
-                              <div class="col-sm-10">
-                                <input
-                                  type="date"
-                                  class="form-control"
-                                  id="fromDate"
-                                />
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </form>
-                    </div>
-                  </div>
-                  <div class="col-md-4 search-form-sec">
-                    <form>
-                      <input type="text" class="filter-drop border-0" name="search" placeholder="Search" />
-                    </form>
-                  </div>
-                </div>
-              </div>
-              <!--Filter Date section ended here -->
-              <div class="row">
-                <div class="col-md-12">
-                  <div class="page-content">
-                    <div class="nav-tabs">
-                    <nav>
-                      <ul class="tabs">
-                        <li class="tab-li">
-                          <a href="#tab1" class="tab-li__link">Active Accounts</a>
-                        </li>
-                        <li class="tab-li">
-                          <a href="#tab2" class="tab-li__link">Inactive Accounts</a>
-                        </li>
-                        <li class="tab-li">
-                          <a href="#tab3" class="tab-li__link">Banned Accounts</a>
-                        </li>
-                        <li class="tab-li">
-                          <a href="#tab4" class="tab-li__link">Deleted Accounts</a>
-                        </li>
-                        
-                      </ul>
-                    </nav>
-                  </div>
-                </div>
-                </div>
-              </div> 
-                  <div>
-                    <section id="tab1" data-tab-content>
-                      <p class="tab__content">
-                        <div >
-                          <!-- BEGIN: MAIN SECTION -->
-                          <div>
-                              <div id="installment-contant">
-                                  <div class="row" id="main-contant-AI">
-                                      <div class="col-md-12">
-                                          <!-- BEGIN: INSTALLMENT TABLE SECTION -->
-                                          <div class="row installment-table">
-                                              <div class="col-md-12">
-                                                  <div class="table-responsive table-desc">
-                                                      <div class="hack1">
-                                                          <div class="hack2">
-                                                              <table class="table">
-                                                                  <thead>
-                                                                      <tr class="text-nowrap">
-                                                                          
-                                                                          <th>Applicant</th>
-                                                                          <th>Email</th>
-                                                                          <th>Registration Date</th>
-                                                                          <th>Total Order</th>
-                                                                          <th>Total Amount</th>
-                                                                          <th>Status</th>
-                                                                          <th>Last Active</th>
-                                                                          <th>Action</th>
-                                                                          
-                                                                      </tr>
-                                                                  </thead>
-                                                                  <tbody>
-                                                                      <tr>
-                                                                          
-                                                                        <td><img class="Buyer-img" src="assets/admin/asset/img/profile.png" ><span class="para-1">Usama A.</span></td>
-                                                                          <td>example@company.com</td>
-                                                                          <td>October 23, 2023</td>
-                                                                          <td>400</td>
-                                                                          <td>$ 14,840</td>
-                                                                          <td><span class="badge servce-class-badge">Active</span></td>
-                                                                          <td>Last month ago</td>
-                                                                          <td>
-                                                                            <div class="expert-dropdown">
-                                                                              <button
-                                                                                class="btn action-btn"
-                                                                                type="button"
-                                                                                id="dropdownMenuButton1"
-                                                                                data-bs-toggle="dropdown"
-                                                                                aria-expanded="false"
-                                                                              >
-                                                                                ...
-                                                                              </button>
-                                                                              <ul
-                                                                                class="dropdown-menu"
-                                                                                aria-labelledby="dropdownMenuButton1"
-                                                                              >
-                                                                                <a
-                                                                                  class="dropdown-item"
-                                                                                  href="#"
-                                                                                  ><li>
-                                                                                    View dashboard
-                                                                                  </li></a
-                                                                                >
-                                                                                <a
-                                                                                  class="dropdown-item"
-                                                                                  href="#"
-                                                                                  ><li> delete account</li></a
-                                                                                >
-                                                                                <a
-                                                                                  class="dropdown-item"
-                                                                                  href="#"
-                                                                                  ><li>ban account</li></a
-                                                                                >
-                                                                              </ul>
-                                                                            </div>
-                                                                          </td>
-                                                                      </tr>
-                                                                      <tr>
-                                                                        <td><img class="Buyer-img" src="assets/admin/asset/img/profile.png" ><span class="para-1">Usama A.</span></td>
-                                                                          <td>example@company.com</td>
-                                                                          <td>October 23, 2023</td>
-                                                                          <td>400</td>
-                                                                          <td>$ 14,840</td>
-                                                                          <td><span class="badge servce-class-badge">Active</span></td>
-                                                                          <td>Last month ago</td>
-                                                                          <td>
-                                                                            <div class="expert-dropdown">
-                                                                              <button
-                                                                                class="btn action-btn"
-                                                                                type="button"
-                                                                                id="dropdownMenuButton1"
-                                                                                data-bs-toggle="dropdown"
-                                                                                aria-expanded="false"
-                                                                              >
-                                                                                ...
-                                                                              </button>
-                                                                              <ul
-                                                                                class="dropdown-menu"
-                                                                                aria-labelledby="dropdownMenuButton1"
-                                                                              >
-                                                                                <a
-                                                                                  class="dropdown-item"
-                                                                                  href="#"
-                                                                                  ><li>
-                                                                                    View dashboard
-                                                                                  </li></a
-                                                                                >
-                                                                                <a
-                                                                                  class="dropdown-item"
-                                                                                  href="#"
-                                                                                  ><li> delete account</li></a
-                                                                                >
-                                                                                <a
-                                                                                  class="dropdown-item"
-                                                                                  href="#"
-                                                                                  ><li>ban account</li></a
-                                                                                >
-                                                                              </ul>
-                                                                            </div>
-                                                                          </td>
-                                                                        </tr>
-                                                                      <tr>
-                                                                        <td><img class="Buyer-img" src="assets/admin/asset/img/profile.png" ><span class="para-1">Usama A.</span></td>
-                                                                        <td>example@company.com</td>
-                                                                        <td>October 23, 2023</td>
-                                                                        <td>400</td>
-                                                                        <td>$ 14,840</td>
-                                                                        <td><span class="badge servce-class-badge">Active</span></td>
-                                                                        <td>Last month ago</td>
-                                                                        <td>
-                                                                          <div class="expert-dropdown">
-                                                                            <button
-                                                                              class="btn action-btn"
-                                                                              type="button"
-                                                                              id="dropdownMenuButton1"
-                                                                              data-bs-toggle="dropdown"
-                                                                              aria-expanded="false"
-                                                                            >
-                                                                              ...
-                                                                            </button>
-                                                                            <ul
-                                                                              class="dropdown-menu"
-                                                                              aria-labelledby="dropdownMenuButton1"
-                                                                            >
-                                                                              <a
-                                                                                class="dropdown-item"
-                                                                                href="#"
-                                                                                ><li>
-                                                                                  View dashboard
-                                                                                </li></a
-                                                                              >
-                                                                              <a
-                                                                                class="dropdown-item"
-                                                                                href="#"
-                                                                                ><li> delete account</li></a
-                                                                              >
-                                                                              <a
-                                                                                class="dropdown-item"
-                                                                                href="#"
-                                                                                ><li>ban account</li></a
-                                                                              >
-                                                                            </ul>
-                                                                          </div>
-                                                                        </td>
-                                                                      </tr>
-                                                                      <tr>
-                                                                         
-                                                                        <td><img class="Buyer-img" src="assets/admin/asset/img/profile.png" ><span class="para-1">Usama A.</span></td>
-                                                                          <td>example@company.com</td>
-                                                                          <td>October 23, 2023</td>
-                                                                          <td>400</td>
-                                                                          <td>$ 14,840</td>
-                                                                          <td><span class="badge servce-class-badge">Active</span></td>
-                                                                          <td>Last month ago</td>
-                                                                          <td>
-                                                                            <div class="expert-dropdown">
-                                                                              <button
-                                                                                class="btn action-btn"
-                                                                                type="button"
-                                                                                id="dropdownMenuButton1"
-                                                                                data-bs-toggle="dropdown"
-                                                                                aria-expanded="false"
-                                                                              >
-                                                                                ...
-                                                                              </button>
-                                                                              <ul
-                                                                                class="dropdown-menu"
-                                                                                aria-labelledby="dropdownMenuButton1"
-                                                                              >
-                                                                                <a
-                                                                                  class="dropdown-item"
-                                                                                  href="#"
-                                                                                  ><li>
-                                                                                    View dashboard
-                                                                                  </li></a
-                                                                                >
-                                                                                <a
-                                                                                  class="dropdown-item"
-                                                                                  href="#"
-                                                                                  ><li> delete account</li></a
-                                                                                >
-                                                                                <a
-                                                                                  class="dropdown-item"
-                                                                                  href="#"
-                                                                                  ><li>ban account</li></a
-                                                                                >
-                                                                              </ul>
-                                                                            </div>
-                                                                          </td>
-                                                                         </tr>
-                                                                      <tr>
-                                                                        <td><img class="Buyer-img" src="assets/admin/asset/img/profile.png" ><span class="para-1">Usama A.</span></td>
-                                                                        <td>example@company.com</td>
-                                                                        <td>October 23, 2023</td>
-                                                                        <td>400</td>
-                                                                        <td>$ 14,840</td>
-                                                                        <td><span class="badge servce-class-badge">Active</span></td>
-                                                                        <td>Last month ago</td>
-                                                                        <td>
-                                                                          <div class="expert-dropdown">
-                                                                            <button
-                                                                              class="btn action-btn"
-                                                                              type="button"
-                                                                              id="dropdownMenuButton1"
-                                                                              data-bs-toggle="dropdown"
-                                                                              aria-expanded="false"
-                                                                            >
-                                                                              ...
-                                                                            </button>
-                                                                            <ul
-                                                                              class="dropdown-menu"
-                                                                              aria-labelledby="dropdownMenuButton1"
-                                                                            >
-                                                                              <a
-                                                                                class="dropdown-item"
-                                                                                href="#"
-                                                                                ><li>
-                                                                                  View dashboard
-                                                                                </li></a
-                                                                              >
-                                                                              <a
-                                                                                class="dropdown-item"
-                                                                                href="#"
-                                                                                ><li> delete account</li></a
-                                                                              >
-                                                                              <a
-                                                                                class="dropdown-item"
-                                                                                href="#"
-                                                                                ><li>ban account</li></a
-                                                                              >
-                                                                            </ul>
-                                                                          </div>
-                                                                        </td>   
-                                                                        
-                                                                      </tr>
-                                                                      <tr>
-                                                                          
-                                                                        <td><img class="Buyer-img" src="assets/admin/asset/img/profile.png" ><span class="para-1">Usama A.</span></td>
-                                                                        <td>example@company.com</td>
-                                                                        <td>October 23, 2023</td>
-                                                                        <td>400</td>
-                                                                        <td>$ 14,840</td>
-                                                                        <td><span class="badge servce-class-badge">Active</span></td>
-                                                                        <td>Last month ago</td>
-                                                                        <td>
-                                                                          <div class="expert-dropdown">
-                                                                            <button
-                                                                              class="btn action-btn"
-                                                                              type="button"
-                                                                              id="dropdownMenuButton1"
-                                                                              data-bs-toggle="dropdown"
-                                                                              aria-expanded="false"
-                                                                            >
-                                                                              ...
-                                                                            </button>
-                                                                            <ul
-                                                                              class="dropdown-menu"
-                                                                              aria-labelledby="dropdownMenuButton1"
-                                                                            >
-                                                                              <a
-                                                                                class="dropdown-item"
-                                                                                href="#"
-                                                                                ><li>
-                                                                                  View dashboard
-                                                                                </li></a
-                                                                              >
-                                                                              <a
-                                                                                class="dropdown-item"
-                                                                                href="#"
-                                                                                ><li> delete account</li></a
-                                                                              >
-                                                                              <a
-                                                                                class="dropdown-item"
-                                                                                href="#"
-                                                                                ><li>ban account</li></a
-                                                                              >
-                                                                            </ul>
-                                                                          </div>
-                                                                        </td>
-                                                                      </tr>
-                                                                      <tr>
-                                                                       
-                                                                        <td><img class="Buyer-img" src="assets/admin/asset/img/profile.png" ><span class="para-1">Usama A.</span></td>
-                                                                          <td>example@company.com</td>
-                                                                          <td>October 23, 2023</td>
-                                                                          <td>400</td>
-                                                                          <td>$ 14,840</td>
-                                                                          <td><span class="badge servce-class-badge">Active</span></td>
-                                                                          <td>Last month ago</td>
-                                                                          <td>
-                                                                            <div class="expert-dropdown">
-                                                                              <button
-                                                                                class="btn action-btn"
-                                                                                type="button"
-                                                                                id="dropdownMenuButton1"
-                                                                                data-bs-toggle="dropdown"
-                                                                                aria-expanded="false"
-                                                                              >
-                                                                                ...
-                                                                              </button>
-                                                                              <ul
-                                                                                class="dropdown-menu"
-                                                                                aria-labelledby="dropdownMenuButton1"
-                                                                              >
-                                                                                <a
-                                                                                  class="dropdown-item"
-                                                                                  href="#"
-                                                                                  ><li>
-                                                                                    View dashboard
-                                                                                  </li></a
-                                                                                >
-                                                                                <a
-                                                                                  class="dropdown-item"
-                                                                                  href="#"
-                                                                                  ><li> delete account</li></a
-                                                                                >
-                                                                                <a
-                                                                                  class="dropdown-item"
-                                                                                  href="#"
-                                                                                  ><li>ban account</li></a
-                                                                                >
-                                                                              </ul>
-                                                                            </div>
-                                                                          </td>
-                                                                          </tr>
-                                                                      <tr>
-                                                                        <td><img class="Buyer-img" src="assets/admin/asset/img/profile.png" ><span class="para-1">Usama A.</span></td>
-                                                                          <td>example@company.com</td>
-                                                                          <td>October 23, 2023</td>
-                                                                          <td>400</td>
-                                                                          <td>$ 14,840</td>
-                                                                          <td><span class="badge servce-class-badge">Active</span></td>
-                                                                          <td>Last month ago</td>
-                                                                          <td>
-                                                                            <div class="expert-dropdown">
-                                                                              <button
-                                                                                class="btn action-btn"
-                                                                                type="button"
-                                                                                id="dropdownMenuButton1"
-                                                                                data-bs-toggle="dropdown"
-                                                                                aria-expanded="false"
-                                                                              >
-                                                                                ...
-                                                                              </button>
-                                                                              <ul
-                                                                                class="dropdown-menu"
-                                                                                aria-labelledby="dropdownMenuButton1"
-                                                                              >
-                                                                                <a
-                                                                                  class="dropdown-item"
-                                                                                  href="#"
-                                                                                  ><li>
-                                                                                    View dashboard
-                                                                                  </li></a
-                                                                                >
-                                                                                <a
-                                                                                  class="dropdown-item"
-                                                                                  href="#"
-                                                                                  ><li> delete account</li></a
-                                                                                >
-                                                                                <a
-                                                                                  class="dropdown-item"
-                                                                                  href="#"
-                                                                                  ><li>ban account</li></a
-                                                                                >
-                                                                              </ul>
-                                                                            </div>
-                                                                          </td>  
-                                                                         </tr>
-                                                                  </tbody>
-                                                              </table>
-                                                          </div>
-                                                      </div>
-                                                  </div>
-                                              </div>
-                                          </div>
-                                          <!-- END: INSTALLMENT TABLE SECTION -->
-                                      </div>
-                                  </div>
-                        
+
+                  <!-- Statistics Cards -->
+                  <div class="row mb-4">
+                      <div class="col-md-2 col-sm-6 mb-3">
+                          <div class="card text-center">
+                              <div class="card-body">
+                                  <h5 class="card-title">{{ $stats['total'] ?? 0 }}</h5>
+                                  <p class="card-text text-muted">Total Buyers</p>
                               </div>
                           </div>
-                        </div>
-                      </p>
-                  
-                    </section>
-                  </div>
-                    <section id="tab2" data-tab-content class="">
-                      <p class="tab__content">
-                        <div>
-                          <!-- BEGIN: MAIN SECTION -->
-                          <div>
-                              <div>
-                                  <div class="row" id="main-contant-AI">
-                                      <div class="col-md-12">
-                                          <!-- BEGIN: INSTALLMENT TABLE SECTION -->
-                                          <div class="row installment-table">
-                                            <div class="col-md-12">
-                                                <div class="table-responsive table-desc">
-                                                    <div class="hack1">
-                                                        <div class="hack2">
-                                                            <table class="table">
-                                                                <thead>
-                                                                    <tr class="text-nowrap">
-                                                                       
-                                                                      <th>Applicant</th>
-                                                                      <th>Email</th>
-                                                                      <th>Registration Date</th>
-                                                                      <th>Total Order</th>
-                                                                      <th>Total Amount</th>
-                                                                      <th>Status</th>
-                                                                      <th>Last Active</th>
-                                                                      <th>Action</th>
-                                                                        
-                                                                    </tr>
-                                                                </thead>
-                                                                <tbody>
-                                                                    <tr>
-                                                                        
-                                                                      <td><img class="Buyer-img" src="assets/admin/asset/img/profile.png" ><span class="para-1">Usama A.</span></td>
-                                                                      <td>example@company.com</td>
-                                                                      <td>October 23, 2023</td>
-                                                                      <td>400</td>
-                                                                      <td>$ 14,840</td>
-                                                                      <td><span class="badge servce-clas-badge">Inactive</span></td>
-                                                                      <td>Last month ago</td>
-                                                                      <td>
-                                                                        <div class="expert-dropdown">
-                                                                          <button
-                                                                            class="btn action-btn"
-                                                                            type="button"
-                                                                            id="dropdownMenuButton1"
-                                                                            data-bs-toggle="dropdown"
-                                                                            aria-expanded="false"
-                                                                          >
-                                                                            ...
-                                                                          </button>
-                                                                          <ul
-                                                                            class="dropdown-menu"
-                                                                            aria-labelledby="dropdownMenuButton1"
-                                                                          >
-                                                                            <a
-                                                                              class="dropdown-item"
-                                                                              href="#"
-                                                                              ><li>
-                                                                                View dashboard
-                                                                              </li></a
-                                                                            >
-                                                                            <a
-                                                                              class="dropdown-item"
-                                                                              href="#"
-                                                                              ><li> delete account</li></a
-                                                                            >
-                                                                            <a
-                                                                              class="dropdown-item"
-                                                                              href="#"
-                                                                              ><li>ban account</li></a
-                                                                            >
-                                                                          </ul>
-                                                                        </div>
-                                                                      </td>
-                                                                     
-                                                                        
-                                                                    </tr>
-                                                                    <tr>
-                                                                      <td><img class="Buyer-img" src="assets/admin/asset/img/profile.png" ><span class="para-1">Usama A.</span></td>
-                                                                      <td>example@company.com</td>
-                                                                      <td>October 23, 2023</td>
-                                                                      <td>400</td>
-                                                                      <td>$ 14,840</td>
-                                                                      <td><span class="badge servce-clas-badge">Inactive</span></td>
-                                                                      <td>Last month ago</td>
-                                                                      <td>
-                                                                        <div class="expert-dropdown">
-                                                                          <button
-                                                                            class="btn action-btn"
-                                                                            type="button"
-                                                                            id="dropdownMenuButton1"
-                                                                            data-bs-toggle="dropdown"
-                                                                            aria-expanded="false"
-                                                                          >
-                                                                            ...
-                                                                          </button>
-                                                                          <ul
-                                                                            class="dropdown-menu"
-                                                                            aria-labelledby="dropdownMenuButton1"
-                                                                          >
-                                                                            <a
-                                                                              class="dropdown-item"
-                                                                              href="#"
-                                                                              ><li>
-                                                                                View dashboard
-                                                                              </li></a
-                                                                            >
-                                                                            <a
-                                                                              class="dropdown-item"
-                                                                              href="#"
-                                                                              ><li> delete account</li></a
-                                                                            >
-                                                                            <a
-                                                                              class="dropdown-item"
-                                                                              href="#"
-                                                                              ><li>ban account</li></a
-                                                                            >
-                                                                          </ul>
-                                                                        </div>
-                                                                      </td>  
-                                                                     
-                                                                    </tr>
-                                                                    <tr>
-                                                                      <td><img class="Buyer-img" src="assets/admin/asset/img/profile.png" ><span class="para-1">Usama A.</span></td>
-                                                                      <td>example@company.com</td>
-                                                                      <td>October 23, 2023</td>
-                                                                      <td>400</td>
-                                                                      <td>$ 14,840</td>
-                                                                      <td><span class="badge servce-clas-badge">Inactive</span></td>
-                                                                      <td>Last month ago</td>
-                                                                      <td>
-                                                                        <div class="expert-dropdown">
-                                                                          <button
-                                                                            class="btn action-btn"
-                                                                            type="button"
-                                                                            id="dropdownMenuButton1"
-                                                                            data-bs-toggle="dropdown"
-                                                                            aria-expanded="false"
-                                                                          >
-                                                                            ...
-                                                                          </button>
-                                                                          <ul
-                                                                            class="dropdown-menu"
-                                                                            aria-labelledby="dropdownMenuButton1"
-                                                                          >
-                                                                            <a
-                                                                              class="dropdown-item"
-                                                                              href="#"
-                                                                              ><li>
-                                                                                View dashboard
-                                                                              </li></a
-                                                                            >
-                                                                            <a
-                                                                              class="dropdown-item"
-                                                                              href="#"
-                                                                              ><li> delete account</li></a
-                                                                            >
-                                                                            <a
-                                                                              class="dropdown-item"
-                                                                              href="#"
-                                                                              ><li>ban account</li></a
-                                                                            >
-                                                                          </ul>
-                                                                        </div>
-                                                                      </td>
-                                                                     
-                                                                    </tr>
-                                                                    <tr>
-                                                                      <td><img class="Buyer-img" src="assets/admin/asset/img/profile.png" ><span class="para-1">Usama A.</span></td>
-                                                                      <td>example@company.com</td>
-                                                                      <td>October 23, 2023</td>
-                                                                      <td>400</td>
-                                                                      <td>$ 14,840</td>
-                                                                      <td><span class="badge servce-clas-badge">Inactive</span></td>
-                                                                      <td>Last month ago</td>
-                                                                      <td>
-                                                                        <div class="expert-dropdown">
-                                                                          <button
-                                                                            class="btn action-btn"
-                                                                            type="button"
-                                                                            id="dropdownMenuButton1"
-                                                                            data-bs-toggle="dropdown"
-                                                                            aria-expanded="false"
-                                                                          >
-                                                                            ...
-                                                                          </button>
-                                                                          <ul
-                                                                            class="dropdown-menu"
-                                                                            aria-labelledby="dropdownMenuButton1"
-                                                                          >
-                                                                            <a
-                                                                              class="dropdown-item"
-                                                                              href="#"
-                                                                              ><li>
-                                                                                View dashboard
-                                                                              </li></a
-                                                                            >
-                                                                            <a
-                                                                              class="dropdown-item"
-                                                                              href="#"
-                                                                              ><li> delete account</li></a
-                                                                            >
-                                                                            <a
-                                                                              class="dropdown-item"
-                                                                              href="#"
-                                                                              ><li>ban account</li></a
-                                                                            >
-                                                                          </ul>
-                                                                        </div>
-                                                                      </td> 
-                                                                     
-                                                                    </tr>
-                                                                    <tr>
-                                                                      <td><img class="Buyer-img" src="assets/admin/asset/img/profile.png" ><span class="para-1">Usama A.</span></td>
-                                                                      <td>example@company.com</td>
-                                                                      <td>October 23, 2023</td>
-                                                                      <td>400</td>
-                                                                      <td>$ 14,840</td>
-                                                                      <td><span class="badge servce-clas-badge">Inactive</span></td>
-                                                                      <td>Last month ago</td>
-                                                                      <td>
-                                                                        <div class="expert-dropdown">
-                                                                          <button
-                                                                            class="btn action-btn"
-                                                                            type="button"
-                                                                            id="dropdownMenuButton1"
-                                                                            data-bs-toggle="dropdown"
-                                                                            aria-expanded="false"
-                                                                          >
-                                                                            ...
-                                                                          </button>
-                                                                          <ul
-                                                                            class="dropdown-menu"
-                                                                            aria-labelledby="dropdownMenuButton1"
-                                                                          >
-                                                                            <a
-                                                                              class="dropdown-item"
-                                                                              href="#"
-                                                                              ><li>
-                                                                                View dashboard
-                                                                              </li></a
-                                                                            >
-                                                                            <a
-                                                                              class="dropdown-item"
-                                                                              href="#"
-                                                                              ><li> delete account</li></a
-                                                                            >
-                                                                            <a
-                                                                              class="dropdown-item"
-                                                                              href="#"
-                                                                              ><li>ban account</li></a
-                                                                            >
-                                                                          </ul>
-                                                                        </div>
-                                                                      </td>  
-                                                                     
-                                                                    </tr>
-                                                                    <tr>
-                                                                      <td><img class="Buyer-img" src="assets/admin/asset/img/profile.png" ><span class="para-1">Usama A.</span></td>
-                                                                      <td>example@company.com</td>
-                                                                      <td>October 23, 2023</td>
-                                                                      <td>400</td>
-                                                                      <td>$ 14,840</td>
-                                                                      <td><span class="badge servce-clas-badge">Inactive</span></td>
-                                                                      <td>Last month ago</td>
-                                                                      <td>
-                                                                        <div class="expert-dropdown">
-                                                                          <button
-                                                                            class="btn action-btn"
-                                                                            type="button"
-                                                                            id="dropdownMenuButton1"
-                                                                            data-bs-toggle="dropdown"
-                                                                            aria-expanded="false"
-                                                                          >
-                                                                            ...
-                                                                          </button>
-                                                                          <ul
-                                                                            class="dropdown-menu"
-                                                                            aria-labelledby="dropdownMenuButton1"
-                                                                          >
-                                                                            <a
-                                                                              class="dropdown-item"
-                                                                              href="#"
-                                                                              ><li>
-                                                                                View dashboard
-                                                                              </li></a
-                                                                            >
-                                                                            <a
-                                                                              class="dropdown-item"
-                                                                              href="#"
-                                                                              ><li> delete account</li></a
-                                                                            >
-                                                                            <a
-                                                                              class="dropdown-item"
-                                                                              href="#"
-                                                                              ><li>ban account</li></a
-                                                                            >
-                                                                          </ul>
-                                                                        </div>
-                                                                      </td>  
-                                                                     
-                                                                    </tr>
-                                                                    <tr>
-                                                                      <td><img class="Buyer-img" src="assets/admin/asset/img/profile.png" ><span class="para-1">Usama A.</span></td>
-                                                                          <td>example@company.com</td>
-                                                                          <td>October 23, 2023</td>
-                                                                          <td>400</td>
-                                                                          <td>$ 14,840</td>
-                                                                          <td><span class="badge servce-clas-badge">Inactive</span></td>
-                                                                          <td>Last month ago</td>
-                                                                          <td>
-                                                                            <div class="expert-dropdown">
-                                                                              <button
-                                                                                class="btn action-btn"
-                                                                                type="button"
-                                                                                id="dropdownMenuButton1"
-                                                                                data-bs-toggle="dropdown"
-                                                                                aria-expanded="false"
-                                                                              >
-                                                                                ...
-                                                                              </button>
-                                                                              <ul
-                                                                                class="dropdown-menu"
-                                                                                aria-labelledby="dropdownMenuButton1"
-                                                                              >
-                                                                                <a
-                                                                                  class="dropdown-item"
-                                                                                  href="#"
-                                                                                  ><li>
-                                                                                    View dashboard
-                                                                                  </li></a
-                                                                                >
-                                                                                <a
-                                                                                  class="dropdown-item"
-                                                                                  href="#"
-                                                                                  ><li> delete account</li></a
-                                                                                >
-                                                                                <a
-                                                                                  class="dropdown-item"
-                                                                                  href="#"
-                                                                                  ><li>ban account</li></a
-                                                                                >
-                                                                              </ul>
-                                                                            </div>
-                                                                          </td>  
-                                                                         
-                                                                    </tr>
-                                                                    <tr>
-                                                                      <td><img class="Buyer-img" src="assets/admin/asset/img/profile.png" ><span class="para-1">Usama A.</span></td>
-                                                                      <td>example@company.com</td>
-                                                                      <td>October 23, 2023</td>
-                                                                      <td>400</td>
-                                                                      <td>$ 14,840</td>
-                                                                      <td><span class="badge servce-clas-badge">Inactive</span></td>
-                                                                      <td>Last month ago</td>
-                                                                      <td>
-                                                                        <div class="expert-dropdown">
-                                                                          <button
-                                                                            class="btn action-btn"
-                                                                            type="button"
-                                                                            id="dropdownMenuButton1"
-                                                                            data-bs-toggle="dropdown"
-                                                                            aria-expanded="false"
-                                                                          >
-                                                                            ...
-                                                                          </button>
-                                                                          <ul
-                                                                            class="dropdown-menu"
-                                                                            aria-labelledby="dropdownMenuButton1"
-                                                                          >
-                                                                            <a
-                                                                              class="dropdown-item"
-                                                                              href="#"
-                                                                              ><li>
-                                                                                View dashboard
-                                                                              </li></a
-                                                                            >
-                                                                            <a
-                                                                              class="dropdown-item"
-                                                                              href="#"
-                                                                              ><li> delete account</li></a
-                                                                            >
-                                                                            <a
-                                                                              class="dropdown-item"
-                                                                              href="#"
-                                                                              ><li>ban account</li></a
-                                                                            >
-                                                                          </ul>
-                                                                        </div>
-                                                                      </td>  
-                                                                     
-                                                                    </tr>
-                                                                </tbody>
-                                                            </table>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                          <!-- END: INSTALLMENT TABLE SECTION -->
-                                      </div>
-                                  </div>
-                        
-                              </div>
-                          </div>
-                        </div>
-                      </p>
-                    </section>
-                   
-                   
-                    <section id="tab3" data-tab-content class="">
-                      <p class="tab__content">
-                        <div class="main-container d-flex">
-                          <!-- BEGIN: MAIN SECTION -->
-                          <div>
-                              <div>
-                                  <div class="row" id="main-contant-AI">
-                                      <div class="col-md-12">
-                                          <!-- BEGIN: INSTALLMENT TABLE SECTION -->
-                                          <div class="row installment-table">
-                                            <div class="col-md-12">
-                                                <div class="table-responsive table-desc">
-                                                    <div class="hack1">
-                                                        <div class="hack2">
-                                                            <table class="table">
-                                                                <thead>
-                                                                    <tr class="text-nowrap">
-                                                                       
-                                                                      <th>Applicant</th>
-                                                                      <th>Email</th>
-                                                                      <th>Registration Date</th>
-                                                                      <th>Total Order</th>
-                                                                      <th>Total Amount</th>
-                                                                      <th>Status</th>
-                                                                      <th>Last Active</th>
-                                                                      <th>Action</th>
-                                                                      
-                                                                        
-                                                                    </tr>
-                                                                </thead>
-                                                                <tbody>
-                                                                    <tr>
-                                                                        
-                                                                      <td><img class="Buyer-img" src="assetsassets/admin/asset/img/profile.png" ><span class="para-1">Usama A.</span></td>
-                                                                      <td>example@company.com</td>
-                                                                      <td>October 23, 2023</td>
-                                                                      <td>400</td>
-                                                                      <td>$ 14,840</td>
-                                                                      <td><span class="badge servce-clas-badg">Banned</span></td>
-                                                                      <td>Last month ago</td>
-                                                                      <td>
-                                                                        <div class="expert-dropdown">
-                                                                          <button
-                                                                            class="btn action-btn"
-                                                                            type="button"
-                                                                            id="dropdownMenuButton1"
-                                                                            data-bs-toggle="dropdown"
-                                                                            aria-expanded="false"
-                                                                          >
-                                                                            ...
-                                                                          </button>
-                                                                          <ul
-                                                                            class="dropdown-menu"
-                                                                            aria-labelledby="dropdownMenuButton1"
-                                                                          >
-                                                                            <a
-                                                                              class="dropdown-item"
-                                                                              href="#"
-                                                                              ><li>
-                                                                                View dashboard
-                                                                              </li></a
-                                                                            >
-                                                                            <a
-                                                                              class="dropdown-item"
-                                                                              href="#"
-                                                                              ><li> unban</li></a
-                                                                            >
-                                                                            
-                                                                          </ul>
-                                                                        </div>
-                                                                      </td>  
-                                                                     
-                                                                        
-                                                                    </tr>
-                                                                    <tr>
-                                                                         
-                                                                      <td><img class="Buyer-img" src="assets/admin/asset/img/profile.png" ><span class="para-1">Usama A.</span></td>
-                                                                      <td>example@company.com</td>
-                                                                      <td>October 23, 2023</td>
-                                                                      <td>400</td>
-                                                                      <td>$ 14,840</td>
-                                                                      <td><span class="badge servce-clas-badg">Banned</span></td>
-                                                                      <td>Last month ago</td>
-                                                                      <td>
-                                                                        <div class="expert-dropdown">
-                                                                          <button
-                                                                            class="btn action-btn"
-                                                                            type="button"
-                                                                            id="dropdownMenuButton1"
-                                                                            data-bs-toggle="dropdown"
-                                                                            aria-expanded="false"
-                                                                          >
-                                                                            ...
-                                                                          </button>
-                                                                          <ul
-                                                                            class="dropdown-menu"
-                                                                            aria-labelledby="dropdownMenuButton1"
-                                                                          >
-                                                                            <a
-                                                                              class="dropdown-item"
-                                                                              href="#"
-                                                                              ><li>
-                                                                                View dashboard
-                                                                              </li></a
-                                                                            >
-                                                                            <a
-                                                                              class="dropdown-item"
-                                                                              href="#"
-                                                                              ><li> unban</li></a
-                                                                            >
-                                                                            
-                                                                          </ul>
-                                                                        </div>
-                                                                      </td>    
-                                                                    
-                                                                    </tr>
-                                                                    <tr>
-                                                                           
-                                                                      <td><img class="Buyer-img" src="assets/admin/asset/img/profile.png" ><span class="para-1">Usama A.</span></td>
-                                                                      <td>example@company.com</td>
-                                                                      <td>October 23, 2023</td>
-                                                                      <td>400</td>
-                                                                      <td>$ 14,840</td>
-                                                                      <td><span class="badge servce-clas-badg">Banned</span></td>
-                                                                      <td>Last month ago</td>
-                                                                      <td>
-                                                                        <div class="expert-dropdown">
-                                                                          <button
-                                                                            class="btn action-btn"
-                                                                            type="button"
-                                                                            id="dropdownMenuButton1"
-                                                                            data-bs-toggle="dropdown"
-                                                                            aria-expanded="false"
-                                                                          >
-                                                                            ...
-                                                                          </button>
-                                                                          <ul
-                                                                            class="dropdown-menu"
-                                                                            aria-labelledby="dropdownMenuButton1"
-                                                                          >
-                                                                            <a
-                                                                              class="dropdown-item"
-                                                                              href="#"
-                                                                              ><li>
-                                                                                View dashboard
-                                                                              </li></a
-                                                                            >
-                                                                            <a
-                                                                              class="dropdown-item"
-                                                                              href="#"
-                                                                              ><li> unban</li></a
-                                                                            >
-                                                                            
-                                                                          </ul>
-                                                                        </div>
-                                                                      </td>   
-                                                                    
-                                                                    </tr>
-                                                                    <tr>
-                                                                         
-                                                                      <td><img class="Buyer-img" src="assets/admin/asset/img/profile.png" ><span class="para-1">Usama A.</span></td>
-                                                                      <td>example@company.com</td>
-                                                                      <td>October 23, 2023</td>
-                                                                      <td>400</td>
-                                                                      <td>$ 14,840</td>
-                                                                      <td><span class="badge servce-clas-badg">Banned</span></td>
-                                                                      <td>Last month ago</td>
-                                                                      <td>
-                                                                        <div class="expert-dropdown">
-                                                                          <button
-                                                                            class="btn action-btn"
-                                                                            type="button"
-                                                                            id="dropdownMenuButton1"
-                                                                            data-bs-toggle="dropdown"
-                                                                            aria-expanded="false"
-                                                                          >
-                                                                            ...
-                                                                          </button>
-                                                                          <ul
-                                                                            class="dropdown-menu"
-                                                                            aria-labelledby="dropdownMenuButton1"
-                                                                          >
-                                                                            <a
-                                                                              class="dropdown-item"
-                                                                              href="#"
-                                                                              ><li>
-                                                                                View dashboard
-                                                                              </li></a
-                                                                            >
-                                                                            <a
-                                                                              class="dropdown-item"
-                                                                              href="#"
-                                                                              ><li> unban</li></a
-                                                                            >
-                                                                            
-                                                                          </ul>
-                                                                        </div>
-                                                                      </td>    
-                                                                    
-                                                                    </tr>
-                                                                    <tr>
-                                                                           
-                                                                      <td><img class="Buyer-img" src="assets/admin/asset/img/profile.png" ><span class="para-1">Usama A.</span></td>
-                                                                      <td>example@company.com</td>
-                                                                      <td>October 23, 2023</td>
-                                                                      <td>400</td>
-                                                                      <td>$ 14,840</td>
-                                                                      <td><span class="badge servce-clas-badg">Banned</span></td>
-                                                                      <td>Last month ago</td>
-                                                                      <td>
-                                                                        <div class="expert-dropdown">
-                                                                          <button
-                                                                            class="btn action-btn"
-                                                                            type="button"
-                                                                            id="dropdownMenuButton1"
-                                                                            data-bs-toggle="dropdown"
-                                                                            aria-expanded="false"
-                                                                          >
-                                                                            ...
-                                                                          </button>
-                                                                          <ul
-                                                                            class="dropdown-menu"
-                                                                            aria-labelledby="dropdownMenuButton1"
-                                                                          >
-                                                                            <a
-                                                                              class="dropdown-item"
-                                                                              href="#"
-                                                                              ><li>
-                                                                                View dashboard
-                                                                              </li></a
-                                                                            >
-                                                                            <a
-                                                                              class="dropdown-item"
-                                                                              href="#"
-                                                                              ><li> unban</li></a
-                                                                            >
-                                                                            
-                                                                          </ul>
-                                                                        </div>
-                                                                      </td>   
-                                                                    
-                                                                    </tr>
-                                                                    <tr>
-                                                                          
-                                                                      <td><img class="Buyer-img" src="assets/admin/asset/img/profile.png" ><span class="para-1">Usama A.</span></td>
-                                                                      <td>example@company.com</td>
-                                                                      <td>October 23, 2023</td>
-                                                                      <td>400</td>
-                                                                      <td>$ 14,840</td>
-                                                                      <td><span class="badge servce-clas-badg">Banned</span></td>
-                                                                      <td>Last month ago</td>
-                                                                      <td>
-                                                                        <div class="expert-dropdown">
-                                                                          <button
-                                                                            class="btn action-btn"
-                                                                            type="button"
-                                                                            id="dropdownMenuButton1"
-                                                                            data-bs-toggle="dropdown"
-                                                                            aria-expanded="false"
-                                                                          >
-                                                                            ...
-                                                                          </button>
-                                                                          <ul
-                                                                            class="dropdown-menu"
-                                                                            aria-labelledby="dropdownMenuButton1"
-                                                                          >
-                                                                            <a
-                                                                              class="dropdown-item"
-                                                                              href="#"
-                                                                              ><li>
-                                                                                View dashboard
-                                                                              </li></a
-                                                                            >
-                                                                            <a
-                                                                              class="dropdown-item"
-                                                                              href="#"
-                                                                              ><li> unban</li></a
-                                                                            >
-                                                                            
-                                                                          </ul>
-                                                                        </div>
-                                                                      </td>    
-                                                                    
-                                                                    </tr>
-                                                                    <tr>
-                                                                         
-                                                                      <td><img class="Buyer-img" src="assets/admin/asset/img/profile.png" ><span class="para-1">Usama A.</span></td>
-                                                                      <td>example@company.com</td>
-                                                                      <td>October 23, 2023</td>
-                                                                      <td>400</td>
-                                                                      <td>$ 14,840</td>
-                                                                      <td><span class="badge servce-clas-badg">Banned</span></td>
-                                                                      <td>Last month ago</td>
-                                                                      <td>
-                                                                        <div class="expert-dropdown">
-                                                                          <button
-                                                                            class="btn action-btn"
-                                                                            type="button"
-                                                                            id="dropdownMenuButton1"
-                                                                            data-bs-toggle="dropdown"
-                                                                            aria-expanded="false"
-                                                                          >
-                                                                            ...
-                                                                          </button>
-                                                                          <ul
-                                                                            class="dropdown-menu"
-                                                                            aria-labelledby="dropdownMenuButton1"
-                                                                          >
-                                                                            <a
-                                                                              class="dropdown-item"
-                                                                              href="#"
-                                                                              ><li>
-                                                                                View dashboard
-                                                                              </li></a
-                                                                            >
-                                                                            <a
-                                                                              class="dropdown-item"
-                                                                              href="#"
-                                                                              ><li> unban</li></a
-                                                                            >
-                                                                            
-                                                                          </ul>
-                                                                        </div>
-                                                                      </td>    
-                                                                    
-                                                                    </tr>
-                                                                    <tr>
-                                                                      
-                                                                      <td><img class="Buyer-img" src="assets/admin/asset/img/profile.png" ><span class="para-1">Usama A.</span></td>
-                                                                      <td>example@company.com</td>
-                                                                      <td>October 23, 2023</td>
-                                                                      <td>400</td>
-                                                                      <td>$ 14,840</td>
-                                                                      <td><span class="badge servce-clas-badg">Banned</span></td>
-                                                                      <td>Last month ago</td>
-                                                                      <td>
-                                                                        <div class="expert-dropdown">
-                                                                          <button
-                                                                            class="btn action-btn"
-                                                                            type="button"
-                                                                            id="dropdownMenuButton1"
-                                                                            data-bs-toggle="dropdown"
-                                                                            aria-expanded="false"
-                                                                          >
-                                                                            ...
-                                                                          </button>
-                                                                          <ul
-                                                                            class="dropdown-menu"
-                                                                            aria-labelledby="dropdownMenuButton1"
-                                                                          >
-                                                                            <a
-                                                                              class="dropdown-item"
-                                                                              href="#"
-                                                                              ><li>
-                                                                                View dashboard
-                                                                              </li></a
-                                                                            >
-                                                                            <a
-                                                                              class="dropdown-item"
-                                                                              href="#"
-                                                                              ><li> unban</li></a
-                                                                            >
-                                                                            
-                                                                          </ul>
-                                                                        </div>
-                                                                      </td>    
-                                                                    
-                                                                    </tr>
-                                                                </tbody>
-                                                            </table>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                          <!-- END: INSTALLMENT TABLE SECTION -->
-                                      </div>
-                                  </div>
-                        
-                              </div>
-                          </div>
-                        </div>
-                      </p>
-                  </section>
-                
-                  <section id="tab4" data-tab-content class="">
-                    <p class="tab__content">
-                      <div class="main-container d-flex">
-                        <!-- BEGIN: MAIN SECTION -->
-                        <div>
-                            <div>
-                                <div class="row" id="main-contant-AI">
-                                    <div class="col-md-12">
-                                        <!-- BEGIN: INSTALLMENT TABLE SECTION -->
-                                        <div class="row installment-table">
-                                          <div class="col-md-12">
-                                              <div class="table-responsive table-desc">
-                                                  <div class="hack1">
-                                                      <div class="hack2">
-                                                          <table class="table">
-                                                              <thead>
-                                                                  <tr class="text-nowrap">
-                                                                     
-                                                                    <th>Applicant</th>
-                                                                    <th>Email</th>
-                                                                    <th>Registration Date</th>
-                                                                    <th>Total Order</th>
-                                                                    <th>Total Amount</th>
-                                                                    <th>Status</th>
-                                                                    <th>Last Active</th>
-                                                                    <th>Action</th>
-                                                                    
-                                                                      
-                                                                  </tr>
-                                                              </thead>
-                                                              <tbody>
-                                                                  <tr>
-                                                                      
-                                                                    <td><img class="Buyer-img" src="assets/admin/asset/img/profile.png" ><span class="para-1">Usama A.</span></td>
-                                                                    <td>example@company.com</td>
-                                                                    <td>October 23, 2023</td>
-                                                                    <td>400</td>
-                                                                    <td>$ 14,840</td>
-                                                                    <td><span class="badge servce-clas-badg">Deleted</span></td>
-                                                                    <td>Last month ago</td>
-                                                                    <td>
-                                                                      <div class="expert-dropdown">
-                                                                        <button
-                                                                          class="btn action-btn"
-                                                                          type="button"
-                                                                          id="dropdownMenuButton1"
-                                                                          data-bs-toggle="dropdown"
-                                                                          aria-expanded="false"
-                                                                        >
-                                                                          ...
-                                                                        </button>
-                                                                        <ul
-                                                                          class="dropdown-menu"
-                                                                          aria-labelledby="dropdownMenuButton1"
-                                                                        >
-                                                                          <a
-                                                                            class="dropdown-item"
-                                                                            href="#"
-                                                                            ><li>
-                                                                              View dashboard
-                                                                            </li></a
-                                                                          >
-                                                                          
-                                                                        </ul>
-                                                                      </div>
-                                                                    </td>   
-                                                                   
-                                                                      
-                                                                  </tr>
-                                                                  <tr>
-                                                                       
-                                                                    <td><img class="Buyer-img" src="assets/admin/asset/img/profile.png" ><span class="para-1">Usama A.</span></td>
-                                                                    <td>example@company.com</td>
-                                                                    <td>October 23, 2023</td>
-                                                                    <td>400</td>
-                                                                    <td>$ 14,840</td>
-                                                                    <td><span class="badge servce-clas-badg">Deleted</span></td>
-                                                                    <td>Last month ago</td>
-                                                                    <td>
-                                                                      <div class="expert-dropdown">
-                                                                        <button
-                                                                          class="btn action-btn"
-                                                                          type="button"
-                                                                          id="dropdownMenuButton1"
-                                                                          data-bs-toggle="dropdown"
-                                                                          aria-expanded="false"
-                                                                        >
-                                                                          ...
-                                                                        </button>
-                                                                        <ul
-                                                                          class="dropdown-menu"
-                                                                          aria-labelledby="dropdownMenuButton1"
-                                                                        >
-                                                                          <a
-                                                                            class="dropdown-item"
-                                                                            href="#"
-                                                                            ><li>
-                                                                              View dashboard
-                                                                            </li></a
-                                                                          >
-                                                                          
-                                                                        </ul>
-                                                                      </div>
-                                                                    </td>   
-                                                                  
-                                                                  </tr>
-                                                                  <tr>
-                                                                         
-                                                                    <td><img class="Buyer-img" src="assets/admin/asset/img/profile.png" ><span class="para-1">Usama A.</span></td>
-                                                                    <td>example@company.com</td>
-                                                                    <td>October 23, 2023</td>
-                                                                    <td>400</td>
-                                                                    <td>$ 14,840</td>
-                                                                    <td><span class="badge servce-clas-badg">Deleted</span></td>
-                                                                    <td>Last month ago</td>
-                                                                    <td>
-                                                                      <div class="expert-dropdown">
-                                                                        <button
-                                                                          class="btn action-btn"
-                                                                          type="button"
-                                                                          id="dropdownMenuButton1"
-                                                                          data-bs-toggle="dropdown"
-                                                                          aria-expanded="false"
-                                                                        >
-                                                                          ...
-                                                                        </button>
-                                                                        <ul
-                                                                          class="dropdown-menu"
-                                                                          aria-labelledby="dropdownMenuButton1"
-                                                                        >
-                                                                          <a
-                                                                            class="dropdown-item"
-                                                                            href="#"
-                                                                            ><li>
-                                                                              View dashboard
-                                                                            </li></a
-                                                                          >
-                                                                          
-                                                                        </ul>
-                                                                      </div>
-                                                                    </td>   
-                                                                  
-                                                                  </tr>
-                                                                  <tr>
-                                                                       
-                                                                    <td><img class="Buyer-img" src="assets/admin/asset/img/profile.png" ><span class="para-1">Usama A.</span></td>
-                                                                    <td>example@company.com</td>
-                                                                    <td>October 23, 2023</td>
-                                                                    <td>400</td>
-                                                                    <td>$ 14,840</td>
-                                                                    <td><span class="badge servce-clas-badg">Deleted</span></td>
-                                                                    <td>Last month ago</td>
-                                                                    <td>
-                                                                      <div class="expert-dropdown">
-                                                                        <button
-                                                                          class="btn action-btn"
-                                                                          type="button"
-                                                                          id="dropdownMenuButton1"
-                                                                          data-bs-toggle="dropdown"
-                                                                          aria-expanded="false"
-                                                                        >
-                                                                          ...
-                                                                        </button>
-                                                                        <ul
-                                                                          class="dropdown-menu"
-                                                                          aria-labelledby="dropdownMenuButton1"
-                                                                        >
-                                                                          <a
-                                                                            class="dropdown-item"
-                                                                            href="#"
-                                                                            ><li>
-                                                                              View dashboard
-                                                                            </li></a
-                                                                          >
-                                                                          
-                                                                        </ul>
-                                                                      </div>
-                                                                    </td>  
-                                                                  
-                                                                  </tr>
-                                                                  <tr>
-                                                                         
-                                                                    <td><img class="Buyer-img" src="assets/admin/asset/img/profile.png" ><span class="para-1">Usama A.</span></td>
-                                                                    <td>example@company.com</td>
-                                                                    <td>October 23, 2023</td>
-                                                                    <td>400</td>
-                                                                    <td>$ 14,840</td>
-                                                                    <td><span class="badge servce-clas-badg">Deleted</span></td>
-                                                                    <td>Last month ago</td>
-                                                                    <td>
-                                                                      <div class="expert-dropdown">
-                                                                        <button
-                                                                          class="btn action-btn"
-                                                                          type="button"
-                                                                          id="dropdownMenuButton1"
-                                                                          data-bs-toggle="dropdown"
-                                                                          aria-expanded="false"
-                                                                        >
-                                                                          ...
-                                                                        </button>
-                                                                        <ul
-                                                                          class="dropdown-menu"
-                                                                          aria-labelledby="dropdownMenuButton1"
-                                                                        >
-                                                                          <a
-                                                                            class="dropdown-item"
-                                                                            href="#"
-                                                                            ><li>
-                                                                              View dashboard
-                                                                            </li></a
-                                                                          >
-                                                                          
-                                                                        </ul>
-                                                                      </div>
-                                                                    </td>   
-                                                                  
-                                                                  </tr>
-                                                                  <tr>
-                                                                        
-                                                                    <td><img class="Buyer-img" src="assets/admin/asset/img/profile.png" ><span class="para-1">Usama A.</span></td>
-                                                                    <td>example@company.com</td>
-                                                                    <td>October 23, 2023</td>
-                                                                    <td>400</td>
-                                                                    <td>$ 14,840</td>
-                                                                    <td><span class="badge servce-clas-badg">Deleted</span></td>
-                                                                    <td>Last month ago</td>
-                                                                    <td>
-                                                                      <div class="expert-dropdown">
-                                                                        <button
-                                                                          class="btn action-btn"
-                                                                          type="button"
-                                                                          id="dropdownMenuButton1"
-                                                                          data-bs-toggle="dropdown"
-                                                                          aria-expanded="false"
-                                                                        >
-                                                                          ...
-                                                                        </button>
-                                                                        <ul
-                                                                          class="dropdown-menu"
-                                                                          aria-labelledby="dropdownMenuButton1"
-                                                                        >
-                                                                          <a
-                                                                            class="dropdown-item"
-                                                                            href="#"
-                                                                            ><li>
-                                                                              View dashboard
-                                                                            </li></a
-                                                                          >
-                                                                          
-                                                                        </ul>
-                                                                      </div>
-                                                                    </td> 
-                                                                  
-                                                                  </tr>
-                                                                  <tr>
-                                                                       
-                                                                    <td><img class="Buyer-img" src="assets/admin/asset/img/profile.png" ><span class="para-1">Usama A.</span></td>
-                                                                    <td>example@company.com</td>
-                                                                    <td>October 23, 2023</td>
-                                                                    <td>400</td>
-                                                                    <td>$ 14,840</td>
-                                                                    <td><span class="badge servce-clas-badg">Deleted</span></td>
-                                                                    <td>Last month ago</td>
-                                                                    <td>
-                                                                      <div class="expert-dropdown">
-                                                                        <button
-                                                                          class="btn action-btn"
-                                                                          type="button"
-                                                                          id="dropdownMenuButton1"
-                                                                          data-bs-toggle="dropdown"
-                                                                          aria-expanded="false"
-                                                                        >
-                                                                          ...
-                                                                        </button>
-                                                                        <ul
-                                                                          class="dropdown-menu"
-                                                                          aria-labelledby="dropdownMenuButton1"
-                                                                        >
-                                                                          <a
-                                                                            class="dropdown-item"
-                                                                            href="#"
-                                                                            ><li>
-                                                                              View dashboard
-                                                                            </li></a
-                                                                          >
-                                                                          
-                                                                        </ul>
-                                                                      </div>
-                                                                    </td>  
-                                                                  
-                                                                  </tr>
-                                                                  <tr>
-                                                                    
-                                                                    <td><img class="Buyer-img" src="assets/admin/asset/img/profile.png" ><span class="para-1">Usama A.</span></td>
-                                                                    <td>example@company.com</td>
-                                                                    <td>October 23, 2023</td>
-                                                                    <td>400</td>
-                                                                    <td>$ 14,840</td>
-                                                                    <td><span class="badge servce-clas-badg">Deleted</span></td>
-                                                                    <td>Last month ago</td>
-                                                                    <td>
-                                                                      <div class="expert-dropdown">
-                                                                        <button
-                                                                          class="btn action-btn"
-                                                                          type="button"
-                                                                          id="dropdownMenuButton1"
-                                                                          data-bs-toggle="dropdown"
-                                                                          aria-expanded="false"
-                                                                        >
-                                                                          ...
-                                                                        </button>
-                                                                        <ul
-                                                                          class="dropdown-menu"
-                                                                          aria-labelledby="dropdownMenuButton1"
-                                                                        >
-                                                                          <a
-                                                                            class="dropdown-item"
-                                                                            href="#"
-                                                                            ><li>
-                                                                              View dashboard
-                                                                            </li></a
-                                                                          >
-                                                                          
-                                                                        </ul>
-                                                                      </div>
-                                                                    </td>   
-                                                                  
-                                                                  </tr>
-                                                              </tbody>
-                                                          </table>
-                                                      </div>
-                                                  </div>
-                                              </div>
-                                          </div>
-                                      </div>
-                                        <!-- END: INSTALLMENT TABLE SECTION -->
-                                    </div>
-                                </div>
-                      
-                            </div>
-                        </div>
                       </div>
-                    </p>
-                </section>
-                  
+                      <div class="col-md-2 col-sm-6 mb-3">
+                          <div class="card text-center">
+                              <div class="card-body">
+                                  <h5 class="card-title text-success">{{ $stats['active'] ?? 0 }}</h5>
+                                  <p class="card-text text-muted">Active</p>
+                              </div>
+                          </div>
+                      </div>
+                      <div class="col-md-2 col-sm-6 mb-3">
+                          <div class="card text-center">
+                              <div class="card-body">
+                                  <h5 class="card-title text-warning">{{ $stats['inactive'] ?? 0 }}</h5>
+                                  <p class="card-text text-muted">Inactive</p>
+                              </div>
+                          </div>
+                      </div>
+                      <div class="col-md-2 col-sm-6 mb-3">
+                          <div class="card text-center">
+                              <div class="card-body">
+                                  <h5 class="card-title text-danger">{{ $stats['banned'] ?? 0 }}</h5>
+                                  <p class="card-text text-muted">Banned</p>
+                              </div>
+                          </div>
+                      </div>
+                      <div class="col-md-2 col-sm-6 mb-3">
+                          <div class="card text-center">
+                              <div class="card-body">
+                                  <h5 class="card-title text-secondary">{{ $stats['deleted'] ?? 0 }}</h5>
+                                  <p class="card-text text-muted">Deleted</p>
+                              </div>
+                          </div>
+                      </div>
                   </div>
+
+                  <!-- Filter and Search Section -->
+                  <div class="row mb-4">
+                      <div class="col-md-12">
+                          <form method="GET" action="{{ route('admin.buyer-management') }}" id="filterForm">
+                              <div class="row g-3">
+                                  <!-- Status Filter -->
+                                  <div class="col-md-2">
+                                      <select name="status" class="form-select" onchange="this.form.submit()">
+                                          <option value="all" {{ ($status ?? 'all') == 'all' ? 'selected' : '' }}>All Status</option>
+                                          <option value="active" {{ ($status ?? '') == 'active' ? 'selected' : '' }}>Active</option>
+                                          <option value="inactive" {{ ($status ?? '') == 'inactive' ? 'selected' : '' }}>Inactive</option>
+                                          <option value="banned" {{ ($status ?? '') == 'banned' ? 'selected' : '' }}>Banned</option>
+                                          <option value="deleted" {{ ($status ?? '') == 'deleted' ? 'selected' : '' }}>Deleted</option>
+                                      </select>
+                                  </div>
+
+                                  <!-- Date Filter -->
+                                  <div class="col-md-2">
+                                      <select name="date_filter" class="form-select" id="dateFilter" onchange="toggleCustomDates()">
+                                          <option value="">All Time</option>
+                                          <option value="today" {{ ($dateFilter ?? '') == 'today' ? 'selected' : '' }}>Today</option>
+                                          <option value="yesterday" {{ ($dateFilter ?? '') == 'yesterday' ? 'selected' : '' }}>Yesterday</option>
+                                          <option value="last_week" {{ ($dateFilter ?? '') == 'last_week' ? 'selected' : '' }}>Last Week</option>
+                                          <option value="last_month" {{ ($dateFilter ?? '') == 'last_month' ? 'selected' : '' }}>Last Month</option>
+                                          <option value="custom" {{ ($dateFilter ?? '') == 'custom' ? 'selected' : '' }}>Custom Range</option>
+                                      </select>
+                                  </div>
+
+                                  <!-- Custom Date Inputs -->
+                                  <div class="col-md-2" id="dateFromCol" style="{{ ($dateFilter ?? '') == 'custom' ? '' : 'display:none;' }}">
+                                      <input type="date" name="date_from" class="form-control" placeholder="From" value="{{ request('date_from') }}">
+                                  </div>
+                                  <div class="col-md-2" id="dateToCol" style="{{ ($dateFilter ?? '') == 'custom' ? '' : 'display:none;' }}">
+                                      <input type="date" name="date_to" class="form-control" placeholder="To" value="{{ request('date_to') }}">
+                                  </div>
+
+                                  <!-- Sort Filter -->
+                                  <div class="col-md-2">
+                                      <select name="sort" class="form-select" onchange="this.form.submit()">
+                                          <option value="date_desc" {{ ($sort ?? 'date_desc') == 'date_desc' ? 'selected' : '' }}>Newest First</option>
+                                          <option value="date_asc" {{ ($sort ?? '') == 'date_asc' ? 'selected' : '' }}>Oldest First</option>
+                                          <option value="name_asc" {{ ($sort ?? '') == 'name_asc' ? 'selected' : '' }}>Name A-Z</option>
+                                          <option value="name_desc" {{ ($sort ?? '') == 'name_desc' ? 'selected' : '' }}>Name Z-A</option>
+                                          <option value="spending" {{ ($sort ?? '') == 'spending' ? 'selected' : '' }}>Top Spenders</option>
+                                          <option value="orders" {{ ($sort ?? '') == 'orders' ? 'selected' : '' }}>Most Orders</option>
+                                      </select>
+                                  </div>
+
+                                  <!-- Search Box -->
+                                  <div class="col-md-3">
+                                      <div class="input-group">
+                                          <input type="text" name="search" class="form-control" placeholder="Search by name, email, or ID..." value="{{ $search ?? '' }}">
+                                          <button class="btn btn-primary" type="submit">
+                                              <i class="fas fa-search"></i>
+                                          </button>
+                                      </div>
+                                  </div>
+                              </div>
+                          </form>
+                      </div>
                   </div>
+
+                  <!-- Bulk Actions and Export -->
+                  <div class="row mb-3">
+                      <div class="col-md-6">
+                          <div class="btn-group">
+                              <button type="button" class="btn btn-sm btn-danger" onclick="bulkAction('delete')" id="bulkDeleteBtn" disabled>
+                                  <i class="fas fa-trash"></i> Delete Selected
+                              </button>
+                              <button type="button" class="btn btn-sm btn-success" onclick="bulkAction('activate')" id="bulkActivateBtn" disabled>
+                                  <i class="fas fa-check"></i> Activate Selected
+                              </button>
+                              <button type="button" class="btn btn-sm btn-warning" onclick="bulkAction('deactivate')" id="bulkDeactivateBtn" disabled>
+                                  <i class="fas fa-ban"></i> Deactivate Selected
+                              </button>
+                          </div>
+                          <span class="ms-2 text-muted" id="selectedCount">0 selected</span>
+                      </div>
+                      <div class="col-md-6 text-end">
+                          <a href="{{ route('admin.buyers.export', request()->all()) }}" class="btn btn-sm btn-info">
+                              <i class="fas fa-download"></i> Export to Excel
+                          </a>
+                      </div>
+                  </div>
+
+                  <!-- Buyers Table -->
+                  <div class="row">
+                      <div class="col-md-12">
+                          <div class="table-responsive">
+                              <table class="table table-hover">
+                                  <thead>
+                                      <tr>
+                                          <th width="30">
+                                              <input type="checkbox" id="selectAll" onchange="toggleSelectAll()">
+                                          </th>
+                                          <th>ID</th>
+                                          <th>Name</th>
+                                          <th>Email</th>
+                                          <th>Country</th>
+                                          <th>Registration Date</th>
+                                          <th>Total Orders</th>
+                                          <th>Total Spent</th>
+                                          <th>Status</th>
+                                          <th>Last Active</th>
+                                          <th>Actions</th>
+                                      </tr>
+                                  </thead>
+                                  <tbody>
+                                      @forelse($buyers as $buyer)
+                                      <tr>
+                                          <td>
+                                              <input type="checkbox" class="buyer-checkbox" value="{{ $buyer->id }}" onchange="updateBulkActions()">
+                                          </td>
+                                          <td>{{ $buyer->id }}</td>
+                                          <td>
+                                              <div class="d-flex align-items-center">
+                                                  @if($buyer->profile)
+                                                      <img src="/assets/public-site/asset/img/{{ $buyer->profile }}" alt="{{ $buyer->first_name }}" class="rounded-circle me-2" width="32" height="32">
+                                                  @else
+                                                      <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center me-2" style="width:32px;height:32px;">
+                                                          {{ substr($buyer->first_name, 0, 1) }}
+                                                      </div>
+                                                  @endif
+                                                  <span>{{ $buyer->first_name }} {{ $buyer->last_name }}</span>
+                                              </div>
+                                          </td>
+                                          <td>{{ $buyer->email }}</td>
+                                          <td>{{ $buyer->country ?? 'N/A' }}</td>
+                                          <td>{{ $buyer->created_at->format('M d, Y') }}</td>
+                                          <td>{{ $buyer->book_orders_count ?? 0 }}</td>
+                                          <td>${{ number_format($buyer->total_spent ?? 0, 2) }}</td>
+                                          <td>
+                                              @php
+                                                  $statusBadge = [
+                                                      'active' => 'success',
+                                                      'inactive' => 'warning',
+                                                      'banned' => 'danger',
+                                                      'deleted' => 'secondary'
+                                                  ];
+                                                  $statusStr = $buyer->status_string ?? 'active';
+                                              @endphp
+                                              <span class="badge bg-{{ $statusBadge[$statusStr] ?? 'secondary' }}">
+                                                  {{ ucfirst($statusStr) }}
+                                              </span>
+                                          </td>
+                                          <td>
+                                              @if($buyer->last_active_at)
+                                                  {{ $buyer->last_active_at->diffForHumans() }}
+                                              @else
+                                                  Never
+                                              @endif
+                                          </td>
+                                          <td>
+                                              <div class="btn-group btn-group-sm">
+                                                  <a href="{{ route('admin.buyers.details', $buyer->id) }}" class="btn btn-info btn-sm" title="View Details">
+                                                      <i class="fas fa-eye"></i>
+                                                  </a>
+
+                                                  @if($buyer->status == 2)
+                                                      <form action="{{ route('admin.buyers.unban', $buyer->id) }}" method="POST" style="display:inline;">
+                                                          @csrf
+                                                          <button type="submit" class="btn btn-success btn-sm" title="Unban" onclick="return confirm('Are you sure you want to unban this buyer?')">
+                                                              <i class="fas fa-check"></i>
+                                                          </button>
+                                                      </form>
+                                                  @else
+                                                      <button type="button" class="btn btn-warning btn-sm" onclick="showBanModal({{ $buyer->id }})" title="Ban">
+                                                          <i class="fas fa-ban"></i>
+                                                      </button>
+                                                  @endif
+
+                                                  @if($buyer->deleted_at)
+                                                      <form action="{{ route('admin.buyers.restore', $buyer->id) }}" method="POST" style="display:inline;">
+                                                          @csrf
+                                                          <button type="submit" class="btn btn-primary btn-sm" title="Restore" onclick="return confirm('Are you sure you want to restore this buyer?')">
+                                                              <i class="fas fa-undo"></i>
+                                                          </button>
+                                                      </form>
+                                                  @else
+                                                      <form action="{{ route('admin.buyers.delete', $buyer->id) }}" method="POST" style="display:inline;">
+                                                          @csrf
+                                                          <button type="submit" class="btn btn-danger btn-sm" title="Delete" onclick="return confirm('Are you sure you want to delete this buyer?')">
+                                                              <i class="fas fa-trash"></i>
+                                                          </button>
+                                                      </form>
+                                                  @endif
+                                              </div>
+                                          </td>
+                                      </tr>
+                                      @empty
+                                      <tr>
+                                          <td colspan="11" class="text-center py-4">
+                                              <div class="text-muted">
+                                                  <i class="fas fa-inbox fa-3x mb-3"></i>
+                                                  <p>No buyers found matching your criteria.</p>
+                                              </div>
+                                          </td>
+                                      </tr>
+                                      @endforelse
+                                  </tbody>
+                              </table>
+                          </div>
+
+                          <!-- Pagination -->
+                          <div class="d-flex justify-content-between align-items-center mt-3">
+                              <div>
+                                  Showing {{ $buyers->firstItem() ?? 0 }} to {{ $buyers->lastItem() ?? 0 }} of {{ $buyers->total() }} buyers
+                              </div>
+                              <div>
+                                  {{ $buyers->links() }}
+                              </div>
+                          </div>
+                      </div>
                   </div>
               </div>
-                <!-- pagination start from here -->
-                <div class="demo">
-                  <nav class="pagination-outer" aria-label="Page navigation">
-                    <ul class="pagination">
-                      <li class="page-item">
-                        <a href="#" class="page-link" aria-label="Previous">
-                          <span aria-hidden="true">«</span>
-                        </a>
-                      </li>
-                      <li class="page-item active">
-                        <a class="page-link" href="#">1</a>
-                      </li>
-                      <li class="page-item">
-                        <a class="page-link" href="#">2</a>
-                      </li>
-                      <li class="page-item">
-                        <a class="page-link" href="#">3</a>
-                      </li>
-                      <li class="page-item">
-                        <a class="page-link" href="#">4</a>
-                      </li>
-                      <li class="page-item">
-                        <a class="page-link" href="#">5</a>
-                      </li>
-                      <li class="page-item">
-                        <a href="#" class="page-link" aria-label="Next">
-                          <span aria-hidden="true">»</span>
-                        </a>
-                      </li>
-                    </ul>
-                  </nav>
-                </div>
-                <!-- pagination ended here -->
-                <!-- copyright section start from here -->
-                <div class="copyright">
-                  <p>Copyright Dreamcrowd © 2021. All Rights Reserved.</p>
-                </div>
-    <!-- =============================== MAIN CONTENT END HERE =========================== -->
-  </section>
-  
-  <script src="assets/admin/libs/jquery/jquery.js"></script>
-  <script src="assets/admin/libs/datatable/js/datatable.js"></script>
-  <script src="assets/admin/libs/datatable/js/datatablebootstrap.js"></script>
-  <script src="assets/admin/libs/select2/js/select2.min.js"></script>
-  <script src="assets/admin/libs/owl-carousel/js/owl.carousel.min.js"></script>  
-  <script src="assets/admin/libs/aos/js/aos.js"></script>
-  <script src="assets/admin/asset/js/bootstrap.min.js"></script>
-  <script src="assets/admin/asset/js/script.js"></script>
-  <script src="script.js"></script>
+          </div>
+        </div>
+       </div>
+    </section>
+
+    <!-- Ban Modal -->
+    <div class="modal fade" id="banModal" tabindex="-1" aria-labelledby="banModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form id="banForm" method="POST">
+                    @csrf
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="banModalLabel">Ban Buyer</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="banReason" class="form-label">Ban Reason <span class="text-danger">*</span></label>
+                            <textarea class="form-control" id="banReason" name="reason" rows="3" required placeholder="Please provide a reason for banning this buyer..."></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-danger">Ban Buyer</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="/assets/admin/asset/js/bootstrap.min.js"></script>
+    <script>
+        // Toggle custom date inputs
+        function toggleCustomDates() {
+            const dateFilter = document.getElementById('dateFilter').value;
+            const dateFromCol = document.getElementById('dateFromCol');
+            const dateToCol = document.getElementById('dateToCol');
+
+            if (dateFilter === 'custom') {
+                dateFromCol.style.display = 'block';
+                dateToCol.style.display = 'block';
+            } else {
+                dateFromCol.style.display = 'none';
+                dateToCol.style.display = 'none';
+                document.getElementById('filterForm').submit();
+            }
+        }
+
+        // Ban modal
+        function showBanModal(buyerId) {
+            const form = document.getElementById('banForm');
+            form.action = `/admin/buyers/${buyerId}/ban`;
+            const modal = new bootstrap.Modal(document.getElementById('banModal'));
+            modal.show();
+        }
+
+        // Select all checkboxes
+        function toggleSelectAll() {
+            const selectAll = document.getElementById('selectAll');
+            const checkboxes = document.querySelectorAll('.buyer-checkbox');
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = selectAll.checked;
+            });
+            updateBulkActions();
+        }
+
+        // Update bulk action buttons
+        function updateBulkActions() {
+            const checkboxes = document.querySelectorAll('.buyer-checkbox:checked');
+            const count = checkboxes.length;
+
+            document.getElementById('selectedCount').textContent = `${count} selected`;
+            document.getElementById('bulkDeleteBtn').disabled = count === 0;
+            document.getElementById('bulkActivateBtn').disabled = count === 0;
+            document.getElementById('bulkDeactivateBtn').disabled = count === 0;
+        }
+
+        // Bulk actions
+        function bulkAction(action) {
+            const checkboxes = document.querySelectorAll('.buyer-checkbox:checked');
+            const buyerIds = Array.from(checkboxes).map(cb => cb.value);
+
+            if (buyerIds.length === 0) {
+                alert('Please select at least one buyer.');
+                return;
+            }
+
+            if (!confirm(`Are you sure you want to ${action} ${buyerIds.length} buyer(s)?`)) {
+                return;
+            }
+
+            // Create form and submit
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '{{ route("admin.buyers.bulk-action") }}';
+
+            const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+            const csrfInput = document.createElement('input');
+            csrfInput.type = 'hidden';
+            csrfInput.name = '_token';
+            csrfInput.value = csrfToken;
+            form.appendChild(csrfInput);
+
+            const actionInput = document.createElement('input');
+            actionInput.type = 'hidden';
+            actionInput.name = 'action';
+            actionInput.value = action;
+            form.appendChild(actionInput);
+
+            buyerIds.forEach(id => {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'buyer_ids[]';
+                input.value = id;
+                form.appendChild(input);
+            });
+
+            document.body.appendChild(form);
+            form.submit();
+        }
+
+        // Auto-hide alerts after 5 seconds
+        setTimeout(function() {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(alert => {
+                const bsAlert = new bootstrap.Alert(alert);
+                bsAlert.close();
+            });
+        }, 5000);
+    </script>
 </body>
 </html>
-<!-- Date Picker JS -->
-<script>
-  const dateFilter = document.getElementById("dateFilter");
-  const fromDateFields = document.getElementById("fromDateFields");
-  const toDateFields = document.getElementById("toDateFields");
-
-  dateFilter.addEventListener("change", function () {
-    if (dateFilter.value === "custom") {
-      fromDateFields.style.display = "inline";
-      toDateFields.style.display = "inline";
-    } else {
-      fromDateFields.style.display = "none";
-      toDateFields.style.display = "none";
-    }
-  });
-</script>
- <!-- tabs js start here -->
- <script>
-  var nestedTabSelect = (tabsElement, currentElement) => {
-    const tabs = tabsElement ?? "ul.tabs";
-    const currentClass = currentElement ?? "active";
-
-    $(tabs).each(function () {
-      let $active,
-        $content,
-        $links = $(this).find("a");
-
-      $active = $(
-        $links.filter('[href="' + location.hash + '"]')[0] || $links[0]
-      );
-      $active.addClass(currentClass);
-
-      $content = $($active[0].hash);
-      $content.addClass(currentClass);
-
-      $links.not($active).each(function () {
-        $(this.hash).removeClass(currentClass);
-      });
-
-      $(this).on("click", "a", function (e) {
-        // Make the old tab inactive.
-        $active.removeClass(currentClass);
-        $content.removeClass(currentClass);
-
-        // Update the variables with the new link and content
-        $active = $(this);
-        $content = $(this.hash);
-
-        // Make the tab active.
-        $active.addClass(currentClass);
-        $content.addClass(currentClass);
-
-        e.preventDefault();
-      });
-    });
-  };
-
-  nestedTabSelect("ul.tabs", "active");
-</script>
-<!-- tabs js ended here -->
-<!-- ================ side js start here=============== -->
-<!-- ================ side js start End=============== -->
-

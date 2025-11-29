@@ -116,7 +116,7 @@
 
 
                     <!-- Notification Dropdown -->
-                    <div id="notification-dropdown" style="z-index: 99999; display: none; position: absolute; top: 60px; right: 0; width: 350px; max-height: 500px; background: white; border-radius: 8px; box-shadow: 0 8px 16px rgba(0,0,0,0.15); overflow: hidden;">
+                    <div id="notification-dropdown" style="z-index: 99999; display: none; position: absolute; top: 70px; right: 200px; width: 350px; max-height: 500px; background: white; border-radius: 8px; box-shadow: 0 8px 16px rgba(0,0,0,0.15); overflow: hidden;">
                         <div style="padding: 15px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center;">
                             <h3 style="margin: 0; font-size: 16px; font-weight: bold;">Notifications</h3>
                             <button id="mark-all-read" style="background: none; border: none; color: #4CAF50; cursor: pointer; font-size: 13px;">Mark all read</button>
@@ -331,7 +331,9 @@
             try {
                 const response = await fetch(`${CONFIG.apiBaseUrl}`);
                 const data = await response.json();
-                this.notifications = data.data || [];
+                console.log(data, 'gg');
+                
+                this.notifications = data.notifications.data || [];
                 this.renderNotifications();
             } catch (error) {
                 console.error('Error loading notifications:', error);
@@ -342,6 +344,7 @@
         // Render Notifications
         renderNotifications() {
             const list = document.getElementById('notification-list');
+            console.log(this.notifications);
 
             if (this.notifications.length === 0) {
                 list.innerHTML = '<div style="padding: 40px 20px; text-align: center; color: #999;">No notifications yet</div>';
@@ -354,6 +357,7 @@
 
         // Create Notification HTML
         createNotificationHTML(notification) {
+            
             const isUnread = !notification.is_read;
             const date = this.formatDate(notification.created_at);
 

@@ -867,6 +867,28 @@
                                 </select>
                             </div>
                         @endif
+
+                        <!-- Order Management Preferences -->
+                        <div class="col-12 profile-form" style="margin-top: 30px; padding: 20px; background: #f8f9fa; border-radius: 8px;">
+                            <h6 style="margin-bottom: 15px; color: #333;">Order Management Preferences</h6>
+                            <div class="custom-switch-wrapper" style="display: flex; align-items: center; justify-content: space-between;">
+                                <div>
+                                    <label for="auto_approve_enabled" class="switch-label" style="font-weight: 500; margin-bottom: 5px;">Enable Auto-Approve for All Services</label>
+                                    <p style="font-size: 13px; color: #666; margin: 0;">When enabled, all incoming orders will be automatically approved. You can still set individual services to require manual approval.</p>
+                                </div>
+                                <div class="toggle-switch">
+                                    <input
+                                        type="checkbox"
+                                        id="auto_approve_enabled"
+                                        class="toggle-input"
+                                        @if (Auth::user()->auto_approve_enabled == 1) checked @endif
+                                    >
+                                    <span class="slider"></span>
+                                </div>
+                                <input type="hidden" name="auto_approve_enabled" id="auto_approve_enabled_val" value="{{ Auth::user()->auto_approve_enabled ?? 0 }}">
+                            </div>
+                        </div>
+
                         <button type="submit" class="btn rqst-send" style="width: max-content;">Send Request</button>
                     </div>
                 </div>
@@ -1829,7 +1851,7 @@
 {{-- Fetch Country City Zipcode Script Start ======= --}}
 {{-- CDN For Script --}}
 <script
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBMA8qhhaBOYY1uv0nUfsBGcE74w6JNY7M&libraries=places"></script>
+    src="https://maps.googleapis.com/maps/api/js?key={{ config('services.google_maps.api_key') }}&libraries=places&loading=async"></script>
 
 <script>
 
@@ -1892,11 +1914,20 @@
     //  Onclick Live Location Dedect ==== Start Script
 
     var locationInput = document.getElementById('street_address');
+    var geocodingInProgress = false; // Flag to prevent multiple simultaneous calls
 
     // When the input is clicked, detect and autofill the live location
-    locationInput.addEventListener('click', function () {
+    // Remove any existing listeners first to prevent duplicates
+    $(locationInput).off('click').on('click', function () {
+        // Prevent multiple simultaneous geocoding requests
+        if (geocodingInProgress) {
+            console.log('Geocoding already in progress, skipping...');
+            return;
+        }
+
         // Check if the browser supports Geolocation API
         if (navigator.geolocation) {
+            geocodingInProgress = true; // Set flag
             navigator.geolocation.getCurrentPosition(function (position) {
                 var latitude = position.coords.latitude;
                 var longitude = position.coords.longitude;
@@ -1966,8 +1997,10 @@
                     } else {
                         console.log('Geocoder failed due to: ' + status);
                     }
+                    geocodingInProgress = false; // Reset flag after geocoding completes
                 });
             }, function (error) {
+                geocodingInProgress = false; // Reset flag on error
                 console.log("Error occurred. Error code: " + error.code);
                 // Handle different error cases
                 switch (error.code) {
@@ -3803,6 +3836,11 @@
 <script>
     document.getElementById('show_full_name').addEventListener('change', function() {
         document.getElementById('show_full_name_val').value = this.checked ? 1 : 0;
+    });
+</script>
+<script>
+    document.getElementById('auto_approve_enabled').addEventListener('change', function() {
+        document.getElementById('auto_approve_enabled_val').value = this.checked ? 1 : 0;
     });
 </script>
 

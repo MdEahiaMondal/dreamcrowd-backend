@@ -157,8 +157,8 @@
         <tr>
             <td><strong>#{{ $transaction->id }}</strong></td>
             <td>{{ $transaction->created_at->format('d M Y') }}</td>
-            <td>{{ $transaction->buyer->name ?? 'N/A' }}</td>
-            <td>{{ $transaction->seller->name ?? 'N/A' }}</td>
+            <td>{{ ($transaction->buyer->first_name ?? '') . ' ' . ($transaction->buyer->last_name ?? '') ?: 'N/A' }}</td>
+            <td>{{ ($transaction->seller->first_name ?? '') . ' ' . ($transaction->seller->last_name ?? '') ?: 'N/A' }}</td>
             <td><strong>${{ number_format($transaction->total_amount, 2) }}</strong></td>
             <td style="color: #28a745;">${{ number_format($transaction->total_admin_commission, 2) }}</td>
             <td style="color: #007bff;">${{ number_format($transaction->seller_earnings, 2) }}</td>

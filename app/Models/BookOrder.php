@@ -9,6 +9,15 @@ class BookOrder extends Model
 {
     use HasFactory;
 
+    
+// Status Code	Status      Name		                    Description
+
+        // 0	Pending		Order placed,                   awaiting seller acceptance
+        // 1	Active	    Order accepted by seller,       service in progress
+        // 2	Delivered	Service completed,              48-hour dispute window active
+        // 3	Completed	Order finalized,                ready for seller payout
+        // 4	Cancelled   Order cancelled (with or without refund)
+
     protected $fillable = [
         'user_id',
         'gig_id',
@@ -86,6 +95,20 @@ class BookOrder extends Model
     ];
 
     /**
+     * Appends - attributes to append to model
+     */
+    protected $appends = ['order_number'];
+
+    /**
+     * Get the order number attribute
+     * Generates a formatted order number based on the ID
+     */
+    public function getOrderNumberAttribute(): string
+    {
+        return 'ORD-' . str_pad($this->id, 6, '0', STR_PAD_LEFT);
+    }
+
+    /**
      * Get the transaction associated with this order
      */
     public function transaction(): \Illuminate\Database\Eloquent\Relations\HasOne
@@ -115,6 +138,14 @@ class BookOrder extends Model
     public function classDates()
     {
         return $this->hasMany(ClassDate::class, 'order_id');
+    }
+
+    /**
+     * Get the dispute order associated with this booking
+     */
+    public function disputeOrder()
+    {
+        return $this->hasOne(DisputeOrder::class, 'order_id');
     }
 
     /**

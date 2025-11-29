@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class TeacherGig extends Model
 {
-    use HasFactory;
+
     protected $fillable = [
         'user_id',
         'title',
@@ -36,25 +36,44 @@ class TeacherGig extends Model
         'orders',
         'reviews',
         'status',
+        'approval_mode',
         'meeting_platform',
         'trial_type',
     ];
 
+    public function category()
+    {
+        return $this->belongsTo(Category::class, 'category');
+    }
 
-    public function repeatDays() {
+    public function repeatDays()
+    {
         return $this->hasMany(TeacherReapetDays::class, 'gig_id');
     }
 
-   public function all_reviews() {
+    public function all_reviews()
+    {
         return $this->hasMany(ServiceReviews::class, 'gig_id')->with('replies');
     }
 
-    public function user() {
+    public function user()
+    {
         return $this->belongsTo(User::class, 'user_id');
     }
 
-    public function expertProfile() {
+    public function expertProfile()
+    {
         return $this->hasOne(ExpertProfile::class, 'user_id', 'user_id');
+    }
+
+    public function teacherGigData()
+    {
+        return $this->hasOne(TeacherGigData::class, 'gig_id');
+    }
+
+    public function transactions()
+    {
+        return $this->hasMany(Transaction::class, 'service_id');
     }
 
 

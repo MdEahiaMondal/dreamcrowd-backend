@@ -1158,30 +1158,42 @@ class DynamicManagementController extends Controller
                 
  
                   
-            $review_image1 = $request->review_image1;
-            $review_image1Name =  $review_image1->getClientOriginalName();
-            $review_image1->move(public_path().'/assets/public-site/asset/img', $review_image1Name);
-            $review_image1Data = $review_image1Name;
+            $review_image1Data = null;
+            if ($request->hasfile('review_image1')) {
+                $review_image1 = $request->review_image1;
+                $review_image1Name =  $review_image1->getClientOriginalName();
+                $review_image1->move(public_path().'/assets/public-site/asset/img', $review_image1Name);
+                $review_image1Data = $review_image1Name;
+            }
 
 
 
              
-            $review_image2 = $request->review_image2;
-            $review_image2Name =  $review_image2->getClientOriginalName();
-            $review_image2->move(public_path().'/assets/public-site/asset/img', $review_image2Name);
-            $review_image2Data = $review_image2Name;
+            $review_image2Data = null;
+            if ($request->hasfile('review_image2')) {
+                $review_image2 = $request->review_image2;
+                $review_image2Name =  $review_image2->getClientOriginalName();
+                $review_image2->move(public_path().'/assets/public-site/asset/img', $review_image2Name);
+                $review_image2Data = $review_image2Name;
+            }
 
 
              
-            $review_image3 = $request->review_image3;
-            $review_image3Name =  $review_image3->getClientOriginalName();
-            $review_image3->move(public_path().'/assets/public-site/asset/img', $review_image3Name);
-            $review_image3Data = $review_image3Name;
+            $review_image3Data = null;
+            if ($request->hasfile('review_image3')) {
+                $review_image3 = $request->review_image3;
+                $review_image3Name =  $review_image3->getClientOriginalName();
+                $review_image3->move(public_path().'/assets/public-site/asset/img', $review_image3Name);
+                $review_image3Data = $review_image3Name;
+            }
              
-            $review_image4 = $request->review_image4;
-            $review_image4Name =  $review_image4->getClientOriginalName();
-            $review_image4->move(public_path().'/assets/public-site/asset/img', $review_image4Name);
-            $review_image4Data = $review_image4Name;
+            $review_image4Data = null;
+            if ($request->hasfile('review_image4')) {
+                $review_image4 = $request->review_image4;
+                $review_image4Name =  $review_image4->getClientOriginalName();
+                $review_image4->move(public_path().'/assets/public-site/asset/img', $review_image4Name);
+                $review_image4Data = $review_image4Name;
+            }
 
 
                 $home2 = Home2Dynamic::create([
@@ -1828,18 +1840,22 @@ private function removeItemFromCsv($csv, $item)
          
         } else {
 
-             
+            // Handle cover image uploads with null checks
+            $imageData1 = null;
+            if ($request->hasfile('cover_image_1')) {
                 $image1 = $request->cover_image_1;
                 $imageName1 =  $image1->getClientOriginalName();
                 $image1->move(public_path().'/assets/public-site/asset/img', $imageName1);
                 $imageData1 = $imageName1;
-             
+            }
 
-             
+            $imageData2 = null;
+            if ($request->hasfile('cover_image_2')) {
                 $image2 = $request->cover_image_2;
                 $imageName2 =  $image2->getClientOriginalName();
                 $image2->move(public_path().'/assets/public-site/asset/img', $imageName2);
                 $imageData2 = $imageName2;
+            }
              
 
                 $about_create = AboutUsDynamic::create([
@@ -2650,60 +2666,88 @@ public function DeleteTermConditionDynamic($id)  {
                  
             } else {
 
-                $hero_image = $request->hero_image;
-                $hero_imageName =  $hero_image->getClientOriginalName();
-                $hero_image->move(public_path().'/assets/expert/asset/img', $hero_imageName);
-                $hero_imageData = $hero_imageName;
+                // Handle hero_image upload with null check
+                $hero_imageData = null;
+                if ($request->hasfile('hero_image')) {
+                    $hero_image = $request->hero_image;
+                    $hero_imageName =  $hero_image->getClientOriginalName();
+                    $hero_image->move(public_path().'/assets/expert/asset/img', $hero_imageName);
+                    $hero_imageData = $hero_imageName;
+                }
 
-                $host_image_1 = $request->host_image_1;
-                $host_image_1Name =  $host_image_1->getClientOriginalName();
-                $host_image_1->move(public_path().'/assets/expert/asset/img', $host_image_1Name);
-                $host_image_1Data = $host_image_1Name;
-    
-
-                $host_image_2 = $request->host_image_2;
-                $host_image_2Name =  $host_image_2->getClientOriginalName();
-                $host_image_2->move(public_path().'/assets/expert/asset/img', $host_image_2Name);
-                $host_image_2Data = $host_image_2Name;
-    
-
-                $host_image_3 = $request->host_image_3;
-                $host_image_3Name =  $host_image_3->getClientOriginalName();
-                $host_image_3->move(public_path().'/assets/expert/asset/img', $host_image_3Name);
-                $host_image_3Data = $host_image_3Name;
-    
+                $host_image_1Data = null;
+                if ($request->hasfile('host_image_1')) {
+                    $host_image_1 = $request->host_image_1;
+                    $host_image_1Name =  $host_image_1->getClientOriginalName();
+                    $host_image_1->move(public_path().'/assets/expert/asset/img', $host_image_1Name);
+                    $host_image_1Data = $host_image_1Name;
+                }
     
 
-                $host_image_4 = $request->host_image_4;
-                $host_image_4Name =  $host_image_4->getClientOriginalName();
-                $host_image_4->move(public_path().'/assets/expert/asset/img', $host_image_4Name);
-                $host_image_4Data = $host_image_4Name;
+                $host_image_2Data = null;
+                if ($request->hasfile('host_image_2')) {
+                    $host_image_2 = $request->host_image_2;
+                    $host_image_2Name =  $host_image_2->getClientOriginalName();
+                    $host_image_2->move(public_path().'/assets/expert/asset/img', $host_image_2Name);
+                    $host_image_2Data = $host_image_2Name;
+                }
+    
+
+                $host_image_3Data = null;
+                if ($request->hasfile('host_image_3')) {
+                    $host_image_3 = $request->host_image_3;
+                    $host_image_3Name =  $host_image_3->getClientOriginalName();
+                    $host_image_3->move(public_path().'/assets/expert/asset/img', $host_image_3Name);
+                    $host_image_3Data = $host_image_3Name;
+                }
     
     
 
-                $expert_image = $request->expert_image;
-                $expert_imageName =  $expert_image->getClientOriginalName();
-                $expert_image->move(public_path().'/assets/expert/asset/img', $expert_imageName);
-                $expert_imageData = $expert_imageName;
+                $host_image_4Data = null;
+                if ($request->hasfile('host_image_4')) {
+                    $host_image_4 = $request->host_image_4;
+                    $host_image_4Name =  $host_image_4->getClientOriginalName();
+                    $host_image_4->move(public_path().'/assets/expert/asset/img', $host_image_4Name);
+                    $host_image_4Data = $host_image_4Name;
+                }
     
     
 
-                $work_image_1 = $request->work_image_1;
-                $work_image_1Name =  $work_image_1->getClientOriginalName();
-                $work_image_1->move(public_path().'/assets/expert/asset/img', $work_image_1Name);
-                $work_image_1Data = $work_image_1Name;
+                $expert_imageData = null;
+                if ($request->hasfile('expert_image')) {
+                    $expert_image = $request->expert_image;
+                    $expert_imageName =  $expert_image->getClientOriginalName();
+                    $expert_image->move(public_path().'/assets/expert/asset/img', $expert_imageName);
+                    $expert_imageData = $expert_imageName;
+                }
+    
     
 
-                $work_image_2 = $request->work_image_2;
-                $work_image_2Name =  $work_image_2->getClientOriginalName();
-                $work_image_2->move(public_path().'/assets/expert/asset/img', $work_image_2Name);
-                $work_image_2Data = $work_image_2Name;
+                $work_image_1Data = null;
+                if ($request->hasfile('work_image_1')) {
+                    $work_image_1 = $request->work_image_1;
+                    $work_image_1Name =  $work_image_1->getClientOriginalName();
+                    $work_image_1->move(public_path().'/assets/expert/asset/img', $work_image_1Name);
+                    $work_image_1Data = $work_image_1Name;
+                }
     
 
-                $work_image_3 = $request->work_image_3;
-                $work_image_3Name =  $work_image_3->getClientOriginalName();
-                $work_image_3->move(public_path().'/assets/expert/asset/img', $work_image_3Name);
-                $work_image_3Data = $work_image_3Name;
+                $work_image_2Data = null;
+                if ($request->hasfile('work_image_2')) {
+                    $work_image_2 = $request->work_image_2;
+                    $work_image_2Name =  $work_image_2->getClientOriginalName();
+                    $work_image_2->move(public_path().'/assets/expert/asset/img', $work_image_2Name);
+                    $work_image_2Data = $work_image_2Name;
+                }
+    
+
+                $work_image_3Data = null;
+                if ($request->hasfile('work_image_3')) {
+                    $work_image_3 = $request->work_image_3;
+                    $work_image_3Name =  $work_image_3->getClientOriginalName();
+                    $work_image_3->move(public_path().'/assets/expert/asset/img', $work_image_3Name);
+                    $work_image_3Data = $work_image_3Name;
+                }
     
     
     

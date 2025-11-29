@@ -77,6 +77,9 @@ class SellerListingController extends Controller
             $gigs = TeacherGig::query()
                 ->withAvg('all_reviews', 'rating')
                 ->where('status', 1)
+                ->whereHas('user', function($q) {
+                    $q->whereNotNull('id'); // Only gigs with valid users
+                })
                 ->select('*')
                 ->selectRaw('
             (COALESCE(impressions, 0) * ?) +
@@ -97,6 +100,9 @@ class SellerListingController extends Controller
             $gigs = TeacherGig::query()
                 ->withAvg('all_reviews', 'rating')
                 ->where('status', 1)
+                ->whereHas('user', function($q) {
+                    $q->whereNotNull('id'); // Only gigs with valid users
+                })
                 ->select('*')
                 ->selectRaw('
             (COALESCE(impressions, 0) * 0.10) +
@@ -180,6 +186,9 @@ class SellerListingController extends Controller
 
             // Query for TeacherGig where status=1 and service_type='Online'
             $gigs = TeacherGig::where(['status' => 1, 'service_type' => 'Online'])
+                ->whereHas('user', function($q) {
+                    $q->whereNotNull('id'); // Only gigs with valid users
+                })
                 ->select('*')
                 ->selectRaw('
                 (COALESCE(impressions, 0) * ?) +
@@ -198,6 +207,9 @@ class SellerListingController extends Controller
         } else {
             // Default values if $tag is not found
             $gigs = TeacherGig::where(['status' => 1, 'service_type' => 'Online'])
+                ->whereHas('user', function($q) {
+                    $q->whereNotNull('id'); // Only gigs with valid users
+                })
                 ->select('*')
                 ->selectRaw('
                 (COALESCE(impressions, 0) * 0.10) +
@@ -250,6 +262,9 @@ class SellerListingController extends Controller
         if ($tag && $tag->sorting_impressions && $tag->sorting_clicks && $tag->sorting_orders && $tag->sorting_reviews) {
             // Use sorting values from the $tag table
             $gigs = TeacherGig::where(['status' => 1, 'service_type' => 'Online', 'category_name' => $category])
+                ->whereHas('user', function($q) {
+                    $q->whereNotNull('id'); // Only gigs with valid users
+                })
                 ->select('*')
                 ->selectRaw('
                 (COALESCE(impressions, 0) * ?) +
@@ -267,6 +282,9 @@ class SellerListingController extends Controller
         } else {
             // Default sorting if $tag is not available
             $gigs = TeacherGig::where(['status' => 1, 'service_type' => 'Online', 'category_name' => $category])
+                ->whereHas('user', function($q) {
+                    $q->whereNotNull('id'); // Only gigs with valid users
+                })
                 ->select('*')
                 ->selectRaw('
                 (COALESCE(impressions, 0) * 0.10) +
@@ -324,6 +342,9 @@ class SellerListingController extends Controller
         if ($tag && $tag->sorting_impressions && $tag->sorting_clicks && $tag->sorting_orders && $tag->sorting_reviews) {
             // Use sorting values from the $tag table for "Inperson" service type
             $gigs = TeacherGig::where(['status' => 1, 'service_type' => 'Inperson'])
+                ->whereHas('user', function($q) {
+                    $q->whereNotNull('id'); // Only gigs with valid users
+                })
                 ->select('*')
                 ->selectRaw('
             (COALESCE(impressions, 0) * ?) +
@@ -341,6 +362,9 @@ class SellerListingController extends Controller
         } else {
             // Default sorting if $tag is not available
             $gigs = TeacherGig::where(['status' => 1, 'service_type' => 'Inperson'])
+                ->whereHas('user', function($q) {
+                    $q->whereNotNull('id'); // Only gigs with valid users
+                })
                 ->select('*')
                 ->selectRaw('
             (COALESCE(impressions, 0) * 0.10) +
@@ -393,6 +417,9 @@ class SellerListingController extends Controller
         if ($tag && $tag->sorting_impressions && $tag->sorting_clicks && $tag->sorting_orders && $tag->sorting_reviews) {
             // Use sorting values from the $tag table
             $gigs = TeacherGig::where(['status' => 1, 'service_type' => 'Inperson', 'category_name' => $category])
+                ->whereHas('user', function($q) {
+                    $q->whereNotNull('id'); // Only gigs with valid users
+                })
                 ->select('*')
                 ->selectRaw('
                 (COALESCE(impressions, 0) * ?) +
@@ -410,6 +437,9 @@ class SellerListingController extends Controller
         } else {
             // Default sorting if $tag is not available
             $gigs = TeacherGig::where(['status' => 1, 'service_type' => 'Inperson', 'category_name' => $category])
+                ->whereHas('user', function($q) {
+                    $q->whereNotNull('id'); // Only gigs with valid users
+                })
                 ->select('*')
                 ->selectRaw('
                 (COALESCE(impressions, 0) * 0.10) +
@@ -466,7 +496,10 @@ class SellerListingController extends Controller
         $tag = TopSellerTag::first();
 
         // Start the query
-        $query = TeacherGig::where('status', 1);
+        $query = TeacherGig::where('status', 1)
+            ->whereHas('user', function($q) {
+                $q->whereNotNull('id'); // Only gigs with valid users
+            });
 
         // Apply category filter only if $category_type is not null
         if ($category !== null) {
@@ -478,27 +511,53 @@ class SellerListingController extends Controller
             $query->where('title', 'LIKE', '%' . $keyword . '%');
         }
 
+        //     // Apply sorting based on $tag values
+        //     if ($tag && $tag->sorting_impressions && $tag->sorting_clicks && $tag->sorting_orders && $tag->sorting_reviews) {
+        //         $query->selectRaw('
+        //     (COALESCE(impressions, 0) * ?) +
+        //     (COALESCE(clicks, 0) * ?) +
+        //     (COALESCE(orders, 0) * ?) +
+        //     (COALESCE(reviews, 0) * ?) as score
+        // ', [
+        //             $tag->sorting_impressions / 100,
+        //             $tag->sorting_clicks / 100,
+        //             $tag->sorting_orders / 100,
+        //             $tag->sorting_reviews / 100
+        //         ]);
+        //     } else {
+        //         // Default sorting if $tag is missing
+        //         $query->selectRaw('
+        //     (COALESCE(impressions, 0) * 0.10) +
+        //     (COALESCE(clicks, 0) * 0.10) +
+        //     (COALESCE(orders, 0) * 0.20) +
+        //     (COALESCE(reviews, 0) * 0.60) as score
+        // ');
+        //     }
+
         // Apply sorting based on $tag values
         if ($tag && $tag->sorting_impressions && $tag->sorting_clicks && $tag->sorting_orders && $tag->sorting_reviews) {
-            $query->selectRaw('
-        (COALESCE(impressions, 0) * ?) +
-        (COALESCE(clicks, 0) * ?) +
-        (COALESCE(orders, 0) * ?) +
-        (COALESCE(reviews, 0) * ?) as score
-    ', [
-                $tag->sorting_impressions / 100,
-                $tag->sorting_clicks / 100,
-                $tag->sorting_orders / 100,
-                $tag->sorting_reviews / 100
-            ]);
+            // Ensure we select all columns (including id) and compute score
+            $query->select('*')
+                ->selectRaw('
+            (COALESCE(impressions, 0) * ?) +
+            (COALESCE(clicks, 0) * ?) +
+            (COALESCE(orders, 0) * ?) +
+            (COALESCE(reviews, 0) * ?) as score
+        ', [
+                    $tag->sorting_impressions / 100,
+                    $tag->sorting_clicks / 100,
+                    $tag->sorting_orders / 100,
+                    $tag->sorting_reviews / 100
+                ]);
         } else {
-            // Default sorting if $tag is missing
-            $query->selectRaw('
-        (COALESCE(impressions, 0) * 0.10) +
-        (COALESCE(clicks, 0) * 0.10) +
-        (COALESCE(orders, 0) * 0.20) +
-        (COALESCE(reviews, 0) * 0.60) as score
-    ');
+            // Default sorting if $tag is missing; select all columns including id
+            $query->select('*')
+                ->selectRaw('
+            (COALESCE(impressions, 0) * 0.10) +
+            (COALESCE(clicks, 0) * 0.10) +
+            (COALESCE(orders, 0) * 0.20) +
+            (COALESCE(reviews, 0) * 0.60) as score
+        ');
         }
 
 // Order by calculated score
@@ -621,7 +680,10 @@ class SellerListingController extends Controller
         $users = $profiles;
 
         // Fetch matching Gigs
-        $query = TeacherGig::whereIn('user_id', $userIds)->where('status', 1);
+        $query = TeacherGig::whereIn('user_id', $userIds)->where('status', 1)
+            ->whereHas('user', function($q) {
+                $q->whereNotNull('id'); // Only gigs with valid users
+            });
         $CatesQuery = Category::where('status', 1);
 
         // Filtering by Service Role
@@ -964,18 +1026,59 @@ class SellerListingController extends Controller
 
     public function CourseService($id)
     {
-        $gig = TeacherGig::find($id);
+        // Load gig with all necessary relationships using eager loading
+        $gig = TeacherGig::with([
+            'user:id,first_name,last_name,email,profile',
+            'teacherGigData',
+            'all_reviews' => function($query) {
+                $query->with('user:id,first_name,last_name,profile')
+                      ->whereNull('parent_id')
+                      ->latest();
+            }
+        ])->find($id);
+
+        // Check if gig exists and has a valid user
+        if (!$gig) {
+            abort(404, 'Service not found or no longer available');
+        }
+
+        // Get expert profile
         $profile = ExpertProfile::where(['user_id' => $gig->user_id, 'status' => 1])->first();
-        $gigData = TeacherGigData::where(['gig_id' => $gig->id])->first();
+
+        // Get gig data using relationship
+        $gigData = $gig->teacherGigData;
+
+        // Get payment data
         $gigPayment = TeacherGigPayment::where(['gig_id' => $gig->id])->first();
-        $course = explode(',_,', $gigData->course);
-        $resource = explode(',_,', $gigData->resource);
 
-        $category = $gig->category; // Assuming gig has a 'category' field or relation
+        // Add null checks before exploding strings
+        $course = ($gigData && $gigData->course) ? explode(',_,', $gigData->course) : [];
+        $resource = ($gigData && $gigData->resource) ? explode(',_,', $gigData->resource) : [];
 
-        $clicks = $gig->clicks + 1;
-        $gig->clicks = $clicks;
-        $gig->update();
+        $category = $gig->category;
+
+        // Get reviews with user data
+        $reviews = $gig->all_reviews;
+
+        // Calculate average rating and total reviews
+        $averageRating = $reviews->avg('rating');
+        $totalReviews = $reviews->count();
+
+        // Get similar services (same category, different service)
+        $similarServices = TeacherGig::where('category', $gig->category)
+            ->where('id', '!=', $id)
+            ->where('status', 1) // Active only
+            ->with([
+                'user:id,first_name,last_name',
+                'teacherGigData:id,gig_id,description'
+            ])
+            ->withAvg('all_reviews', 'rating')
+            ->withCount('all_reviews')
+            ->limit(4)
+            ->get();
+
+        // Update clicks counter
+        $gig->increment('clicks');
 
         // Retrieve the existing recently viewed gigs from cookies (if any)
         $recentlyViewedGigs = json_decode(request()->cookie('recently_viewed_gigs', '[]'), true);
@@ -997,8 +1100,11 @@ class SellerListingController extends Controller
         // Save the most recent category in a separate cookie (replacing the old category)
         Cookie::queue('recently_viewed_category', json_encode($category), 60 * 24 * 30); // Only the latest category
 
-
-        return view("Public-site.recorded-class", compact('gig', 'profile', 'gigData', 'gigPayment', 'course', 'resource'));
+        return view("Public-site.recorded-class", compact(
+            'gig', 'profile', 'gigData', 'gigPayment',
+            'course', 'resource', 'reviews', 'averageRating',
+            'totalReviews', 'similarServices'
+        ));
     }
 
 
@@ -1063,16 +1169,32 @@ class SellerListingController extends Controller
 
         $all_reviews = ServiceReviews::query()->with(['replies', 'user'])->where(['teacher_id' => $user->id])->get();
         $faqs = TeacherFaqs::where(['user_id' => $user->id])->get();
-        $teacher_services = TeacherGig::where(['user_id' => $user->id, 'service_type' => 'Online', 'status' => 1])->get();
-        $teacher_services_cls = TeacherGig::where(['user_id' => $user->id, 'service_role' => 'Class', 'lesson_type' => 'One', 'status' => 1])->get();
+        $teacher_services = TeacherGig::where(['user_id' => $user->id, 'service_type' => 'Online', 'status' => 1])
+            ->whereHas('user', function($q) {
+                $q->whereNotNull('id'); // Only gigs with valid users
+            })
+            ->get();
+        $teacher_services_cls = TeacherGig::where(['user_id' => $user->id, 'service_role' => 'Class', 'lesson_type' => 'One', 'status' => 1])
+            ->whereHas('user', function($q) {
+                $q->whereNotNull('id'); // Only gigs with valid users
+            })
+            ->get();
 
-        $teacher_services_fls = TeacherGig::where(['user_id' => $user->id, 'service_role' => 'Freelance', 'freelance_type' => 'Basic', 'status' => 1])->get();
+        $teacher_services_fls = TeacherGig::where(['user_id' => $user->id, 'service_role' => 'Freelance', 'freelance_type' => 'Basic', 'status' => 1])
+            ->whereHas('user', function($q) {
+                $q->whereNotNull('id'); // Only gigs with valid users
+            })
+            ->get();
 
         // Retrieve the stored gig IDs from the cookie
         $recentlyViewed = json_decode(request()->cookie('recently_viewed_gigs', '[]'), true);
 
         // Fetch gigs based on the stored gig IDs
-        $recentlyViewedGigs = TeacherGig::whereIn('id', $recentlyViewed)->where('status', 1)->get();
+        $recentlyViewedGigs = TeacherGig::whereIn('id', $recentlyViewed)->where('status', 1)
+            ->whereHas('user', function($q) {
+                $q->whereNotNull('id'); // Only gigs with valid users
+            })
+            ->get();
 
         // Retrieve the most recent category from the cookie
         $recentlyViewedCategory = json_decode(request()->cookie('recently_viewed_category', 'null'), true);
@@ -1083,6 +1205,9 @@ class SellerListingController extends Controller
             $cate = Category::find($recentlyViewedCategory);
             $sameCategoryGigs = TeacherGig::where('category_name', $cate->category)
                 ->where('status', 1) // Assuming you want to fetch only active gigs
+                ->whereHas('user', function($q) {
+                    $q->whereNotNull('id'); // Only gigs with valid users
+                })
                 ->latest()->take(10)->get();
 
 
@@ -1185,7 +1310,10 @@ class SellerListingController extends Controller
     // Profile Ajax Services Get Function Start ====
     public function GetProfileServices(Request $request)
     {
-        $query = TeacherGig::where('user_id', $request->id)->where('status', 1);
+        $query = TeacherGig::where('user_id', $request->id)->where('status', 1)
+            ->whereHas('user', function($q) {
+                $q->whereNotNull('id'); // Only gigs with valid users
+            });
 
         if ($request->has('role') && $request->role != 'All') {
             $query->where('service_role', $request->role);

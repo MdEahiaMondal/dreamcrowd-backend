@@ -1350,8 +1350,21 @@ document.getElementById('payment_type').addEventListener('change', function() {
 
 
                // Final duration validation
-     const durationH = document.getElementById('durationH_2').value;
-  const durationM = document.getElementById('durationM_2').value;
+     const durationHElement = document.getElementById('durationH_2');
+  const durationMElement = document.getElementById('durationM_2');
+  if (!durationHElement || !durationMElement) {
+    toastr.options = {
+      "closeButton": true,
+      "progressBar": true,
+      "timeOut": "10000",
+      "extendedTimeOut": "4410000"
+    }
+    toastr.error("Duration fields not found!");
+    valid = false;
+    return false;
+  }
+  const durationH = durationHElement.value;
+  const durationM = durationMElement.value;
   duration = `${durationH}:${durationM}`;
   if (durationH === '00' && durationM === '00'){
 
@@ -1384,12 +1397,27 @@ document.getElementById('payment_type').addEventListener('change', function() {
     if (activeDays.length > 0) {
       
       for (let i = 0; i < activeDays.length; i++) {
-      
+
         const day = activeDays[i];
         const data = activeDivs[i];
-        const start_repeat = document.getElementById('start_repeat_'+data).value;
-        const end_repeat = document.getElementById('end_repeat_'+data).value;
-          
+        const startRepeatElement = document.getElementById('start_repeat_'+data);
+        const endRepeatElement = document.getElementById('end_repeat_'+data);
+
+        if (!startRepeatElement || !endRepeatElement) {
+            toastr.options = {
+                "closeButton": true,
+                "progressBar": true,
+                "timeOut": "10000",
+                "extendedTimeOut": "4410000"
+            }
+            toastr.error(`Time input fields not found for ${day}!`);
+            valid = false;
+            return false;
+        }
+
+        const start_repeat = startRepeatElement.value;
+        const end_repeat = endRepeatElement.value;
+
         // Start Time validation
         if (!start_repeat) {
             toastr.options =
@@ -1559,8 +1587,21 @@ document.getElementById('payment_type').addEventListener('change', function() {
 
 
                  // Final duration validation
-  const durationH = document.getElementById('durationH').value;
-  const durationM = document.getElementById('durationM').value;
+  const durationHElement = document.getElementById('durationH');
+  const durationMElement = document.getElementById('durationM');
+  if (!durationHElement || !durationMElement) {
+    toastr.options = {
+      "closeButton": true,
+      "progressBar": true,
+      "timeOut": "10000",
+      "extendedTimeOut": "4410000"
+    }
+    toastr.error("Duration fields not found!");
+    valid = false;
+    return false;
+  }
+  const durationH = durationHElement.value;
+  const durationM = durationMElement.value;
   duration = `${durationH}:${durationM}`;
   if (durationH === '00' && durationM === '00'){
 
@@ -1593,12 +1634,27 @@ document.getElementById('payment_type').addEventListener('change', function() {
     if (activeDays.length > 0) {
       
       for (let i = 0; i < activeDays.length; i++) {
-      
+
         const day = activeDays[i];
         const data = activeDivs[i];
-        const start_repeat = document.getElementById('start_repeat_'+data).value;
-        const end_repeat = document.getElementById('end_repeat_'+data).value;
-          
+        const startRepeatElement = document.getElementById('start_repeat_'+data);
+        const endRepeatElement = document.getElementById('end_repeat_'+data);
+
+        if (!startRepeatElement || !endRepeatElement) {
+            toastr.options = {
+                "closeButton": true,
+                "progressBar": true,
+                "timeOut": "10000",
+                "extendedTimeOut": "4410000"
+            }
+            toastr.error(`Time input fields not found for ${day}!`);
+            valid = false;
+            return false;
+        }
+
+        const start_repeat = startRepeatElement.value;
+        const end_repeat = endRepeatElement.value;
+
         // Start Time validation
         if (!start_repeat) {
             toastr.options =

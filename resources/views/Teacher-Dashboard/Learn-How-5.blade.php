@@ -1064,7 +1064,7 @@
 
     {{-- Google Script CDN --}}
     <script
-        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBMA8qhhaBOYY1uv0nUfsBGcE74w6JNY7M&libraries=places"></script>
+        src="https://maps.googleapis.com/maps/api/js?key={{ config('services.google_maps.api_key') }}&libraries=places&loading=async"></script>
 
     {{-- Street Address Google Api Script Start --}}
     <script>

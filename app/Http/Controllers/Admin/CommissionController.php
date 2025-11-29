@@ -10,10 +10,18 @@ use App\Models\TopSellerTag;
 use App\Models\SellerCommission;
 use App\Models\ServiceCommission;
 use App\Models\User;
+use App\Models\TeacherGig;
+use App\Services\NotificationService;
 use Illuminate\Support\Facades\Auth;
 
 class CommissionController extends Controller
 {
+    protected $notificationService;
+
+    public function __construct(NotificationService $notificationService)
+    {
+        $this->notificationService = $notificationService;
+    }
     public function AdmincheckAuth()
     {
         if (!Auth::user()) {
@@ -269,11 +277,33 @@ class CommissionController extends Controller
 
         try {
             $commission = SellerCommission::findOrFail($id);
+            $oldRate = $commission->commission_rate;
+
             $commission->update([
                 'commission_rate' => $request->commission_rate,
                 'is_active' => $request->is_active,
                 'notes' => $request->notes,
             ]);
+
+            // Send notification to seller about commission change
+            $seller = User::find($commission->seller_id);
+            if ($seller) {
+                $this->notificationService->send(
+                    userId: $seller->id,
+                    type: 'account',
+                    title: 'Commission Rate Updated',
+                    message: "Your commission rate has been updated to {$request->commission_rate}% by the admin team.",
+                    data: [
+                        'old_rate' => $oldRate,
+                        'new_rate' => $request->commission_rate,
+                        'updated_at' => now()->toISOString(),
+                        'is_active' => $request->is_active
+                    ],
+                    sendEmail: true,
+                    actorUserId: Auth::id(),
+                    targetUserId: $seller->id
+                );
+            }
 
             return redirect()->back()->with('success', 'Seller commission updated successfully!');
 
@@ -344,11 +374,36 @@ class CommissionController extends Controller
 
         try {
             $commission = ServiceCommission::findOrFail($id);
+            $oldRate = $commission->commission_rate;
+
             $commission->update([
                 'commission_rate' => $request->commission_rate,
                 'is_active' => $request->is_active,
                 'notes' => $request->notes,
             ]);
+
+            // Get the service/gig and seller information
+            $gig = TeacherGig::find($commission->service_id);
+            if ($gig && $gig->user) {
+                $this->notificationService->send(
+                    userId: $gig->user_id,
+                    type: 'gig',
+                    title: 'Service Commission Updated',
+                    message: "Commission rate for '{$gig->title}' has been updated to {$request->commission_rate}%.",
+                    data: [
+                        'gig_id' => $gig->id,
+                        'gig_title' => $gig->title,
+                        'old_rate' => $oldRate,
+                        'new_rate' => $request->commission_rate,
+                        'service_type' => $commission->service_type,
+                        'updated_at' => now()->toISOString()
+                    ],
+                    sendEmail: true,
+                    actorUserId: Auth::id(),
+                    targetUserId: $gig->user_id,
+                    serviceId: $gig->id
+                );
+            }
 
             return redirect()->back()->with('success', 'Service commission updated successfully!');
 
@@ -521,6 +576,45 @@ class CommissionController extends Controller
                 'reason' => $request->refund_reason,
                 'admin_id' => auth()->id()
             ]);
+
+            // Send notifications about manual refund
+            // Notify buyer
+            if ($transaction->buyer_id) {
+                $this->notificationService->send(
+                    userId: $transaction->buyer_id,
+                    type: 'payment',
+                    title: 'Refund Issued',
+                    message: "A refund of \${$transaction->total_amount} has been issued for your transaction. Reason: {$request->refund_reason}",
+                    data: [
+                        'transaction_id' => $transaction->id,
+                        'refund_amount' => $transaction->total_amount,
+                        'reason' => $request->refund_reason,
+                        'refunded_at' => now()->toISOString()
+                    ],
+                    sendEmail: true,
+                    actorUserId: Auth::id(),
+                    targetUserId: $transaction->buyer_id
+                );
+            }
+
+            // Notify seller
+            if ($transaction->seller_id) {
+                $this->notificationService->send(
+                    userId: $transaction->seller_id,
+                    type: 'payment',
+                    title: 'Refund Issued for Your Transaction',
+                    message: "A refund of \${$transaction->total_amount} has been issued for transaction #{$transaction->id}. This will be deducted from your next payout.",
+                    data: [
+                        'transaction_id' => $transaction->id,
+                        'refund_amount' => $transaction->total_amount,
+                        'reason' => $request->refund_reason,
+                        'refunded_at' => now()->toISOString()
+                    ],
+                    sendEmail: true,
+                    actorUserId: Auth::id(),
+                    targetUserId: $transaction->seller_id
+                );
+            }
 
             return redirect()->back()->with('success', 'Transaction refunded successfully!');
 

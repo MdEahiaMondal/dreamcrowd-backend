@@ -147,6 +147,163 @@
                     <h5>Client Management</h5>
                 </div>
 
+                {{-- ✅ NEW: Pending Refund Requests Alert --}}
+                @if($pendingRefunds->isNotEmpty())
+                <div class="alert alert-warning mb-4 shadow-sm" role="alert" style="border-left: 4px solid #ff9800;">
+                    <div class="d-flex align-items-center">
+                        <i class="bx bx-error-circle" style="font-size: 2.5rem; margin-right: 15px; color: #ff9800;"></i>
+                        <div>
+                            <h5 class="mb-1" style="color: #d84315;">
+                                <strong>⚠️ {{ $pendingRefunds->count() }} Pending Refund Request(s)</strong>
+                            </h5>
+                            <p class="mb-0">
+                                You have refund requests that require your response within <strong>48 hours</strong>.
+                                Failure to respond will result in automatic full refund to the buyer.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Pending Refunds Table --}}
+                <div class="card mb-4 shadow-sm">
+                    <div class="card-header bg-warning text-white">
+                        <h5 class="mb-0"><i class="bx bx-time-five"></i> Refund Requests - Awaiting Your Response</h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Order Details</th>
+                                        <th>Buyer</th>
+                                        <th>Amount</th>
+                                        <th>Buyer's Reason</th>
+                                        <th width="150">Time Remaining</th>
+                                        <th width="200">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($pendingRefunds as $refund)
+                                    <tr>
+                                        <td>
+                                            <strong>Order #{{ $refund->id }}</strong><br>
+                                            <small class="text-muted">{{ $refund->title }}</small>
+                                        </td>
+                                        <td>
+                                            {{ $refund->user->first_name }} {{ $refund->user->last_name }}
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-danger" style="font-size: 1.1em;">
+                                                ${{ number_format($refund->finel_price, 2) }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <div style="max-width: 300px;">
+                                                @if(strlen($refund->buyer_reason) > 100)
+                                                    <span class="reason-short-{{ $refund->id }}">
+                                                        {{ substr($refund->buyer_reason, 0, 100) }}...
+                                                        <a href="javascript:void(0)" onclick="showFullReason({{ $refund->id }})" class="text-primary">Read More</a>
+                                                    </span>
+                                                    <span class="reason-full-{{ $refund->id }}" style="display: none;">
+                                                        {{ $refund->buyer_reason }}
+                                                        <a href="javascript:void(0)" onclick="hideFullReason({{ $refund->id }})" class="text-primary">Show Less</a>
+                                                    </span>
+                                                @else
+                                                    {{ $refund->buyer_reason }}
+                                                @endif
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="countdown-badge
+                                                @if($refund->is_flashing) flashing-badge @endif"
+                                                id="countdown-{{ $refund->id }}"
+                                                data-end-time="{{ \Carbon\Carbon::parse($refund->action_date)->addHours(48)->toIso8601String() }}">
+
+                                                <span class="badge bg-{{ $refund->urgency_color }} p-2" style="font-size: 1em;">
+                                                    ⏱️ <span class="countdown-text-{{ $refund->id }}">
+                                                        {{ floor($refund->hours_remaining) }}h {{ floor(($refund->hours_remaining - floor($refund->hours_remaining)) * 60) }}m
+                                                    </span>
+                                                </span>
+
+                                                @if($refund->urgency == 'high')
+                                                    <br><small class="text-danger"><strong>URGENT!</strong></small>
+                                                @elseif($refund->urgency == 'medium')
+                                                    <br><small class="text-warning">Moderate</small>
+                                                @endif
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="btn-group-vertical" role="group">
+                                                <form action="{{ route('AcceptDisputedOrder') }}" method="POST" class="mb-2" onsubmit="return confirm('Are you sure you want to ACCEPT this refund? The full amount will be refunded to the buyer immediately.');">
+                                                    @csrf
+                                                    <input type="hidden" name="order_id" value="{{ $refund->id }}">
+                                                    <button type="submit" class="btn btn-sm btn-success w-100">
+                                                        <i class="bx bx-check"></i> Accept Refund
+                                                    </button>
+                                                </form>
+
+                                                <button type="button" class="btn btn-sm btn-danger w-100"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#disputeModal{{ $refund->id }}">
+                                                    <i class="bx bx-message-square-x"></i> Dispute Refund
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+
+                                    {{-- Dispute Modal --}}
+                                    <div class="modal fade" id="disputeModal{{ $refund->id }}" tabindex="-1" aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header bg-danger text-white">
+                                                    <h5 class="modal-title">Dispute Refund Request - Order #{{ $refund->id }}</h5>
+                                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <form action="{{ route('DisputeOrder') }}" method="POST">
+                                                    @csrf
+                                                    <div class="modal-body">
+                                                        <input type="hidden" name="order_id" value="{{ $refund->id }}">
+
+                                                        <div class="alert alert-info">
+                                                            <strong>Buyer's Reason:</strong><br>
+                                                            {{ $refund->buyer_reason }}
+                                                        </div>
+
+                                                        <div class="mb-3">
+                                                            <label for="reason{{ $refund->id }}" class="form-label">
+                                                                <strong>Your Counter-Reason:</strong> <span class="text-danger">*</span>
+                                                            </label>
+                                                            <textarea
+                                                                class="form-control"
+                                                                id="reason{{ $refund->id }}"
+                                                                name="reason"
+                                                                rows="5"
+                                                                required
+                                                                placeholder="Explain why you disagree with this refund request..."></textarea>
+                                                            <small class="text-muted">This will be sent to the admin for review. Payment will be held until admin makes a decision.</small>
+                                                        </div>
+
+                                                        <div class="alert alert-warning">
+                                                            <strong>Note:</strong> Once you dispute, the payment will be ON HOLD and an admin will review both sides before making a final decision.
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                        <button type="submit" class="btn btn-danger">Submit Dispute</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                @endif
+                {{-- ✅ END: Pending Refund Requests Section --}}
+
                 <nav>
                     <ul class="tabs">
 
@@ -221,6 +378,8 @@
                                 </div>
                             </div>
                         </div>
+                       
+
                         <p class="">
                         <div class="class-management-sec">
                             <div class="row">
@@ -237,7 +396,6 @@
                                             <th>Status</th>
                                             <th class="act">Action</th>
                                             </thead>
-
 
                                             <tbody>
 
@@ -259,8 +417,12 @@
                                                                          class="card-img-top-profile">
                                                                 @endif
 
-                                                                <p>{{ $order->first_name }}  {{strtoupper(substr($order->last_name, 0, 1))}}
-                                                                    . </p>
+                                                                <div>
+                                                                    <p>{{ $order->first_name }}  {{strtoupper(substr($order->last_name, 0, 1))}}</p>
+                                                                    <p class="text-sm" style="font-size: 12px">{{ $order->country }}</p>
+
+                                                                </div>
+                                                                    
                                                             </div>
                                                         </td>
                                                         <td>
@@ -563,8 +725,10 @@
                                                                          class="card-img-top-profile">
                                                                 @endif
 
-                                                                <p>{{ $order->first_name }}  {{strtoupper(substr($order->last_name, 0, 1))}}
-                                                                    . </p>
+                                                                <div>
+                                                                    <p>{{ $order->first_name }}  {{strtoupper(substr($order->last_name, 0, 1))}}</p>
+                                                                    <p class="text-sm" style="font-size: 12px">{{ $order->country }}</p>
+                                                                </div>
                                                             </div>
                                                         </td>
                                                         <td>
@@ -867,8 +1031,11 @@
                                                                          class="card-img-top-profile">
                                                                 @endif
 
-                                                                <p>{{ $order->first_name }}  {{strtoupper(substr($order->last_name, 0, 1))}}
-                                                                    . </p>
+                                                                <div>
+                                                                    <p>{{ $order->first_name }}  {{strtoupper(substr($order->last_name, 0, 1))}}</p>
+                                                                    <p class="text-sm" style="font-size: 12px">{{ $order->country }}</p>
+
+                                                                </div>
                                                             </div>
                                                         </td>
                                                         <td>
@@ -1171,8 +1338,11 @@
                                                                          class="card-img-top-profile">
                                                                 @endif
 
-                                                                <p>{{ $order->first_name }}  {{strtoupper(substr($order->last_name, 0, 1))}}
-                                                                    . </p>
+                                                                <div>
+                                                                    <p>{{ $order->first_name }}  {{strtoupper(substr($order->last_name, 0, 1))}}</p>
+                                                                    <p class="text-sm" style="font-size: 12px">{{ $order->country }}</p>
+
+                                                                </div>
                                                             </div>
                                                         </td>
                                                         <td>
@@ -1459,8 +1629,11 @@
                                                                          class="card-img-top-profile">
                                                                 @endif
 
-                                                                <p>{{ $order->first_name }}  {{strtoupper(substr($order->last_name, 0, 1))}}
-                                                                    . </p>
+                                                                <div>
+                                                                    <p>{{ $order->first_name }}  {{strtoupper(substr($order->last_name, 0, 1))}}</p>
+                                                                    <p class="text-sm" style="font-size: 12px">{{ $order->country }}</p>
+
+                                                                </div>
                                                             </div>
                                                         </td>
                                                         <td>
@@ -1747,8 +1920,11 @@
                                                                          class="card-img-top-profile">
                                                                 @endif
 
-                                                                <p>{{ $order->first_name }}  {{strtoupper(substr($order->last_name, 0, 1))}}
-                                                                    . </p>
+                                                                <div>
+                                                                    <p>{{ $order->first_name }}  {{strtoupper(substr($order->last_name, 0, 1))}}</p>
+                                                                    <p class="text-sm" style="font-size: 12px">{{ $order->country }}</p>
+
+                                                                </div>
                                                             </div>
                                                         </td>
                                                         <td>
@@ -2807,7 +2983,7 @@
                                 <h5 class="mb-0 refund">Refund Reason</h5>
                                 <textarea class="form-control" name="reason" id="refund_reason"
                                           placeholder="write here reason of refund" required></textarea>
-                                <button type="button" class="btn float-start cancel-button btn-outline-danger">Cancel
+                                <button type="button" class="btn float-start cancel-button btn-outline-danger" data-bs-dismiss="modal" aria-label="Close">Cancel
                                 </button>
                                 <button type="submit" class="btn float-end submit-button" id="submit-cancel-service">
                                     Submit
@@ -2869,7 +3045,7 @@
                                 <h5 class="mb-0 refund">Refund Reason</h5>
                                 <textarea class="form-control" name="reason" id="dispute_refund_reason"
                                           placeholder="explain why dispute order..." required></textarea>
-                                <button type="button" class="btn float-start cancel-button btn-outline-danger">Cancel
+                                <button type="button" class="btn float-start cancel-button btn-outline-danger" data-bs-dismiss="modal" aria-label="Close">Cancel
                                 </button>
                                 <button type="submit" class="btn float-end submit-button" id="submit-cancel-service">
                                     Submit
@@ -5467,6 +5643,115 @@
             // $('#request-refund-modal').modal('show');
         });
     });
+</script>
 
+{{-- ✅ NEW: Countdown Timer JavaScript --}}
+<script>
+// Show/Hide full reason text
+function showFullReason(orderId) {
+    $('.reason-short-' + orderId).hide();
+    $('.reason-full-' + orderId).show();
+}
+
+function hideFullReason(orderId) {
+    $('.reason-full-' + orderId).hide();
+    $('.reason-short-' + orderId).show();
+}
+
+// Countdown Timer Functionality
+function initializeCountdowns() {
+    const countdownElements = document.querySelectorAll('[id^="countdown-"]');
+
+    countdownElements.forEach(element => {
+        const endTimeStr = element.getAttribute('data-end-time');
+        if (!endTimeStr) return;
+
+        const endTime = new Date(endTimeStr);
+        const orderId = element.id.replace('countdown-', '');
+
+        function updateCountdown() {
+            const now = new Date();
+            const diff = endTime - now;
+
+            if (diff <= 0) {
+                // Time expired
+                const textElement = document.querySelector('.countdown-text-' + orderId);
+                const badgeElement = element.querySelector('.badge');
+
+                if (textElement) {
+                    textElement.textContent = 'Time Expired!';
+                }
+                if (badgeElement) {
+                    badgeElement.className = 'badge bg-dark p-2';
+                }
+
+                return;
+            }
+
+            // Calculate hours and minutes remaining
+            const hoursRemaining = Math.floor(diff / (1000 * 60 * 60));
+            const minutesRemaining = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+
+            // Update countdown text
+            const textElement = document.querySelector('.countdown-text-' + orderId);
+            if (textElement) {
+                textElement.textContent = hoursRemaining + 'h ' + minutesRemaining + 'm';
+            }
+
+            // Update badge color based on urgency
+            const badgeElement = element.querySelector('.badge');
+            if (badgeElement) {
+                if (hoursRemaining > 24) {
+                    badgeElement.className = 'badge bg-success p-2';
+                } else if (hoursRemaining > 6) {
+                    badgeElement.className = 'badge bg-warning p-2';
+                } else {
+                    badgeElement.className = 'badge bg-danger p-2';
+                }
+            }
+
+            // Add flashing effect if < 2 hours
+            if (hoursRemaining < 2) {
+                element.classList.add('flashing-badge');
+            } else {
+                element.classList.remove('flashing-badge');
+            }
+        }
+
+        // Update immediately
+        updateCountdown();
+
+        // Update every minute (60 seconds)
+        setInterval(updateCountdown, 60000);
+    });
+}
+
+// Initialize countdowns when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    initializeCountdowns();
+});
+
+// Also initialize if using jQuery
+$(document).ready(function() {
+    initializeCountdowns();
+});
+</script>
+
+{{-- ✅ NEW: Flashing Badge CSS Animation --}}
+<style>
+@keyframes flash {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+}
+
+.flashing-badge {
+    animation: flash 1.5s infinite;
+}
+
+.flashing-badge .badge {
+    font-weight: bold;
+    box-shadow: 0 0 10px rgba(220, 53, 69, 0.5);
+}
+</style>
 
 </script>

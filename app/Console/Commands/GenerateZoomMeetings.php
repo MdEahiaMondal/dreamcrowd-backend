@@ -206,7 +206,11 @@ class GenerateZoomMeetings extends Command
                             title: 'Zoom Link Ready',
                             message: 'Your Zoom link for "' . $order->title . '" is now available. Class starts soon!',
                             data: ['order_id' => $order->id, 'class_date_id' => $classDate->id, 'meeting_id' => $meeting->meeting_id],
-                            sendEmail: false // Email already sent above
+                            sendEmail: false, // Email already sent above
+                            actorUserId: $teacher->id,
+                            targetUserId: $buyer->id,
+                            orderId: $order->id,
+                            serviceId: $order->gig_id
                         );
                     } catch (\Exception $e) {
                         Log::error("Failed to send Zoom notification to buyer: " . $e->getMessage());
@@ -221,7 +225,11 @@ class GenerateZoomMeetings extends Command
                         title: 'Zoom Meeting Created',
                         message: 'Zoom meeting created for "' . $order->title . '". Class starts at ' . $classDate->teacher_date->format('h:i A'),
                         data: ['order_id' => $order->id, 'class_date_id' => $classDate->id, 'meeting_id' => $meeting->meeting_id],
-                        sendEmail: false
+                        sendEmail: false,
+                        actorUserId: $teacher->id,
+                        targetUserId: $buyer->id,
+                        orderId: $order->id,
+                        serviceId: $order->gig_id
                     );
                 } catch (\Exception $e) {
                     Log::error("Failed to send Zoom notification to teacher: " . $e->getMessage());

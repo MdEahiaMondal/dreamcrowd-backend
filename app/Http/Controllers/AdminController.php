@@ -303,7 +303,9 @@ class AdminController extends Controller
             title: 'Category Rejected',
             message: 'The category "' . $category->category . '" has been removed from your seller application. Please review your application or contact support for more information.',
             data: ['application_id' => $app->id, 'rejected_category' => $category->category, 'type' => $request->type],
-            sendEmail: true
+            sendEmail: true,
+            actorUserId: Auth::id(),
+            targetUserId: $app->user_id
         );
 
         if ($app) {
@@ -401,6 +403,7 @@ class AdminController extends Controller
         if ($request->action == 'reject') {
 
             $user = User::find($expert->user_id);
+            $oldRole = $user->role;
             $user->role = 0;
 
 
@@ -447,6 +450,30 @@ class AdminController extends Controller
 
             $user->update();
             $expert->update();
+
+            // Send account role change notification
+            if ($oldRole != 0) {
+                try {
+                    $this->notificationService->send(
+                        userId: $expert->user_id,
+                        type: 'account',
+                        title: 'Account Role Changed',
+                        message: 'Your account role has been changed to Buyer due to seller application rejection.',
+                        data: [
+                            'old_role' => $oldRole,
+                            'new_role' => 0,
+                            'changed_at' => now()->toISOString(),
+                            'reason' => 'Seller application rejected'
+                        ],
+                        sendEmail: false,
+                        actorUserId: Auth::id(),
+                        targetUserId: $expert->user_id
+                    );
+                } catch (\Exception $e) {
+                    \Log::error('Failed to send role change notification: ' . $e->getMessage());
+                }
+            }
+
             // If rejected
             $this->notificationService->send(
                 userId: $expert->user_id,
@@ -454,9 +481,11 @@ class AdminController extends Controller
                 title: 'Seller Application Rejected',
                 message: 'Unfortunately, your seller application was not approved. Reason: ' . $request->reason,
                 data: ['rejection_reason' => $request->reason],
-                sendEmail: true
+                sendEmail: true,
+                actorUserId: Auth::id(),
+                targetUserId: $expert->user_id
             );
-            
+
             if ($expert) {
                 return redirect()->to('/all-application')->with('success', 'Application Rejected Successfuly!');
             } else {
@@ -465,6 +494,7 @@ class AdminController extends Controller
         } else {
             $user = User::find($expert->user_id);
 
+            $oldRole = $user->role;
             $user->profile = $expert->profile_image;
             $user->first_name = $expert->first_name;
             $user->last_name = $expert->last_name;
@@ -475,6 +505,29 @@ class AdminController extends Controller
             $user->ip = $expert->ip_address;
             $user->role = 1;
             $user->update();
+
+            // Send account role change notification
+            if ($oldRole != 1) {
+                try {
+                    $this->notificationService->send(
+                        userId: $expert->user_id,
+                        type: 'account',
+                        title: 'Account Role Changed',
+                        message: 'Congratulations! Your account has been upgraded to Seller. You can now create and manage services.',
+                        data: [
+                            'old_role' => $oldRole,
+                            'new_role' => 1,
+                            'changed_at' => now()->toISOString(),
+                            'reason' => 'Seller application approved'
+                        ],
+                        sendEmail: false,
+                        actorUserId: Auth::id(),
+                        targetUserId: $expert->user_id
+                    );
+                } catch (\Exception $e) {
+                    \Log::error('Failed to send role change notification: ' . $e->getMessage());
+                }
+            }
 
             $expert->status = 1;
             $expert->action_date = date("M d, Y");
@@ -496,7 +549,9 @@ class AdminController extends Controller
                 title: 'Seller Application Approved',
                 message: 'Congratulations! Your seller application has been approved. You can now start creating services and accepting orders.',
                 data: ['approved_at' => now()],
-                sendEmail: true
+                sendEmail: true,
+                actorUserId: Auth::id(),
+                targetUserId: $expert->user_id
             );
 
 
@@ -559,6 +614,24 @@ class AdminController extends Controller
         $request = TeacherRequest::find($id);
         $request->status = 2;
         $request->update();
+
+        // Send notification to seller about request rejection
+        if ($request && $request->user_id) {
+            $this->notificationService->send(
+                userId: $request->user_id,
+                type: 'account',
+                title: 'Request Rejected',
+                message: 'Your request has been rejected by the admin team. Please contact support for more information.',
+                data: [
+                    'request_id' => $id,
+                    'rejected_at' => now()->toISOString(),
+                    'request_type' => $request->request_type ?? 'unknown'
+                ],
+                sendEmail: true,
+                actorUserId: Auth::id(),
+                targetUserId: $request->user_id
+            );
+        }
 
         if ($request) {
             return redirect()->to('/seller-request')->with('success', 'Seller Request Rejected!');
@@ -801,6 +874,22 @@ class AdminController extends Controller
             $user->update();
             $request->update();
 
+            // Send notification to seller about profile update approval
+            $this->notificationService->send(
+                userId: $user->id,
+                type: 'account',
+                title: 'Profile Update Approved',
+                message: 'Your profile update request has been approved by the admin team.',
+                data: [
+                    'request_id' => $id,
+                    'approved_at' => now()->toISOString(),
+                    'request_type' => 'profile'
+                ],
+                sendEmail: true,
+                actorUserId: Auth::id(),
+                targetUserId: $user->id
+            );
+
             if ($expert) {
                 return redirect()->to('/seller-request')->with('success', 'Seller Request Approved!');
             } else {
@@ -929,205 +1018,6 @@ class AdminController extends Controller
 
     // Seller Management END================
 
-    // Admin Management Start================
-
-    public function AdminManagement()
-    {
-
-        if ($redirect = $this->AdmincheckAuth()) {
-            return $redirect;
-        }
-
-
-        $admins = User::where('role', '=', 2)->where('admin_role', '<', Auth::user()->admin_role)->paginate(10);
-        return view("Admin-Dashboard.admin-management", compact('admins'));
-    }
-
-
-    // Create Admin ============
-    public function CreateAdmin(Request $request)
-    {
-
-        if ($redirect = $this->AdmincheckAuth()) {
-            return $redirect;
-        }
-
-
-        $password = $request->input('password');
-
-
-        if (strlen($password) < 8) {
-            return redirect()->back()->with('error', 'The password must be at least 8 characters long.');
-        }
-
-        if (!preg_match('/[A-Z]/', $password)) {
-            return redirect()->back()->with('error', 'The password must contain at least one uppercase letter.');
-        }
-        if (!preg_match('/[0-9]/', $password)) {
-            return redirect()->back()->with('error', 'The password must contain at least one number.');
-        }
-
-        if (!preg_match('/[\W_]/', $password)) {
-            return redirect()->back()->with('error', 'The password must contain at least one special character.');
-        }
-
-
-        if ($request->password != $request->c_password) {
-            return redirect()->back()->with('error', 'Password did not Matched!');
-        }
-
-
-        if ($request->email == null || $request->password == null || $request->c_password == null || $request->first_name == null || $request->last_name == null) {
-            return redirect()->back()->with('error', 'All Fields Are Required!');
-        }
-
-        if ($request->password != $request->c_password) {
-            return redirect()->back()->with('error', 'Password did not Matched');
-        }
-
-        $user = User::where(['email' => $request->email])->first();
-
-        if (!empty($user)) {
-            return redirect()->back()->with('error', 'This Email is Already Registered');
-        }
-
-        if ($request->role >= Auth::user()->admin_role) {
-            return redirect()->back()->with('error', 'You are Not Allowed to Add Admin in Heigher Rank!');
-        }
-
-
-        //  $userIp = $_SERVER['REMOTE_ADDR']; /* Live IP address */
-        // $userIp = $request->ip(); /* Live IP address */
-        //  $userIp = '162.159.24.227'; /* Static IP address */
-        //  $location = Location::get($userIp);
-        //  echo $location->countryName;
-        // echo $location->countryCode ;
-        // echo $location->cityName ;
-
-
-        $user = User::create([
-            'first_name' => $request->first_name,
-            'last_name' => $request->last_name,
-            'email' => $request->email,
-            'email_verify' => 'verified',
-            'password' => Hash::make($request->password),
-            // 'ip' => $userIp,
-            // 'city' => $location->cityName,
-            // 'country' => $location->countryName,
-            'status' => 1,
-            'role' => 2,
-            'admin_role' => $request->role,
-        ]);
-
-        if ($user) {
-            return redirect()->back()->with('success', 'New Admin Created Successfuly!');
-        } else {
-            return redirect()->back()->with('error', 'Something Error Please Try again Later!');
-        }
-    }
-
-    public function UpdateAdmin(Request $request)
-    {
-
-        if ($redirect = $this->AdmincheckAuth()) {
-            return $redirect;
-        }
-
-        if ($request->email == null || $request->first_name == null || $request->last_name == null) {
-            return redirect()->back()->with('error', 'Fields Are Required!');
-        }
-
-        if ($request->role >= Auth::user()->admin_role) {
-            return redirect()->back()->with('error', 'You are Not Allowed to Update Admin in Heigher Rank!');
-        }
-
-        $admin = User::find($request->id);
-
-        if ($request->email != $admin->email) {
-
-            $user = User::where(['email' => $request->email])->first();
-            if (!empty($user)) {
-                return redirect()->back()->with('error', 'This Email is Already Registered');
-            }
-            $admin->email = $request->email;
-        }
-
-        if ($request->password != null) {
-
-
-            $password = $request->input('password');
-
-
-            if (strlen($password) < 8) {
-                return redirect()->back()->with('error', 'The password must be at least 8 characters long.');
-            }
-
-            if (!preg_match('/[A-Z]/', $password)) {
-                return redirect()->back()->with('error', 'The password must contain at least one uppercase letter.');
-            }
-            if (!preg_match('/[0-9]/', $password)) {
-                return redirect()->back()->with('error', 'The password must contain at least one number.');
-            }
-
-            if (!preg_match('/[\W_]/', $password)) {
-                return redirect()->back()->with('error', 'The password must contain at least one special character.');
-            }
-
-
-            if ($request->password != $request->c_password) {
-                return redirect()->back()->with('error', 'Password did not Matched!');
-            }
-
-
-            if ($request->password != $request->c_password) {
-                return redirect()->back()->with('error', 'Password did not Matched');
-            }
-            $admin->password = Hash::make($request->password);
-        }
-
-        $admin->first_name = $request->first_name;
-        $admin->last_name = $request->last_name;
-        $admin->admin_role = $request->role;
-        $admin->update();
-
-        return redirect()->back()->with('success', 'Admin Details Updated Successfuly!');
-    }
-
-
-    // Delete Admin ===========
-    public function DeleteAdmin($id)
-    {
-
-        if ($redirect = $this->AdmincheckAuth()) {
-            return $redirect;
-        }
-
-        $admin = User::find($id);
-        $admin->delete();
-        return redirect()->back()->with('success', 'Admin Deleted Successfuly!');
-    }
-
-    // Block Admin ===========
-    public function BlockAdmin($id)
-    {
-
-        if ($redirect = $this->AdmincheckAuth()) {
-            return $redirect;
-        }
-
-        $admin = User::find($id);
-        if ($admin->status == 2) {
-            $admin->status = 1;
-            $admin->update();
-            return redirect()->back()->with('success', 'Admin Un Blocked Successfuly!');
-        } else {
-            $admin->status = 2;
-            $admin->update();
-            return redirect()->back()->with('success', 'Admin Blocked Successfuly!');
-        }
-    }
-
-    // Admin Management End================
 
     // Admin Profile Functions Start ================
     // Account Setting Functions Start =================
@@ -1526,7 +1416,9 @@ class AdminController extends Controller
                 title: 'Payment Processed',
                 message: 'Your payment of $' . $amount . ' has been processed by admin and will be transferred to your account shortly.',
                 data: ['transaction_id' => $transaction->id, 'amount' => $amount],
-                sendEmail: true
+                sendEmail: true,
+                actorUserId: Auth::id(),
+                targetUserId: $transaction->seller_id
             );
 
             return redirect()->back()->with('success', 'Payout marked as completed successfully');
@@ -1570,7 +1462,9 @@ class AdminController extends Controller
                         title: 'Payment Processed',
                         message: 'Your payment of $' . $amount . ' has been processed and will be transferred to your account shortly.',
                         data: ['transaction_id' => $transaction->id, 'amount' => $amount],
-                        sendEmail: true
+                        sendEmail: true,
+                        actorUserId: Auth::id(),
+                        targetUserId: $transaction->seller_id
                     );
                 }
             } catch (\Exception $e) {
@@ -1580,5 +1474,2348 @@ class AdminController extends Controller
         }
 
         return redirect()->back()->with('success', "Processed {$processed} payouts successfully. Failed: {$failed}");
+    }
+
+    // ============================================
+    // CRITICAL-2 FIX: Missing Admin Panel Features
+    // ============================================
+
+    /**
+     * All Sellers Management
+     */
+    public function allSellers(Request $request)
+    {
+        if ($redirect = $this->AdmincheckAuth()) {
+            return $redirect;
+        }
+
+        // Determine which tab/status to show
+        $status = $request->get('status', 'active'); // active, hidden, paused, banned, deleted
+
+        // Base query for sellers (users with role = 1)
+        $query = User::where('role', 1);
+
+        // Apply status filter based on tab
+        switch ($status) {
+            case 'active':
+                $query->where('status', User::STATUS_ACTIVE);
+                break;
+            case 'hidden':
+                $query->where('status', User::STATUS_HIDDEN);
+                break;
+            case 'paused':
+                $query->where('status', User::STATUS_PAUSED);
+                break;
+            case 'banned':
+                $query->where('status', User::STATUS_BANNED);
+                break;
+            case 'deleted':
+                $query->onlyTrashed();
+                break;
+        }
+
+        // FILTER 1: Date Range Filter (Registration Date)
+        if ($request->filled('date_filter')) {
+            switch ($request->date_filter) {
+                case 'today':
+                    $query->whereDate('created_at', today());
+                    break;
+                case 'yesterday':
+                    $query->whereDate('created_at', today()->subDay());
+                    break;
+                case 'last_week':
+                    $query->whereBetween('created_at', [now()->subWeek(), now()]);
+                    break;
+                case 'last_7_days':
+                    $query->whereBetween('created_at', [now()->subDays(7), now()]);
+                    break;
+                case 'last_month':
+                    $query->whereMonth('created_at', now()->subMonth()->month)
+                          ->whereYear('created_at', now()->subMonth()->year);
+                    break;
+                case 'current_month':
+                    $query->whereMonth('created_at', now()->month)
+                          ->whereYear('created_at', now()->year);
+                    break;
+                case 'custom':
+                    if ($request->filled(['from_date', 'to_date'])) {
+                        $query->whereBetween('created_at', [
+                            $request->from_date . ' 00:00:00',
+                            $request->to_date . ' 23:59:59'
+                        ]);
+                    }
+                    break;
+            }
+        }
+
+        // FILTER 2: Search (Name, Email, ID)
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('first_name', 'like', "%{$search}%")
+                  ->orWhere('last_name', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%")
+                  ->orWhere('id', 'like', "%{$search}%");
+            });
+        }
+
+        // FILTER 3: Service Type (via gigs)
+        if ($request->filled('service_type')) {
+            $query->whereHas('teacherGigs', function($q) use ($request) {
+                $q->where('service_type', $request->service_type);
+            });
+        }
+
+        // FILTER 4: Category
+        if ($request->filled('category_id')) {
+            $query->whereHas('teacherGigs', function($q) use ($request) {
+                $q->where('category', $request->category_id);
+            });
+        }
+
+        // FILTER 5: Location (Country/City)
+        if ($request->filled('location')) {
+            $location = $request->location;
+            $query->where(function($q) use ($location) {
+                $q->where('country', 'like', "%{$location}%")
+                  ->orWhere('city', 'like', "%{$location}%");
+            });
+        }
+
+        // Load relationships and calculate aggregates
+        $query->with([
+            'expertProfile',
+            'teacherGigs:id,user_id,title,service_type,service_role,category,category_name,sub_category,main_file',
+            'sellerCommission:id,seller_id,commission_rate,is_active',
+        ])
+        ->withCount([
+            'teacherGigs',
+            'bookOrders',
+            'sellerTransactions',
+        ])
+        ->withSum('sellerTransactions as total_earnings', 'seller_earnings')
+        ->withAvg('receivedReviews as average_rating', 'rating')
+        ->withCount('receivedReviews');
+
+        // Check if export is requested
+        if ($request->has('export') && $request->export == 'excel') {
+            return \Maatwebsite\Excel\Facades\Excel::download(
+                new \App\Exports\SellersExport($query->get(), $status),
+                'sellers_' . $status . '_' . now()->format('Y-m-d_His') . '.xlsx'
+            );
+        }
+
+        // Get paginated sellers
+        $sellers = $query->orderBy('created_at', 'desc')->paginate(20);
+
+        // Calculate Statistics for each status
+        $stats = [
+            'total_sellers' => User::where('role', 1)->count(),
+            'active_sellers' => User::where('role', 1)->where('status', User::STATUS_ACTIVE)->count(),
+            'hidden_sellers' => User::where('role', 1)->where('status', User::STATUS_HIDDEN)->count(),
+            'paused_sellers' => User::where('role', 1)->where('status', User::STATUS_PAUSED)->count(),
+            'banned_sellers' => User::where('role', 1)->where('status', User::STATUS_BANNED)->count(),
+            'deleted_sellers' => User::where('role', 1)->onlyTrashed()->count(),
+            'sellers_this_month' => User::where('role', 1)
+                ->whereMonth('created_at', now()->month)->count(),
+            'total_services' => \App\Models\TeacherGig::count(),
+            'total_orders' => \App\Models\BookOrder::count(),
+            'total_revenue' => \App\Models\Transaction::where('status', 'completed')
+                ->sum('total_amount'),
+        ];
+
+        // Get categories for filter dropdown
+        $categories = \App\Models\Category::orderBy('category')->get(['id', 'category']);
+
+        return view('Admin-Dashboard.all-sellers', compact('sellers', 'stats', 'categories', 'status'));
+    }
+
+    /**
+     * Update seller status (hide, pause, ban, activate)
+     */
+    public function updateSellerStatus(Request $request, $id)
+    {
+        if ($redirect = $this->AdmincheckAuth()) {
+            return $redirect;
+        }
+
+        $request->validate([
+            'status' => 'required|in:0,2,3,4', // 0=active, 2=hidden, 3=paused, 4=banned
+        ]);
+
+        try {
+            $seller = User::findOrFail($id);
+            $seller->status = $request->status;
+            $seller->save();
+
+            $statusText = [
+                0 => 'activated',
+                2 => 'hidden',
+                3 => 'paused',
+                4 => 'banned'
+            ];
+
+            return redirect()->back()->with('success', 'Seller ' . $statusText[$request->status] . ' successfully!');
+        } catch (\Exception $e) {
+            \Log::error('Failed to update seller status: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Failed to update seller status.');
+        }
+    }
+
+    /**
+     * Delete seller (soft delete)
+     */
+    public function deleteSeller($id)
+    {
+        if ($redirect = $this->AdmincheckAuth()) {
+            return $redirect;
+        }
+
+        try {
+            $seller = User::findOrFail($id);
+            $seller->delete(); // Soft delete
+
+            return redirect()->back()->with('success', 'Seller deleted successfully!');
+        } catch (\Exception $e) {
+            \Log::error('Failed to delete seller: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Failed to delete seller.');
+        }
+    }
+
+    /**
+     * Restore deleted seller
+     */
+    public function restoreSeller($id)
+    {
+        if ($redirect = $this->AdmincheckAuth()) {
+            return $redirect;
+        }
+
+        try {
+            $seller = User::withTrashed()->findOrFail($id);
+            $seller->restore();
+            $seller->status = User::STATUS_ACTIVE; // Set to active
+            $seller->save();
+
+            return redirect()->back()->with('success', 'Seller restored successfully!');
+        } catch (\Exception $e) {
+            \Log::error('Failed to restore seller: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Failed to restore seller.');
+        }
+    }
+
+    /**
+     * All Services Management
+     */
+    public function allServices(Request $request)
+    {
+        if ($redirect = $this->AdmincheckAuth()) {
+            return $redirect;
+        }
+
+        // Handle Excel Export
+        if ($request->has('export')) {
+            return Excel::download(new \App\Exports\ServicesExport($request->all()), 'services-' . date('Y-m-d') . '.xlsx');
+        }
+
+        // Get filter parameters
+        $status = $request->get('status', 'all');
+        $search = $request->get('search');
+        $seller_id = $request->get('seller_id');
+        $service_type = $request->get('service_type');
+        $service_role = $request->get('service_role');
+        $category = $request->get('category');
+        $date_from = $request->get('date_from');
+        $date_to = $request->get('date_to');
+
+        // Base query
+        $query = \App\Models\TeacherGig::query();
+
+        // Load relationships with correct column names
+        $query->with([
+            'user:id,first_name,last_name,email,status,deleted_at',
+            'teacherGigData:id,gig_id,description',
+            'all_reviews:id,gig_id,rating,cmnt',
+        ])
+        ->withCount('all_reviews')
+        ->withAvg('all_reviews', 'rating')
+        ->withSum('transactions', 'seller_earnings');
+
+        // Status-based filtering
+        switch ($status) {
+            case 'newly_created':
+                $query->where('status', 0);
+                break;
+            case 'active':
+                $query->where('status', 1);
+                break;
+            case 'delivered':
+                $query->where('status', 2);
+                break;
+            case 'cancelled':
+                $query->where('status', 3);
+                break;
+            case 'completed':
+                $query->where('status', 4);
+                break;
+            case 'all':
+            default:
+                // No status filter
+                break;
+        }
+
+        // Seller ID filter (important for seller_id=5 parameter)
+        if ($seller_id) {
+            $query->where('user_id', $seller_id);
+        }
+
+        // Search filter (title, category_name, sub_category)
+        if ($search) {
+            $query->where(function($q) use ($search) {
+                $q->where('title', 'like', '%' . $search . '%')
+                  ->orWhere('category_name', 'like', '%' . $search . '%')
+                  ->orWhere('sub_category', 'like', '%' . $search . '%')
+                  ->orWhereHas('user', function($userQuery) use ($search) {
+                      $userQuery->where('name', 'like', '%' . $search . '%');
+                  });
+            });
+        }
+
+        // Service type filter
+        if ($service_type) {
+            $query->where('service_type', $service_type);
+        }
+
+        // Service role filter
+        if ($service_role) {
+            $query->where('service_role', $service_role);
+        }
+
+        // Category filter
+        if ($category) {
+            $query->where('category', $category);
+        }
+
+        // Date range filter
+        if ($date_from) {
+            $query->whereDate('created_at', '>=', $date_from);
+        }
+        if ($date_to) {
+            $query->whereDate('created_at', '<=', $date_to);
+        }
+
+        // Get paginated results
+        $services = $query->orderBy('created_at', 'desc')->paginate(20)->appends($request->query());
+
+        // Calculate statistics
+        $stats = [
+            'total_services' => \App\Models\TeacherGig::count(),
+            'newly_created' => \App\Models\TeacherGig::where('status', 0)->count(),
+            'active' => \App\Models\TeacherGig::where('status', 1)->count(),
+            'delivered' => \App\Models\TeacherGig::where('status', 2)->count(),
+            'cancelled' => \App\Models\TeacherGig::where('status', 3)->count(),
+            'completed' => \App\Models\TeacherGig::where('status', 4)->count(),
+            'total_revenue' => \App\Models\Transaction::where('service_type', 'service')->sum('total_admin_commission'),
+        ];
+
+        // Get unique categories from teacher_gigs table (using category column)
+        $categories = \App\Models\TeacherGig::whereNotNull('category')
+            ->distinct()
+            ->orderBy('category')
+            ->pluck('category');
+
+        // Get unique sellers (users with teacher_gigs)
+        $sellers = \App\Models\User::whereHas('teacherGigs')
+            ->orderBy('first_name')
+            ->get(['id', 'first_name', 'last_name']);
+
+        return view('Admin-Dashboard.all-services', compact('services', 'stats', 'categories', 'sellers'));
+    }
+
+    /**
+     * Update service status
+     */
+    public function updateServiceStatus(Request $request, $id)
+    {
+        if ($redirect = $this->AdmincheckAuth()) {
+            return $redirect;
+        }
+
+        try {
+            $service = \App\Models\TeacherGig::findOrFail($id);
+            $service->status = $request->status;
+            $service->save();
+
+            return redirect()->back()->with('success', 'Service status updated successfully!');
+        } catch (\Exception $e) {
+            \Log::error('Failed to update service status: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Failed to update service status.');
+        }
+    }
+
+    /**
+     * Set custom commission for service
+     */
+    public function setServiceCommission(Request $request, $id)
+    {
+        if ($redirect = $this->AdmincheckAuth()) {
+            return $redirect;
+        }
+
+        try {
+            $service = \App\Models\TeacherGig::findOrFail($id);
+
+            // Create or update service commission
+            \App\Models\ServiceCommission::updateOrCreate(
+                ['service_id' => $id],
+                [
+                    'commission_rate' => $request->commission_rate,
+                    'is_active' => $request->has('is_active') ? 1 : 0,
+                    'notes' => $request->notes,
+                ]
+            );
+
+            return redirect()->back()->with('success', 'Service commission updated successfully!');
+        } catch (\Exception $e) {
+            \Log::error('Failed to set service commission: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Failed to update service commission.');
+        }
+    }
+
+    /**
+     * Toggle service visibility (pause/unpause)
+     */
+    public function toggleServiceVisibility(Request $request, $id)
+    {
+        if ($redirect = $this->AdmincheckAuth()) {
+            return $redirect;
+        }
+
+        try {
+            $service = \App\Models\TeacherGig::findOrFail($id);
+
+            // Toggle between active (1) and paused (0)
+            $service->status = $service->status == 1 ? 0 : 1;
+            $service->save();
+
+            return redirect()->back()->with('success', 'Service visibility toggled successfully!');
+        } catch (\Exception $e) {
+            \Log::error('Failed to toggle service visibility: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Failed to toggle service visibility.');
+        }
+    }
+
+    /**
+     * Buyer Management - Enhanced with filters, search, and status tabs
+     */
+    public function buyerManagement(Request $request)
+    {
+        if ($redirect = $this->AdmincheckAuth()) {
+            return $redirect;
+        }
+
+        // Base query for buyers only
+        $query = User::buyersOnly()
+            ->withCount(['bookOrders'])
+            ->withSum('buyerTransactions as total_spent', 'total_amount');
+
+        // Status filter
+        $status = $request->input('status', 'all');
+        if ($status !== 'all') {
+            switch ($status) {
+                case 'active':
+                    $query->active();
+                    break;
+                case 'banned':
+                    $query->banned();
+                    break;
+                case 'inactive':
+                    $query->inactive();
+                    break;
+                case 'deleted':
+                    $query->onlyTrashed();
+                    break;
+            }
+        }
+
+        // Search filter
+        $search = $request->input('search');
+        if (!empty($search)) {
+            $query->search($search);
+        }
+
+        // Date range filter
+        $dateFilter = $request->input('date_filter');
+        if ($dateFilter) {
+            switch ($dateFilter) {
+                case 'today':
+                    $query->whereDate('created_at', today());
+                    break;
+                case 'yesterday':
+                    $query->whereDate('created_at', today()->subDay());
+                    break;
+                case 'last_week':
+                    $query->whereBetween('created_at', [now()->subWeek(), now()]);
+                    break;
+                case 'last_month':
+                    $query->whereBetween('created_at', [now()->subMonth(), now()]);
+                    break;
+                case 'custom':
+                    if ($request->date_from) {
+                        $query->whereDate('created_at', '>=', $request->date_from);
+                    }
+                    if ($request->date_to) {
+                        $query->whereDate('created_at', '<=', $request->date_to);
+                    }
+                    break;
+            }
+        }
+
+        // Sorting
+        $sort = $request->input('sort', 'date_desc');
+        switch ($sort) {
+            case 'name_asc':
+                $query->orderBy('first_name', 'asc');
+                break;
+            case 'name_desc':
+                $query->orderBy('first_name', 'desc');
+                break;
+            case 'date_asc':
+                $query->orderBy('created_at', 'asc');
+                break;
+            case 'date_desc':
+                $query->orderBy('created_at', 'desc');
+                break;
+            case 'spending':
+                $query->orderByDesc('total_spent');
+                break;
+            case 'orders':
+                $query->orderByDesc('book_orders_count');
+                break;
+            default:
+                $query->orderBy('created_at', 'desc');
+        }
+
+        // Pagination
+        $buyers = $query->paginate(20)->withQueryString();
+
+        // Statistics for dashboard cards
+        $stats = [
+            'total' => User::buyersOnly()->count(),
+            'active' => User::buyersOnly()->active()->count(),
+            'banned' => User::buyersOnly()->banned()->count(),
+            'inactive' => User::buyersOnly()->inactive()->count(),
+            'deleted' => User::buyersOnly()->onlyTrashed()->count(),
+        ];
+
+        return view('Admin-Dashboard.buyer-management', compact('buyers', 'stats', 'status', 'search', 'dateFilter', 'sort'));
+    }
+
+    /**
+     * Ban a buyer
+     */
+    public function banBuyer(Request $request, $id)
+    {
+        if ($redirect = $this->AdmincheckAuth()) {
+            return $redirect;
+        }
+
+        $request->validate([
+            'reason' => 'required|string|max:500',
+        ]);
+
+        try {
+            $buyer = User::findOrFail($id);
+            $buyer->ban($request->reason);
+
+            // Log activity
+            $activityService = app(\App\Services\BuyerActivityService::class);
+            $activityService->logAccountBanned($buyer->id, $request->reason);
+
+            return redirect()->back()->with('success', 'Buyer has been banned successfully.');
+        } catch (\Exception $e) {
+            \Log::error('Failed to ban buyer: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Failed to ban buyer.');
+        }
+    }
+
+    /**
+     * Unban a buyer
+     */
+    public function unbanBuyer($id)
+    {
+        if ($redirect = $this->AdmincheckAuth()) {
+            return $redirect;
+        }
+
+        try {
+            $buyer = User::findOrFail($id);
+            $buyer->unban();
+
+            // Log activity
+            $activityService = app(\App\Services\BuyerActivityService::class);
+            $activityService->logAccountUnbanned($buyer->id);
+
+            return redirect()->back()->with('success', 'Buyer has been unbanned successfully.');
+        } catch (\Exception $e) {
+            \Log::error('Failed to unban buyer: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Failed to unban buyer.');
+        }
+    }
+
+    /**
+     * Soft delete a buyer
+     */
+    public function deleteBuyer($id)
+    {
+        if ($redirect = $this->AdmincheckAuth()) {
+            return $redirect;
+        }
+
+        try {
+            $buyer = User::findOrFail($id);
+            $buyer->update(['status' => 3]); // deleted
+            $buyer->delete();
+
+            // Log activity
+            $activityService = app(\App\Services\BuyerActivityService::class);
+            $activityService->logAccountDeleted($buyer->id);
+
+            return redirect()->back()->with('success', 'Buyer has been deleted successfully.');
+        } catch (\Exception $e) {
+            \Log::error('Failed to delete buyer: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Failed to delete buyer.');
+        }
+    }
+
+    /**
+     * Restore a soft-deleted buyer
+     */
+    public function restoreBuyer($id)
+    {
+        if ($redirect = $this->AdmincheckAuth()) {
+            return $redirect;
+        }
+
+        try {
+            $buyer = User::withTrashed()->findOrFail($id);
+            $buyer->restore();
+            $buyer->markActive();
+
+            // Log activity
+            $activityService = app(\App\Services\BuyerActivityService::class);
+            $activityService->logAccountRestored($buyer->id);
+
+            return redirect()->back()->with('success', 'Buyer has been restored successfully.');
+        } catch (\Exception $e) {
+            \Log::error('Failed to restore buyer: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Failed to restore buyer.');
+        }
+    }
+
+    /**
+     * Bulk actions on buyers
+     */
+    public function bulkActionBuyers(Request $request)
+    {
+        if ($redirect = $this->AdmincheckAuth()) {
+            return $redirect;
+        }
+
+        $request->validate([
+            'action' => 'required|in:delete,activate,deactivate',
+            'buyer_ids' => 'required|array',
+            'buyer_ids.*' => 'exists:users,id',
+        ]);
+
+        try {
+            $buyers = User::whereIn('id', $request->buyer_ids)->get();
+            $activityService = app(\App\Services\BuyerActivityService::class);
+
+            foreach ($buyers as $buyer) {
+                switch ($request->action) {
+                    case 'delete':
+                        $buyer->update(['status' => 3]); // deleted
+                        $buyer->delete();
+                        $activityService->logAccountDeleted($buyer->id);
+                        break;
+                    case 'activate':
+                        $buyer->markActive();
+                        break;
+                    case 'deactivate':
+                        $buyer->markInactive();
+                        break;
+                }
+            }
+
+            $message = ucfirst($request->action) . ' action completed successfully for ' . count($buyers) . ' buyer(s).';
+            return redirect()->back()->with('success', $message);
+        } catch (\Exception $e) {
+            \Log::error('Failed to perform bulk action: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Failed to perform bulk action.');
+        }
+    }
+
+    /**
+     * Export buyers to Excel
+     */
+    public function exportBuyers(Request $request)
+    {
+        if ($redirect = $this->AdmincheckAuth()) {
+            return $redirect;
+        }
+
+        try {
+            $filters = [
+                'status' => $request->input('status'),
+                'search' => $request->input('search'),
+                'date_from' => $request->input('date_from'),
+                'date_to' => $request->input('date_to'),
+                'sort' => $request->input('sort'),
+            ];
+
+            return \Maatwebsite\Excel\Facades\Excel::download(
+                new \App\Exports\BuyersExport($filters),
+                'buyers_' . date('Y-m-d_H-i-s') . '.xlsx'
+            );
+        } catch (\Exception $e) {
+            \Log::error('Failed to export buyers: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Failed to export buyers.');
+        }
+    }
+
+    /**
+     * View buyer details
+     */
+    public function viewBuyerDetails($id)
+    {
+        if ($redirect = $this->AdmincheckAuth()) {
+            return $redirect;
+        }
+
+        try {
+            $buyer = User::withTrashed()
+                ->withCount(['bookOrders'])
+                ->withSum('buyerTransactions as total_spent', 'total_amount')
+                ->with(['bookOrders' => function($query) {
+                    $query->latest()->limit(10);
+                }])
+                ->findOrFail($id);
+
+            // Get recent activities
+            $activityService = app(\App\Services\BuyerActivityService::class);
+            $recentActivities = $activityService->getRecentActivities($buyer->id, 20);
+
+            return view('Admin-Dashboard.buyer-details', compact('buyer', 'recentActivities'));
+        } catch (\Exception $e) {
+            \Log::error('Failed to load buyer details: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Failed to load buyer details.');
+        }
+    }
+
+    /**
+     * All Orders Management
+     */
+    public function allOrders(Request $request)
+    {
+        if ($redirect = $this->AdmincheckAuth()) {
+            return $redirect;
+        }
+
+        // Build query with eager loading
+        $query = \App\Models\BookOrder::with(['user', 'teacher', 'gig', 'transaction']);
+
+        // STATUS FILTER
+        $statusFilter = $request->get('status_filter', 'all');
+        if ($statusFilter !== 'all') {
+            $statusMap = [
+                'pending' => 0,
+                'active' => 1,
+                'delivered' => 2,
+                'completed' => 3,
+                'cancelled' => 4,
+            ];
+            if (isset($statusMap[$statusFilter])) {
+                $query->where('status', $statusMap[$statusFilter]);
+            }
+        }
+
+        // SERVICE TYPE FILTER
+        $serviceTypeFilter = $request->get('service_type_filter');
+        if ($serviceTypeFilter !== null && $serviceTypeFilter !== 'all') {
+            $query->whereHas('gig', function($q) use ($serviceTypeFilter) {
+                $q->where('service_type', $serviceTypeFilter);
+            });
+        }
+
+        // DATE RANGE FILTER
+        $dateFilter = $request->get('date_filter', 'lifetime');
+        $fromDate = $request->get('from_date');
+        $toDate = $request->get('to_date');
+
+        if ($dateFilter === 'today') {
+            $query->whereDate('created_at', \Carbon\Carbon::today());
+        } elseif ($dateFilter === 'yesterday') {
+            $query->whereDate('created_at', \Carbon\Carbon::yesterday());
+        } elseif ($dateFilter === 'last_week') {
+            $query->whereBetween('created_at', [
+                \Carbon\Carbon::now()->subWeek()->startOfWeek(),
+                \Carbon\Carbon::now()->subWeek()->endOfWeek()
+            ]);
+        } elseif ($dateFilter === 'last_7_days') {
+            $query->where('created_at', '>=', \Carbon\Carbon::now()->subDays(7));
+        } elseif ($dateFilter === 'last_month') {
+            $query->whereMonth('created_at', \Carbon\Carbon::now()->subMonth()->month)
+                  ->whereYear('created_at', \Carbon\Carbon::now()->subMonth()->year);
+        } elseif ($dateFilter === 'custom' && $fromDate && $toDate) {
+            $query->whereBetween('created_at', [
+                \Carbon\Carbon::parse($fromDate)->startOfDay(),
+                \Carbon\Carbon::parse($toDate)->endOfDay()
+            ]);
+        }
+
+        // SEARCH FILTER (Order ID, Buyer Name, Seller Name)
+        $search = $request->get('search');
+        if ($search) {
+            $query->where(function($q) use ($search) {
+                $q->where('id', 'like', '%' . $search . '%')
+                  ->orWhereHas('user', function($subQ) use ($search) {
+                      $subQ->where('name', 'like', '%' . $search . '%')
+                           ->orWhere('email', 'like', '%' . $search . '%');
+                  })
+                  ->orWhereHas('teacher', function($subQ) use ($search) {
+                      $subQ->where('name', 'like', '%' . $search . '%')
+                           ->orWhere('email', 'like', '%' . $search . '%');
+                  })
+                  ->orWhereHas('gig', function($subQ) use ($search) {
+                      $subQ->where('title', 'like', '%' . $search . '%');
+                  });
+            });
+        }
+
+        // Paginate results
+        $orders = $query->orderBy('created_at', 'desc')->paginate(20);
+
+        // COMPREHENSIVE STATISTICS
+        // Apply same filters to statistics calculations
+        $statsQuery = \App\Models\BookOrder::query();
+
+        // Apply same filters as main query for consistent stats
+        if ($statusFilter !== 'all') {
+            $statusMap = [
+                'pending' => 0,
+                'active' => 1,
+                'delivered' => 2,
+                'completed' => 3,
+                'cancelled' => 4,
+            ];
+            if (isset($statusMap[$statusFilter])) {
+                $statsQuery->where('status', $statusMap[$statusFilter]);
+            }
+        }
+        if ($serviceTypeFilter !== null && $serviceTypeFilter !== 'all') {
+            $statsQuery->whereHas('gig', function($q) use ($serviceTypeFilter) {
+                $q->where('service_type', $serviceTypeFilter);
+            });
+        }
+        if ($dateFilter === 'today') {
+            $statsQuery->whereDate('created_at', \Carbon\Carbon::today());
+        } elseif ($dateFilter === 'yesterday') {
+            $statsQuery->whereDate('created_at', \Carbon\Carbon::yesterday());
+        } elseif ($dateFilter === 'last_week') {
+            $statsQuery->whereBetween('created_at', [
+                \Carbon\Carbon::now()->subWeek()->startOfWeek(),
+                \Carbon\Carbon::now()->subWeek()->endOfWeek()
+            ]);
+        } elseif ($dateFilter === 'last_7_days') {
+            $statsQuery->where('created_at', '>=', \Carbon\Carbon::now()->subDays(7));
+        } elseif ($dateFilter === 'last_month') {
+            $statsQuery->whereMonth('created_at', \Carbon\Carbon::now()->subMonth()->month)
+                      ->whereYear('created_at', \Carbon\Carbon::now()->subMonth()->year);
+        } elseif ($dateFilter === 'custom' && $fromDate && $toDate) {
+            $statsQuery->whereBetween('created_at', [
+                \Carbon\Carbon::parse($fromDate)->startOfDay(),
+                \Carbon\Carbon::parse($toDate)->endOfDay()
+            ]);
+        }
+        if ($search) {
+            $statsQuery->where(function($q) use ($search) {
+                $q->where('id', 'like', '%' . $search . '%')
+                  ->orWhereHas('user', function($subQ) use ($search) {
+                      $subQ->where('name', 'like', '%' . $search . '%')
+                           ->orWhere('email', 'like', '%' . $search . '%');
+                  })
+                  ->orWhereHas('teacher', function($subQ) use ($search) {
+                      $subQ->where('name', 'like', '%' . $search . '%')
+                           ->orWhere('email', 'like', '%' . $search . '%');
+                  })
+                  ->orWhereHas('gig', function($subQ) use ($search) {
+                      $subQ->where('title', 'like', '%' . $search . '%');
+                  });
+            });
+        }
+
+        // Order status counts
+        $statusCounts = [
+            'all' => (clone $statsQuery)->count(),
+            'pending' => (clone $statsQuery)->where('status', 0)->count(),
+            'active' => (clone $statsQuery)->where('status', 1)->count(),
+            'delivered' => (clone $statsQuery)->where('status', 2)->count(),
+            'completed' => (clone $statsQuery)->where('status', 3)->count(),
+            'cancelled' => (clone $statsQuery)->where('status', 4)->count(),
+        ];
+
+        // Financial statistics
+        $stats = [
+            'total_orders' => $statusCounts['all'],
+            'total_revenue' => (clone $statsQuery)->sum('finel_price'),
+            'total_commission' => (clone $statsQuery)->sum('buyer_commission_amount'),
+            'total_refunded' => (clone $statsQuery)->where('refund', 1)->sum('finel_price'),
+            'pending_orders' => $statusCounts['pending'],
+            'active_orders' => $statusCounts['active'],
+            'completed_orders' => $statusCounts['completed'],
+            'cancelled_orders' => $statusCounts['cancelled'],
+        ];
+
+        return view('Admin-Dashboard.All-orders', compact('orders', 'statusCounts', 'stats', 'statusFilter'));
+    }
+
+    /**
+     * Payout Details - Enhanced with filters and tabs
+     */
+    public function payoutDetails(Request $request)
+    {
+        if ($redirect = $this->AdmincheckAuth()) {
+            return $redirect;
+        }
+
+        // Determine view: pending, approved, completed, failed, all
+        $view = $request->get('view', 'pending');
+
+        // Build query with eager loading
+        $query = \App\Models\Transaction::with(['seller', 'buyer', 'bookOrder']);
+
+        // VIEW FILTER
+        if ($view === 'pending') {
+            $query->where('payout_status', 'pending')
+                  ->where('status', 'completed');
+        } elseif ($view === 'approved') {
+            $query->where('payout_status', 'approved');
+        } elseif ($view === 'completed') {
+            $query->where('payout_status', 'completed');
+        } elseif ($view === 'failed') {
+            $query->where('payout_status', 'failed');
+        }
+        // 'all' = no filter
+
+        // DATE RANGE FILTER
+        $dateFilter = $request->get('date_filter', 'lifetime');
+        $fromDate = $request->get('from_date');
+        $toDate = $request->get('to_date');
+
+        if ($dateFilter === 'today') {
+            $query->whereDate('created_at', \Carbon\Carbon::today());
+        } elseif ($dateFilter === 'yesterday') {
+            $query->whereDate('created_at', \Carbon\Carbon::yesterday());
+        } elseif ($dateFilter === 'last_week') {
+            $query->whereBetween('created_at', [
+                \Carbon\Carbon::now()->subWeek()->startOfWeek(),
+                \Carbon\Carbon::now()->subWeek()->endOfWeek()
+            ]);
+        } elseif ($dateFilter === 'last_7_days') {
+            $query->where('created_at', '>=', \Carbon\Carbon::now()->subDays(7));
+        } elseif ($dateFilter === 'last_month') {
+            $query->whereMonth('created_at', \Carbon\Carbon::now()->subMonth()->month)
+                  ->whereYear('created_at', \Carbon\Carbon::now()->subMonth()->year);
+        } elseif ($dateFilter === 'custom' && $fromDate && $toDate) {
+            $query->whereBetween('created_at', [
+                \Carbon\Carbon::parse($fromDate)->startOfDay(),
+                \Carbon\Carbon::parse($toDate)->endOfDay()
+            ]);
+        }
+
+        // SEARCH FILTER (Transaction ID, Seller Name, Seller Email)
+        $search = $request->get('search');
+        if ($search) {
+            $query->where(function($q) use ($search) {
+                $q->where('id', 'like', '%' . $search . '%')
+                  ->orWhereHas('seller', function($subQ) use ($search) {
+                      $subQ->where('name', 'like', '%' . $search . '%')
+                           ->orWhere('email', 'like', '%' . $search . '%');
+                  });
+            });
+        }
+
+        // Paginate results
+        $payouts = $query->orderBy('created_at', 'desc')->paginate(20);
+
+        // COMPREHENSIVE STATISTICS
+        $stats = [
+            'pending_amount' => \App\Models\Transaction::where('payout_status', 'pending')
+                ->where('status', 'completed')
+                ->sum('seller_earnings'),
+            'pending_count' => \App\Models\Transaction::where('payout_status', 'pending')
+                ->where('status', 'completed')
+                ->count(),
+            'approved_amount' => \App\Models\Transaction::where('payout_status', 'approved')
+                ->sum('seller_earnings'),
+            'approved_count' => \App\Models\Transaction::where('payout_status', 'approved')
+                ->count(),
+            'completed_amount' => \App\Models\Transaction::where('payout_status', 'completed')
+                ->sum('seller_earnings'),
+            'completed_count' => \App\Models\Transaction::where('payout_status', 'completed')
+                ->count(),
+            'failed_amount' => \App\Models\Transaction::where('payout_status', 'failed')
+                ->sum('seller_earnings'),
+            'failed_count' => \App\Models\Transaction::where('payout_status', 'failed')
+                ->count(),
+            'total_payouts' => \App\Models\Transaction::whereIn('payout_status', ['pending', 'approved', 'completed', 'failed'])
+                ->count(),
+        ];
+
+        return view('Admin-Dashboard.payout-details', compact('payouts', 'stats', 'view'));
+    }
+
+    /**
+     * Process Payout - Mark payout as completed
+     */
+    public function processPayout(Request $request, $transactionId)
+    {
+        if ($redirect = $this->AdmincheckAuth()) {
+            return $redirect;
+        }
+
+        \DB::beginTransaction();
+
+        try {
+            $transaction = \App\Models\Transaction::findOrFail($transactionId);
+
+            // Validate that the transaction is eligible for payout
+            if ($transaction->payout_status === 'completed') {
+                return back()->with('error', 'This payout has already been completed.');
+            }
+
+            if ($transaction->payout_status === 'failed') {
+                return back()->with('error', 'This payout was marked as failed. Cannot process failed payouts.');
+            }
+
+            if ($transaction->status !== 'completed' && $transaction->payout_status !== 'approved') {
+                return back()->with('error', 'This transaction is not eligible for payout yet.');
+            }
+
+            // Update payout status
+            $transaction->payout_status = 'completed';
+            $transaction->payout_at = now();
+            $transaction->notes = ($transaction->notes ?? '') . "\n[" . now()->format('Y-m-d H:i:s') . "] Payout processed by admin.";
+            $transaction->save();
+
+            \DB::commit();
+
+            // Send notification to seller
+            $notificationService = app(\App\Services\NotificationService::class);
+            $notificationService->send(
+                $transaction->seller_id,
+                'Payout Processed',
+                'Your payout of $' . number_format($transaction->seller_earnings, 2) . ' has been processed and sent to your account.',
+                'payment',
+                route('seller.transactions')
+            );
+
+            return back()->with('success', 'Payout marked as completed successfully. Seller has been notified.');
+        } catch (\Exception $e) {
+            \DB::rollBack();
+            \Log::error('Admin payout processing failed: ' . $e->getMessage());
+            return back()->with('error', 'Payout processing failed: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Refund Details - Shows disputes that need admin review
+     * CRITICAL: This is where admin approves/rejects refunds
+     */
+    public function refundDetails(Request $request)
+    {
+        if ($redirect = $this->AdmincheckAuth()) {
+            return $redirect;
+        }
+
+        // Determine view: pending_disputes, refunded, rejected, all
+        $view = $request->get('view', 'pending_disputes');
+
+        if ($view === 'pending_disputes') {
+            // Show pending disputes that need admin action
+            $query = \App\Models\DisputeOrder::with([
+                'user',
+                'order.user',
+                'order.teacher',
+                'order.gig'
+            ])->where('status', 0); // Status 0 = Pending
+
+            // Only show disputes where:
+            // 1. Both buyer AND seller have disputed (needs admin review)
+            // 2. OR user disputed and auto-refund eligible but not processed yet
+            $query->whereHas('order', function($q) {
+                $q->where(function($subQ) {
+                    // Seller counter-disputed
+                    $subQ->where('user_dispute', 1)
+                         ->where('teacher_dispute', 1);
+                })
+                ->orWhere(function($subQ) {
+                    // User disputed but seller hasn't, auto-refund pending
+                    $subQ->where('user_dispute', 1)
+                         ->where('teacher_dispute', 0)
+                         ->where('auto_dispute_processed', 0);
+                });
+            });
+
+        } elseif ($view === 'refunded') {
+            // Show already refunded orders
+            $query = \App\Models\DisputeOrder::with([
+                'user',
+                'order.user',
+                'order.teacher',
+                'order.gig'
+            ])->where('status', 1); // Status 1 = Approved/Refunded
+
+        } elseif ($view === 'rejected') {
+            // Show rejected refund requests
+            $query = \App\Models\DisputeOrder::with([
+                'user',
+                'order.user',
+                'order.teacher',
+                'order.gig'
+            ])->where('status', 2); // Status 2 = Rejected
+
+        } else {
+            // All disputes
+            $query = \App\Models\DisputeOrder::with([
+                'user',
+                'order.user',
+                'order.teacher',
+                'order.gig'
+            ]);
+        }
+
+        // Search filter
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('reason', 'like', "%{$search}%")
+                  ->orWhereHas('order', function($orderQ) use ($search) {
+                      $orderQ->where('id', 'like', "%{$search}%")
+                             ->orWhere('title', 'like', "%{$search}%");
+                  });
+            });
+        }
+
+        $disputes = $query->orderBy('created_at', 'desc')->paginate(20);
+
+        // Statistics
+        $stats = [
+            'pending_disputes' => \App\Models\DisputeOrder::where('status', 0)->count(),
+            'refunded' => \App\Models\DisputeOrder::where('status', 1)->count(),
+            'rejected' => \App\Models\DisputeOrder::where('status', 2)->count(),
+            'total_refunded_amount' => \App\Models\DisputeOrder::where('status', 1)->sum('amount'),
+            'pending_refund_amount' => \App\Models\DisputeOrder::where('status', 0)->sum('amount'),
+        ];
+
+        return view('Admin-Dashboard.refund-details', compact('disputes', 'stats', 'view'));
+    }
+
+    /**
+     * Approve Refund Request - Admin Action
+     * CRITICAL: This triggers Stripe API refund automatically
+     */
+    public function approveRefund(Request $request, $disputeId)
+    {
+        if ($redirect = $this->AdmincheckAuth()) {
+            return $redirect;
+        }
+
+        \Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
+
+        $dispute = \App\Models\DisputeOrder::with('order')->findOrFail($disputeId);
+        $order = $dispute->order;
+
+        // Validate
+        if ($dispute->status != 0) {
+            return back()->with('error', 'This dispute has already been processed.');
+        }
+
+        if (!$order) {
+            return back()->with('error', 'Order not found.');
+        }
+
+        \DB::beginTransaction();
+
+        try {
+            // Process Stripe refund
+            $paymentIntent = \Stripe\PaymentIntent::retrieve($order->payment_id);
+
+            if ($dispute->refund_type == 0) {
+                // FULL REFUND
+                if (in_array($paymentIntent->status, ['requires_capture', 'requires_confirmation'])) {
+                    // Payment not captured yet, just cancel
+                    $paymentIntent->cancel();
+                } elseif ($paymentIntent->status === 'succeeded') {
+                    // Payment captured, issue refund
+                    \Stripe\Refund::create(['payment_intent' => $order->payment_id]);
+                }
+
+                $refundAmount = $order->finel_price;
+
+            } else {
+                // PARTIAL REFUND
+                $refundAmount = floatval($request->input('refund_amount', $dispute->amount));
+
+                if (!$refundAmount || $refundAmount > $order->finel_price) {
+                    return back()->with('error', 'Invalid refund amount.');
+                }
+
+                if ($paymentIntent->status === 'requires_capture') {
+                    $paymentIntent->capture();
+                }
+
+                if ($paymentIntent->status === 'succeeded') {
+                    \Stripe\Refund::create([
+                        'payment_intent' => $order->payment_id,
+                        'amount' => round($refundAmount * 100) // Stripe uses cents
+                    ]);
+                }
+            }
+
+            // Update dispute
+            $dispute->status = 1; // Approved
+            $dispute->amount = $refundAmount;
+            $dispute->save();
+
+            // Update order
+            $order->refund = 1;
+            $order->payment_status = 'refunded';
+            $order->status = 4; // Cancelled
+            $order->save();
+
+            // Update transaction
+            $transaction = \App\Models\Transaction::where('buyer_id', $order->user_id)
+                ->where('seller_id', $order->teacher_id)
+                ->first();
+
+            if ($transaction) {
+                if ($dispute->refund_type == 0) {
+                    // Full refund
+                    $transaction->markAsRefunded();
+                    $transaction->payout_status = 'failed';
+                } else {
+                    // Partial refund - recalculate commissions
+                    $remainingAmount = $transaction->total_amount - $refundAmount;
+                    $newSellerCommission = ($remainingAmount * $transaction->seller_commission_rate) / 100;
+                    $newBuyerCommission = ($remainingAmount * $transaction->buyer_commission_rate) / 100;
+
+                    $transaction->coupon_discount += $refundAmount;
+                    $transaction->seller_commission_amount = $newSellerCommission;
+                    $transaction->buyer_commission_amount = $newBuyerCommission;
+                    $transaction->total_admin_commission = $newSellerCommission + $newBuyerCommission;
+                    $transaction->seller_earnings = $remainingAmount - $newSellerCommission;
+                }
+
+                $transaction->notes .= "\n[" . now()->format('Y-m-d H:i:s') . "] Admin approved refund: $" . $refundAmount;
+                $transaction->save();
+            }
+
+            \DB::commit();
+
+            // Send notifications
+            $refundType = $dispute->refund_type == 0 ? 'Full' : 'Partial';
+            $notificationService = app(\App\Services\NotificationService::class);
+
+            // To Buyer
+            $notificationService->send(
+                userId: $order->user_id,
+                type: 'refund_approved',
+                title: 'Refund Approved ✅',
+                message: "Your refund request has been approved by admin. {$refundType} refund of $" . number_format($refundAmount, 2) . " has been processed.",
+                data: [
+                    'dispute_id' => $dispute->id,
+                    'order_id' => $order->id,
+                    'refund_amount' => $refundAmount,
+                    'refund_type' => $refundType
+                ],
+                sendEmail: true,
+                orderId: $order->id
+            );
+
+            // To Seller
+            $notificationService->send(
+                userId: $order->teacher_id,
+                type: 'refund_approved',
+                title: 'Refund Approved by Admin',
+                message: "Admin has approved the refund request for order #{$order->id}. {$refundType} refund of $" . number_format($refundAmount, 2) . " has been issued.",
+                data: [
+                    'dispute_id' => $dispute->id,
+                    'order_id' => $order->id,
+                    'refund_amount' => $refundAmount,
+                    'refund_type' => $refundType
+                ],
+                sendEmail: true,
+                orderId: $order->id
+            );
+
+            return back()->with('success', 'Refund approved successfully. ' . ucfirst($refundType) . ' refund of $' . number_format($refundAmount, 2) . ' has been processed.');
+
+        } catch (\Exception $e) {
+            \DB::rollBack();
+            \Log::error('Admin refund approval failed: ' . $e->getMessage());
+            return back()->with('error', 'Refund processing failed: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Reject Refund Request - Admin Action
+     * This releases payment to seller for payout
+     */
+    public function rejectRefund(Request $request, $disputeId)
+    {
+        if ($redirect = $this->AdmincheckAuth()) {
+            return $redirect;
+        }
+
+        $dispute = \App\Models\DisputeOrder::with('order')->findOrFail($disputeId);
+        $order = $dispute->order;
+
+        // Validate
+        if ($dispute->status != 0) {
+            return back()->with('error', 'This dispute has already been processed.');
+        }
+
+        $rejectReason = $request->input('reject_reason', 'Admin decision after review');
+
+        \DB::beginTransaction();
+
+        try {
+            // Update dispute
+            $dispute->status = 2; // Rejected
+            $dispute->admin_notes = $rejectReason;
+            $dispute->save();
+
+            // Update order - clear dispute flags
+            $order->user_dispute = 0;
+            $order->teacher_dispute = 0;
+
+            // If order was cancelled due to dispute, revert to previous status
+            if ($order->status == 4) {
+                $order->status = 2; // Back to Delivered
+            }
+            $order->save();
+
+            // Update transaction - release payment for seller
+            $transaction = \App\Models\Transaction::where('buyer_id', $order->user_id)
+                ->where('seller_id', $order->teacher_id)
+                ->first();
+
+            if ($transaction) {
+                $transaction->payout_status = 'approved'; // Seller will get paid
+                $transaction->status = 'completed';
+                $transaction->notes .= "\n[" . now()->format('Y-m-d H:i:s') . "] Admin rejected refund request. Payment released to seller.";
+                $transaction->save();
+            }
+
+            \DB::commit();
+
+            // Send notifications
+            $notificationService = app(\App\Services\NotificationService::class);
+
+            // To Buyer
+            $notificationService->send(
+                userId: $order->user_id,
+                type: 'refund_rejected',
+                title: 'Refund Request Rejected ❌',
+                message: "Your refund request has been reviewed and rejected by admin. Reason: {$rejectReason}",
+                data: [
+                    'dispute_id' => $dispute->id,
+                    'order_id' => $order->id,
+                    'reason' => $rejectReason
+                ],
+                sendEmail: true,
+                orderId: $order->id
+            );
+
+            // To Seller
+            $notificationService->send(
+                userId: $order->teacher_id,
+                type: 'refund_rejected',
+                title: 'Refund Request Rejected - Payment Released',
+                message: "Admin has rejected the refund request for order #{$order->id}. Your earnings have been released for payout.",
+                data: [
+                    'dispute_id' => $dispute->id,
+                    'order_id' => $order->id,
+                    'reason' => $rejectReason
+                ],
+                sendEmail: true,
+                orderId: $order->id
+            );
+
+            return back()->with('success', 'Refund request rejected successfully. Payment released to seller.');
+
+        } catch (\Exception $e) {
+            \DB::rollBack();
+            \Log::error('Admin refund rejection failed: ' . $e->getMessage());
+            return back()->with('error', 'Rejection processing failed: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Invoice & Statement
+     */
+    public function invoice(Request $request)
+    {
+        if ($redirect = $this->AdmincheckAuth()) {
+            return $redirect;
+        }
+
+        // Base query with relationships
+        $query = \App\Models\Transaction::with([
+            'seller:id,first_name,last_name,email',
+            'buyer:id,first_name,last_name,email',
+            'bookOrder.gig:id,title,service_role,service_type'
+        ]);
+
+        // FILTER 1: Date Range Filter
+        if ($request->filled('date_filter')) {
+            switch ($request->date_filter) {
+                case 'today':
+                    $query->whereDate('created_at', today());
+                    break;
+                case 'yesterday':
+                    $query->whereDate('created_at', today()->subDay());
+                    break;
+                case 'last_week':
+                    $query->whereBetween('created_at', [now()->subWeek(), now()]);
+                    break;
+                case 'last_7_days':
+                    $query->whereBetween('created_at', [now()->subDays(7), now()]);
+                    break;
+                case 'last_month':
+                    $query->whereMonth('created_at', now()->subMonth()->month)
+                          ->whereYear('created_at', now()->subMonth()->year);
+                    break;
+                case 'current_month':
+                    $query->whereMonth('created_at', now()->month)
+                          ->whereYear('created_at', now()->year);
+                    break;
+                case 'custom':
+                    if ($request->filled(['from_date', 'to_date'])) {
+                        $query->whereBetween('created_at', [
+                            $request->from_date . ' 00:00:00',
+                            $request->to_date . ' 23:59:59'
+                        ]);
+                    }
+                    break;
+            }
+        }
+
+        // FILTER 2: Search (Seller/Buyer name, Transaction ID)
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->whereHas('seller', function($q) use ($search) {
+                    $q->where('first_name', 'like', "%{$search}%")
+                      ->orWhere('last_name', 'like', "%{$search}%")
+                      ->orWhere('email', 'like', "%{$search}%");
+                })
+                ->orWhereHas('buyer', function($q) use ($search) {
+                    $q->where('first_name', 'like', "%{$search}%")
+                      ->orWhere('last_name', 'like', "%{$search}%")
+                      ->orWhere('email', 'like', "%{$search}%");
+                })
+                ->orWhere('stripe_transaction_id', 'like', "%{$search}%")
+                ->orWhere('id', 'like', "%{$search}%");
+            });
+        }
+
+        // FILTER 3: Service Type
+        if ($request->filled('service_type')) {
+            $query->where('service_type', $request->service_type);
+        }
+
+        // FILTER 4: Status Filter
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        // FILTER 5: Payout Status Filter
+        if ($request->filled('payout_status')) {
+            $query->where('payout_status', $request->payout_status);
+        }
+
+        // Check if export is requested
+        if ($request->has('export') && $request->export == 'excel') {
+            return \Maatwebsite\Excel\Facades\Excel::download(
+                new \App\Exports\TransactionsExport($query->get()),
+                'transactions_' . now()->format('Y-m-d_His') . '.xlsx'
+            );
+        }
+
+        // Get paginated transactions
+        $transactions = $query->orderBy('created_at', 'desc')->paginate(20);
+
+        // Calculate Statistics
+        $stats = [
+            'total_transactions' => \App\Models\Transaction::count(),
+            'monthly_revenue' => \App\Models\Transaction::where('status', 'completed')
+                ->whereMonth('created_at', now()->month)
+                ->sum('total_admin_commission'),
+            'total_revenue' => \App\Models\Transaction::where('status', 'completed')
+                ->sum('total_admin_commission'),
+            'pending_payouts' => \App\Models\Transaction::where('payout_status', 'pending')
+                ->where('status', 'completed')
+                ->sum('total_admin_commission'),
+            'transactions_this_month' => \App\Models\Transaction::whereMonth('created_at', now()->month)
+                ->count(),
+            'refunded_amount' => \App\Models\Transaction::where('status', 'refunded')
+                ->sum('total_amount'),
+        ];
+
+        return view('Admin-Dashboard.invoice', compact('transactions', 'stats'));
+    }
+
+    /**
+     * Download Transaction Invoice PDF
+     */
+    public function downloadInvoice($id)
+    {
+        if ($redirect = $this->AdmincheckAuth()) {
+            return $redirect;
+        }
+
+        $transaction = \App\Models\Transaction::with(['seller', 'buyer', 'bookOrder.gig'])
+            ->findOrFail($id);
+
+        // Get company information from settings
+        $homeSettings = \App\Models\HomeDynamic::first();
+
+        $data = [
+            'transaction' => $transaction,
+            'companyName' => $homeSettings->company_name ?? 'Dreamcrowd',
+            'companyAddress' => $homeSettings->company_address ?? 'Your Company Address, City, Country',
+            'companyEmail' => $homeSettings->company_email ?? 'support@dreamcrowd.com',
+            'companyPhone' => $homeSettings->company_phone ?? '+1 234 567 8900',
+            'invoiceDate' => now()->format('d M Y'),
+        ];
+
+        $pdf = \PDF::loadView('Admin-Dashboard.TransactionInvoice', $data);
+
+        return $pdf->download('invoice_' . $transaction->id . '_' . now()->format('Ymd') . '.pdf');
+    }
+
+    /**
+     * Reviews & Ratings
+     */
+    public function reviewsRatings(Request $request)
+    {
+        if ($redirect = $this->AdmincheckAuth()) {
+            return $redirect;
+        }
+
+        // Base query with relationships
+        $query = \App\Models\ServiceReviews::with([
+            'user:id,first_name,last_name,email,profile',
+            'teacher:id,first_name,last_name,email,profile',
+            'gig:id,title,service_role,service_type,main_file',
+            'replies.user:id,first_name,last_name'
+        ])->whereNull('parent_id'); // Only parent reviews, not replies
+
+        // FILTER 1: Rating Filter
+        if ($request->filled('rating')) {
+            $query->where('rating', $request->rating);
+        }
+
+        // FILTER 2: Date Range Filter
+        if ($request->filled('date_filter')) {
+            switch ($request->date_filter) {
+                case 'today':
+                    $query->whereDate('created_at', today());
+                    break;
+                case 'yesterday':
+                    $query->whereDate('created_at', today()->subDay());
+                    break;
+                case 'last_week':
+                    $query->whereBetween('created_at', [now()->subWeek(), now()]);
+                    break;
+                case 'last_7_days':
+                    $query->whereBetween('created_at', [now()->subDays(7), now()]);
+                    break;
+                case 'last_month':
+                    $query->whereMonth('created_at', now()->subMonth()->month)
+                          ->whereYear('created_at', now()->subMonth()->year);
+                    break;
+                case 'current_month':
+                    $query->whereMonth('created_at', now()->month)
+                          ->whereYear('created_at', now()->year);
+                    break;
+                case 'custom':
+                    if ($request->filled(['from_date', 'to_date'])) {
+                        $query->whereBetween('created_at', [
+                            $request->from_date . ' 00:00:00',
+                            $request->to_date . ' 23:59:59'
+                        ]);
+                    }
+                    break;
+            }
+        }
+
+        // FILTER 3: Search (Buyer/Seller name, Service title, Review text)
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->whereHas('user', function($q) use ($search) {
+                    $q->where('first_name', 'like', "%{$search}%")
+                      ->orWhere('last_name', 'like', "%{$search}%")
+                      ->orWhere('email', 'like', "%{$search}%");
+                })
+                ->orWhereHas('teacher', function($q) use ($search) {
+                    $q->where('first_name', 'like', "%{$search}%")
+                      ->orWhere('last_name', 'like', "%{$search}%")
+                      ->orWhere('email', 'like', "%{$search}%");
+                })
+                ->orWhereHas('gig', function($q) use ($search) {
+                    $q->where('title', 'like', "%{$search}%");
+                })
+                ->orWhere('cmnt', 'like', "%{$search}%")
+                ->orWhere('id', 'like', "%{$search}%");
+            });
+        }
+
+        // FILTER 4: Service Type
+        if ($request->filled('service_type')) {
+            $query->whereHas('gig', function($q) use ($request) {
+                $q->where('service_type', $request->service_type);
+            });
+        }
+
+        // FILTER 5: With/Without Replies
+        if ($request->filled('has_replies')) {
+            if ($request->has_replies == 'yes') {
+                $query->has('replies');
+            } elseif ($request->has_replies == 'no') {
+                $query->doesntHave('replies');
+            }
+        }
+
+        // Check if export is requested
+        if ($request->has('export') && $request->export == 'excel') {
+            return \Maatwebsite\Excel\Facades\Excel::download(
+                new \App\Exports\ReviewsExport($query->get()),
+                'reviews_' . now()->format('Y-m-d_His') . '.xlsx'
+            );
+        }
+
+        // Get paginated reviews
+        $reviews = $query->orderBy('created_at', 'desc')->paginate(20);
+
+        // Enhanced Statistics
+        $stats = [
+            'total_reviews' => \App\Models\ServiceReviews::whereNull('parent_id')->count(),
+            'average_rating' => round(\App\Models\ServiceReviews::whereNull('parent_id')->avg('rating'), 2),
+            'five_star' => \App\Models\ServiceReviews::whereNull('parent_id')->where('rating', 5)->count(),
+            'four_star' => \App\Models\ServiceReviews::whereNull('parent_id')->where('rating', 4)->count(),
+            'three_star' => \App\Models\ServiceReviews::whereNull('parent_id')->where('rating', 3)->count(),
+            'two_star' => \App\Models\ServiceReviews::whereNull('parent_id')->where('rating', 2)->count(),
+            'one_star' => \App\Models\ServiceReviews::whereNull('parent_id')->where('rating', 1)->count(),
+            'total_replies' => \App\Models\ServiceReviews::whereNotNull('parent_id')->count(),
+            'reviews_this_month' => \App\Models\ServiceReviews::whereNull('parent_id')
+                ->whereMonth('created_at', now()->month)->count(),
+            'unanswered_reviews' => \App\Models\ServiceReviews::whereNull('parent_id')
+                ->doesntHave('replies')->count(),
+        ];
+
+        return view('Admin-Dashboard.reviews&rating', compact('reviews', 'stats'));
+    }
+
+    /**
+     * Delete a review
+     */
+    public function deleteReview($id)
+    {
+        if ($redirect = $this->AdmincheckAuth()) {
+            return $redirect;
+        }
+
+        try {
+            $review = \App\Models\ServiceReviews::findOrFail($id);
+
+            // Delete replies first
+            $review->replies()->delete();
+
+            // Delete the review
+            $review->delete();
+
+            return redirect()->back()->with('success', 'Review deleted successfully!');
+        } catch (\Exception $e) {
+            \Log::error('Failed to delete review: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Failed to delete review.');
+        }
+    }
+
+    /**
+     * Seller Reports
+     */
+    public function sellerReports()
+    {
+        if ($redirect = $this->AdmincheckAuth()) {
+            return $redirect;
+        }
+
+        $sellers = User::where('role', 1)
+            ->with('expertProfile')
+            ->withCount('teacherGigs')
+            ->withCount('bookOrders')
+            ->withSum('sellerTransactions as total_earnings', 'seller_earnings')
+            ->orderBy('created_at', 'desc')
+            ->paginate(20);
+
+        $stats = [
+            'total_sellers' => User::where('role', 1)->count(),
+            'active_sellers' => User::where('role', 1)->whereHas('teacherGigs', function($q) {
+                $q->where('status', 1);
+            })->count(),
+            'total_services' => \App\Models\TeacherGig::count(),
+            'total_revenue' => \App\Models\Transaction::where('status', 'completed')->sum('seller_earnings'),
+        ];
+
+        return view('Admin-Dashboard.seller-reports', compact('sellers', 'stats'));
+    }
+
+    /**
+     * Buyer Reports
+     */
+    public function buyerReports()
+    {
+        if ($redirect = $this->AdmincheckAuth()) {
+            return $redirect;
+        }
+
+        $buyers = User::where('role', 0)
+            ->withCount('bookOrders')
+            ->withSum('buyerTransactions as total_spent', 'total_amount')
+            ->orderBy('created_at', 'desc')
+            ->paginate(20);
+
+        $stats = [
+            'total_buyers' => User::where('role', 0)->count(),
+            'active_buyers' => User::where('role', 0)->whereHas('bookOrders')->count(),
+            'total_orders' => \App\Models\BookOrder::count(),
+            'total_revenue' => \App\Models\Transaction::where('status', 'completed')->sum('total_amount'),
+        ];
+
+        return view('Admin-Dashboard.Buyer-reports', compact('buyers', 'stats'));
+    }
+
+    // =====================================================================
+    // ADMIN MANAGEMENT METHODS
+    // =====================================================================
+
+    /**
+     * Display admin management page
+     */
+    public function adminManagement(Request $request)
+    {
+        if ($redirect = $this->AdmincheckAuth()) {
+            return $redirect;
+        }
+
+        $service = new \App\Services\AdminManagementService(new \App\Services\AdminActivityService());
+
+        // Get filters from request
+        $filters = [
+            'role' => $request->input('role'),
+            'search' => $request->input('search'),
+            'date_from' => $request->input('date_from'),
+            'date_to' => $request->input('date_to'),
+            'sort' => $request->input('sort', 'date_desc'),
+            'per_page' => $request->input('per_page', 20),
+        ];
+
+        $admins = $service->getAllAdmins($filters);
+        $stats = $service->getAdminStats();
+        $roles = \Spatie\Permission\Models\Role::orderBy('hierarchy_level')->get();
+
+        return view('Admin-Dashboard.admin-management', compact('admins', 'stats', 'roles', 'filters'));
+    }
+
+    /**
+     * Show form to create a new admin
+     */
+    public function createAdminForm()
+    {
+        if ($redirect = $this->AdmincheckAuth()) {
+            return $redirect;
+        }
+
+        // Get roles that the current admin can assign
+        $currentAdmin = auth()->user();
+        $roles = \Spatie\Permission\Models\Role::orderBy('hierarchy_level')->get();
+
+        // Filter roles based on hierarchy if not top super admin
+        if (!$currentAdmin->isTopSuperAdmin()) {
+            $currentRole = $currentAdmin->roles()->first();
+            if ($currentRole) {
+                $roles = $roles->filter(function($role) use ($currentRole) {
+                    return $role->hierarchy_level > $currentRole->hierarchy_level;
+                });
+            }
+        }
+
+        return view('Admin-Dashboard.admin-create', compact('roles'));
+    }
+
+    /**
+     * Store a new admin
+     */
+    public function storeAdmin(Request $request)
+    {
+        if ($redirect = $this->AdmincheckAuth()) {
+            return $redirect;
+        }
+
+        $request->validate([
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|string|min:8|confirmed',
+            'role' => 'required|exists:roles,name',
+        ]);
+
+        try {
+            $service = new \App\Services\AdminManagementService(new \App\Services\AdminActivityService());
+            $admin = $service->createAdmin($request->all(), auth()->user());
+
+            return redirect()->route('admin.admin-management')
+                ->with('success', 'Admin created successfully!');
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->withInput()
+                ->with('error', $e->getMessage());
+        }
+    }
+
+    /**
+     * Show form to edit an admin
+     */
+    public function editAdminForm($id)
+    {
+        if ($redirect = $this->AdmincheckAuth()) {
+            return $redirect;
+        }
+
+        $admin = User::with('roles')->findOrFail($id);
+        $currentAdmin = auth()->user();
+
+        // Check if current admin can manage this admin
+        if (!$currentAdmin->canManageAdmin($admin)) {
+            return redirect()->route('admin.admin-management')
+                ->with('error', 'You do not have permission to edit this admin');
+        }
+
+        // Get roles that can be assigned
+        $roles = \Spatie\Permission\Models\Role::orderBy('hierarchy_level')->get();
+
+        if (!$currentAdmin->isTopSuperAdmin()) {
+            $currentRole = $currentAdmin->roles()->first();
+            if ($currentRole) {
+                $roles = $roles->filter(function($role) use ($currentRole) {
+                    return $role->hierarchy_level > $currentRole->hierarchy_level;
+                });
+            }
+        }
+
+        return view('Admin-Dashboard.admin-edit', compact('admin', 'roles'));
+    }
+
+    /**
+     * Update an admin
+     */
+    public function updateAdmin(Request $request, $id)
+    {
+        if ($redirect = $this->AdmincheckAuth()) {
+            return $redirect;
+        }
+
+        $admin = User::findOrFail($id);
+
+        $request->validate([
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email,' . $id,
+            'password' => 'nullable|string|min:8|confirmed',
+            'role' => 'required|exists:roles,name',
+        ]);
+
+        try {
+            $service = new \App\Services\AdminManagementService(new \App\Services\AdminActivityService());
+            $service->updateAdmin($admin, $request->all(), auth()->user());
+
+            return redirect()->route('admin.admin-management')
+                ->with('success', 'Admin updated successfully!');
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->withInput()
+                ->with('error', $e->getMessage());
+        }
+    }
+
+    /**
+     * Delete an admin
+     */
+    public function deleteAdmin($id)
+    {
+        if ($redirect = $this->AdmincheckAuth()) {
+            return $redirect;
+        }
+
+        $admin = User::findOrFail($id);
+
+        try {
+            $service = new \App\Services\AdminManagementService(new \App\Services\AdminActivityService());
+            $service->deleteAdmin($admin, auth()->user());
+
+            return redirect()->route('admin.admin-management')
+                ->with('success', 'Admin deleted successfully!');
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', $e->getMessage());
+        }
+    }
+
+    /**
+     * Restore a deleted admin
+     */
+    public function restoreAdmin($id)
+    {
+        if ($redirect = $this->AdmincheckAuth()) {
+            return $redirect;
+        }
+
+        try {
+            $service = new \App\Services\AdminManagementService(new \App\Services\AdminActivityService());
+            $service->restoreAdmin($id, auth()->user());
+
+            return redirect()->route('admin.admin-management')
+                ->with('success', 'Admin restored successfully!');
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', $e->getMessage());
+        }
+    }
+
+    /**
+     * Get admin activities (AJAX)
+     */
+    public function getAdminActivities(Request $request)
+    {
+        if ($redirect = $this->AdmincheckAuth()) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        $service = new \App\Services\AdminActivityService();
+
+        $filters = [
+            'admin_id' => $request->input('admin_id'),
+            'target_admin_id' => $request->input('target_admin_id'),
+            'activity_type' => $request->input('activity_type'),
+            'date_from' => $request->input('date_from'),
+            'date_to' => $request->input('date_to'),
+        ];
+
+        $activities = $service->getRecentActivities($request->input('limit', 50), $filters);
+
+        return response()->json($activities);
+    }
+
+    /**
+     * Get admin statistics (AJAX)
+     */
+    public function getAdminStatistics()
+    {
+        if ($redirect = $this->AdmincheckAuth()) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        $service = new \App\Services\AdminManagementService(new \App\Services\AdminActivityService());
+        $stats = $service->getAdminStats();
+
+        return response()->json($stats);
+    }
+
+    /**
+     * Analytics Dashboard - Refund, Payout, and Revenue Analytics
+     */
+    public function analyticsDashboard(Request $request)
+    {
+        if ($redirect = $this->AdmincheckAuth()) {
+            return $redirect;
+        }
+
+        // Date range filtering (default: last 30 days)
+        $startDate = $request->input('start_date', now()->subDays(30)->format('Y-m-d'));
+        $endDate = $request->input('end_date', now()->format('Y-m-d'));
+
+        // ============ REFUND ANALYTICS ============
+        $refundStats = $this->getRefundAnalytics($startDate, $endDate);
+
+        // ============ PAYOUT ANALYTICS ============
+        $payoutStats = $this->getPayoutAnalytics($startDate, $endDate);
+
+        // ============ ORDER ANALYTICS ============
+        $orderStats = $this->getOrderAnalytics($startDate, $endDate);
+
+        // ============ REVENUE ANALYTICS ============
+        $revenueStats = $this->getRevenueAnalytics($startDate, $endDate);
+
+        // ============ CHART DATA ============
+        $chartData = $this->prepareChartData($startDate, $endDate);
+
+        return view('Admin-Dashboard.analytics', compact(
+            'refundStats',
+            'payoutStats',
+            'orderStats',
+            'revenueStats',
+            'chartData',
+            'startDate',
+            'endDate'
+        ));
+    }
+
+    /**
+     * Get refund analytics for date range
+     */
+    protected function getRefundAnalytics($startDate, $endDate)
+    {
+        $disputes = \App\Models\DisputeOrder::whereBetween('created_at', [$startDate, $endDate]);
+
+        $totalDisputes = $disputes->count();
+        $approvedDisputes = (clone $disputes)->where('status', 1)->count();
+        $rejectedDisputes = (clone $disputes)->where('status', 2)->count();
+        $pendingDisputes = (clone $disputes)->where('status', 0)->count();
+
+        $totalRefundAmount = (clone $disputes)->where('status', 1)->sum('amount');
+        $averageRefundAmount = $approvedDisputes > 0 ? $totalRefundAmount / $approvedDisputes : 0;
+
+        $approvalRate = $totalDisputes > 0 ? ($approvedDisputes / $totalDisputes) * 100 : 0;
+        $rejectionRate = $totalDisputes > 0 ? ($rejectedDisputes / $totalDisputes) * 100 : 0;
+
+        // Average processing time (from creation to approval/rejection)
+        $avgProcessingTime = \App\Models\DisputeOrder::whereBetween('created_at', [$startDate, $endDate])
+            ->whereIn('status', [1, 2])
+            ->selectRaw('AVG(TIMESTAMPDIFF(HOUR, created_at, updated_at)) as avg_hours')
+            ->value('avg_hours') ?? 0;
+
+        return [
+            'total_disputes' => $totalDisputes,
+            'approved' => $approvedDisputes,
+            'rejected' => $rejectedDisputes,
+            'pending' => $pendingDisputes,
+            'total_refund_amount' => $totalRefundAmount,
+            'average_refund_amount' => $averageRefundAmount,
+            'approval_rate' => round($approvalRate, 2),
+            'rejection_rate' => round($rejectionRate, 2),
+            'avg_processing_hours' => round($avgProcessingTime, 1),
+        ];
+    }
+
+    /**
+     * Get payout analytics for date range
+     */
+    protected function getPayoutAnalytics($startDate, $endDate)
+    {
+        $transactions = \App\Models\Transaction::whereBetween('created_at', [$startDate, $endDate]);
+
+        $totalPayouts = (clone $transactions)->whereIn('payout_status', ['pending', 'completed', 'failed'])->count();
+        $pendingPayouts = (clone $transactions)->where('payout_status', 'pending')->count();
+        $completedPayouts = (clone $transactions)->where('payout_status', 'completed')->count();
+        $failedPayouts = (clone $transactions)->where('payout_status', 'failed')->count();
+
+        $totalPayoutAmount = (clone $transactions)->where('payout_status', 'completed')->sum('seller_earnings');
+        $pendingPayoutAmount = (clone $transactions)->where('payout_status', 'pending')->sum('seller_earnings');
+        $averagePayoutAmount = $completedPayouts > 0 ? $totalPayoutAmount / $completedPayouts : 0;
+
+        $completionRate = $totalPayouts > 0 ? ($completedPayouts / $totalPayouts) * 100 : 0;
+
+        // Top sellers by payout amount
+        $topSellers = \App\Models\Transaction::with('seller:id,first_name,last_name,email')
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->where('payout_status', 'completed')
+            ->selectRaw('seller_id, SUM(seller_earnings) as total_earnings, COUNT(*) as payout_count')
+            ->groupBy('seller_id')
+            ->orderBy('total_earnings', 'desc')
+            ->limit(10)
+            ->get();
+
+        return [
+            'total_payouts' => $totalPayouts,
+            'pending' => $pendingPayouts,
+            'completed' => $completedPayouts,
+            'failed' => $failedPayouts,
+            'total_payout_amount' => $totalPayoutAmount,
+            'pending_payout_amount' => $pendingPayoutAmount,
+            'average_payout_amount' => $averagePayoutAmount,
+            'completion_rate' => round($completionRate, 2),
+            'top_sellers' => $topSellers,
+        ];
+    }
+
+    /**
+     * Get order analytics for date range
+     */
+    protected function getOrderAnalytics($startDate, $endDate)
+    {
+        $orders = \App\Models\BookOrder::whereBetween('created_at', [$startDate, $endDate]);
+
+        $totalOrders = $orders->count();
+        $pendingOrders = (clone $orders)->where('status', 0)->count();
+        $activeOrders = (clone $orders)->where('status', 1)->count();
+        $deliveredOrders = (clone $orders)->where('status', 2)->count();
+        $completedOrders = (clone $orders)->where('status', 3)->count();
+        $cancelledOrders = (clone $orders)->where('status', 4)->count();
+
+        $completionRate = $totalOrders > 0 ? ($completedOrders / $totalOrders) * 100 : 0;
+        $cancellationRate = $totalOrders > 0 ? ($cancelledOrders / $totalOrders) * 100 : 0;
+
+        $disputeRate = $totalOrders > 0
+            ? (\App\Models\DisputeOrder::whereBetween('created_at', [$startDate, $endDate])->count() / $totalOrders) * 100
+            : 0;
+
+        return [
+            'total_orders' => $totalOrders,
+            'pending' => $pendingOrders,
+            'active' => $activeOrders,
+            'delivered' => $deliveredOrders,
+            'completed' => $completedOrders,
+            'cancelled' => $cancelledOrders,
+            'completion_rate' => round($completionRate, 2),
+            'cancellation_rate' => round($cancellationRate, 2),
+            'dispute_rate' => round($disputeRate, 2),
+        ];
+    }
+
+    /**
+     * Get revenue analytics for date range
+     */
+    protected function getRevenueAnalytics($startDate, $endDate)
+    {
+        $transactions = \App\Models\Transaction::whereBetween('created_at', [$startDate, $endDate])
+            ->where('status', 'completed');
+
+        $totalRevenue = $transactions->sum('total_amount');
+        $totalAdminCommission = (clone $transactions)->sum('total_admin_commission');
+        $totalSellerEarnings = (clone $transactions)->sum('seller_earnings');
+        $totalCouponDiscounts = (clone $transactions)->sum('coupon_discount');
+
+        $transactionCount = $transactions->count();
+        $averageOrderValue = $transactionCount > 0 ? $totalRevenue / $transactionCount : 0;
+
+        return [
+            'total_revenue' => $totalRevenue,
+            'total_admin_commission' => $totalAdminCommission,
+            'total_seller_earnings' => $totalSellerEarnings,
+            'total_coupon_discounts' => $totalCouponDiscounts,
+            'transaction_count' => $transactionCount,
+            'average_order_value' => $averageOrderValue,
+        ];
+    }
+
+    /**
+     * Prepare chart data for visualizations
+     */
+    protected function prepareChartData($startDate, $endDate)
+    {
+        // Daily revenue and commission data
+        $dailyData = \App\Models\Transaction::whereBetween('created_at', [$startDate, $endDate])
+            ->where('status', 'completed')
+            ->selectRaw('DATE(created_at) as date,
+                         SUM(total_amount) as revenue,
+                         SUM(total_admin_commission) as commission,
+                         COUNT(*) as orders')
+            ->groupBy('date')
+            ->orderBy('date')
+            ->get();
+
+        // Refund trends (daily)
+        $refundTrends = \App\Models\DisputeOrder::whereBetween('created_at', [$startDate, $endDate])
+            ->selectRaw('DATE(created_at) as date,
+                         COUNT(*) as total,
+                         SUM(CASE WHEN status = 1 THEN 1 ELSE 0 END) as approved,
+                         SUM(CASE WHEN status = 2 THEN 1 ELSE 0 END) as rejected')
+            ->groupBy('date')
+            ->orderBy('date')
+            ->get();
+
+        // Payout status distribution
+        $payoutDistribution = \App\Models\Transaction::whereBetween('created_at', [$startDate, $endDate])
+            ->selectRaw('payout_status, COUNT(*) as count, SUM(seller_earnings) as total_amount')
+            ->whereIn('payout_status', ['pending', 'completed', 'failed'])
+            ->groupBy('payout_status')
+            ->get();
+
+        return [
+            'daily_revenue' => $dailyData,
+            'refund_trends' => $refundTrends,
+            'payout_distribution' => $payoutDistribution,
+        ];
+    }
+
+    /**
+     * Export Analytics Summary to Excel
+     */
+    public function exportAnalyticsSummary(Request $request)
+    {
+        if ($redirect = $this->AdmincheckAuth()) {
+            return $redirect;
+        }
+
+        // Date range filtering
+        $startDate = $request->input('start_date', now()->subDays(30)->format('Y-m-d'));
+        $endDate = $request->input('end_date', now()->format('Y-m-d'));
+
+        // Get all analytics data
+        $refundStats = $this->getRefundAnalytics($startDate, $endDate);
+        $payoutStats = $this->getPayoutAnalytics($startDate, $endDate);
+        $orderStats = $this->getOrderAnalytics($startDate, $endDate);
+        $revenueStats = $this->getRevenueAnalytics($startDate, $endDate);
+
+        $filename = 'analytics_summary_' . $startDate . '_to_' . $endDate . '.xlsx';
+
+        return \Maatwebsite\Excel\Facades\Excel::download(
+            new \App\Exports\AnalyticsSummaryExport($refundStats, $payoutStats, $orderStats, $revenueStats, $startDate, $endDate),
+            $filename
+        );
+    }
+
+    /**
+     * Export Transactions to Excel
+     */
+    public function exportTransactions(Request $request)
+    {
+        if ($redirect = $this->AdmincheckAuth()) {
+            return $redirect;
+        }
+
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
+        $status = $request->input('status');
+        $payoutStatus = $request->input('payout_status');
+
+        $query = \App\Models\Transaction::with(['seller', 'buyer', 'bookOrder.gig']);
+
+        if ($startDate && $endDate) {
+            $query->whereBetween('created_at', [$startDate, $endDate]);
+        }
+
+        if ($status) {
+            $query->where('status', $status);
+        }
+
+        if ($payoutStatus) {
+            $query->where('payout_status', $payoutStatus);
+        }
+
+        $transactions = $query->orderBy('created_at', 'desc')->get();
+
+        $filename = 'transactions_' . now()->format('Y-m-d_H-i-s') . '.xlsx';
+
+        return \Maatwebsite\Excel\Facades\Excel::download(
+            new \App\Exports\TransactionsExport($transactions),
+            $filename
+        );
+    }
+
+    /**
+     * Export Payouts to Excel
+     */
+    public function exportPayouts(Request $request)
+    {
+        if ($redirect = $this->AdmincheckAuth()) {
+            return $redirect;
+        }
+
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
+        $view = $request->input('view', 'pending');
+
+        $query = \App\Models\Transaction::with(['seller', 'buyer', 'bookOrder.gig']);
+
+        if ($startDate && $endDate) {
+            $query->whereBetween('created_at', [$startDate, $endDate]);
+        }
+
+        switch ($view) {
+            case 'pending':
+                $query->where('payout_status', 'pending')
+                    ->where('status', 'completed');
+                break;
+            case 'approved':
+                $query->where('payout_status', 'approved');
+                break;
+            case 'completed':
+                $query->where('payout_status', 'completed');
+                break;
+            case 'failed':
+                $query->where('payout_status', 'failed');
+                break;
+            default:
+                $query->whereIn('payout_status', ['pending', 'approved', 'completed', 'failed']);
+        }
+
+        $payouts = $query->orderBy('created_at', 'desc')->get();
+
+        $filename = 'payouts_' . $view . '_' . now()->format('Y-m-d_H-i-s') . '.xlsx';
+
+        return \Maatwebsite\Excel\Facades\Excel::download(
+            new \App\Exports\PayoutsExport($payouts),
+            $filename
+        );
+    }
+
+    /**
+     * Export Refunds to Excel
+     */
+    public function exportRefunds(Request $request)
+    {
+        if ($redirect = $this->AdmincheckAuth()) {
+            return $redirect;
+        }
+
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
+        $view = $request->input('view', 'pending_disputes');
+
+        $query = \App\Models\DisputeOrder::with(['user', 'order.gig.user']);
+
+        if ($startDate && $endDate) {
+            $query->whereBetween('created_at', [$startDate, $endDate]);
+        }
+
+        switch ($view) {
+            case 'pending_disputes':
+                $query->where('status', 0);
+                break;
+            case 'refunded':
+                $query->where('status', 1);
+                break;
+            case 'rejected':
+                $query->where('status', 2);
+                break;
+            default:
+                // all disputes
+                break;
+        }
+
+        $disputes = $query->orderBy('created_at', 'desc')->get();
+
+        $filename = 'refunds_' . $view . '_' . now()->format('Y-m-d_H-i-s') . '.xlsx';
+
+        return \Maatwebsite\Excel\Facades\Excel::download(
+            new \App\Exports\RefundsExport($disputes),
+            $filename
+        );
     }
 }

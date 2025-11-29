@@ -57,17 +57,6 @@
         </ul>
       </li>
       <li>
-        <a href="my-learning.html">
-          <i class="bx bx-book-reader" title="Video Orders"></i>
-          <span class="link_name">Video Orders</span>
-        </a>
-        <ul class="sub-menu blank">
-          <li>
-            <a class="link_name" href="my-learning.html">Video Orders</a>
-          </li>
-        </ul>
-      </li>
-      <li>
         <a href="/user/transactions">
           <i class="bx bx-history" title="Purchase History"></i>
           <span class="link_name">My Transactions</span>

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\ZoomSetting;
 use App\Models\ZoomAuditLog;
 use App\Models\User;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
@@ -12,6 +13,12 @@ use Illuminate\Support\Facades\Log;
 
 class ZoomOAuthController extends Controller
 {
+    protected $notificationService;
+
+    public function __construct(NotificationService $notificationService)
+    {
+        $this->notificationService = $notificationService;
+    }
     /**
      * Check teacher authentication
      */
@@ -192,6 +199,25 @@ class ZoomOAuthController extends Controller
             }
 
             $user->disconnectZoom();
+
+            // Send notification about Zoom disconnection
+            try {
+                $this->notificationService->send(
+                    userId: $user->id,
+                    type: 'zoom',
+                    title: 'Zoom Account Disconnected',
+                    message: 'Your Zoom account has been disconnected. You will not be able to host live classes until you reconnect.',
+                    data: [
+                        'disconnected_at' => now()->toISOString(),
+                        'reconnect_url' => route('teacher.zoom.connect')
+                    ],
+                    sendEmail: true,
+                    actorUserId: $user->id,
+                    targetUserId: $user->id
+                );
+            } catch (\Exception $e) {
+                \Log::error('Failed to send Zoom disconnection notification: ' . $e->getMessage());
+            }
 
             return redirect()->back()->with('success', 'Zoom account disconnected successfully!');
         } catch (\Exception $e) {

@@ -1751,8 +1751,9 @@ function loadNotifications(page = 1) {
         url: '/notifications?page=' + page,
         method: 'GET',
         success: function(response) {
-            renderNotifications(response.data);
-            renderPagination(response);
+
+            renderNotifications(response.notifications.data);
+            renderPagination(response.notifications);
         }
     });
 }

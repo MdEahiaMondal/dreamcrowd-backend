@@ -131,8 +131,8 @@ class UserController extends Controller
 
         if ($request->hasFile('profile')) {
             $filename = time() . '.' . $request->profile->extension();
-            $request->profile->move(public_path('uploads/profiles'), $filename);
-            $user->profile = 'uploads/profiles/' . $filename;
+            $request->profile->move(public_path('assets/profile/img/'), $filename);
+            $user->profile = $filename;
         }
 
         $user->first_name = $request->first_name;
@@ -378,7 +378,6 @@ class UserController extends Controller
                 'success' => true,
                 'data' => $statistics
             ]);
-
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -429,7 +428,6 @@ class UserController extends Controller
                 'chart_type' => $chartType,
                 'data' => $data
             ]);
-
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -485,7 +483,6 @@ class UserController extends Controller
                     'last_page' => $transactions->lastPage(),
                 ]
             ]);
-
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -534,7 +531,6 @@ class UserController extends Controller
             ]);
 
             return $pdf->download('dashboard-report-' . now()->format('Y-m-d') . '.pdf');
-
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Error generating PDF: ' . $e->getMessage());
         }
@@ -566,7 +562,6 @@ class UserController extends Controller
                 new \App\Exports\UserDashboardExport($userId, $dateFrom, $dateTo),
                 'dashboard-data-' . now()->format('Y-m-d') . '.xlsx'
             );
-
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Error generating Excel: ' . $e->getMessage());
         }
@@ -601,6 +596,4 @@ class UserController extends Controller
         ];
         return $colors[$status] ?? 'secondary';
     }
-
-
 }

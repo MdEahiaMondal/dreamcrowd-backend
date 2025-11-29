@@ -967,9 +967,18 @@
 
 
         // Get duty time values
-        const startDutydate = document.getElementById('start_date').value;
-        const startDutyTime = document.getElementById('start_time').value;
-        const endDutyTime = document.getElementById('end_time').value;
+        const startDutydateElement = document.getElementById('start_date');
+        const startDutyTimeElement = document.getElementById('start_time');
+        const endDutyTimeElement = document.getElementById('end_time');
+
+        if (!startDutydateElement || !startDutyTimeElement || !endDutyTimeElement) {
+            alert('Required time fields not found!');
+            return false;
+        }
+
+        const startDutydate = startDutydateElement.value;
+        const startDutyTime = startDutyTimeElement.value;
+        const endDutyTime = endDutyTimeElement.value;
 
 
         // Check if duty times are filled
@@ -987,14 +996,22 @@
 
         // Convert duty times to Date objects for comparison
 
-        const startdate = document.getElementById(`start_date`).value;
+        const startdate = startDutydateElement.value;
         const startDuty = new Date(`${startdate}T${startDutyTime}:00`);
         const endDuty = new Date(`${startdate}T${endDutyTime}:00`);
 
         // Loop through each day's lecture times
         var id = Clicked.split('_');
-        const startLectureTime = document.getElementById(`start_repeat_` + id[2]).value;
-        const endLectureTime = document.getElementById(`end_repeat_` + id[2]).value;
+        const startLectureTimeElement = document.getElementById(`start_repeat_` + id[2]);
+        const endLectureTimeElement = document.getElementById(`end_repeat_` + id[2]);
+
+        if (!startLectureTimeElement || !endLectureTimeElement) {
+            alert('Lecture time fields not found!');
+            return false;
+        }
+
+        const startLectureTime = startLectureTimeElement.value;
+        const endLectureTime = endLectureTimeElement.value;
 
         if (id[0] == 'start') {
 
@@ -1268,11 +1285,16 @@
         // Validate duration based on service and class type
         if (service_type === 'Online') {
             if (class_type === 'Video') {
-                duration = document.getElementById('duration').value;
+                const durationElement = document.getElementById('duration');
+                if (!durationElement) return showError("Duration field not found!");
+                duration = durationElement.value;
                 if (!duration) return showError("Duration Required!");
             } else {
-                const durationH = document.getElementById('durationH').value;
-                const durationM = document.getElementById('durationM').value;
+                const durationHElement = document.getElementById('durationH');
+                const durationMElement = document.getElementById('durationM');
+                if (!durationHElement || !durationMElement) return showError("Duration fields not found!");
+                const durationH = durationHElement.value;
+                const durationM = durationMElement.value;
                 duration = `${durationH}:${durationM}`;
                 if (durationH === '00' && durationM === '00') return showError("Duration Required!");
             }
@@ -1423,8 +1445,14 @@
 
 
             // if (class_type !== 'Video' && class_type !== '') {
-            const durationH = document.getElementById('durationH').value;
-            const durationM = document.getElementById('durationM').value;
+            const durationHElement = document.getElementById('durationH');
+            const durationMElement = document.getElementById('durationM');
+            if (!durationHElement || !durationMElement) {
+                showError("Duration fields not found!");
+                return false;
+            }
+            const durationH = durationHElement.value;
+            const durationM = durationMElement.value;
             duration = `${durationH}:${durationM}`;
             if (duration === '00:00') {
                 showError("Duration Required!");
@@ -1448,6 +1476,12 @@
                 const data = activeDivs[i];
                 const startTimeInput = document.getElementById('start_repeat_' + data);
                 const endTimeInput = document.getElementById('end_repeat_' + data);
+
+                if (!startTimeInput || !endTimeInput) {
+                    showError(`Time input fields not found for ${day}!`);
+                    return;
+                }
+
                 const start_repeat = startTimeInput.value;
                 const end_repeat = endTimeInput.value;
 

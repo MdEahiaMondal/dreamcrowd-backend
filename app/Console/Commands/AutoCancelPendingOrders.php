@@ -16,10 +16,12 @@ use Stripe\Stripe;
 use Stripe\PaymentIntent;
 use Stripe\Exception\ApiErrorException;
 use App\Services\NotificationService;
+use App\Services\GoogleAnalyticsService;
 
 class AutoCancelPendingOrders extends Command
 {
     protected $notificationService;
+    protected $analyticsService;
 
     /**
      * The name and signature of the console command.
@@ -35,10 +37,11 @@ class AutoCancelPendingOrders extends Command
      */
     protected $description = 'Auto-cancel pending orders if first class is about to start in 30 minutes or has already started';
 
-    public function __construct(NotificationService $notificationService)
+    public function __construct(NotificationService $notificationService, GoogleAnalyticsService $analyticsService)
     {
         parent::__construct();
         $this->notificationService = $notificationService;
+        $this->analyticsService = $analyticsService;
     }
 
     /**
@@ -223,6 +226,22 @@ class AutoCancelPendingOrders extends Command
             $this->cancelPendingReschedules($order);
 
             DB::commit();
+
+            // Track order cancellation in Google Analytics
+            try {
+                $this->analyticsService->trackEvent('order_status_change', [
+                    'order_id' => $order->id,
+                    'from_status' => 'Pending',
+                    'to_status' => 'Cancelled',
+                    'order_value' => $order->finel_price ?? 0,
+                    'cancel_reason' => $cancelReason,
+                    'service_id' => $order->gig_id,
+                    'refund_success' => $refundSuccess ? 'yes' : 'no',
+                    'trigger' => 'automated'
+                ]);
+            } catch (\Exception $e) {
+                Log::warning("GA4 order cancellation tracking failed for order #{$order->id}: " . $e->getMessage());
+            }
 
             // ============ SEND NOTIFICATIONS ============
             $this->sendCancellationNotifications($order, $cancelReason, $refundSuccess);
@@ -426,8 +445,10 @@ class AutoCancelPendingOrders extends Command
             // Get user names
             $buyer = User::find($buyerId);
             $seller = User::find($sellerId);
-            $buyerName = $buyer ? "{$buyer->first_name} {$buyer->last_name}" : 'Buyer';
-            $sellerName = $seller ? "{$seller->first_name} {$seller->last_name}" : 'Seller';
+            $BuyerLastNameFirstLatter = $buyer ? strtoupper(substr($buyer->last_name, 0, 1)) : '';
+            $sellerLastNameFirstLatter = $buyer ? strtoupper(substr($seller->last_name, 0, 1)) : '';
+            $buyerName = $buyer ? "{$buyer->first_name} {$BuyerLastNameFirstLatter}" : 'Buyer';
+            $sellerName = $seller ? "{$seller->first_name} {$sellerLastNameFirstLatter}" : 'Seller';
 
             // Refund status message
             $refundMessage = $refundSuccess
@@ -446,7 +467,12 @@ class AutoCancelPendingOrders extends Command
                     'cancellation_reason' => $reason,
                     'seller_id' => $sellerId
                 ],
-                sendEmail: true // Critical - buyer needs to know
+                sendEmail: true, // Critical - buyer needs to know
+                actorUserId: $sellerId, // Seller who failed to accept
+                targetUserId: $buyerId, // Buyer affected by cancellation
+                orderId: $orderId,
+                serviceId: $order->gig_id,
+                isEmergency: !$refundSuccess // Emergency if refund failed!
             );
 
             Log::info("Auto-cancel notification sent to buyer #{$buyerId} for order #{$orderId}");
@@ -462,7 +488,11 @@ class AutoCancelPendingOrders extends Command
                     'buyer_id' => $buyerId,
                     'cancellation_reason' => $reason
                 ],
-                sendEmail: true // Important - seller needs to improve response time
+                sendEmail: true, // Important - seller needs to improve response time
+                actorUserId: $sellerId, // Seller responsible for delay
+                targetUserId: $buyerId, // Buyer affected
+                orderId: $orderId,
+                serviceId: $order->gig_id
             );
 
             Log::info("Auto-cancel notification sent to seller #{$sellerId} for order #{$orderId}");
@@ -484,7 +514,12 @@ class AutoCancelPendingOrders extends Command
                         'refund_success' => $refundSuccess,
                         'cancellation_reason' => $reason
                     ],
-                    sendEmail: false // Admin gets notification only, not email spam
+                    sendEmail: false, // Admin gets notification only, not email spam
+                    actorUserId: $sellerId, // Seller responsible
+                    targetUserId: $buyerId, // Buyer affected
+                    orderId: $orderId,
+                    serviceId: $order->gig_id,
+                    isEmergency: !$refundSuccess // Emergency if refund failed - requires manual intervention!
                 );
 
                 Log::info("Auto-cancel notification sent to " . count($adminIds) . " admin(s) for order #{$orderId}");

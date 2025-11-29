@@ -1332,7 +1332,7 @@ body {
   /* border-bottom-left-radius: calc(.3rem - 1px); */
   border: none;
 }
-.btn-secondary {
+/* .btn-secondary {
   display: flex;
   padding: 8px 27px 8px 26px;
   justify-content: center;
@@ -1350,7 +1350,7 @@ body {
   color: #fff;
   background-color: #0072b1;
   border-color: none;
-}
+} */
 .pie {
   padding: 40px;
   align-items: center;
@@ -1646,7 +1646,7 @@ body {
   align-items: center;
 }
 /* ================== */
-div[role="progressbar"] {
+/* div[role="progressbar"] {
   --size: 12rem;
   --fg: #0072b1;
   --bg: #eeeeee;
@@ -1667,12 +1667,12 @@ div[role="progressbar"] {
   font-family: Helvetica, Arial, sans-serif;
   font-size: calc(var(--size) / 5);
   color: var(--fg);
-}
+} */
 
-div[role="progressbar"]::before {
+/* div[role="progressbar"]::before {
   counter-reset: percentage var(--value);
   content: counter(percentage) "%";
-}
+} */
 .graph-container {
   justify-content: center;
   display: flex;
@@ -1680,9 +1680,9 @@ div[role="progressbar"]::before {
   flex-direction: column;
 }
 @media only screen and (max-width: 1024px) {
-  div[role="progressbar"] {
+  /* div[role="progressbar"] {
     --size: 9rem;
-  }
+  } */
   .date-sec {
     display: none;
   }
