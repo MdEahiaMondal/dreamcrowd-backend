@@ -1,66 +1,620 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# DreamCrowd
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A Laravel-based multi-sided marketplace platform connecting service providers (teachers/sellers) with customers (buyers/users).
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Table of Contents
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- [Overview](#overview)
+- [Business Model](#business-model)
+- [User Roles](#user-roles)
+- [Key Features](#key-features)
+- [How It Works](#how-it-works)
+- [Order Lifecycle](#order-lifecycle)
+- [Commission System](#commission-system)
+- [Payment Integration](#payment-integration)
+- [Installation](#installation)
+- [Development Commands](#development-commands)
+- [Architecture](#architecture)
+- [Tech Stack](#tech-stack)
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+---
 
-## Learning Laravel
+## Overview
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+**DreamCrowd** is an online marketplace where service providers can create and sell their services (gigs), and buyers can browse, book, and pay for those services. The platform supports:
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+- Online and in-person service bookings
+- Class scheduling with recurring dates
+- Secure payment processing via Stripe
+- Automated order lifecycle management
+- Dispute resolution and refund system
+- Commission-based revenue model
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+---
 
-## Laravel Sponsors
+## Business Model
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+DreamCrowd operates as a **multi-sided marketplace** generating revenue through commissions:
 
-### Premium Partners
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                        BUSINESS FLOW                            │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│   SELLER                    PLATFORM                   BUYER    │
+│   (Teacher)                (DreamCrowd)                (User)   │
+│                                                                 │
+│   ┌─────────┐              ┌─────────┐              ┌─────────┐ │
+│   │ Creates │              │ Takes   │              │ Pays    │ │
+│   │ Service │─────────────►│Commission├─────────────│ Service │ │
+│   │ (Gig)   │              │ (15%)   │              │ Price + │ │
+│   └─────────┘              └─────────┘              │ Fees    │ │
+│       │                         │                   └─────────┘ │
+│       │                         │                        │      │
+│       ▼                         ▼                        ▼      │
+│   ┌─────────┐              ┌─────────┐              ┌─────────┐ │
+│   │Receives │              │ Admin   │              │Receives │ │
+│   │ Payout  │◄─────────────│Earnings │              │ Service │ │
+│   │ (85%)   │              │ (15%+)  │              │         │ │
+│   └─────────┘              └─────────┘              └─────────┘ │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+```
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+### Revenue Streams
 
-## Contributing
+1. **Seller Commission**: Percentage deducted from each sale (default 15%)
+2. **Buyer Commission**: Additional fee charged to buyers
+3. **Service-specific Commissions**: Custom rates for specific services
+4. **Seller-specific Commissions**: Custom rates for specific sellers
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+---
 
-## Code of Conduct
+## User Roles
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### 1. Teacher/Seller
+- Create and manage service listings (gigs)
+- Set pricing tiers for different service types
+- Manage bookings and class schedules
+- Deliver services (online/in-person)
+- Respond to disputes
+- Receive payouts after order completion
+- View analytics (impressions, clicks, orders, reviews)
 
-## Security Vulnerabilities
+### 2. User/Buyer
+- Browse and search services by category
+- Book classes and make payments
+- Track order status
+- Submit reviews and ratings
+- Request rescheduling
+- Initiate disputes for unsatisfactory service
+- Request refunds
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### 3. Admin
+- Manage categories and subcategories
+- Manage seller accounts and verification
+- Configure commission rates (global, per-seller, per-service)
+- Manage coupons and promotions
+- Process payouts
+- Handle dispute escalations
+- Manage site content and settings
+
+---
+
+## Key Features
+
+### For Sellers
+- **Gig Management**: Create, edit, delete service listings
+- **Pricing Tiers**: Set different prices for subscription, one-off, courses
+- **Class Scheduling**: Set available dates and times
+- **Order Management**: Track and manage bookings
+- **Analytics Dashboard**: View performance metrics
+- **Payout Tracking**: Monitor earnings and payment status
+
+### For Buyers
+- **Service Discovery**: Browse by category, search, filter
+- **Secure Booking**: Book services with Stripe payment
+- **Order Tracking**: Real-time status updates
+- **Review System**: Rate and review completed services
+- **Reschedule Requests**: Request class time changes
+- **Dispute System**: File complaints and request refunds
+
+### For Admin
+- **Dashboard**: Overview of platform metrics
+- **User Management**: Manage sellers and buyers
+- **Commission Settings**: Configure global and custom rates
+- **Coupon Management**: Create discount codes
+- **Content Management**: Edit site pages and settings
+- **Financial Reports**: Track revenue and payouts
+
+### Platform Features
+- **Automated Order Lifecycle**: Auto-delivery, auto-completion
+- **Dispute Resolution**: 48-hour dispute window with auto-refund
+- **Email Notifications**: Transactional emails for all events
+- **OAuth Authentication**: Google and Facebook login
+- **PDF Invoices**: Downloadable transaction receipts
+- **Multi-role Accounts**: Switch between buyer/seller roles
+
+---
+
+## How It Works
+
+### Complete User Journey
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                           COMPLETE USER JOURNEY                              │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+SELLER FLOW:
+┌──────────┐   ┌──────────┐   ┌──────────┐   ┌──────────┐   ┌──────────┐
+│ Register │──►│ Create   │──►│ Set      │──►│ Publish  │──►│ Receive  │
+│ Account  │   │ Profile  │   │ Services │   │ Gig      │   │ Bookings │
+└──────────┘   └──────────┘   └──────────┘   └──────────┘   └──────────┘
+                                                                  │
+                                                                  ▼
+┌──────────┐   ┌──────────┐   ┌──────────┐   ┌──────────┐   ┌──────────┐
+│ Receive  │◄──│ Order    │◄──│ Wait 48  │◄──│ Mark     │◄──│ Deliver  │
+│ Payout   │   │ Complete │   │ Hours    │   │ Delivered│   │ Service  │
+└──────────┘   └──────────┘   └──────────┘   └──────────┘   └──────────┘
+
+
+BUYER FLOW:
+┌──────────┐   ┌──────────┐   ┌──────────┐   ┌──────────┐   ┌──────────┐
+│ Register │──►│ Browse   │──►│ Select   │──►│ Book &   │──►│ Attend   │
+│ Account  │   │ Services │   │ Gig      │   │ Pay      │   │ Class    │
+└──────────┘   └──────────┘   └──────────┘   └──────────┘   └──────────┘
+                                                                  │
+                                                                  ▼
+                              ┌──────────┐   ┌──────────┐   ┌──────────┐
+                              │ Review   │◄──│ Order    │◄──│ Receive  │
+                              │ Service  │   │ Complete │   │ Service  │
+                              └──────────┘   └──────────┘   └──────────┘
+```
+
+### Service Booking Process
+
+1. **Browse**: User browses services by category or search
+2. **Select**: User views gig details, pricing, reviews
+3. **Choose Tier**: User selects subscription, one-off, or course
+4. **Select Dates**: User picks class dates (for one-off/courses)
+5. **Apply Coupon**: User can apply discount code (optional)
+6. **Payment**: User pays via Stripe
+7. **Confirmation**: Both parties receive confirmation email
+8. **Service Delivery**: Seller delivers the service
+9. **Completion**: Order auto-completes after 48-hour window
+10. **Review**: Buyer can leave rating and review
+11. **Payout**: Seller receives payment (minus commission)
+
+---
+
+## Order Lifecycle
+
+### Status Flow
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    ORDER STATUS LIFECYCLE                        │
+└─────────────────────────────────────────────────────────────────┘
+
+                         ┌─────────────┐
+                         │   PENDING   │ (Status: 0)
+                         │ Awaiting    │
+                         │ Payment     │
+                         └──────┬──────┘
+                                │
+                         Payment Completed
+                                │
+                                ▼
+                         ┌─────────────┐
+                         │   ACTIVE    │ (Status: 1)
+                         │ Service in  │
+                         │ Progress    │
+                         └──────┬──────┘
+                                │
+              ┌─────────────────┼─────────────────┐
+              │                 │                 │
+     Due Date Passes    Manual Delivery    User Cancels
+              │                 │                 │
+              ▼                 ▼                 ▼
+       ┌─────────────┐   ┌─────────────┐   ┌─────────────┐
+       │  DELIVERED  │   │  DELIVERED  │   │  CANCELLED  │
+       │ Auto-marked │   │ Seller-     │   │ Refund      │
+       │ by System   │   │ marked      │   │ Processed   │
+       └──────┬──────┘   └──────┬──────┘   └─────────────┘
+              │                 │           (Status: 4)
+              └────────┬────────┘
+                       │
+                       ▼
+                ┌─────────────┐
+                │  DELIVERED  │ (Status: 2)
+                │ 48-Hour     │
+                │ Dispute     │
+                │ Window      │
+                └──────┬──────┘
+                       │
+         ┌─────────────┴─────────────┐
+         │                           │
+    No Dispute               User Files Dispute
+         │                           │
+         ▼                           ▼
+  ┌─────────────┐            ┌─────────────┐
+  │  COMPLETED  │            │  DISPUTED   │
+  │ Ready for   │            │ Under       │
+  │ Payout      │            │ Review      │
+  └─────────────┘            └──────┬──────┘
+   (Status: 3)                      │
+                       ┌────────────┴────────────┐
+                       │                         │
+               Teacher Contests          No Teacher Response
+                       │                  (48 hours)
+                       ▼                         │
+                ┌─────────────┐                  ▼
+                │ ADMIN       │          ┌─────────────┐
+                │ REVIEW      │          │ AUTO-REFUND │
+                │             │          │ Cancelled   │
+                └─────────────┘          └─────────────┘
+                                          (Status: 4)
+```
+
+### Automated Tasks
+
+| Task | Schedule | Description |
+|------|----------|-------------|
+| `orders:auto-cancel` | Hourly | Cancels pending orders near class start time |
+| `orders:auto-deliver` | Hourly | Marks active orders as delivered after due date |
+| `orders:auto-complete` | Every 6 hours | Completes delivered orders after 48-hour window |
+| `disputes:process` | Daily 3:00 AM | Processes refunds for uncontested disputes |
+| `update:teacher-gig-status` | Daily | Updates gig availability based on dates |
+
+### Due Date Calculation
+
+- **Subscription Services**: 1 month from order creation
+- **One-Off Services**: Last class date
+- **Courses**: Last class date in the curriculum
+
+---
+
+## Commission System
+
+### How Commissions Work
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    COMMISSION CALCULATION                        │
+└─────────────────────────────────────────────────────────────────┘
+
+Service Price: $100
+Seller Commission Rate: 15%
+Buyer Commission: $5
+
+┌──────────────────────────────────────────────────────────────────┐
+│                                                                  │
+│  BUYER PAYS:                                                     │
+│  ├── Service Price ─────────────────────── $100.00              │
+│  ├── Buyer Commission Fee ──────────────── $5.00                │
+│  ├── Tax (if applicable) ───────────────── $0.00                │
+│  └── TOTAL ─────────────────────────────── $105.00              │
+│                                                                  │
+│  ADMIN RECEIVES:                                                 │
+│  ├── Seller Commission (15% of $100) ───── $15.00               │
+│  ├── Buyer Commission Fee ──────────────── $5.00                │
+│  └── TOTAL ─────────────────────────────── $20.00               │
+│                                                                  │
+│  SELLER RECEIVES:                                                │
+│  └── Service Price - Commission ────────── $85.00               │
+│                                                                  │
+└──────────────────────────────────────────────────────────────────┘
+```
+
+### Commission Priority (Highest to Lowest)
+
+1. **Service-Specific Commission**: Custom rate set for a specific gig
+2. **Seller-Specific Commission**: Custom rate set for a specific seller
+3. **Global Default Commission**: Platform-wide default rate (typically 15%)
+
+### Commission Configuration
+
+| Level | Table | Description |
+|-------|-------|-------------|
+| Service | `service_commissions` | Override for specific services |
+| Seller | `seller_commissions` | Override for specific sellers |
+| Global | `top_seller_tags` | Default platform commission |
+
+---
+
+## Payment Integration
+
+### Stripe Payment Flow
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    STRIPE PAYMENT FLOW                           │
+└─────────────────────────────────────────────────────────────────┘
+
+┌──────────┐     ┌──────────┐     ┌──────────┐     ┌──────────┐
+│  Buyer   │────►│DreamCrowd│────►│  Stripe  │────►│  Bank    │
+│ Browser  │     │  Server  │     │   API    │     │ Network  │
+└──────────┘     └──────────┘     └──────────┘     └──────────┘
+     │                │                 │                │
+     │  1. Checkout   │                 │                │
+     │───────────────►│                 │                │
+     │                │                 │                │
+     │                │ 2. Create       │                │
+     │                │ PaymentIntent   │                │
+     │                │────────────────►│                │
+     │                │                 │                │
+     │                │ 3. Client       │                │
+     │                │ Secret          │                │
+     │                │◄────────────────│                │
+     │                │                 │                │
+     │ 4. Payment     │                 │                │
+     │ Form           │                 │                │
+     │◄───────────────│                 │                │
+     │                │                 │                │
+     │ 5. Card        │                 │                │
+     │ Details        │                 │                │
+     │────────────────────────────────►│                │
+     │                │                 │                │
+     │                │                 │ 6. Process    │
+     │                │                 │ Payment       │
+     │                │                 │───────────────►│
+     │                │                 │                │
+     │                │                 │ 7. Result     │
+     │                │                 │◄───────────────│
+     │                │                 │                │
+     │                │ 8. Webhook      │                │
+     │                │ Notification    │                │
+     │                │◄────────────────│                │
+     │                │                 │                │
+     │ 9. Success     │                 │                │
+     │ Redirect       │                 │                │
+     │◄───────────────│                 │                │
+     │                │                 │                │
+```
+
+### Refund Processing
+
+- **Full Refund**: 100% of buyer payment returned
+- **Partial Refund**: Percentage-based or fixed amount
+- **Auto-Refund**: Triggered after 48 hours for uncontested disputes
+
+---
+
+## Installation
+
+### Requirements
+
+- PHP >= 8.1
+- Composer
+- Node.js & NPM
+- SQLite / MySQL / PostgreSQL
+
+### Setup Steps
+
+```bash
+# Clone repository
+git clone <repository-url>
+cd dreamcrowd-backend
+
+# Install PHP dependencies
+composer install
+
+# Install Node.js dependencies
+npm install
+
+# Copy environment file
+cp .env.example .env
+
+# Generate application key
+php artisan key:generate
+
+# Create SQLite database (for development)
+touch database/database.sqlite
+
+# Run migrations
+php artisan migrate
+
+# Seed database (optional)
+php artisan db:seed
+
+# Build frontend assets
+npm run build
+
+# Start development server
+php artisan serve
+```
+
+### Environment Configuration
+
+```env
+# Application
+APP_NAME=DreamCrowd
+APP_ENV=local
+APP_DEBUG=true
+APP_URL=http://localhost:8000
+
+# Database
+DB_CONNECTION=sqlite
+# For MySQL:
+# DB_CONNECTION=mysql
+# DB_HOST=127.0.0.1
+# DB_PORT=3306
+# DB_DATABASE=dreamcrowd
+# DB_USERNAME=root
+# DB_PASSWORD=
+
+# Stripe
+STRIPE_KEY=pk_test_...
+STRIPE_SECRET=sk_test_...
+STRIPE_WEBHOOK_SECRET=whsec_...
+
+# OAuth (Google)
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
+GOOGLE_REDIRECT_URI=
+
+# OAuth (Facebook)
+FACEBOOK_CLIENT_ID=
+FACEBOOK_CLIENT_SECRET=
+FACEBOOK_REDIRECT_URI=
+
+# Mail
+MAIL_MAILER=smtp
+MAIL_HOST=
+MAIL_PORT=587
+MAIL_USERNAME=
+MAIL_PASSWORD=
+```
+
+---
+
+## Development Commands
+
+### Server & Build
+
+```bash
+php artisan serve          # Start development server
+npm run dev                # Start Vite dev server
+npm run build              # Build for production
+```
+
+### Database
+
+```bash
+php artisan migrate              # Run migrations
+php artisan migrate:rollback     # Rollback last migration
+php artisan migrate:fresh        # Reset database
+php artisan db:seed              # Seed database
+```
+
+### Testing
+
+```bash
+php artisan test                 # Run all tests
+php artisan test --coverage      # With coverage report
+```
+
+### Code Quality
+
+```bash
+./vendor/bin/pint               # Format code with Laravel Pint
+```
+
+### Cache
+
+```bash
+php artisan cache:clear         # Clear cache
+php artisan config:clear        # Clear config cache
+php artisan route:clear         # Clear route cache
+php artisan view:clear          # Clear view cache
+php artisan optimize            # Optimize for production
+```
+
+### Scheduled Tasks (Manual)
+
+```bash
+php artisan orders:auto-cancel      # Cancel pending orders
+php artisan orders:auto-deliver     # Mark orders delivered
+php artisan orders:auto-complete    # Complete delivered orders
+php artisan disputes:process        # Process disputes
+php artisan schedule:list           # View scheduled tasks
+```
+
+---
+
+## Architecture
+
+### Directory Structure
+
+```
+dreamcrowd-backend/
+├── app/
+│   ├── Console/
+│   │   ├── Commands/           # Artisan commands
+│   │   │   ├── AutoMarkDelivered.php
+│   │   │   ├── AutoMarkCompleted.php
+│   │   │   └── AutoHandleDisputes.php
+│   │   └── Kernel.php          # Task scheduler
+│   ├── Http/
+│   │   ├── Controllers/        # Request handlers
+│   │   │   ├── BookingController.php
+│   │   │   ├── TransactionController.php
+│   │   │   └── AdminController.php
+│   │   └── Middleware/         # Request filters
+│   └── Models/                 # Eloquent models
+│       ├── BookOrder.php
+│       ├── Transaction.php
+│       ├── TeacherGig.php
+│       └── TopSellerTag.php
+├── config/                     # Configuration files
+├── database/
+│   ├── migrations/             # Database schema
+│   └── seeders/               # Test data
+├── resources/
+│   └── views/                  # Blade templates
+│       ├── Public-site/        # Public pages
+│       ├── Seller-listing/     # Service browsing
+│       ├── Teacher-Dashboard/  # Seller dashboard
+│       ├── User-Dashboard/     # Buyer dashboard
+│       ├── Admin-Dashboard/    # Admin panel
+│       └── emails/             # Email templates
+├── routes/
+│   └── web.php                 # Web routes
+└── storage/
+    └── logs/                   # Application logs
+```
+
+### Core Models
+
+| Model | Description |
+|-------|-------------|
+| `BookOrder` | Service bookings with payment and status tracking |
+| `Transaction` | Financial records for purchases |
+| `TeacherGig` | Service listings with pricing and availability |
+| `TeacherGigData` | Extended gig metadata (videos, resources) |
+| `TeacherGigPayment` | Pricing tiers for services |
+| `Coupon` | Discount codes with validation |
+| `ServiceReviews` | Ratings and reviews |
+| `DisputeOrder` | Dispute records and resolution |
+| `ClassDate` | Scheduled class dates |
+| `ClassReschedule` | Rescheduling requests |
+
+### Key Controllers
+
+| Controller | Responsibility |
+|------------|----------------|
+| `BookingController` | Service bookings, payments |
+| `TransactionController` | Transaction history, invoices |
+| `AdminController` | Admin dashboard, settings |
+| `CouponController` | Coupon management |
+| `StripeWebhookController` | Stripe event handling |
+
+---
+
+## Tech Stack
+
+| Category | Technology |
+|----------|------------|
+| Backend | Laravel 11 (PHP 8.2+) |
+| Frontend | Blade, Vite, TailwindCSS |
+| Database | SQLite / MySQL / PostgreSQL |
+| Payment | Stripe |
+| Authentication | Laravel Sanctum, Socialite |
+| PDF Generation | DomPDF |
+| Excel Export | Maatwebsite Excel |
+| Code Quality | Laravel Pint |
+
+---
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+This project is proprietary software. All rights reserved.
+
+---
+
+## Support
+
+For questions or issues, please contact the development team.

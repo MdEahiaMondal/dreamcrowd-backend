@@ -3157,6 +3157,145 @@ class AdminController extends Controller
     }
 
     /**
+     * Review Reports - View all reported reviews
+     */
+    public function reviewReports(Request $request)
+    {
+        if ($redirect = $this->AdmincheckAuth()) {
+            return $redirect;
+        }
+
+        $query = \App\Models\ReviewReport::with([
+            'review.user:id,first_name,last_name,email,profile',
+            'review.teacher:id,first_name,last_name,email,profile',
+            'review.gig:id,title',
+            'reporter:id,first_name,last_name,email',
+            'handler:id,first_name,last_name'
+        ]);
+
+        // Filter by status
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        // Filter by reason
+        if ($request->filled('reason')) {
+            $query->where('reason', $request->reason);
+        }
+
+        // Filter by date
+        if ($request->filled('date_filter')) {
+            switch ($request->date_filter) {
+                case 'today':
+                    $query->whereDate('created_at', today());
+                    break;
+                case 'last_7_days':
+                    $query->whereBetween('created_at', [now()->subDays(7), now()]);
+                    break;
+                case 'last_month':
+                    $query->whereMonth('created_at', now()->subMonth()->month)
+                          ->whereYear('created_at', now()->subMonth()->year);
+                    break;
+            }
+        }
+
+        // Search
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->whereHas('reporter', function($q) use ($search) {
+                    $q->where('first_name', 'like', "%{$search}%")
+                      ->orWhere('last_name', 'like', "%{$search}%");
+                })
+                ->orWhereHas('review.user', function($q) use ($search) {
+                    $q->where('first_name', 'like', "%{$search}%")
+                      ->orWhere('last_name', 'like', "%{$search}%");
+                })
+                ->orWhere('description', 'like', "%{$search}%");
+            });
+        }
+
+        $reports = $query->orderBy('created_at', 'desc')->paginate(20);
+
+        // Statistics
+        $stats = [
+            'total_reports' => \App\Models\ReviewReport::count(),
+            'pending_reports' => \App\Models\ReviewReport::where('status', 'pending')->count(),
+            'approved_reports' => \App\Models\ReviewReport::where('status', 'approved')->count(),
+            'rejected_reports' => \App\Models\ReviewReport::where('status', 'rejected')->count(),
+        ];
+
+        return view('Admin-Dashboard.review-reports', compact('reports', 'stats'));
+    }
+
+    /**
+     * Handle Review Report - Approve or Reject
+     */
+    public function handleReviewReport(Request $request, $id)
+    {
+        if ($redirect = $this->AdmincheckAuth()) {
+            return $redirect;
+        }
+
+        $request->validate([
+            'action' => 'required|in:approve,reject',
+            'admin_notes' => 'nullable|string|max:1000'
+        ]);
+
+        try {
+            $report = \App\Models\ReviewReport::findOrFail($id);
+
+            if ($report->status !== 'pending') {
+                return redirect()->back()->with('error', 'This report has already been handled.');
+            }
+
+            $report->status = $request->action === 'approve' ? 'approved' : 'rejected';
+            $report->admin_notes = $request->admin_notes;
+            $report->handled_by = Auth::id();
+            $report->handled_at = now();
+            $report->save();
+
+            // If approved, delete the review
+            if ($request->action === 'approve' && $report->review) {
+                // Delete replies first
+                $report->review->replies()->delete();
+                // Delete the review
+                $report->review->delete();
+
+                \Log::info('Review deleted via report approval', [
+                    'report_id' => $report->id,
+                    'review_id' => $report->review_id,
+                    'handled_by' => Auth::id()
+                ]);
+            }
+
+            // Send notification to reporter (seller)
+            try {
+                $actionText = $request->action === 'approve' ? 'approved and the review has been deleted' : 'rejected';
+                app(\App\Services\NotificationService::class)->send(
+                    userId: $report->reporter_id,
+                    type: 'review_report',
+                    title: 'Review Report ' . ucfirst($report->status),
+                    message: 'Your report has been ' . $actionText . '.',
+                    data: ['report_id' => $report->id],
+                    sendEmail: false
+                );
+            } catch (\Exception $e) {
+                \Log::error('Failed to send report status notification: ' . $e->getMessage());
+            }
+
+            $message = $request->action === 'approve'
+                ? 'Report approved and review deleted successfully!'
+                : 'Report rejected successfully!';
+
+            return redirect()->back()->with('success', $message);
+        } catch (\Exception $e) {
+            \Log::error('Failed to handle review report: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Failed to handle report.');
+        }
+    }
+
+    /**
      * Seller Reports
      */
     public function sellerReports()

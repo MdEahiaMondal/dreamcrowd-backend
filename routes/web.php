@@ -193,6 +193,8 @@ Route::controller(AdminController::class)->group(function () {
     Route::get('/admin/invoice/download/{id}', 'downloadInvoice')->name('admin.invoice.download');
     Route::get('/admin/reviews-ratings', 'reviewsRatings')->name('admin.reviews.ratings');
     Route::post('/admin/reviews/{id}/delete', 'deleteReview')->name('admin.reviews.delete');
+    Route::get('/admin/review-reports', 'reviewReports')->name('admin.review.reports');
+    Route::post('/admin/review-reports/{id}/handle', 'handleReviewReport')->name('admin.review.reports.handle');
     Route::get('/admin/seller-reports', 'sellerReports')->name('admin.seller-reports');
     Route::get('/admin/buyer-reports', 'buyerReports')->name('admin.buyer-reports');
     // CRITICAL-2 FIX END =========
@@ -507,6 +509,7 @@ Route::controller(TeacherController::class)->group(function () {
     Route::post('/teacher-store-reply', 'storeReply');
     Route::post('/teacher-update-reply/{id}', 'updateReply');
     Route::get('/teacher-delete-reply/{id}', 'deleteReply');
+    Route::post('/teacher-report-review', 'reportReview');
 
 
     // Notes&Calender ===

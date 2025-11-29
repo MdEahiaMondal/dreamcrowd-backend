@@ -463,7 +463,7 @@
 
             if (confirm('Are you sure you want to delete this review?')) {
                 $.ajax({
-                    url: `/delete-review//${reviewId}`,
+                    url: `/delete-review/${reviewId}`,
                     method: 'GET',
                     data: {
                         _token: '{{ csrf_token() }}'
