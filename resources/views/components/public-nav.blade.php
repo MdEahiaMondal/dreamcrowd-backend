@@ -497,6 +497,8 @@
                                         fill="#181818" />
                                 </svg>
                             </button>
+
+                            {{-- @dd(Auth::user()->role); --}}
                             <ul class="dropdown-menu dropdown-menu-lg-end dropdown-menu-sm-start logout-dropdawon"
                                 aria-labelledby="dropdownMicroProcessorTrigger">
                                 <li>

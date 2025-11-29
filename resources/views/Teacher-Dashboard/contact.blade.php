@@ -31,6 +31,8 @@
 
                 
 </script>
+
+
 @endif
 
 
@@ -137,3 +139,28 @@
       </div>
       <!-- =============================== MAIN CONTENT END HERE =========================== -->
     @endsection
+
+@push('scripts')
+
+<script>
+    const dropdown = document.querySelector(".dropdown");
+    const toggleBtn = dropdown.querySelector(".dropdown-toggle");
+    const menu = dropdown.querySelector(".dropdown-menu");
+
+    toggleBtn.addEventListener("click", function (e) {
+        e.preventDefault();
+
+        menu.classList.toggle("show");
+        toggleBtn.classList.toggle("show");
+    });
+
+    // Optional: click outside to close
+    document.addEventListener("click", function (e) {
+        if (!dropdown.contains(e.target)) {
+            menu.classList.remove("show");
+            toggleBtn.classList.remove("show");
+        }
+    });
+</script>
+  
+@endpush

@@ -3084,4 +3084,26 @@
     {{-- Script for Custom Offer - Now using external JS file --}}
     <script src="{{ asset('assets/teacher/js/custom-offers.js') }}"></script>
     {{-- Script for Custom Offer END =========== --}}
+
+
+<script>
+    const dropdown = document.querySelector(".dropdown");
+    const toggleBtn = dropdown.querySelector(".dropdown-toggle");
+    const menu = dropdown.querySelector(".dropdown-menu");
+
+    toggleBtn.addEventListener("click", function (e) {
+        e.preventDefault();
+
+        menu.classList.toggle("show");
+        toggleBtn.classList.toggle("show");
+    });
+
+    // Optional: click outside to close
+    document.addEventListener("click", function (e) {
+        if (!dropdown.contains(e.target)) {
+            menu.classList.remove("show");
+            toggleBtn.classList.remove("show");
+        }
+    });
+</script>
 @endpush
