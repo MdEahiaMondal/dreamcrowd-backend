@@ -57,7 +57,7 @@
                     @endif
                     
                     <div class="dropdown">
-                        <button class="dropdown-toggle dashboard-drop" type="button" id="dropdownMenuButton1"
+                        <button class="dropdown-toggle dashboard-drop azdraganddrop" type="button" id="dropdownMenuButton1"
                             data-bs-toggle="dropdown" aria-expanded="false">
                             <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" viewBox="0 0 35 35"
                                 fill="none">
@@ -66,7 +66,7 @@
                                     fill="#181818" />
                             </svg>
                         </button>
-                        <ul class="dropdown-menu dropdown-menu-lg-end dropdown-menu-sm-start logout-dropdawon"
+                        <ul class="dropdown-menu dropdown-menu-lg-end dropdown-menu-sm-start azdraganddropshow logout-dropdawon"
                             aria-labelledby="dropdownMicroProcessorTrigger">
                             <li>
                                 <a class="dropdown-item" href="#">

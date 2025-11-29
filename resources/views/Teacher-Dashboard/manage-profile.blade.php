@@ -1,92 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <!-- Required meta tags -->
-    <meta charset="UTF-8"/>
-    <!-- View Point scale to 1.0 -->
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <!-- Animate css -->
-    <link rel="stylesheet" href="assets/teacher/libs/animate/css/animate.css"/>
-    <!-- AOS Animation css-->
-    <link rel="stylesheet" href="assets/teacher/libs/aos/css/aos.css"/>
-    <!-- Datatable css  -->
-    <link rel="stylesheet" href="assets/teacher/libs/datatable/css/datatable.css"/>
-    {{-- Fav Icon --}}
-    @php  $home = \App\Models\HomeDynamic::first(); @endphp
-    @if ($home)
-        <link rel="shortcut icon" href="assets/public-site/asset/img/{{$home->fav_icon}}" type="image/x-icon">
-    @endif
-    <!-- Select2 css -->
-    <link href="assets/teacher/libs/select2/css/select2.min.css" rel="stylesheet"/>
-    <!-- Owl carousel css -->
-    <link href="assets/teacher/libs/owl-carousel/css/owl.carousel.css" rel="stylesheet"/>
-    <link href="assets/teacher/libs/owl-carousel/css/owl.theme.green.css" rel="stylesheet"/>
-    <!-- Bootstrap css -->
-    <link
-        rel="stylesheet"
-        type="text/css"
-        href="assets/teacher/asset/css/bootstrap.min.css"
-    />
-    <link
-        href="https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css"
-        rel="stylesheet"
-    />
-    <link
-        rel="stylesheet"
-        href="https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css"
-    />
-    <!-- Fontawesome CDN -->
-    <script
-        src="https://kit.fontawesome.com/be69b59144.js"
-        crossorigin="anonymous"
-    ></script>
-    <!-- file upload link -->
-    <link
-        rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.0.2/css/bootstrap.min.css"
-    />
-    <link
-        rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css"
-    />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.1.10/vue.min.js"></script>
-
-    <!-- mutilple images upload -->
-    <!-- file upload link -->
-    <link
-        href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
-        rel="stylesheet"
-        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
-        crossorigin="anonymous"
-    />
-    <!-- jquery -->
-    <script
-        src="https://code.jquery.com/jquery-3.7.1.min.js"
-        integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
-        crossorigin="anonymous"
-    ></script>
-
-    <!-- ====================== -->
-    <!-- jQuery -->
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
-            integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
-
-
-    {{-- =======Toastr CDN ======== --}}
-    <link rel="stylesheet" type="text/css"
-          href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
-    {{-- =======Toastr CDN ======== --}}
-
-
-    <!-- Defualt css -->
-
-    <link rel="stylesheet" href="assets/teacher/asset/css/sidebar.css"/>
-    <link rel="stylesheet" type="text/css" href="assets/teacher/asset/css/Dashboard.css"/>
+@extends('layout.app')
+@section('title', 'Teacher Dashboard | Manage Profile')
+@push('styles')
     <link rel="stylesheet" href="assets/teacher/asset/css/manage-profile.css"/>
-    <link rel="stylesheet" href="assets/teacher/asset/css/style.css"/>
     <style>
         .custom-switch-wrapper {
             display: flex;
@@ -155,9 +70,9 @@
         }
 
     </style>
-</head>
-<body>
+@endpush
 
+@section('content')
 
 @if (Session::has('error'))
     <script>
@@ -190,14 +105,7 @@
     </script>
 @endif
 
-{{-- ===========Teacher Sidebar Start==================== --}}
-<x-teacher-sidebar/>
-{{-- ===========Teacher Sidebar End==================== --}}
-<section class="home-section">
-    {{-- ===========Teacher NavBar Start==================== --}}
-    <x-teacher-nav/>
-    {{-- ===========Teacher NavBar End==================== --}}
-    <!-- =============================== MAIN CONTENT START HERE =========================== -->
+
     <div class="container-fluid main-section">
         <div class="row">
             <nav style="--bs-breadcrumb-divider: '>'" aria-label="breadcrumb">
@@ -1277,8 +1185,7 @@
 
         <!-- ================= ALL CATEGORIES SECTION ENDED HERE =================== -->
     </div>
-    <!-- =============================== MAIN CONTENT END HERE =========================== -->
-</section>
+
 
 <!-- =========== NAME VERIFICATION MODAL START HERE =============== -->
 <!-- Modal -->
@@ -1712,60 +1619,7 @@
         </div>
     </div>
 </div>
-<!-- =========== ADD NEW FAQ's MODAL ENDED HERE =============== -->
-<!-- =========== FAQ's MODAL START HERE =============== -->
-<!-- Modal -->
-<!-- <div
-      class="modal fade"
-      id="exampleModal3"
-      tabindex="-1"
-      aria-labelledby="exampleModalLabel"
-      aria-hidden="true"
-    >
-      <div class="modal-dialog verification-modal">
-        <div class="modal-content content-modal">
-          <div class="modal-header modal-heading">
-            <h5 class="modal-title" id="exampleModalLabel">Edit FAQ’s</h5>
-          </div>
-          <div class="modal-body body-modal">
-            <form action="" class="row p-0 profile-form">
-              <div class="col-12">
-                <label for="inputAddress" class="form-label">Question</label>
-                <input
-                  type="text"
-                  class="form-control"
-                  id="inputAddress"
-                  placeholder="How can you deliver my project to me?"
-                />
-              </div>
-              <div class="col-12">
-                <label for="inputAddress2" class="form-label mt-3"
-                  >Answer</label
-                >
-                <textarea
-                  name=""
-                  id=""
-                  cols="30"
-                  rows="10"
-                  placeholder="write the answer here...."
-                ></textarea>
-              </div>
-              <div class="row">
-                <div class="col-md-12">
-                  <div class="add-button">
-                    <button class="btn add-btn remove-btn">Remove</button>
-                    <button class="btn add-btn">Add</button>
-                  </div>
-                </div>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
-    </div> -->
-<!-- =========== FAQ's MODAL ENDED HERE =============== -->
-<!-- =========== ADD NEW CATEGORY MODAL START HERE =============== -->
-<!-- Modal -->
+
 <div
     class="modal fade"
     id="exampleModal4"
@@ -1819,7 +1673,9 @@
     </div>
 </div>
 <!-- =========== ADD NEW CATEGORY MODAL ENDED HERE =============== -->
+@endsection
 
+@push('scripts')
 
 <!-- modal hide show jquery here -->
 <script>
@@ -1838,15 +1694,7 @@
     });
 </script>
 
-<script src="assets/teacher/libs/jquery/jquery.js"></script>
-<script src="assets/teacher/libs/aos/js/aos.js"></script>
-<script src="assets/teacher/libs/datatable/js/datatable.js"></script>
-<script src="assets/teacher/libs/datatable/js/datatablebootstrap.js"></script>
-<script src="assets/teacher/libs/select2/js/select2.min.js"></script>
-<script src="assets/expert/asset/js/bootstrap.min.js"></script>
-<!-- <script src="assets/teacher/libs/owl-carousel/js/jquery.min.js"></script> -->
-<script src="assets/teacher/libs/owl-carousel/js/owl.carousel.min.js"></script>
-<!--  -->
+
 
 {{-- Fetch Country City Zipcode Script Start ======= --}}
 {{-- CDN For Script --}}
@@ -2768,827 +2616,49 @@
         var video = 'assets/expert/asset/img/<?php echo $profile->video ?>';
     }
 
-
-    // 1
-    new Vue({
-        el: "#upload-image",
-        data() {
-            return {
-                preview: main_image,
-                image: null,
-            };
-        },
-        methods: {
-            previewImage: function (id) {
-                let input = document.getElementById(id);
-                if (input.files) {
-                    let reader = new FileReader();
-                    reader.onload = (e) => {
-                        this.preview = e.target.result;
-                    };
-                    this.image = input.files[0];
-                    reader.readAsDataURL(input.files[0]);
-                }
+  function createUploader(el, defaultPreview) {
+        return new Vue({
+            el: el,
+            data() {
+                return {
+                    preview: defaultPreview,
+                    image: null,
+                };
             },
-            reset: function (id) {
-                if (!confirm("Are You Sure, You Want to Remove ?")) {
-                    return false;
-                }
-                this.image = null;
-                this.preview = null;
-                // Clear the input element
-                document.getElementById(id).value = "";
+            methods: {
+                previewImage(id) {
+                    const input = document.getElementById(id);
+                    if (input.files) {
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                            this.preview = e.target.result;
+                        };
+                        this.image = input.files[0];
+                        reader.readAsDataURL(input.files[0]);
+                    }
+                },
+                reset(id) {
+                    if (!confirm("Are You Sure, You Want to Remove ?")) return;
+                    this.image = null;
+                    this.preview = null;
+                    document.getElementById(id).value = "";
+                },
             },
-        },
-    });
-    // 2
-    new Vue({
-        el: "#upload-image1",
-        data() {
-            return {
-                preview: more_image_1,
-                image: null,
-            };
-        },
-        methods: {
-            previewImage: function (id) {
-                let input = document.getElementById(id);
-                if (input.files) {
-                    let reader = new FileReader();
-                    reader.onload = (e) => {
-                        this.preview = e.target.result;
-                    };
-                    this.image = input.files[0];
-                    reader.readAsDataURL(input.files[0]);
-                }
-            },
-            reset: function (id) {
-                if (!confirm("Are You Sure, You Want to Remove ?")) {
-                    return false;
-                }
-                this.image = null;
-                this.preview = null;
-                // Clear the input element
-                document.getElementById(id).value = "";
-            },
-        },
-    });
-    // 3
-    new Vue({
-        el: "#upload-image2",
-        data() {
-            return {
-                preview: more_image_2,
-                image: null,
-            };
-        },
-        methods: {
-            previewImage: function (id) {
-                let input = document.getElementById(id);
-                if (input.files) {
-                    let reader = new FileReader();
-                    reader.onload = (e) => {
-                        this.preview = e.target.result;
-                    };
-                    this.image = input.files[0];
-                    reader.readAsDataURL(input.files[0]);
-                }
-            },
-            reset: function (id) {
-                if (!confirm("Are You Sure, You Want to Remove ?")) {
-                    return false;
-                }
-                this.image = null;
-                this.preview = null;
-                // Clear the input element
-                document.getElementById(id).value = "";
-            },
-        },
-    });
-    // 4
-    new Vue({
-        el: "#upload-image3",
-        data() {
-            return {
-                preview: more_image_3,
-                image: null,
-            };
-        },
-        methods: {
-            previewImage: function (id) {
-                let input = document.getElementById(id);
-                if (input.files) {
-                    let reader = new FileReader();
-                    reader.onload = (e) => {
-                        this.preview = e.target.result;
-                    };
-                    this.image = input.files[0];
-                    reader.readAsDataURL(input.files[0]);
-                }
-            },
-            reset: function (id) {
-                if (!confirm("Are You Sure, You Want to Remove ?")) {
-                    return false;
-                }
-                this.image = null;
-                this.preview = null;
-                // Clear the input element
-                document.getElementById(id).value = "";
-            },
-        },
-    });
-    // 5
-    new Vue({
-        el: "#upload-image4",
-        data() {
-            return {
-                preview: more_image_4,
-                image: null,
-            };
-        },
-        methods: {
-            previewImage: function (id) {
-                let input = document.getElementById(id);
-                if (input.files) {
-                    let reader = new FileReader();
-                    reader.onload = (e) => {
-                        this.preview = e.target.result;
-                    };
-                    this.image = input.files[0];
-                    reader.readAsDataURL(input.files[0]);
-                }
-            },
-            reset: function (id) {
-                if (!confirm("Are You Sure, You Want to Remove ?")) {
-                    return false;
-                }
-                this.image = null;
-                this.preview = null;
-                // Clear the input element
-                document.getElementById(id).value = "";
-            },
-        },
-    });
-    // 6
-    new Vue({
-        el: "#upload-image5",
-        data() {
-            return {
-                preview: more_image_5,
-                image: null,
-            };
-        },
-        methods: {
-            previewImage: function (id) {
-                let input = document.getElementById(id);
-                if (input.files) {
-                    let reader = new FileReader();
-                    reader.onload = (e) => {
-                        this.preview = e.target.result;
-                    };
-                    this.image = input.files[0];
-                    reader.readAsDataURL(input.files[0]);
-                }
-            },
-            reset: function (id) {
-                if (!confirm("Are You Sure, You Want to Remove ?")) {
-                    return false;
-                }
-                this.image = null;
-                this.preview = null;
-                // Clear the input element
-                document.getElementById(id).value = "";
-            },
-        },
-    });
-    // 7
-    new Vue({
-        el: "#upload-image6",
-        data() {
-            return {
-                preview: more_image_6,
-                image: null,
-            };
-        },
-        methods: {
-            previewImage: function (id) {
-                let input = document.getElementById(id);
-                if (input.files) {
-                    let reader = new FileReader();
-                    reader.onload = (e) => {
-                        this.preview = e.target.result;
-                    };
-                    this.image = input.files[0];
-                    reader.readAsDataURL(input.files[0]);
-                }
-            },
-            reset: function (id) {
-                if (!confirm("Are You Sure, You Want to Remove ?")) {
-                    return false;
-                }
-                this.image = null;
-                this.preview = null;
-                // Clear the input element
-                document.getElementById(id).value = "";
-            },
-        },
-    });
-    // 8
-    new Vue({
-        el: "#upload-image7",
-        data() {
-            return {
-                preview: video,
-                image: null,
-            };
-        },
-        methods: {
-            previewImage: function (id) {
-                let input = document.getElementById(id);
-                if (input.files) {
-                    let reader = new FileReader();
-                    reader.onload = (e) => {
-                        this.preview = e.target.result;
-                    };
-                    this.image = input.files[0];
-                    reader.readAsDataURL(input.files[0]);
-                }
-            },
-            reset: function (id) {
-                if (!confirm("Are You Sure, You Want to Remove ?")) {
-                    return false;
-                }
-                this.image = null;
-                this.preview = null;
-                // Clear the input element
-                document.getElementById(id).value = "";
-            },
-        },
-    });
-    // 9
-    new Vue({
-        el: "#upload-image8",
-        data() {
-            return {
-                preview: null,
-                image: null,
-            };
-        },
-        methods: {
-            previewImage: function (id) {
-                let input = document.getElementById(id);
-                if (input.files) {
-                    let reader = new FileReader();
-                    reader.onload = (e) => {
-                        this.preview = e.target.result;
-                    };
-                    this.image = input.files[0];
-                    reader.readAsDataURL(input.files[0]);
-                }
-            },
-            reset: function (id) {
-                if (!confirm("Are You Sure, You Want to Remove ?")) {
-                    return false;
-                }
-                this.image = null;
-                this.preview = null;
-                // Clear the input element
-                document.getElementById(id).value = "";
-            },
-        },
-    });
-    // 10
-    new Vue({
-        el: "#upload-image9",
-        data() {
-            return {
-                preview: null,
-                image: null,
-            };
-        },
-        methods: {
-            previewImage: function (id) {
-                let input = document.getElementById(id);
-                if (input.files) {
-                    let reader = new FileReader();
-                    reader.onload = (e) => {
-                        this.preview = e.target.result;
-                    };
-                    this.image = input.files[0];
-                    reader.readAsDataURL(input.files[0]);
-                }
-            },
-            reset: function (id) {
-                if (!confirm("Are You Sure, You Want to Remove ?")) {
-                    return false;
-                }
-                this.image = null;
-                this.preview = null;
-                // Clear the input element
-                document.getElementById(id).value = "";
-            },
-        },
-    });
-    // 11
-    new Vue({
-        el: "#upload-image10",
-        data() {
-            return {
-                preview: null,
-                image: null,
-            };
-        },
-        methods: {
-            previewImage: function (id) {
-                let input = document.getElementById(id);
-                if (input.files) {
-                    let reader = new FileReader();
-                    reader.onload = (e) => {
-                        this.preview = e.target.result;
-                    };
-                    this.image = input.files[0];
-                    reader.readAsDataURL(input.files[0]);
-                }
-            },
-            reset: function (id) {
-                if (!confirm("Are You Sure, You Want to Remove ?")) {
-                    return false;
-                }
-                this.image = null;
-                this.preview = null;
-                // Clear the input element
-                document.getElementById(id).value = "";
-            },
-        },
-    });
-    // 12
-    new Vue({
-        el: "#upload-image11",
-        data() {
-            return {
-                preview: null,
-                image: null,
-            };
-        },
-        methods: {
-            previewImage: function (id) {
-                let input = document.getElementById(id);
-                if (input.files) {
-                    let reader = new FileReader();
-                    reader.onload = (e) => {
-                        this.preview = e.target.result;
-                    };
-                    this.image = input.files[0];
-                    reader.readAsDataURL(input.files[0]);
-                }
-            },
-            reset: function (id) {
-                this.image = null;
-                this.preview = null;
-                // Clear the input element
-                document.getElementById(id).value = "";
-            },
-        },
-    });
-    // 13
-    new Vue({
-        el: "#upload-image12",
-        data() {
-            return {
-                preview: null,
-                image: null,
-            };
-        },
-        methods: {
-            previewImage: function (id) {
-                let input = document.getElementById(id);
-                if (input.files) {
-                    let reader = new FileReader();
-                    reader.onload = (e) => {
-                        this.preview = e.target.result;
-                    };
-                    this.image = input.files[0];
-                    reader.readAsDataURL(input.files[0]);
-                }
-            },
-            reset: function (id) {
-                this.image = null;
-                this.preview = null;
-                // Clear the input element
-                document.getElementById(id).value = "";
-            },
-        },
-    });
-    // 14
-    new Vue({
-        el: "#upload-image13",
-        data() {
-            return {
-                preview: null,
-                image: null,
-            };
-        },
-        methods: {
-            previewImage: function (id) {
-                let input = document.getElementById(id);
-                if (input.files) {
-                    let reader = new FileReader();
-                    reader.onload = (e) => {
-                        this.preview = e.target.result;
-                    };
-                    this.image = input.files[0];
-                    reader.readAsDataURL(input.files[0]);
-                }
-            },
-            reset: function (id) {
-                this.image = null;
-                this.preview = null;
-                // Clear the input element
-                document.getElementById(id).value = "";
-            },
-        },
-    });
-    // 15
-    new Vue({
-        el: "#upload-image14",
-        data() {
-            return {
-                preview: null,
-                image: null,
-            };
-        },
-        methods: {
-            previewImage: function (id) {
-                let input = document.getElementById(id);
-                if (input.files) {
-                    let reader = new FileReader();
-                    reader.onload = (e) => {
-                        this.preview = e.target.result;
-                    };
-                    this.image = input.files[0];
-                    reader.readAsDataURL(input.files[0]);
-                }
-            },
-            reset: function (id) {
-                this.image = null;
-                this.preview = null;
-                // Clear the input element
-                document.getElementById(id).value = "";
-            },
-        },
-    });
-    // 16
-    new Vue({
-        el: "#upload-image15",
-        data() {
-            return {
-                preview: null,
-                image: null,
-            };
-        },
-        methods: {
-            previewImage: function (id) {
-                let input = document.getElementById(id);
-                if (input.files) {
-                    let reader = new FileReader();
-                    reader.onload = (e) => {
-                        this.preview = e.target.result;
-                    };
-                    this.image = input.files[0];
-                    reader.readAsDataURL(input.files[0]);
-                }
-            },
-            reset: function (id) {
-                this.image = null;
-                this.preview = null;
-                // Clear the input element
-                document.getElementById(id).value = "";
-            },
-        },
-    });
-    // 17
-    new Vue({
-        el: "#upload-image16",
-        data() {
-            return {
-                preview: null,
-                image: null,
-            };
-        },
-        methods: {
-            previewImage: function (id) {
-                let input = document.getElementById(id);
-                if (input.files) {
-                    let reader = new FileReader();
-                    reader.onload = (e) => {
-                        this.preview = e.target.result;
-                    };
-                    this.image = input.files[0];
-                    reader.readAsDataURL(input.files[0]);
-                }
-            },
-            reset: function (id) {
-                this.image = null;
-                this.preview = null;
-                // Clear the input element
-                document.getElementById(id).value = "";
-            },
-        },
-    });
-    // 18
-    new Vue({
-        el: "#upload-image17",
-        data() {
-            return {
-                preview: null,
-                image: null,
-            };
-        },
-        methods: {
-            previewImage: function (id) {
-                let input = document.getElementById(id);
-                if (input.files) {
-                    let reader = new FileReader();
-                    reader.onload = (e) => {
-                        this.preview = e.target.result;
-                    };
-                    this.image = input.files[0];
-                    reader.readAsDataURL(input.files[0]);
-                }
-            },
-            reset: function (id) {
-                this.image = null;
-                this.preview = null;
-                // Clear the input element
-                document.getElementById(id).value = "";
-            },
-        },
-    });
-    // 19
-    new Vue({
-        el: "#upload-image18",
-        data() {
-            return {
-                preview: null,
-                image: null,
-            };
-        },
-        methods: {
-            previewImage: function (id) {
-                let input = document.getElementById(id);
-                if (input.files) {
-                    let reader = new FileReader();
-                    reader.onload = (e) => {
-                        this.preview = e.target.result;
-                    };
-                    this.image = input.files[0];
-                    reader.readAsDataURL(input.files[0]);
-                }
-            },
-            reset: function (id) {
-                this.image = null;
-                this.preview = null;
-                // Clear the input element
-                document.getElementById(id).value = "";
-            },
-        },
-    });
-    // 20
-    new Vue({
-        el: "#upload-image19",
-        data() {
-            return {
-                preview: null,
-                image: null,
-            };
-        },
-        methods: {
-            previewImage: function (id) {
-                let input = document.getElementById(id);
-                if (input.files) {
-                    let reader = new FileReader();
-                    reader.onload = (e) => {
-                        this.preview = e.target.result;
-                    };
-                    this.image = input.files[0];
-                    reader.readAsDataURL(input.files[0]);
-                }
-            },
-            reset: function (id) {
-                this.image = null;
-                this.preview = null;
-                // Clear the input element
-                document.getElementById(id).value = "";
-            },
-        },
-    });
-    // 21
-    new Vue({
-        el: "#upload-image20",
-        data() {
-            return {
-                preview: null,
-                image: null,
-            };
-        },
-        methods: {
-            previewImage: function (id) {
-                let input = document.getElementById(id);
-                if (input.files) {
-                    let reader = new FileReader();
-                    reader.onload = (e) => {
-                        this.preview = e.target.result;
-                    };
-                    this.image = input.files[0];
-                    reader.readAsDataURL(input.files[0]);
-                }
-            },
-            reset: function (id) {
-                this.image = null;
-                this.preview = null;
-                // Clear the input element
-                document.getElementById(id).value = "";
-            },
-        },
-    });
-    // 22
-    new Vue({
-        el: "#upload-image21",
-        data() {
-            return {
-                preview: null,
-                image: null,
-            };
-        },
-        methods: {
-            previewImage: function (id) {
-                let input = document.getElementById(id);
-                if (input.files) {
-                    let reader = new FileReader();
-                    reader.onload = (e) => {
-                        this.preview = e.target.result;
-                    };
-                    this.image = input.files[0];
-                    reader.readAsDataURL(input.files[0]);
-                }
-            },
-            reset: function (id) {
-                this.image = null;
-                this.preview = null;
-                // Clear the input element
-                document.getElementById(id).value = "";
-            },
-        },
-    });
-    // 23
-    new Vue({
-        el: "#upload-image22",
-        data() {
-            return {
-                preview: null,
-                image: null,
-            };
-        },
-        methods: {
-            previewImage: function (id) {
-                let input = document.getElementById(id);
-                if (input.files) {
-                    let reader = new FileReader();
-                    reader.onload = (e) => {
-                        this.preview = e.target.result;
-                    };
-                    this.image = input.files[0];
-                    reader.readAsDataURL(input.files[0]);
-                }
-            },
-            reset: function (id) {
-                this.image = null;
-                this.preview = null;
-                // Clear the input element
-                document.getElementById(id).value = "";
-            },
-        },
-    });
-    // 24
-    new Vue({
-        el: "#upload-image23",
-        data() {
-            return {
-                preview: null,
-                image: null,
-            };
-        },
-        methods: {
-            previewImage: function (id) {
-                let input = document.getElementById(id);
-                if (input.files) {
-                    let reader = new FileReader();
-                    reader.onload = (e) => {
-                        this.preview = e.target.result;
-                    };
-                    this.image = input.files[0];
-                    reader.readAsDataURL(input.files[0]);
-                }
-            },
-            reset: function (id) {
-                this.image = null;
-                this.preview = null;
-                // Clear the input element
-                document.getElementById(id).value = "";
-            },
-        },
-    });
-    // 25
-    new Vue({
-        el: "#upload-image24",
-        data() {
-            return {
-                preview: null,
-                image: null,
-            };
-        },
-        methods: {
-            previewImage: function (id) {
-                let input = document.getElementById(id);
-                if (input.files) {
-                    let reader = new FileReader();
-                    reader.onload = (e) => {
-                        this.preview = e.target.result;
-                    };
-                    this.image = input.files[0];
-                    reader.readAsDataURL(input.files[0]);
-                }
-            },
-            reset: function (id) {
-                this.image = null;
-                this.preview = null;
-                // Clear the input element
-                document.getElementById(id).value = "";
-            },
-        },
-    });
-    // 26
-    new Vue({
-        el: "#upload-image25",
-        data() {
-            return {
-                preview: null,
-                image: null,
-            };
-        },
-        methods: {
-            previewImage: function (id) {
-                let input = document.getElementById(id);
-                if (input.files) {
-                    let reader = new FileReader();
-                    reader.onload = (e) => {
-                        this.preview = e.target.result;
-                    };
-                    this.image = input.files[0];
-                    reader.readAsDataURL(input.files[0]);
-                }
-            },
-            reset: function (id) {
-                this.image = null;
-                this.preview = null;
-                // Clear the input element
-                document.getElementById(id).value = "";
-            },
-        },
-    });
-</script>
-<!-- Upload script End -->
-<!-- FAQs js start -->
-<!-- <script>
-      const accordionItemHeaders = document.querySelectorAll(
-        ".accordion-item-header"
-      );
-
-      accordionItemHeaders.forEach((accordionItemHeader) => {
-        accordionItemHeader.addEventListener("click", (event) => {
-          // Uncomment in case you only want to allow for the display of only one collapsed item at a time!
-
-          const currentlyActiveAccordionItemHeader = document.querySelector(
-            ".accordion-item-header.active"
-          );
-          if (
-            currentlyActiveAccordionItemHeader &&
-            currentlyActiveAccordionItemHeader !== accordionItemHeader
-          ) {
-            currentlyActiveAccordionItemHeader.classList.toggle("active");
-            currentlyActiveAccordionItemHeader.nextElementSibling.style.maxHeight = 0;
-          }
-          accordionItemHeader.classList.toggle("active");
-          const accordionItemBody = accordionItemHeader.nextElementSibling;
-          if (accordionItemHeader.classList.contains("active")) {
-            accordionItemBody.style.maxHeight =
-              accordionItemBody.scrollHeight + "px";
-          } else {
-            accordionItemBody.style.maxHeight = 0;
-          }
         });
-      });
-    </script> -->
+    }
+
+    // Initialize all uploaders
+    createUploader("#upload-image", more_image);
+// ------ AUTO CREATE 1 to 27 ------
+    for (let i = 1; i <= 27; i++) {
+        let selector = `#upload-image${i}`;
+        let previewVar = window[`more_image_${i}`]; // globally defined variable
+
+        createUploader(selector, previewVar);
+    }
+   
+</script>
+
 
 <!-- FAQs js end -->
 <script>
@@ -3844,5 +2914,4 @@
     });
 </script>
 
-</body>
-</html>
+@endpush

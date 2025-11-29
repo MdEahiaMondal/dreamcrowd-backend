@@ -1,216 +1,185 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Teacher Dashboard | DreamCrowd</title>
+@extends('layout.app')
+@section('title', 'Teacher Dashboard')
 
-    <!-- CSS Libraries -->
-    <link rel="stylesheet" href="/assets/teacher/asset/css/bootstrap.min.css"/>
-    <link href="https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css" rel="stylesheet"/>
-    <link rel="stylesheet" href="/assets/teacher/asset/css/sidebar.css"/>
-    <link rel="stylesheet" href="/assets/teacher/asset/css/style.css">
-    <link rel="stylesheet" href="/assets/teacher/asset/css/Dashboard.css">
+    @push('styles')
+        <style>
+            .dashboard-loading {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(255, 255, 255, 0.9);
+                display: none;
+                justify-content: center;
+                align-items: center;
+                z-index: 9999;
+            }
 
-    {{-- Fav Icon --}}
-    @php $home = \App\Models\HomeDynamic::first(); @endphp
-    @if ($home)
-        <link rel="shortcut icon" href="/assets/public-site/asset/img/{{$home->fav_icon}}" type="image/x-icon">
-    @endif
+            .dashboard-loading.active {
+                display: flex;
+            }
 
-    <!-- Flatpickr for Date Picker -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+            .spinner {
+                width: 50px;
+                height: 50px;
+                border: 5px solid #f3f3f3;
+                border-top: 5px solid #28a745;
+                border-radius: 50%;
+                animation: spin 1s linear infinite;
+            }
 
-    <style>
-        .dashboard-loading {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(255, 255, 255, 0.9);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-        }
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
 
-        .dashboard-loading.active {
-            display: flex;
-        }
+            .stat-card {
+                background: #fff;
+                border-radius: 10px;
+                padding: 20px;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                margin-bottom: 20px;
+                display: flex;
+                align-items: center;
+                transition: transform 0.3s ease, box-shadow 0.3s ease;
+            }
 
-        .spinner {
-            width: 50px;
-            height: 50px;
-            border: 5px solid #f3f3f3;
-            border-top: 5px solid #28a745;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
+            .stat-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            }
 
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
+            .stat-icon {
+                width: 60px;
+                height: 60px;
+                border-radius: 10px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin-right: 15px;
+                font-size: 28px;
+            }
 
-        .stat-card {
-            background: #fff;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
+            .stat-content {
+                flex: 1;
+            }
 
-        .stat-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
-        }
+            .stat-label {
+                font-size: 13px;
+                color: #6c757d;
+                margin-bottom: 5px;
+            }
 
-        .stat-icon {
-            width: 60px;
-            height: 60px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 15px;
-            font-size: 28px;
-        }
+            .stat-value {
+                font-size: 26px;
+                font-weight: 700;
+                margin: 0;
+                color: #212529;
+            }
 
-        .stat-content {
-            flex: 1;
-        }
+            .stat-sublabel {
+                font-size: 11px;
+                color: #6c757d;
+            }
 
-        .stat-label {
-            font-size: 13px;
-            color: #6c757d;
-            margin-bottom: 5px;
-        }
+            .stat-card-small {
+                background: #fff;
+                border-radius: 8px;
+                padding: 15px;
+                box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+                text-align: center;
+                transition: transform 0.3s ease;
+            }
 
-        .stat-value {
-            font-size: 26px;
-            font-weight: 700;
-            margin: 0;
-            color: #212529;
-        }
+            .stat-card-small:hover {
+                transform: translateY(-3px);
+            }
 
-        .stat-sublabel {
-            font-size: 11px;
-            color: #6c757d;
-        }
+            .stat-card-small .stat-value {
+                font-size: 28px;
+                font-weight: 700;
+                margin-bottom: 5px;
+            }
 
-        .stat-card-small {
-            background: #fff;
-            border-radius: 8px;
-            padding: 15px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-            text-align: center;
-            transition: transform 0.3s ease;
-        }
+            .stat-card-small .stat-label {
+                font-size: 12px;
+                color: #6c757d;
+            }
 
-        .stat-card-small:hover {
-            transform: translateY(-3px);
-        }
+            .status-active {
+                border-left: 4px solid #007bff;
+            }
 
-        .stat-card-small .stat-value {
-            font-size: 28px;
-            font-weight: 700;
-            margin-bottom: 5px;
-        }
+            .status-pending {
+                border-left: 4px solid #ffc107;
+            }
 
-        .stat-card-small .stat-label {
-            font-size: 12px;
-            color: #6c757d;
-        }
+            .status-completed {
+                border-left: 4px solid #28a745;
+            }
 
-        .status-active {
-            border-left: 4px solid #007bff;
-        }
+            .status-cancelled {
+                border-left: 4px solid #dc3545;
+            }
 
-        .status-pending {
-            border-left: 4px solid #ffc107;
-        }
+            .status-delivered {
+                border-left: 4px solid #17a2b8;
+            }
 
-        .status-completed {
-            border-left: 4px solid #28a745;
-        }
+            .filter-panel {
+                background: #fff;
+                border-radius: 10px;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            }
 
-        .status-cancelled {
-            border-left: 4px solid #dc3545;
-        }
+            .filter-preset {
+                margin: 3px;
+                font-size: 13px;
+            }
 
-        .status-delivered {
-            border-left: 4px solid #17a2b8;
-        }
+            .filter-preset.active {
+                background: #28a745;
+                border-color: #28a745;
+                color: #fff;
+            }
 
-        .filter-panel {
-            background: #fff;
-            border-radius: 10px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-        }
+            .section-header {
+                margin-top: 30px;
+                margin-bottom: 15px;
+                padding-bottom: 10px;
+                border-bottom: 2px solid #e9ecef;
+            }
 
-        .filter-preset {
-            margin: 3px;
-            font-size: 13px;
-        }
+            .section-header h5 {
+                font-weight: 600;
+                color: #495057;
+            }
 
-        .filter-preset.active {
-            background: #28a745;
-            border-color: #28a745;
-            color: #fff;
-        }
+            .chart-card {
+                background: #fff;
+                border: none;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+                border-radius: 10px;
+            }
 
-        .section-header {
-            margin-top: 30px;
-            margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #e9ecef;
-        }
+            .chart-card .card-title {
+                font-weight: 600;
+                color: #495057;
+                margin-bottom: 20px;
+            }
 
-        .section-header h5 {
-            font-weight: 600;
-            color: #495057;
-        }
+            .chart-container {
+                position: relative;
+            }
 
-        .chart-card {
-            background: #fff;
-            border: none;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-            border-radius: 10px;
-        }
+            .input-group {
+                margin-bottom: 10px;
+            }
+        </style>
+    @endpush
 
-        .chart-card .card-title {
-            font-weight: 600;
-            color: #495057;
-            margin-bottom: 20px;
-        }
-
-        .chart-container {
-            position: relative;
-        }
-
-        .input-group {
-            margin-bottom: 10px;
-        }
-    </style>
-</head>
-<body>
-<!-- Loading Overlay -->
-<div class="dashboard-loading" id="dashboardLoading">
-    <div class="spinner"></div>
-</div>
-
-<!-- Sidebar -->
-<x-teacher-sidebar/>
-
-<section class="home-section">
-    <!-- Navigation -->
-    <x-teacher-nav/>
-
+@section('content')
     <!-- Main Content -->
     <div class="container-fluid py-4">
         <div class="row dash-notification">
@@ -632,11 +601,18 @@
 
         </div>
     </div>
-</section>
 
-<!-- JavaScript Libraries -->
-<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-<script src="/assets/teacher/asset/js/bootstrap.min.js"></script>
+      <div class="copyright">
+      <p>Copyright Dreamcrowd © {{ now()->year }}. All Rights Reserved.</p>
+  </div>
+@endsection
+
+
+
+
+@push('scripts')
+
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script src="/assets/teacher/asset/js/dashboard.js"></script>
@@ -887,5 +863,4 @@
         loadDashboardStatistics('custom', dateFrom, dateTo);
     }
 </script>
-</body>
-</html>
+@endpush
