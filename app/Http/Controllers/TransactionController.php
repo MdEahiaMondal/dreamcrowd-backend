@@ -310,7 +310,7 @@ class TransactionController extends Controller
             'invoiceDate' => now()->format('d M Y'),
         ];
 
-        $pdf = \PDF::loadView('user.transaction-invoice', $data);
+        $pdf = \PDF::loadView('User-Dashboard.transaction-invoice', $data);
         $filename = 'invoice_' . str_pad($transaction->id, 6, '0', STR_PAD_LEFT) . '.pdf';
 
         return $pdf->download($filename);
