@@ -172,7 +172,7 @@
                                 <div class="table-responsive">
                                     <div class="hack1">
                                         <div class="hack2" style="min-height: 300px">
-                                            <table class="table" style="min-height: 300px">
+                                            <table class="table" style="min-height: 300px;  margin-bottom: 40px;">
                                                 <thead>
                                                     <tr class="text-nowrap">
                                                         <th>Service Title</th>
@@ -225,7 +225,7 @@
                                                                 <div class="star-rating">
                                                                     @for ($i = 1; $i <= 5; $i++)
                                                                         <i class="fa{{ $i <= $review->rating ? '-solid' : '-regular' }} fa-star"
-                                                                            style="color: #FFAF06;"></i>
+                                                                            style="color: #FFAF06; margin-left:3px !important;"></i>
                                                                     @endfor
                                                                 </div>
                                                             </td>
@@ -247,7 +247,9 @@
                                                                         type="button" data-bs-toggle="dropdown">
                                                                         <i class="fa fa-ellipsis-v"></i>
                                                                     </button>
-                                                                    <ul class="dropdown-menu">
+
+                                                                    <ul class="dropdown-menu dropdown-menu-start"
+                                                                        style=" left: 0 !important; right: auto !important;">
                                                                         <li>
                                                                             <a class="dropdown-item view-review"
                                                                                 href="#"
@@ -263,7 +265,9 @@
                                                                                 {{ $review->replies->isNotEmpty() ? 'View/Edit Reply' : 'Add Reply' }}
                                                                             </a>
                                                                         </li>
-                                                                        <li><hr class="dropdown-divider"></li>
+                                                                        <li>
+                                                                            <hr class="dropdown-divider">
+                                                                        </li>
                                                                         <li>
                                                                             <a class="dropdown-item report-review text-danger"
                                                                                 href="#"
@@ -274,6 +278,7 @@
                                                                     </ul>
                                                                 </div>
                                                             </td>
+
                                                         </tr>
                                                     @empty
                                                         <tr>
@@ -442,8 +447,7 @@
 
                         <h6 class="mb-2">Additional Details <span class="text-muted">(optional)</span></h6>
                         <textarea class="form-control mb-3" name="description" id="report_description"
-                            placeholder="Provide more details about why you're reporting this review..."
-                            rows="4" maxlength="1000"></textarea>
+                            placeholder="Provide more details about why you're reporting this review..." rows="4" maxlength="1000"></textarea>
                         <small class="text-muted"><span id="char-count">0</span>/1000 characters</small>
 
                         <div class="d-flex justify-content-end gap-2 mt-3">
@@ -682,7 +686,8 @@
                     return;
                 }
 
-                $('#submit-report-btn').prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i> Submitting...');
+                $('#submit-report-btn').prop('disabled', true).html(
+                    '<i class="fa fa-spinner fa-spin"></i> Submitting...');
 
                 $.ajax({
                     url: '/teacher-report-review',
@@ -703,17 +708,21 @@
                     },
                     error: function(xhr) {
                         if (xhr.status === 409) {
-                            alert(xhr.responseJSON?.message || 'You have already reported this review.');
+                            alert(xhr.responseJSON?.message ||
+                                'You have already reported this review.');
                         } else if (xhr.status === 422) {
                             let errors = xhr.responseJSON?.errors;
-                            let errorMessage = errors ? Object.values(errors).join('\n') : 'Validation error';
+                            let errorMessage = errors ? Object.values(errors).join('\n') :
+                                'Validation error';
                             alert(errorMessage);
                         } else {
-                            alert('Error: ' + (xhr.responseJSON?.message || 'Failed to submit report'));
+                            alert('Error: ' + (xhr.responseJSON?.message ||
+                                'Failed to submit report'));
                         }
                     },
                     complete: function() {
-                        $('#submit-report-btn').prop('disabled', false).html('<i class="fa fa-flag"></i> Submit Report');
+                        $('#submit-report-btn').prop('disabled', false).html(
+                            '<i class="fa fa-flag"></i> Submit Report');
                     }
                 });
             });
@@ -726,6 +735,4 @@
             });
         });
     </script>
-
-
 @endpush

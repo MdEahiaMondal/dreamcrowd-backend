@@ -192,7 +192,7 @@
                                 <div class="table-responsive">
                                     <div class="hack1">
                                         <div class="hack2" style="min-height: 300px">
-                                            <table class="table" style="min-height: 300px">
+                                            <table class="table" style="min-height: 300px; margin-bottom: 40px;">
                                                 <thead>
                                                 <tr class="text-nowrap">
                                                     <th>Service Title</th>
@@ -236,7 +236,7 @@
                                                             <div class="star-rating">
                                                                 @for($i = 1; $i <= 5; $i++)
                                                                     <i class="fa{{ $i <= $review->rating ? '-solid' : '-regular' }} fa-star"
-                                                                       style="color: #FFAF06;"></i>
+                                                                       style="color: #FFAF06; margin-left:3px !important;"></i>
                                                                 @endfor
                                                             </div>
                                                         </td>
@@ -249,7 +249,7 @@
                                                                     data-bs-toggle="dropdown">
                                                                     <i class="fa fa-ellipsis-v"></i>
                                                                 </button>
-                                                                <ul class="dropdown-menu">
+                                                                <ul class="dropdown-menu" style=" left: 0 !important; top: 0 !important;">
                                                                     <li>
                                                                         <a class="dropdown-item view-review"
                                                                            href="#"

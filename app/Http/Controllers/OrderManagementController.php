@@ -3411,6 +3411,7 @@ class OrderManagementController extends Controller
     // Submit Review of Order ===========
     public function submitReview(Request $request)
     {
+
         if (!Auth::check() || Auth::user()->role != 0) {
             return redirect('/')->with('error', 'Login First!');
         }
@@ -3422,7 +3423,7 @@ class OrderManagementController extends Controller
         $request->validate([
             'order_id' => 'required|exists:book_orders,id',
             'rating' => 'required|integer|min:1|max:5',
-            'cmnt' => 'nullable|string|max:1000'
+            'cmnt_view' => 'nullable|string|max:1000'
         ]);
 
         $order = BookOrder::find($request->order_id);
@@ -3444,7 +3445,7 @@ class OrderManagementController extends Controller
         if ($existingReview) {
             $existingReview->update([
                 'rating' => $request->rating,
-                'cmnt' => $request->cmnt
+                'cmnt' => $request->cmnt_view
             ]);
         } else {
             $review = ServiceReviews::create([
@@ -3453,7 +3454,7 @@ class OrderManagementController extends Controller
                 'gig_id' => $order->gig_id,
                 'order_id' => $request->order_id,
                 'rating' => $request->rating,
-                'cmnt' => $request->cmnt
+                'cmnt' => $request->cmnt_view
             ]);
 
             // Check for rating milestones
