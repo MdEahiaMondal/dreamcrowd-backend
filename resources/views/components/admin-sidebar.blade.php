@@ -163,6 +163,19 @@
                     <li><a href="{{ route('admin.all-orders') }}">All Orders</a></li>
                     <li><a href="{{ route('admin.payout-details') }}">Payout Detail</a></li>
                     <li><a href="{{ route('admin.refund-details') }}">Refund Detail</a></li>
+                    @if(config('features.seller_withdrawals_enabled', false))
+                    <li>
+                        <a href="{{ route('admin.withdrawals.index') }}">
+                            Withdrawals
+                            @php
+                                $pendingWithdrawals = \App\Models\Withdrawal::whereIn('status', ['pending', 'processing'])->count();
+                            @endphp
+                            @if($pendingWithdrawals > 0)
+                                <span class="badge bg-warning ms-1" style="font-size: 10px;">{{ $pendingWithdrawals }}</span>
+                            @endif
+                        </a>
+                    </li>
+                    @endif
                     <li><a href="{{ route('admin.payment-analytics') }}">Payment Analytics</a></li>
                 </ul>
             </li>

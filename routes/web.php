@@ -24,6 +24,9 @@ use App\Http\Controllers\OrderManagementController;
 use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\SellerEarningsController;
+use App\Http\Controllers\WithdrawalController;
+use App\Http\Controllers\AdminWithdrawalController;
 
 
 // Route::get('/', function () {
@@ -433,6 +436,23 @@ Route::get('/admin/commission-report/download-invoice/{id}', [CommissionControll
     ->name('admin.transaction.invoice');
 
 
+// ============ ADMIN WITHDRAWAL MANAGEMENT ROUTES ============
+Route::get('/admin/withdrawals', [AdminWithdrawalController::class, 'index'])
+    ->name('admin.withdrawals.index');
+Route::get('/admin/withdrawals/export', [AdminWithdrawalController::class, 'export'])
+    ->name('admin.withdrawals.export');
+Route::get('/admin/withdrawals/{id}', [AdminWithdrawalController::class, 'show'])
+    ->name('admin.withdrawals.show');
+Route::post('/admin/withdrawals/{id}/processing', [AdminWithdrawalController::class, 'markProcessing'])
+    ->name('admin.withdrawals.processing');
+Route::post('/admin/withdrawals/{id}/complete', [AdminWithdrawalController::class, 'complete'])
+    ->name('admin.withdrawals.complete');
+Route::post('/admin/withdrawals/{id}/reject', [AdminWithdrawalController::class, 'reject'])
+    ->name('admin.withdrawals.reject');
+Route::post('/admin/withdrawals/bulk', [AdminWithdrawalController::class, 'bulkProcess'])
+    ->name('admin.withdrawals.bulk');
+
+
 Route::controller(AnalyticsController::class)->group(function () {
     // Main analytics dashboard
     Route::get('/admin/analytics', 'dashboard')->name('admin.analytics.dashboard');
@@ -709,6 +729,26 @@ Route::middleware(['auth'])->group(function () {
     // Export dashboard to Excel
     Route::post('/user/dashboard/export/excel', [UserController::class, 'exportDashboardExcel'])
         ->name('user.dashboard.export.excel');
+
+    // ============ SELLER EARNINGS & PAYOUTS ROUTES ============
+    Route::get('/seller/earnings', [SellerEarningsController::class, 'index'])
+        ->name('seller.earnings');
+    Route::get('/seller/earnings/invoice/{id}', [SellerEarningsController::class, 'downloadInvoice'])
+        ->name('seller.earnings.invoice');
+    Route::get('/seller/earnings/export', [SellerEarningsController::class, 'exportReport'])
+        ->name('seller.earnings.export');
+
+    // ============ SELLER WITHDRAWAL ROUTES ============
+    Route::get('/seller/withdrawal/request', [WithdrawalController::class, 'create'])
+        ->name('seller.withdrawal.create');
+    Route::post('/seller/withdrawal/request', [WithdrawalController::class, 'store'])
+        ->name('seller.withdrawal.store');
+    Route::post('/seller/withdrawal/{id}/cancel', [WithdrawalController::class, 'cancel'])
+        ->name('seller.withdrawal.cancel');
+    Route::get('/seller/withdrawal/history', [WithdrawalController::class, 'history'])
+        ->name('seller.withdrawal.history');
+    Route::post('/seller/payout-settings', [WithdrawalController::class, 'updatePayoutSettings'])
+        ->name('seller.payout.settings.update');
 });
 
 

@@ -170,6 +170,9 @@ class UserController extends Controller
 
     public function ChangeCardDetail()
     {
+        if (!Auth::check()) {
+            return redirect('/')->with('error', 'Please login to access this page.');
+        }
 
         if (Auth::user()->role == 2) {
             return redirect('/admin-dashboard');

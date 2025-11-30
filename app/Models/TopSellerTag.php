@@ -26,6 +26,9 @@ class TopSellerTag extends Model
         'is_active',
         'enable_custom_seller_commission',
         'enable_custom_service_commission',
+        'holding_period_days',
+        'minimum_withdrawal',
+        'auto_payout_enabled',
     ];
 
     protected $casts = [
@@ -35,6 +38,9 @@ class TopSellerTag extends Model
         'is_active' => 'boolean',
         'enable_custom_seller_commission' => 'boolean',
         'enable_custom_service_commission' => 'boolean',
+        'holding_period_days' => 'integer',
+        'minimum_withdrawal' => 'decimal:2',
+        'auto_payout_enabled' => 'boolean',
     ];
 
     public static function getCommissionSettings()
@@ -51,6 +57,9 @@ class TopSellerTag extends Model
                 'is_active' => 1,
                 'enable_custom_seller_commission' => 0,
                 'enable_custom_service_commission' => 0,
+                'holding_period_days' => 14,
+                'minimum_withdrawal' => 25.00,
+                'auto_payout_enabled' => 1,
             ];
         }
         return $settings;
