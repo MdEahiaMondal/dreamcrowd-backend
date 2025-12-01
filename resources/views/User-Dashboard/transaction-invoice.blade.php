@@ -159,8 +159,8 @@
             <small>Order #{{ $transaction->bookOrder->id ?? 'N/A' }}</small>
         </td>
         <td style="text-align: center;">1</td>
-        <td style="text-align: right;">${{ number_format($transaction->total_amount, 2) }}</td>
-        <td style="text-align: right;">${{ number_format($transaction->total_amount, 2) }}</td>
+        <td style="text-align: right;">@currencyRaw($transaction->total_amount)</td>
+        <td style="text-align: right;">@currencyRaw($transaction->total_amount)</td>
     </tr>
     </tbody>
 </table>
@@ -169,23 +169,23 @@
     <table>
         <tr>
             <td>Subtotal:</td>
-            <td style="text-align: right;">${{ number_format($transaction->total_amount, 2) }}</td>
+            <td style="text-align: right;">@currencyRaw($transaction->total_amount)</td>
         </tr>
         @if($transaction->coupon_discount > 0)
             <tr>
                 <td>Discount (Coupon):</td>
-                <td style="text-align: right; color: #28a745;">-${{ number_format($transaction->coupon_discount, 2) }}</td>
+                <td style="text-align: right; color: #28a745;">-@currencyRaw($transaction->coupon_discount)</td>
             </tr>
         @endif
         @if($transaction->buyer_commission_amount > 0)
             <tr>
                 <td>Service Fee ({{ $transaction->buyer_commission_rate }}%):</td>
-                <td style="text-align: right;">${{ number_format($transaction->buyer_commission_amount, 2) }}</td>
+                <td style="text-align: right;">@currencyRaw($transaction->buyer_commission_amount)</td>
             </tr>
         @endif
         <tr class="total-row">
             <td>TOTAL PAID:</td>
-            <td style="text-align: right;">${{ number_format($transaction->total_amount + $transaction->buyer_commission_amount - $transaction->coupon_discount, 2) }}</td>
+            <td style="text-align: right;">@currencyRaw($transaction->total_amount + $transaction->buyer_commission_amount - $transaction->coupon_discount)</td>
         </tr>
     </table>
 </div>

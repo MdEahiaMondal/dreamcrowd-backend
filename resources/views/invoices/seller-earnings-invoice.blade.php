@@ -231,7 +231,7 @@
         <td style="text-align: center;">
             <span class="badge badge-primary">{{ ucfirst($transaction->service_type ?? 'Service') }}</span>
         </td>
-        <td style="text-align: right;">${{ number_format($transaction->total_amount, 2) }}</td>
+        <td style="text-align: right;">@currencyRaw($transaction->total_amount)</td>
     </tr>
     </tbody>
 </table>
@@ -241,15 +241,15 @@
     <table>
         <tr>
             <td>Order Amount:</td>
-            <td style="text-align: right;">${{ number_format($transaction->total_amount, 2) }}</td>
+            <td style="text-align: right;">@currencyRaw($transaction->total_amount)</td>
         </tr>
         <tr class="commission-row">
             <td>Platform Commission ({{ $transaction->seller_commission_rate }}%):</td>
-            <td style="text-align: right;">-${{ number_format($transaction->seller_commission_amount, 2) }}</td>
+            <td style="text-align: right;">-@currencyRaw($transaction->seller_commission_amount)</td>
         </tr>
         <tr class="earnings-row">
             <td><strong>YOUR NET EARNINGS:</strong></td>
-            <td style="text-align: right;"><strong>${{ number_format($transaction->seller_earnings, 2) }}</strong></td>
+            <td style="text-align: right;"><strong>@currencyRaw($transaction->seller_earnings)</strong></td>
         </tr>
     </table>
 </div>

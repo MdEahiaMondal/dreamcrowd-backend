@@ -257,9 +257,9 @@
                 </p>
                 <h2>
                     @if(Auth::user()->role == 1)
-                        ${{ number_format($transaction->seller_earnings, 2) }}
+                        @currency($transaction->seller_earnings)
                     @else
-                        ${{ number_format($transaction->total_amount + $transaction->buyer_commission_amount, 2) }}
+                        @currency($transaction->total_amount + $transaction->buyer_commission_amount)
                     @endif
                 </h2>
                 <small style="opacity: 0.9;">{{ $transaction->currency }}</small>
@@ -274,48 +274,48 @@
                     <!-- Seller View -->
                         <div class="d-flex justify-content-between mb-2">
                             <span>Service Amount:</span>
-                            <strong>${{ number_format($transaction->total_amount, 2) }}</strong>
+                            <strong>@currency($transaction->total_amount)</strong>
                         </div>
                         <div class="d-flex justify-content-between mb-2">
                             <span style="color: #dc3545;">Platform Commission ({{ $transaction->seller_commission_rate }}%):</span>
-                            <strong style="color: #dc3545;">-${{ number_format($transaction->seller_commission_amount, 2) }}</strong>
+                            <strong style="color: #dc3545;">-@currency($transaction->seller_commission_amount)</strong>
                         </div>
                         @if($transaction->coupon_discount > 0)
                             <div class="d-flex justify-content-between mb-2">
                                 <span style="color: #ffc107;">Coupon Discount (absorbed):</span>
-                                <strong style="color: #ffc107;">-${{ number_format($transaction->coupon_discount, 2) }}</strong>
+                                <strong style="color: #ffc107;">-@currency($transaction->coupon_discount)</strong>
                             </div>
                         @endif
                         <hr>
                         <div class="d-flex justify-content-between">
                             <strong>Your Earnings:</strong>
                             <strong style="color: #28a745; font-size: 18px;">
-                                ${{ number_format($transaction->seller_earnings, 2) }}
+                                @currency($transaction->seller_earnings)
                             </strong>
                         </div>
                     @else
                     <!-- Buyer View -->
                         <div class="d-flex justify-content-between mb-2">
                             <span>Service Price:</span>
-                            <strong>${{ number_format($transaction->total_amount, 2) }}</strong>
+                            <strong>@currency($transaction->total_amount)</strong>
                         </div>
                         @if($transaction->coupon_discount > 0)
                             <div class="d-flex justify-content-between mb-2">
                                 <span style="color: #28a745;">Coupon Discount:</span>
-                                <strong style="color: #28a745;">-${{ number_format($transaction->coupon_discount, 2) }}</strong>
+                                <strong style="color: #28a745;">-@currency($transaction->coupon_discount)</strong>
                             </div>
                         @endif
                         @if($transaction->buyer_commission_amount > 0)
                             <div class="d-flex justify-content-between mb-2">
                                 <span>Service Fee ({{ $transaction->buyer_commission_rate }}%):</span>
-                                <strong>${{ number_format($transaction->buyer_commission_amount, 2) }}</strong>
+                                <strong>@currency($transaction->buyer_commission_amount)</strong>
                             </div>
                         @endif
                         <hr>
                         <div class="d-flex justify-content-between">
                             <strong>Total Paid:</strong>
                             <strong style="color: #007bff; font-size: 18px;">
-                                ${{ number_format($transaction->total_amount + $transaction->buyer_commission_amount - $transaction->coupon_discount, 2) }}
+                                @currency($transaction->total_amount + $transaction->buyer_commission_amount - $transaction->coupon_discount)
                             </strong>
                         </div>
                     @endif

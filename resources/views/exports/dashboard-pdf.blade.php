@@ -150,31 +150,31 @@
         <div class="stat-row">
             <div class="stat-cell">
                 <div class="stat-label">Total Spent</div>
-                <div class="stat-value">${{ number_format($stats['financial']['total_spent'], 2) }}</div>
+                <div class="stat-value">@currencyRaw($stats['financial']['total_spent'])</div>
             </div>
             <div class="stat-cell">
                 <div class="stat-label">This Month Spent</div>
-                <div class="stat-value">${{ number_format($stats['financial']['month_spent'], 2) }}</div>
+                <div class="stat-value">@currencyRaw($stats['financial']['month_spent'])</div>
             </div>
         </div>
         <div class="stat-row">
             <div class="stat-cell">
                 <div class="stat-label">Average Order Value</div>
-                <div class="stat-value">${{ number_format($stats['financial']['avg_order_value'], 2) }}</div>
+                <div class="stat-value">@currencyRaw($stats['financial']['avg_order_value'])</div>
             </div>
             <div class="stat-cell">
                 <div class="stat-label">Total Service Fees</div>
-                <div class="stat-value">${{ number_format($stats['financial']['total_service_fees'], 2) }}</div>
+                <div class="stat-value">@currencyRaw($stats['financial']['total_service_fees'])</div>
             </div>
         </div>
         <div class="stat-row">
             <div class="stat-cell">
                 <div class="stat-label">Total Coupon Savings</div>
-                <div class="stat-value">${{ number_format($stats['financial']['total_coupon_savings'], 2) }}</div>
+                <div class="stat-value">@currencyRaw($stats['financial']['total_coupon_savings'])</div>
             </div>
             <div class="stat-cell">
                 <div class="stat-label">Total Refunded</div>
-                <div class="stat-value">${{ number_format($stats['financial']['total_refunded'], 2) }}</div>
+                <div class="stat-value">@currencyRaw($stats['financial']['total_refunded'])</div>
             </div>
         </div>
     </div>
@@ -262,8 +262,8 @@
                     <td>{{ $transaction->created_at->format('M d, Y') }}</td>
                     <td>{{ $transaction->gig->title ?? 'N/A' }}</td>
                     <td>{{ $transaction->teacher->name ?? 'N/A' }}</td>
-                    <td>${{ number_format($transaction->finel_price ?? 0, 2) }}</td>
-                    <td>${{ number_format($transaction->discount ?? 0, 2) }}</td>
+                    <td>@currencyRaw($transaction->finel_price ?? 0)</td>
+                    <td>@currencyRaw($transaction->discount ?? 0)</td>
                     <td>
                         @php
                             $statusLabels = ['0' => 'Pending', '1' => 'Active', '2' => 'Delivered', '3' => 'Completed', '4' => 'Cancelled'];

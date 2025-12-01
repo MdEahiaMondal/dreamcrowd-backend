@@ -1409,13 +1409,13 @@ class AdminController extends Controller
             ]);
 
             // Send notification to seller
-            $amount = number_format($transaction->seller_earnings, 2);
+            $amount = \App\Services\CurrencyService::formatRaw($transaction->seller_earnings, 'USD');
             $this->notificationService->send(
                 userId: $transaction->seller_id,
                 type: 'payout',
                 title: 'Payment Processed',
-                message: 'Your payment of $' . $amount . ' has been processed by admin and will be transferred to your account shortly.',
-                data: ['transaction_id' => $transaction->id, 'amount' => $amount],
+                message: 'Your payment of ' . $amount . ' has been processed by admin and will be transferred to your account shortly.',
+                data: ['transaction_id' => $transaction->id, 'amount' => $transaction->seller_earnings],
                 sendEmail: true,
                 actorUserId: Auth::id(),
                 targetUserId: $transaction->seller_id
@@ -1455,13 +1455,13 @@ class AdminController extends Controller
                     $processed++;
 
                     // Send notification to seller
-                    $amount = number_format($transaction->seller_earnings, 2);
+                    $amount = \App\Services\CurrencyService::formatRaw($transaction->seller_earnings, 'USD');
                     $this->notificationService->send(
                         userId: $transaction->seller_id,
                         type: 'payout',
                         title: 'Payment Processed',
-                        message: 'Your payment of $' . $amount . ' has been processed and will be transferred to your account shortly.',
-                        data: ['transaction_id' => $transaction->id, 'amount' => $amount],
+                        message: 'Your payment of ' . $amount . ' has been processed and will be transferred to your account shortly.',
+                        data: ['transaction_id' => $transaction->id, 'amount' => $transaction->seller_earnings],
                         sendEmail: true,
                         actorUserId: Auth::id(),
                         targetUserId: $transaction->seller_id
@@ -2516,7 +2516,7 @@ class AdminController extends Controller
             $notificationService->send(
                 $transaction->seller_id,
                 'Payout Processed',
-                'Your payout of $' . number_format($transaction->seller_earnings, 2) . ' has been processed and sent to your account.',
+                'Your payout of ' . \App\Services\CurrencyService::formatRaw($transaction->seller_earnings, 'USD') . ' has been processed and sent to your account.',
                 'payment',
                 route('seller.transactions')
             );
@@ -2733,7 +2733,7 @@ class AdminController extends Controller
                 userId: $order->user_id,
                 type: 'refund_approved',
                 title: 'Refund Approved ✅',
-                message: "Your refund request has been approved by admin. {$refundType} refund of $" . number_format($refundAmount, 2) . " has been processed.",
+                message: "Your refund request has been approved by admin. {$refundType} refund of " . \App\Services\CurrencyService::formatRaw($refundAmount, 'USD') . " has been processed.",
                 data: [
                     'dispute_id' => $dispute->id,
                     'order_id' => $order->id,

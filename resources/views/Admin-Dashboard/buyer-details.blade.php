@@ -135,7 +135,7 @@
                               <div class="col-md-4">
                                   <div class="card text-center">
                                       <div class="card-body">
-                                          <h3 class="text-success">${{ number_format($buyer->total_spent ?? 0, 2) }}</h3>
+                                          <h3 class="text-success">@currency($buyer->total_spent ?? 0)</h3>
                                           <p class="text-muted mb-0">Total Spent</p>
                                       </div>
                                   </div>
@@ -145,9 +145,9 @@
                                       <div class="card-body">
                                           <h3 class="text-info">
                                               @if($buyer->book_orders_count > 0)
-                                                  ${{ number_format(($buyer->total_spent ?? 0) / $buyer->book_orders_count, 2) }}
+                                                  @currency(($buyer->total_spent ?? 0) / $buyer->book_orders_count)
                                               @else
-                                                  $0.00
+                                                  @currency(0)
                                               @endif
                                           </h3>
                                           <p class="text-muted mb-0">Avg Order Value</p>
@@ -218,7 +218,7 @@
                                                   <tr>
                                                       <td>#{{ $order->id }}</td>
                                                       <td>{{ $order->gig->title ?? 'N/A' }}</td>
-                                                      <td>${{ number_format($order->price ?? 0, 2) }}</td>
+                                                      <td>@currency($order->price ?? 0)</td>
                                                       <td>
                                                           @php
                                                               $orderStatusBadge = [

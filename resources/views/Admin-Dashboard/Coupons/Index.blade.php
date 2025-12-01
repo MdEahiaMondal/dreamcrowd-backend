@@ -124,7 +124,7 @@
                         <div class="col-md-3">
                             <div class="stats-card" style="border-left-color: #dc3545;">
                                 <p>Total Discount Given</p>
-                                <h3 style="color: #dc3545;">${{ number_format($stats['total_discount_given'], 2) }}</h3>
+                                <h3 style="color: #dc3545;">@currency($stats['total_discount_given'])</h3>
                                 <small style="color: #999;">All time</small>
                             </div>
                         </div>
@@ -188,7 +188,7 @@
                                             @if($coupon->discount_type == 'percentage')
                                                 <strong style="color: #28a745;">{{ $coupon->discount_value }}%</strong>
                                             @else
-                                                <strong style="color: #28a745;">${{ number_format($coupon->discount_value, 2) }}</strong>
+                                                <strong style="color: #28a745;">@currency($coupon->discount_value)</strong>
                                             @endif
                                             <br>
                                             <small style="color: #999;">{{ ucfirst($coupon->discount_type) }}</small>
@@ -217,7 +217,7 @@
                                             @endif
                                             <br>
                                             <small style="color: #999;">
-                                                ${{ number_format($coupon->total_discount_given, 2) }} saved
+                                                @currency($coupon->total_discount_given) saved
                                             </small>
                                         </td>
                                         <td>

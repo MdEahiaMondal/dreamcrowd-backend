@@ -27,7 +27,7 @@
         <p><strong>Order ID:</strong> #{{ $orderId ?? 'N/A' }}</p>
         <p><strong>Service:</strong> {{ $serviceName ?? 'N/A' }}</p>
         <p><strong>Seller:</strong> {{ $sellerName ?? 'N/A' }}</p>
-        <p><strong>Amount:</strong> ${{ number_format($amount ?? 0, 2) }}</p>
+        <p><strong>Amount:</strong> @currencyRaw($amount ?? 0)</p>
         @if(isset($deliveryDate))
             <p><strong>Expected Delivery:</strong> {{ $deliveryDate }}</p>
         @endif

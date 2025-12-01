@@ -78,4 +78,20 @@ return [
         'debug_mode' => env('APP_DEBUG', false),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Currency API Configuration
+    |--------------------------------------------------------------------------
+    |
+    | This configuration is used for fetching real-time exchange rates.
+    | The API is called daily to update USD to GBP conversion rates.
+    | API Provider: currencyapi.com
+    |
+    */
+
+    'currency' => [
+        'api_key' => env('CURRENCY_API_KEY'),
+        'api_url' => env('CURRENCY_API_URL', 'https://api.currencyapi.com/v3/latest'),
+    ],
+
 ];

@@ -458,7 +458,7 @@
             <div class="stats-grid">
                 <div class="stat-card">
                     <i class='bx bx-dollar-circle' style="color: #28a745;"></i>
-                    <div class="stat-value">${{ number_format($order->service_price + $order->commission + $order->tex_percent, 2) }}</div>
+                    <div class="stat-value">@currency($order->service_price + $order->commission + $order->tex_percent)</div>
                     <div class="stat-label">Total Paid</div>
                 </div>
                 <div class="stat-card">
@@ -655,7 +655,7 @@
                             @if($order->disputeOrder->amount)
                                 <div class="info-row">
                                     <span class="info-label">Refund Amount</span>
-                                    <span class="info-value"><strong>${{ number_format($order->disputeOrder->amount, 2) }}</strong></span>
+                                    <span class="info-value"><strong>@currency($order->disputeOrder->amount)</strong></span>
                                 </div>
                             @endif
 
@@ -742,25 +742,25 @@
                         </div>
                         <div class="info-row">
                             <span class="info-label">Service Price</span>
-                            <span class="info-value">${{ number_format($order->service_price, 2) }}</span>
+                            <span class="info-value">@currency($order->service_price)</span>
                         </div>
                         @if($order->coupon_discount > 0)
                             <div class="info-row">
                                 <span class="info-label">Coupon Discount</span>
-                                <span class="info-value" style="color: #28a745;">-${{ number_format($order->coupon_discount, 2) }}</span>
+                                <span class="info-value" style="color: #28a745;">-@currency($order->coupon_discount)</span>
                             </div>
                         @endif
                         <div class="info-row">
                             <span class="info-label">Commission</span>
-                            <span class="info-value">${{ number_format($order->commission, 2) }}</span>
+                            <span class="info-value">@currency($order->commission)</span>
                         </div>
                         <div class="info-row">
                             <span class="info-label">Tax</span>
-                            <span class="info-value">${{ number_format($order->tex_percent, 2) }}</span>
+                            <span class="info-value">@currency($order->tex_percent)</span>
                         </div>
                         <div class="payment-total">
                             <h3>Total Paid</h3>
-                            <div class="amount">${{ number_format($order->service_price + $order->commission + $order->tex_percent, 2) }}</div>
+                            <div class="amount">@currency($order->service_price + $order->commission + $order->tex_percent)</div>
                             @if($order->transaction)
                                 <small style="opacity: 0.9;">Payment ID: {{ $order->transaction->payment_id ?? 'N/A' }}</small>
                             @endif
@@ -848,7 +848,7 @@
                                     <input class="form-check-input" type="radio" name="refund_type" id="fullRefund" value="0" checked onchange="toggleAmountField()">
                                     <label class="form-check-label" for="fullRefund">
                                         <strong>Full Refund</strong><br>
-                                        <small class="text-muted">Get back the entire amount (${{ number_format($order->finel_price, 2) }})</small>
+                                        <small class="text-muted">Get back the entire amount (@currency($order->finel_price))</small>
                                     </label>
                                 </div>
                                 <div class="form-check">
@@ -875,7 +875,7 @@
                                        max="{{ $order->finel_price }}"
                                        placeholder="Enter amount">
                             </div>
-                            <small class="text-muted">Maximum refund amount: ${{ number_format($order->finel_price, 2) }}</small>
+                            <small class="text-muted">Maximum refund amount: @currency($order->finel_price)</small>
                         </div>
 
                         <!-- Reason -->
@@ -903,7 +903,7 @@
                             </div>
                             <div class="d-flex justify-content-between">
                                 <small class="text-muted">Total Paid:</small>
-                                <small><strong>${{ number_format($order->finel_price, 2) }}</strong></small>
+                                <small><strong>@currency($order->finel_price)</strong></small>
                             </div>
                         </div>
                     </div>

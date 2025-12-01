@@ -195,7 +195,7 @@
                             <small class="text-muted">{{ $withdrawal->created_at->format('h:i A') }}</small>
                         </td>
                         <td>
-                            <strong>${{ number_format($withdrawal->amount, 2) }}</strong>
+                            <strong>@currency($withdrawal->amount)</strong>
                             <br>
                             <small class="text-muted">{{ $withdrawal->currency }}</small>
                         </td>
@@ -215,13 +215,13 @@
                         </td>
                         <td>
                             @if($withdrawal->processing_fee > 0)
-                            <span class="text-danger">-${{ number_format($withdrawal->processing_fee, 2) }}</span>
+                            <span class="text-danger">-@currency($withdrawal->processing_fee)</span>
                             @else
-                            <span class="text-muted">$0.00</span>
+                            <span class="text-muted">@currency(0)</span>
                             @endif
                         </td>
                         <td>
-                            <strong class="text-success">${{ number_format($withdrawal->net_amount, 2) }}</strong>
+                            <strong class="text-success">@currency($withdrawal->net_amount)</strong>
                         </td>
                         <td class="withdrawal-details">
                             @if($withdrawal->isCompleted())

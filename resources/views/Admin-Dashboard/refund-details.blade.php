@@ -181,13 +181,13 @@
                   <div class="col-md-3">
                       <div class="stats-card" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
                           <h4>Total Refunded Amount</h4>
-                          <h2>${{ number_format($stats['total_refunded_amount'] ?? 0, 2) }}</h2>
+                          <h2>@currency($stats['total_refunded_amount'] ?? 0)</h2>
                       </div>
                   </div>
                   <div class="col-md-3">
                       <div class="stats-card" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
                           <h4>Pending Refund Amount</h4>
-                          <h2>${{ number_format($stats['pending_refund_amount'] ?? 0, 2) }}</h2>
+                          <h2>@currency($stats['pending_refund_amount'] ?? 0)</h2>
                       </div>
                   </div>
               </div>
@@ -363,7 +363,7 @@
                                         {{ Str::limit($dispute->order->gig->title ?? 'N/A', 50) }}
                                       </td>
                                       <td class="service-decs">
-                                        <strong>${{ number_format($dispute->amount ?? 0, 2) }}</strong>
+                                        <strong>@currency($dispute->amount ?? 0)</strong>
                                       </td>
                                       <td>
                                         @if($dispute->refund_type == 0)
@@ -433,10 +433,10 @@
                                               <strong>Service:</strong> {{ $dispute->order->gig->title ?? 'N/A' }}
                                             </div>
                                             <div class="info-row">
-                                              <strong>Order Amount:</strong> ${{ number_format($dispute->order->finel_price ?? 0, 2) }}
+                                              <strong>Order Amount:</strong> @currency($dispute->order->finel_price ?? 0)
                                             </div>
                                             <div class="info-row">
-                                              <strong>Refund Amount:</strong> ${{ number_format($dispute->amount ?? 0, 2) }}
+                                              <strong>Refund Amount:</strong> @currency($dispute->amount ?? 0)
                                             </div>
                                             <div class="info-row">
                                               <strong>Refund Type:</strong>

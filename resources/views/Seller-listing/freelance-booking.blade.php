@@ -1676,8 +1676,8 @@
 
                                     @if ($gigData->freelance_type == 'Both')
                                         @php $rate = explode('|*|', $gig->rate);    @endphp
-                                        <option value="Basic" selected>Basic - ${{$rate[0]}}</option>
-                                        <option value="Premium">Premium - ${{$rate[1]}}</option>
+                                        <option value="Basic" selected>Basic - @currency($rate[0])</option>
+                                        <option value="Premium">Premium - @currency($rate[1])</option>
                                     @else
                                         <option value="{{$gigData->freelance_type}}" selected>{{$gigData->freelance_type}}
                                         </option>
@@ -1789,7 +1789,7 @@
                     }
 
                 @endphp
-                <p class="float-start">Total Amount: <span id="total_price">${{$rate}}</span></p>
+                <p class="float-start">Total Amount: <span id="total_price">@currency($rate)</span></p>
                 <div class="float-end">
 
                     @if (Auth::user())

@@ -306,7 +306,7 @@
                                                         </td>
                                                         <td>
                                                             <div class="service-date">
-                                                                <p>${{ $order->finel_price }}</p>
+                                                                <p>@currency($order->finel_price)</p>
                                                             </div>
                                                         </td>
                                                         <td>
@@ -600,7 +600,7 @@
                                                         </td>
                                                         <td>
                                                             <div class="service-date">
-                                                                <p>${{ $order->finel_price }}</p>
+                                                                <p>@currency($order->finel_price)</p>
                                                             </div>
                                                         </td>
                                                         <td>
@@ -884,7 +884,7 @@
                                                         </td>
                                                         <td>
                                                             <div class="service-date">
-                                                                <p>${{ $order->finel_price }}</p>
+                                                                <p>@currency($order->finel_price)</p>
                                                             </div>
                                                         </td>
                                                         <td>
@@ -1164,7 +1164,7 @@
                                                         </td>
                                                         <td>
                                                             <div class="service-date">
-                                                                <p>${{ $order->finel_price }}</p>
+                                                                <p>@currency($order->finel_price)</p>
                                                             </div>
                                                         </td>
                                                         <td>
@@ -1443,7 +1443,7 @@
                                                         </td>
                                                         <td>
                                                             <div class="service-date">
-                                                                <p>${{ $order->finel_price }}</p>
+                                                                <p>@currency($order->finel_price)</p>
                                                             </div>
                                                         </td>
                                                         <td>

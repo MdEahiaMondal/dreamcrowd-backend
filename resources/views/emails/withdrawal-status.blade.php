@@ -29,16 +29,16 @@
             </tr>
             <tr>
                 <td style="padding: 5px 0;"><strong>Amount Requested:</strong></td>
-                <td style="padding: 5px 0;">${{ $amount }}</td>
+                <td style="padding: 5px 0;">@currencyRaw($amount)</td>
             </tr>
             <tr>
                 <td style="padding: 5px 0;"><strong>Processing Fee:</strong></td>
-                <td style="padding: 5px 0;">${{ number_format($withdrawal->processing_fee, 2) }}</td>
+                <td style="padding: 5px 0;">@currencyRaw($withdrawal->processing_fee)</td>
             </tr>
             <tr style="border-top: 2px solid {{ $status == 'completed' ? '#4CAF50' : ($status == 'failed' ? '#f44336' : '#2196F3') }};">
                 <td style="padding: 10px 0;"><strong>Net Amount:</strong></td>
                 <td style="padding: 10px 0; color: {{ $status == 'completed' ? '#4CAF50' : '#333' }}; font-size: 20px; font-weight: bold;">
-                    ${{ $netAmount }}
+                    @currencyRaw($netAmount)
                 </td>
             </tr>
             <tr>

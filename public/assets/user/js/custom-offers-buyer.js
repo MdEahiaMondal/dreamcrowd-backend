@@ -75,9 +75,11 @@
         $modal.find('.service-mode').text(offer.service_mode);
         $modal.find('.offer-description').text(offer.description || 'No description provided');
 
-        // Total amount
+        // Total amount - with currency conversion
         const totalAmount = parseFloat(offer.total_amount);
-        $modal.find('.offer-total-amount').text('$' + totalAmount.toFixed(2));
+        const symbol = (typeof currencyConfig !== 'undefined') ? currencyConfig.symbol : '$';
+        const rate = (typeof currencyConfig !== 'undefined') ? currencyConfig.rate : 1;
+        $modal.find('.offer-total-amount').text(symbol + (totalAmount * rate).toFixed(2));
 
         // Expiration
         if (offer.expires_at) {
@@ -162,7 +164,9 @@
                 html += `<td>${milestone.delivery_days} days</td>`;
             }
 
-            html += `<td>$${parseFloat(milestone.price).toFixed(2)}</td>`;
+            const sym = (typeof currencyConfig !== 'undefined') ? currencyConfig.symbol : '$';
+            const rt = (typeof currencyConfig !== 'undefined') ? currencyConfig.rate : 1;
+            html += `<td>${sym}${(parseFloat(milestone.price) * rt).toFixed(2)}</td>`;
             html += '</tr>';
         });
 

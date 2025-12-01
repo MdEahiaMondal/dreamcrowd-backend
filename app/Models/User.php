@@ -11,7 +11,10 @@ use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable, SoftDeletes, HasRoles;
+    use HasFactory, Notifiable, SoftDeletes;
+    use HasRoles {
+        HasRoles::hasPermissionTo as protected spatieHasPermissionTo;
+    }
 
     /**
      * Seller status constants
@@ -304,7 +307,7 @@ class User extends Authenticatable
             return true;
         }
 
-        return parent::hasPermissionTo($permission, $guardName);
+        return $this->spatieHasPermissionTo($permission, $guardName);
     }
 
     /**

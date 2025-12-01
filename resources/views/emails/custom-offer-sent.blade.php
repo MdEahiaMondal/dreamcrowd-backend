@@ -98,7 +98,7 @@
             <div class="milestones">
                 @foreach($offer->milestones as $milestone)
                 <div class="milestone-item">
-                    <strong>{{ $milestone->title }}</strong> - ${{ number_format($milestone->price, 2) }}
+                    <strong>{{ $milestone->title }}</strong> - @currencyRaw($milestone->price)
                     @if($milestone->description)
                     <br><small>{{ $milestone->description }}</small>
                     @endif
@@ -117,7 +117,7 @@
             @endif
 
             <div class="total">
-                Total: ${{ number_format($offer->total_amount, 2) }}
+                Total: @currencyRaw($offer->total_amount)
             </div>
 
             <center>

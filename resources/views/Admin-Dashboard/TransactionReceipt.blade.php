@@ -339,7 +339,7 @@
     <div class="amount-section">
         <h2>Total Transaction Amount</h2>
         <div class="total-amount">
-            ${{ number_format($transaction->total_amount, 2) }}
+            @currencyRaw($transaction->total_amount)
         </div>
         <p style="opacity: 0.9;">{{ $transaction->currency }}</p>
     </div>
@@ -355,25 +355,25 @@
         <tbody>
         <tr>
             <td>Subtotal</td>
-            <td style="text-align: right;">${{ number_format($transaction->total_amount, 2) }}</td>
+            <td style="text-align: right;">@currencyRaw($transaction->total_amount)</td>
         </tr>
 
         @if($transaction->coupon_discount > 0)
             <tr class="highlight">
                 <td>Coupon Discount</td>
-                <td style="text-align: right;">-${{ number_format($transaction->coupon_discount, 2) }}</td>
+                <td style="text-align: right;">-@currencyRaw($transaction->coupon_discount)</td>
             </tr>
         @endif
 
         <tr>
             <td>Platform Commission ({{ $transaction->seller_commission_rate }}%)</td>
-            <td style="text-align: right;">${{ number_format($transaction->seller_commission_amount, 2) }}</td>
+            <td style="text-align: right;">@currencyRaw($transaction->seller_commission_amount)</td>
         </tr>
 
         @if($transaction->buyer_commission_amount > 0)
             <tr>
                 <td>Buyer Commission ({{ $transaction->buyer_commission_rate }}%)</td>
-                <td style="text-align: right;">${{ number_format($transaction->buyer_commission_amount, 2) }}</td>
+                <td style="text-align: right;">@currencyRaw($transaction->buyer_commission_amount)</td>
             </tr>
         @endif
 
@@ -381,13 +381,13 @@
 
         <tr class="total-row">
             <td><strong>Seller Receives</strong></td>
-            <td style="text-align: right;"><strong>${{ number_format($transaction->seller_earnings, 2) }}</strong></td>
+            <td style="text-align: right;"><strong>@currencyRaw($transaction->seller_earnings)</strong></td>
         </tr>
 
         <tr class="total-row">
             <td><strong>Platform Receives</strong></td>
             <td style="text-align: right;">
-                <strong>${{ number_format($transaction->total_admin_commission, 2) }}</strong></td>
+                <strong>@currencyRaw($transaction->total_admin_commission)</strong></td>
         </tr>
         </tbody>
     </table>

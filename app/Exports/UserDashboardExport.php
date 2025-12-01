@@ -78,13 +78,13 @@ class SummarySheet implements FromCollection, WithHeadings, WithStyles, WithTitl
 
             // Financial Statistics
             ['FINANCIAL STATISTICS', ''],
-            ['Total Spent', '$' . number_format($stats['financial']['total_spent'], 2)],
-            ['This Month Spent', '$' . number_format($stats['financial']['month_spent'], 2)],
-            ['Today Spent', '$' . number_format($stats['financial']['today_spent'], 2)],
-            ['Average Order Value', '$' . number_format($stats['financial']['avg_order_value'], 2)],
-            ['Total Service Fees Paid', '$' . number_format($stats['financial']['total_service_fees'], 2)],
-            ['Total Coupon Savings', '$' . number_format($stats['financial']['total_coupon_savings'], 2)],
-            ['Total Refunded', '$' . number_format($stats['financial']['total_refunded'], 2)],
+            ['Total Spent', \App\Services\CurrencyService::formatRaw($stats['financial']['total_spent'], 'USD')],
+            ['This Month Spent', \App\Services\CurrencyService::formatRaw($stats['financial']['month_spent'], 'USD')],
+            ['Today Spent', \App\Services\CurrencyService::formatRaw($stats['financial']['today_spent'], 'USD')],
+            ['Average Order Value', \App\Services\CurrencyService::formatRaw($stats['financial']['avg_order_value'], 'USD')],
+            ['Total Service Fees Paid', \App\Services\CurrencyService::formatRaw($stats['financial']['total_service_fees'], 'USD')],
+            ['Total Coupon Savings', \App\Services\CurrencyService::formatRaw($stats['financial']['total_coupon_savings'], 'USD')],
+            ['Total Refunded', \App\Services\CurrencyService::formatRaw($stats['financial']['total_refunded'], 'USD')],
             [''],
 
             // Order Statistics
@@ -297,9 +297,9 @@ class MonthlyBreakdownSheet implements FromCollection, WithHeadings, WithStyles,
         for ($i = 0; $i < count($monthlyData['labels']); $i++) {
             $data->push([
                 'month' => $monthlyData['labels'][$i],
-                'spent' => '$' . number_format($monthlyData['spent'][$i], 2),
+                'spent' => \App\Services\CurrencyService::formatRaw($monthlyData['spent'][$i], 'USD'),
                 'order_count' => $monthlyData['count'][$i],
-                'avg_order' => $monthlyData['count'][$i] > 0 ? '$' . number_format($monthlyData['spent'][$i] / $monthlyData['count'][$i], 2) : '$0.00',
+                'avg_order' => $monthlyData['count'][$i] > 0 ? \App\Services\CurrencyService::formatRaw($monthlyData['spent'][$i] / $monthlyData['count'][$i], 'USD') : \App\Services\CurrencyService::formatRaw(0, 'USD'),
             ]);
         }
 
@@ -309,9 +309,9 @@ class MonthlyBreakdownSheet implements FromCollection, WithHeadings, WithStyles,
 
         $data->push([
             'month' => 'TOTAL',
-            'spent' => '$' . number_format($totalSpent, 2),
+            'spent' => \App\Services\CurrencyService::formatRaw($totalSpent, 'USD'),
             'order_count' => $totalOrders,
-            'avg_order' => $totalOrders > 0 ? '$' . number_format($totalSpent / $totalOrders, 2) : '$0.00',
+            'avg_order' => $totalOrders > 0 ? \App\Services\CurrencyService::formatRaw($totalSpent / $totalOrders, 'USD') : \App\Services\CurrencyService::formatRaw(0, 'USD'),
         ]);
 
         return $data;

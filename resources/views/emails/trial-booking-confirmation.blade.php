@@ -185,7 +185,7 @@
 																		@if(!$isFree)
 																		<tr>
 																			<td style="padding:8px 0;border-top:1px solid #e1e4e8;"><strong>Amount Paid:</strong></td>
-																			<td style="padding:8px 0;text-align:right;border-top:1px solid #e1e4e8;color:#0072b1;font-weight:600;">${{$amount}}</td>
+																			<td style="padding:8px 0;text-align:right;border-top:1px solid #e1e4e8;color:#0072b1;font-weight:600;">@currencyRaw($amount)</td>
 																		</tr>
 																		@endif
 																	</table>

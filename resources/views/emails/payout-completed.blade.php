@@ -32,15 +32,15 @@
             </tr>
             <tr>
                 <td style="padding: 5px 0;"><strong>Order Amount:</strong></td>
-                <td style="padding: 5px 0;">${{ number_format($transaction->total_amount, 2) }}</td>
+                <td style="padding: 5px 0;">@currencyRaw($transaction->total_amount)</td>
             </tr>
             <tr>
                 <td style="padding: 5px 0;"><strong>Commission:</strong></td>
-                <td style="padding: 5px 0;">-${{ number_format($transaction->seller_commission_amount, 2) }} ({{ number_format($transaction->seller_commission_rate, 2) }}%)</td>
+                <td style="padding: 5px 0;">-@currencyRaw($transaction->seller_commission_amount) ({{ number_format($transaction->seller_commission_rate, 2) }}%)</td>
             </tr>
             <tr style="border-top: 2px solid #4CAF50;">
                 <td style="padding: 10px 0;"><strong>Your Earnings:</strong></td>
-                <td style="padding: 10px 0; color: #4CAF50; font-size: 20px; font-weight: bold;">${{ number_format($transaction->seller_earnings, 2) }}</td>
+                <td style="padding: 10px 0; color: #4CAF50; font-size: 20px; font-weight: bold;">@currencyRaw($transaction->seller_earnings)</td>
             </tr>
             <tr>
                 <td style="padding: 5px 0;"><strong>Payout Date:</strong></td>
@@ -52,11 +52,11 @@
     <div class="alert-box" style="background-color: #e3f2fd; padding: 15px; border-left: 4px solid #2196F3; margin: 20px 0;">
         <p><strong>📊 Payment Breakdown:</strong></p>
         <ul style="margin: 10px 0 0 20px; padding: 0;">
-            <li>Original Order Amount: <strong>${{ number_format($transaction->total_amount, 2) }}</strong></li>
-            <li>Platform Commission ({{ number_format($transaction->seller_commission_rate, 2) }}%): <strong>-${{ number_format($transaction->seller_commission_amount, 2) }}</strong></li>
-            <li>Buyer Commission: <strong>${{ number_format($transaction->buyer_commission_amount, 2) }}</strong> (paid by buyer)</li>
+            <li>Original Order Amount: <strong>@currencyRaw($transaction->total_amount)</strong></li>
+            <li>Platform Commission ({{ number_format($transaction->seller_commission_rate, 2) }}%): <strong>-@currencyRaw($transaction->seller_commission_amount)</strong></li>
+            <li>Buyer Commission: <strong>@currencyRaw($transaction->buyer_commission_amount)</strong> (paid by buyer)</li>
             <li style="margin-top: 10px; border-top: 2px solid #2196F3; padding-top: 10px; color: #4CAF50; font-weight: bold;">
-                Net Amount Paid to You: <strong>${{ number_format($transaction->seller_earnings, 2) }}</strong>
+                Net Amount Paid to You: <strong>@currencyRaw($transaction->seller_earnings)</strong>
             </li>
         </ul>
     </div>

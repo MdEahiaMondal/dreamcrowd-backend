@@ -33,7 +33,7 @@
         <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="font-size: 14px;">
             <tr>
                 <td style="padding: 5px 0;"><strong>Refund Amount:</strong></td>
-                <td style="padding: 5px 0; color: #28a745; font-size: 18px; font-weight: bold;">${{ number_format($data['refund_amount'], 2) }}</td>
+                <td style="padding: 5px 0; color: #28a745; font-size: 18px; font-weight: bold;">@currencyRaw($data['refund_amount'])</td>
             </tr>
             <tr>
                 <td style="padding: 5px 0;"><strong>Payment Method:</strong></td>

@@ -158,7 +158,7 @@
                         </div>
                         <div class="stat-content">
                             <p class="stat-label">Total Spent</p>
-                            <h3 class="stat-value" id="stat-total-spent">$0.00</h3>
+                            <h3 class="stat-value" id="stat-total-spent">@currencySymbol0.00</h3>
                             <small class="stat-sublabel">All-time spending</small>
                         </div>
                     </div>
@@ -170,7 +170,7 @@
                         </div>
                         <div class="stat-content">
                             <p class="stat-label">This Month</p>
-                            <h3 class="stat-value" id="stat-month-spent">$0.00</h3>
+                            <h3 class="stat-value" id="stat-month-spent">@currencySymbol0.00</h3>
                             <small class="stat-sublabel" id="current-month">{{ now()->format('F Y') }}</small>
                         </div>
                     </div>
@@ -182,7 +182,7 @@
                         </div>
                         <div class="stat-content">
                             <p class="stat-label">Avg Order Value</p>
-                            <h3 class="stat-value" id="stat-avg-order">$0.00</h3>
+                            <h3 class="stat-value" id="stat-avg-order">@currencySymbol0.00</h3>
                             <small class="stat-sublabel">Per transaction</small>
                         </div>
                     </div>
@@ -194,7 +194,7 @@
                         </div>
                         <div class="stat-content">
                             <p class="stat-label">Service Fees</p>
-                            <h3 class="stat-value" id="stat-service-fees">$0.00</h3>
+                            <h3 class="stat-value" id="stat-service-fees">@currencySymbol0.00</h3>
                             <small class="stat-sublabel">Platform fees paid</small>
                         </div>
                     </div>
@@ -206,7 +206,7 @@
                         </div>
                         <div class="stat-content">
                             <p class="stat-label">Coupon Savings</p>
-                            <h3 class="stat-value" id="stat-coupon-savings">$0.00</h3>
+                            <h3 class="stat-value" id="stat-coupon-savings">@currencySymbol0.00</h3>
                             <small class="stat-sublabel">Discounts applied</small>
                         </div>
                     </div>
@@ -390,6 +390,21 @@
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script src="/assets/user/asset/js/dashboard.js"></script>
 <script>
+    // Currency configuration from server
+    const currencyConfig = {
+        currency: '{{ session("display_currency", "USD") }}',
+        symbol: '{{ session("display_currency", "USD") === "GBP" ? "£" : "$" }}',
+        rate: {{ session("display_currency", "USD") === "GBP" ? (\App\Services\CurrencyService::getRate("USD", "GBP") ?? 0.79) : 1 }}
+    };
+
+    /**
+     * Format amount in user's preferred currency
+     */
+    function formatCurrency(amount) {
+        const convertedAmount = parseFloat(amount) * currencyConfig.rate;
+        return currencyConfig.symbol + convertedAmount.toFixed(2);
+    }
+
     // Initialize on page load
     $(document).ready(function () {
         // Load initial statistics (all time)

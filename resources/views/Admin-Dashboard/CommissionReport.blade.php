@@ -110,7 +110,7 @@
                         <div class="row align-items-center">
                             <div class="col-md-8">
                                 <p style="margin: 0; opacity: 0.9;">Total Admin Earnings (All Time)</p>
-                                <h3>${{ number_format($totalEarnings ?? 0, 2) }}</h3>
+                                <h3>@currency($totalEarnings ?? 0)</h3>
                                 <small>Last updated: {{ now()->format('d M Y, h:i A') }}</small>
                             </div>
                             <div class="col-md-4 text-end">
@@ -126,7 +126,7 @@
                             <div class="stat-card" style="border-left-color: #28a745;">
                                 <p style="margin: 0; color: #666;">Today's Earnings</p>
                                 <h4 style="margin: 10px 0; color: #28a745;">
-                                    ${{ number_format($todayEarnings ?? 0, 2) }}</h4>
+                                    @currency($todayEarnings ?? 0)</h4>
                                 <small style="color: #999;">{{ $todayTransactions ?? 0 }} transactions</small>
                             </div>
                         </div>
@@ -136,7 +136,7 @@
                             <div class="stat-card" style="border-left-color: #007bff;">
                                 <p style="margin: 0; color: #666;">This Month</p>
                                 <h4 style="margin: 10px 0; color: #007bff;">
-                                    ${{ number_format($monthlyEarnings ?? 0, 2) }}</h4>
+                                    @currency($monthlyEarnings ?? 0)</h4>
                                 <small style="color: #999;">{{ $monthlyTransactions ?? 0 }} transactions</small>
                             </div>
                         </div>
@@ -146,7 +146,7 @@
                             <div class="stat-card" style="border-left-color: #ffc107;">
                                 <p style="margin: 0; color: #666;">Pending Payouts</p>
                                 <h4 style="margin: 10px 0; color: #ffc107;">
-                                    ${{ number_format($pendingPayouts ?? 0, 2) }}</h4>
+                                    @currency($pendingPayouts ?? 0)</h4>
                                 <small style="color: #999;">{{ $pendingCount ?? 0 }} pending</small>
                             </div>
                         </div>
@@ -158,7 +158,7 @@
                                 <h4 style="margin: 10px 0; color: #dc3545; font-size: 16px;">
                                     {{ ($topSeller->first_name ?? '') . ' ' . ($topSeller->last_name ?? '') ?: 'N/A' }}
                                 </h4>
-                                <small style="color: #999;">${{ number_format($topSellerEarnings ?? 0, 2) }}
+                                <small style="color: #999;">@currency($topSellerEarnings ?? 0)
                                     earned</small>
                             </div>
                         </div>
@@ -266,13 +266,13 @@
                                             <span class="badge bg-info">{{ ucfirst($transaction->service_type) }}</span>
                                             #{{ $transaction->service_id }}
                                         </td>
-                                        <td><strong>${{ number_format($transaction->total_amount, 2) }}</strong></td>
+                                        <td><strong>@currency($transaction->total_amount)</strong></td>
                                         <td>{{ $transaction->seller_commission_rate }}%</td>
                                         <td style="color: #28a745; font-weight: bold;">
-                                            ${{ number_format($transaction->total_admin_commission, 2) }}
+                                            @currency($transaction->total_admin_commission)
                                         </td>
                                         <td style="color: #007bff; font-weight: bold;">
-                                            ${{ number_format($transaction->seller_earnings, 2) }}
+                                            @currency($transaction->seller_earnings)
                                         </td>
                                         <td>
                                             @if($transaction->status == 'completed')

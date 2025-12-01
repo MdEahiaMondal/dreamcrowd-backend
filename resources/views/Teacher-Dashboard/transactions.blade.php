@@ -187,7 +187,7 @@
                 <div class="col-lg-3 col-md-6">
                     <div class="stats-card" style="border-left: 4px solid #28a745;">
                         <p>Total Earnings</p>
-                        <h3 style="color: #28a745;">${{ number_format($stats['total_earnings'], 2) }}</h3>
+                        <h3 style="color: #28a745;">@currency($stats['total_earnings'])</h3>
                         <small>All time</small>
                     </div>
                 </div>
@@ -196,7 +196,7 @@
                 <div class="col-lg-3 col-md-6">
                     <div class="stats-card" style="border-left: 4px solid #ffc107;">
                         <p>Pending Payout</p>
-                        <h3 style="color: #ffc107;">${{ number_format($stats['pending_earnings'], 2) }}</h3>
+                        <h3 style="color: #ffc107;">@currency($stats['pending_earnings'])</h3>
                         <small>Awaiting transfer</small>
                     </div>
                 </div>
@@ -205,7 +205,7 @@
                 <div class="col-lg-3 col-md-6">
                     <div class="stats-card" style="border-left: 4px solid #007bff;">
                         <p>Paid Out</p>
-                        <h3 style="color: #007bff;">${{ number_format($stats['paid_earnings'], 2) }}</h3>
+                        <h3 style="color: #007bff;">@currency($stats['paid_earnings'])</h3>
                         <small>Already received</small>
                     </div>
                 </div>
@@ -214,7 +214,7 @@
                 <div class="col-lg-3 col-md-6">
                     <div class="stats-card" style="border-left: 4px solid #17a2b8;">
                         <p>This Month</p>
-                        <h3 style="color: #17a2b8;">${{ number_format($stats['month_earnings'], 2) }}</h3>
+                        <h3 style="color: #17a2b8;">@currency($stats['month_earnings'])</h3>
                         <small>{{ now()->format('F Y') }}</small>
                     </div>
                 </div>
@@ -225,7 +225,7 @@
                 <div class="col-lg-3 col-md-6">
                     <div class="stats-card" style="border-left: 4px solid #6c757d;">
                         <p>Today's Earnings</p>
-                        <h3 style="color: #6c757d;">${{ number_format($stats['today_earnings'], 2) }}</h3>
+                        <h3 style="color: #6c757d;">@currency($stats['today_earnings'])</h3>
                     </div>
                 </div>
 
@@ -248,7 +248,7 @@
                 <div class="col-lg-3 col-md-6">
                     <div class="stats-card" style="border-left: 4px solid #fd7e14;">
                         <p>Average Order Value</p>
-                        <h3 style="color: #fd7e14;">${{ number_format($stats['avg_transaction'], 2) }}</h3>
+                        <h3 style="color: #fd7e14;">@currency($stats['avg_transaction'])</h3>
                     </div>
                 </div>
             </div>
@@ -342,10 +342,10 @@
                                     <div class="col-md-3">
                                         <p style="margin: 0; color: #666; font-size: 13px;">Your Earnings</p>
                                         <h5 style="margin: 5px 0; color: #28a745; font-weight: bold;">
-                                            ${{ number_format($transaction->seller_earnings, 2) }}
+                                            @currency($transaction->seller_earnings)
                                         </h5>
                                         <small style="color: #999;">
-                                            Commission: ${{ number_format($transaction->seller_commission_amount, 2) }}
+                                            Commission: @currency($transaction->seller_commission_amount)
                                             ({{ $transaction->seller_commission_rate }}%)
                                         </small>
                                     </div>

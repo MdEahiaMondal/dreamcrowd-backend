@@ -151,7 +151,7 @@
                         <a href="#">${escapeHtml(service.category || 'General')}</a>
                     </div>
                     <div class="col-md-6">
-                        <a href="#">Starting from $${parseFloat(service.price || 0).toFixed(2)}</a>
+                        <a href="#">Starting from ${getCurrencySymbol()}${(parseFloat(service.price || 0) * getCurrencyRate()).toFixed(2)}</a>
                     </div>
                 </div>
             `;
@@ -341,9 +341,23 @@
             total = parseFloat($('#single-payment-price').val()) || 0;
         }
 
-        $('.total-amount-display').text('$' + total.toFixed(2));
+        $('.total-amount-display').text(getCurrencySymbol() + (total * getCurrencyRate()).toFixed(2));
 
         return total;
+    }
+
+    /**
+     * Get currency symbol from global config
+     */
+    function getCurrencySymbol() {
+        return (typeof currencyConfig !== 'undefined') ? currencyConfig.symbol : '$';
+    }
+
+    /**
+     * Get currency rate from global config
+     */
+    function getCurrencyRate() {
+        return (typeof currencyConfig !== 'undefined') ? currencyConfig.rate : 1;
     }
 
     /**

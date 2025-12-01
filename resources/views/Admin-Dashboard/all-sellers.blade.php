@@ -200,7 +200,7 @@
                                     <div class="d-flex align-items-center">
                                         <div class="flex-grow-1">
                                             <h6 class="text-muted mb-1">Total Revenue</h6>
-                                            <h3 class="mb-0">${{ number_format($stats['total_revenue'], 2) }}</h3>
+                                            <h3 class="mb-0">@currency($stats['total_revenue'])</h3>
                                             <small class="text-muted">All transactions</small>
                                         </div>
                                         <div class="stat-icon bg-warning">
@@ -473,7 +473,7 @@
                                                                                         <!-- Total Earnings -->
                                                                                         <td class="text-nowrap">
                                                                                             <strong class="text-success">
-                                                                                                ${{ number_format($seller->total_earnings ?? 0, 2) }}
+                                                                                                @currency($seller->total_earnings ?? 0)
                                                                                             </strong>
                                                                                         </td>
 

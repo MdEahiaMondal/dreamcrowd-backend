@@ -60,7 +60,7 @@
             @if($isBuyer)
                 <p>The custom offer from {{ $otherPartyName }} for <strong>{{ $offer->gig->title }}</strong> has expired.</p>
 
-                <p><strong>Offer Amount:</strong> ${{ number_format($offer->total_amount, 2) }}</p>
+                <p><strong>Offer Amount:</strong> @currencyRaw($offer->total_amount)</p>
 
                 <h3>What You Can Do:</h3>
                 <ul>
@@ -75,7 +75,7 @@
             @else
                 <p>Your custom offer to {{ $otherPartyName }} for <strong>{{ $offer->gig->title }}</strong> has expired without being accepted.</p>
 
-                <p><strong>Offer Amount:</strong> ${{ number_format($offer->total_amount, 2) }}</p>
+                <p><strong>Offer Amount:</strong> @currencyRaw($offer->total_amount)</p>
 
                 <h3>What You Can Do:</h3>
                 <ul>

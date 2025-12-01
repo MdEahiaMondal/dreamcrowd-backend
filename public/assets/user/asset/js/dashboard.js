@@ -73,12 +73,16 @@ function loadDashboardStatistics(preset, dateFrom = null, dateTo = null) {
  */
 function updateStatistics(data) {
     try {
-        // Financial Statistics
-        $('#stat-total-spent').text('$' + formatNumber(data.financial.total_spent));
-        $('#stat-month-spent').text('$' + formatNumber(data.financial.month_spent));
-        $('#stat-avg-order').text('$' + formatNumber(data.financial.avg_order_value));
-        $('#stat-service-fees').text('$' + formatNumber(data.financial.total_service_fees));
-        $('#stat-coupon-savings').text('$' + formatNumber(data.financial.total_coupon_savings));
+        // Get currency config from global scope (set in Blade template)
+        const symbol = (typeof currencyConfig !== 'undefined') ? currencyConfig.symbol : '$';
+        const rate = (typeof currencyConfig !== 'undefined') ? currencyConfig.rate : 1;
+
+        // Financial Statistics - with currency conversion
+        $('#stat-total-spent').text(symbol + formatNumber(data.financial.total_spent * rate));
+        $('#stat-month-spent').text(symbol + formatNumber(data.financial.month_spent * rate));
+        $('#stat-avg-order').text(symbol + formatNumber(data.financial.avg_order_value * rate));
+        $('#stat-service-fees').text(symbol + formatNumber(data.financial.total_service_fees * rate));
+        $('#stat-coupon-savings').text(symbol + formatNumber(data.financial.total_coupon_savings * rate));
 
         // Order Statistics
         $('#stat-total-orders').text(data.orders.total_orders);
@@ -192,13 +196,17 @@ function renderSpendingTrendChart(data) {
         ctx.setAttribute('width', containerWidth);
         ctx.setAttribute('height', containerHeight);
 
+        // Get currency config from global scope
+        const symbol = (typeof currencyConfig !== 'undefined') ? currencyConfig.symbol : '$';
+        const rate = (typeof currencyConfig !== 'undefined') ? currencyConfig.rate : 1;
+
         spendingTrendChart = new Chart(ctx, {
             type: 'line',
             data: {
                 labels: data.labels,
                 datasets: [{
-                    label: 'Spending ($)',
-                    data: data.spent,
+                    label: 'Spending (' + symbol + ')',
+                    data: data.spent.map(v => v * rate),
                     borderColor: '#007bff',
                     backgroundColor: 'rgba(0, 123, 255, 0.1)',
                     borderWidth: 3,
@@ -227,7 +235,8 @@ function renderSpendingTrendChart(data) {
                     tooltip: {
                         callbacks: {
                             label: function(context) {
-                                return 'Spent: $' + context.parsed.y.toFixed(2);
+                                const sym = (typeof currencyConfig !== 'undefined') ? currencyConfig.symbol : '$';
+                                return 'Spent: ' + sym + context.parsed.y.toFixed(2);
                             }
                         }
                     }
@@ -237,7 +246,8 @@ function renderSpendingTrendChart(data) {
                         beginAtZero: true,
                         ticks: {
                             callback: function(value) {
-                                return '$' + value.toFixed(0);
+                                const sym = (typeof currencyConfig !== 'undefined') ? currencyConfig.symbol : '$';
+                                return sym + value.toFixed(0);
                             }
                         },
                         grid: {

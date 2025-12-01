@@ -138,6 +138,21 @@ class Kernel extends ConsoleKernel
         // =====================================================
         // END DAILY SYSTEM REPORT SCHEDULED COMMAND
         // =====================================================
+
+        // =====================================================
+        // CURRENCY EXCHANGE RATE UPDATE
+        // =====================================================
+
+        // Update exchange rates daily at 1:00 AM (USD to GBP)
+        $schedule->job(new \App\Jobs\UpdateExchangeRates)
+            ->dailyAt('01:00')
+            ->withoutOverlapping()
+            ->runInBackground()
+            ->appendOutputTo(storage_path('logs/exchange-rates.log'));
+
+        // =====================================================
+        // END CURRENCY EXCHANGE RATE UPDATE
+        // =====================================================
     }
 
 

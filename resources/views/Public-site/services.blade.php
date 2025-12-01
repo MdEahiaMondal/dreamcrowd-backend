@@ -947,7 +947,7 @@ $box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 3px rgba(0, 0, 0, 0.24); */
 
                                                                     <h1>{{$item->title}}</h1>
                                                                     <p>Duration: 1 Day</p>
-                                                                    <h2>Starting at ${{$item->rate}}</h2>
+                                                                    <h2>Starting at @currency($item->rate)</h2>
                                                                 </a>
                                                                 <hr/>
 
@@ -1056,7 +1056,7 @@ $box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 3px rgba(0, 0, 0, 0.24); */
                                                                         @endif
                                                                         <h1>{{$item->title}}</h1>
                                                                         <p>Duration: 1 Day</p>
-                                                                        <h2>Starting at ${{$item->rate}}</h2>
+                                                                        <h2>Starting at @currency($item->rate)</h2>
                                                                     </a>
                                                                     <hr/>
 
@@ -1162,7 +1162,7 @@ $box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 3px rgba(0, 0, 0, 0.24); */
                                                                     @endif
                                                                     <h1>{{$item->title}}</h1>
                                                                     <p>Duration: 1 Day</p>
-                                                                    <h2>Starting at ${{$item->rate}}</h2>
+                                                                    <h2>Starting at @currency($item->rate)</h2>
                                                                 </a>
                                                                 <hr/>
 
@@ -1510,7 +1510,7 @@ $box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 3px rgba(0, 0, 0, 0.24); */
                                         <i class="fa-solid fa-star"></i> &nbsp; (5.0)
                                     </span>
                                                                 <div class="card-last">
-                                                                    <span>Starting at ${{$payment->rate}}</span>
+                                                                    <span>Starting at @currency($payment->rate)</span>
                                                                     <!-- word img -->
                                                                     @if ($item->service_type == 'Online')
                                                                         <img data-toggle="tooltip"
@@ -1760,7 +1760,7 @@ $box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 3px rgba(0, 0, 0, 0.24); */
                                         <i class="fa-solid fa-star"></i> &nbsp; (5.0)
                                     </span>
                                                                 <div class="card-last">
-                                                                    <span>Starting at ${{$payment->rate}}</span>
+                                                                    <span>Starting at @currency($payment->rate)</span>
                                                                     <!-- word img -->
                                                                     @if ($item->service_type == 'Online')
                                                                         <img data-toggle="tooltip"
@@ -2242,7 +2242,7 @@ $box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 3px rgba(0, 0, 0, 0.24); */
                                     <i class="fa-solid fa-star"></i> &nbsp; (5.0)
                                 </span>
                                                     <div class="card-last">
-                                                        <span>Starting at ${{$payment->rate}}</span>
+                                                        <span>Starting at @currency($payment->rate)</span>
                                                         <!-- word img -->
                                                         @if ($item->service_type == 'Online')
                                                             <img data-toggle="tooltip" title="In Person-Service"

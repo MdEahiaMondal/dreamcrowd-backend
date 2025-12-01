@@ -123,11 +123,11 @@
                 </div>
                 <div class="stat-card amount">
                     <h6><i class="bx bx-dollar"></i> Total Pending Amount</h6>
-                    <h3>${{ number_format($stats['total_pending_amount'], 2) }}</h3>
+                    <h3>@currency($stats['total_pending_amount'])</h3>
                 </div>
                 <div class="stat-card paid">
                     <h6><i class="bx bx-check-double"></i> Paid This Month</h6>
-                    <h3>${{ number_format($stats['total_paid_this_month'], 2) }}</h3>
+                    <h3>@currency($stats['total_paid_this_month'])</h3>
                 </div>
             </div>
 
@@ -249,10 +249,10 @@
                                     @endif
                                 </td>
                                 <td>
-                                    <strong>${{ number_format($withdrawal->amount, 2) }}</strong>
+                                    <strong>@currency($withdrawal->amount)</strong>
                                     @if($withdrawal->processing_fee > 0)
                                     <br>
-                                    <small class="text-danger">Fee: -${{ number_format($withdrawal->processing_fee, 2) }}</small>
+                                    <small class="text-danger">Fee: -@currency($withdrawal->processing_fee)</small>
                                     @endif
                                 </td>
                                 <td>

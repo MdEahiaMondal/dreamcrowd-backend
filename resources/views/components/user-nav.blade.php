@@ -29,6 +29,7 @@
             </div>
             <div class="col-md-4" style="padding: 0px 12px">
                 <div class="nav-profile">
+                    <x-currency-switcher />
                     <div class="notificationSectionAz"></div>
                     <div class="messageSectionAz"></div>
 

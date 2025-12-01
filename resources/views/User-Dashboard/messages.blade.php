@@ -2415,6 +2415,14 @@ document.getElementById('imgInput').addEventListener('change', function() {
 </script>
 {{-- In Chat Unsetisfied Button Click Function END --}}
 
+<!-- Currency configuration for JavaScript -->
+<script>
+    const currencyConfig = {
+        currency: '{{ session("display_currency", "USD") }}',
+        symbol: '{{ session("display_currency", "USD") === "GBP" ? "£" : "$" }}',
+        rate: {{ session("display_currency", "USD") === "GBP" ? (\App\Services\CurrencyService::getRate("USD", "GBP") ?? 0.79) : 1 }}
+    };
+</script>
 <!-- Custom Offers Buyer JavaScript -->
 <script src="{{ asset('assets/user/js/custom-offers-buyer.js') }}"></script>
 

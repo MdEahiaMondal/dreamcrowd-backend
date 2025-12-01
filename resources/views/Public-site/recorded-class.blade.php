@@ -261,17 +261,17 @@
                       @endif
                       @if($gigPayment->rate)
                         <div class="col-md-4">
-                          <p><strong>Standard Rate:</strong> ${{ number_format((float)$gigPayment->rate, 2) }}</p>
+                          <p><strong>Standard Rate:</strong> @currency($gigPayment->rate)</p>
                         </div>
                       @endif
                       @if($gigPayment->public_rate)
                         <div class="col-md-4">
-                          <p><strong>Group Rate:</strong> ${{ number_format((float)$gigPayment->public_rate, 2) }}</p>
+                          <p><strong>Group Rate:</strong> @currency($gigPayment->public_rate)</p>
                         </div>
                       @endif
                       @if($gigPayment->private_rate)
                         <div class="col-md-4">
-                          <p><strong>Private Rate:</strong> ${{ number_format((float)$gigPayment->private_rate, 2) }}</p>
+                          <p><strong>Private Rate:</strong> @currency($gigPayment->private_rate)</p>
                         </div>
                       @endif
                       @if($gigPayment->duration)

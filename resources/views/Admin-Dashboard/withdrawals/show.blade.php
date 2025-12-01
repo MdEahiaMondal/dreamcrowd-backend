@@ -159,13 +159,13 @@
                             <div class="col-md-6">
                                 <div class="info-row">
                                     <div class="info-label">Amount Requested</div>
-                                    <div class="amount-display">${{ number_format($withdrawal->amount, 2) }}</div>
+                                    <div class="amount-display">@currency($withdrawal->amount)</div>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="info-row">
                                     <div class="info-label">Net Amount (After Fees)</div>
-                                    <div class="amount-display">${{ number_format($withdrawal->net_amount, 2) }}</div>
+                                    <div class="amount-display">@currency($withdrawal->net_amount)</div>
                                 </div>
                             </div>
                         </div>
@@ -184,7 +184,7 @@
                             <div class="col-md-4">
                                 <div class="info-row">
                                     <div class="info-label">Processing Fee</div>
-                                    <div class="info-value">${{ number_format($withdrawal->processing_fee, 2) }}</div>
+                                    <div class="info-value">@currency($withdrawal->processing_fee)</div>
                                 </div>
                             </div>
                             <div class="col-md-4">
@@ -345,7 +345,7 @@
                         @forelse($sellerWithdrawals as $prev)
                         <div class="history-item {{ $prev->status }}">
                             <div class="d-flex justify-content-between">
-                                <strong>${{ number_format($prev->amount, 2) }}</strong>
+                                <strong>@currency($prev->amount)</strong>
                                 <span class="status-badge status-{{ $prev->status }}" style="font-size: 10px; padding: 3px 8px;">
                                     {{ ucfirst($prev->status) }}
                                 </span>
@@ -364,7 +364,7 @@
                         <div class="history-item completed">
                             <div class="d-flex justify-content-between">
                                 <span>{{ \Illuminate\Support\Str::limit($txn->bookOrder->title ?? 'Transaction', 20) }}</span>
-                                <strong class="text-success">${{ number_format($txn->seller_earnings, 2) }}</strong>
+                                <strong class="text-success">@currency($txn->seller_earnings)</strong>
                             </div>
                             <small class="text-muted">{{ $txn->created_at->format('M d, Y') }}</small>
                         </div>
@@ -388,7 +388,7 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
                     <div class="modal-body">
-                        <p>You are about to mark this withdrawal of <strong>${{ number_format($withdrawal->amount, 2) }}</strong> as completed.</p>
+                        <p>You are about to mark this withdrawal of <strong>@currency($withdrawal->amount)</strong> as completed.</p>
 
                         @if($withdrawal->method === 'stripe')
                         <div class="mb-3">
@@ -436,7 +436,7 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
                     <div class="modal-body">
-                        <p>You are about to reject this withdrawal request of <strong>${{ number_format($withdrawal->amount, 2) }}</strong>.</p>
+                        <p>You are about to reject this withdrawal request of <strong>@currency($withdrawal->amount)</strong>.</p>
                         <div class="mb-3">
                             <label class="form-label">Reason for Rejection *</label>
                             <textarea name="failure_reason" class="form-control" rows="3" required

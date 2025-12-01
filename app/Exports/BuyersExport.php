@@ -120,7 +120,7 @@ class BuyersExport implements FromQuery, WithHeadings, WithMapping, WithStyles
             $buyer->country ?? 'N/A',
             $buyer->city ?? 'N/A',
             ucfirst($buyer->status_string ?? 'active'),
-            '$' . number_format($buyer->total_spent ?? 0, 2),
+            \App\Services\CurrencyService::formatRaw($buyer->total_spent ?? 0, 'USD'),
             $buyer->book_orders_count ?? 0,
             $buyer->last_active_at ? $buyer->last_active_at->format('Y-m-d H:i:s') : 'Never',
             $buyer->created_at->format('Y-m-d H:i:s'),

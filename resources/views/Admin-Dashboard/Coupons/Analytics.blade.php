@@ -126,7 +126,7 @@
                                                 <small style="color: #999;">uses</small>
                                                 <br>
                                                 <small style="color: #28a745; font-weight: bold;">
-                                                    ${{ number_format($coupon->total_discount_given, 2) }}
+                                                    @currency($coupon->total_discount_given)
                                                 </small>
                                             </div>
                                         </div>
@@ -167,11 +167,11 @@
                                                 </div>
                                                 <div class="text-end">
                                                         <span style="color: #dc3545; font-weight: bold;">
-                                                            -${{ number_format($usage->discount_amount, 2) }}
+                                                            -@currency($usage->discount_amount)
                                                         </span>
                                                     <br>
                                                     <small style="color: #666;">
-                                                        on ${{ number_format($usage->original_amount, 2) }}
+                                                        on @currency($usage->original_amount)
                                                     </small>
                                                 </div>
                                             </div>

@@ -156,7 +156,7 @@
             <div class="stats-card" style="border-left: 4px solid #28a745;">
                 <i class="bx bx-wallet earnings-icon" style="color: #28a745;"></i>
                 <p>Total Earned</p>
-                <h3 style="color: #28a745;">${{ number_format($stats['total_earned'], 2) }}</h3>
+                <h3 style="color: #28a745;">@currency($stats['total_earned'])</h3>
                 <small>Lifetime earnings</small>
             </div>
         </div>
@@ -166,7 +166,7 @@
             <div class="stats-card" style="border-left: 4px solid #007bff;">
                 <i class="bx bx-check-circle earnings-icon" style="color: #007bff;"></i>
                 <p>Available for Withdrawal</p>
-                <h3 style="color: #007bff;">${{ number_format($stats['available'], 2) }}</h3>
+                <h3 style="color: #007bff;">@currency($stats['available'])</h3>
                 <small>Ready to withdraw</small>
             </div>
         </div>
@@ -176,7 +176,7 @@
             <div class="stats-card" style="border-left: 4px solid #ffc107;">
                 <i class="bx bx-time earnings-icon" style="color: #ffc107;"></i>
                 <p>Pending Clearance</p>
-                <h3 style="color: #ffc107;">${{ number_format($stats['pending_clearance'], 2) }}</h3>
+                <h3 style="color: #ffc107;">@currency($stats['pending_clearance'])</h3>
                 <small>{{ $settings->holding_period_days ?? 14 }}-day holding period</small>
             </div>
         </div>
@@ -186,7 +186,7 @@
             <div class="stats-card" style="border-left: 4px solid #6c757d;">
                 <i class="bx bx-check-double earnings-icon" style="color: #6c757d;"></i>
                 <p>Withdrawn</p>
-                <h3 style="color: #6c757d;">${{ number_format($stats['withdrawn'], 2) }}</h3>
+                <h3 style="color: #6c757d;">@currency($stats['withdrawn'])</h3>
                 <small>Already paid out</small>
             </div>
         </div>
@@ -281,16 +281,16 @@
                                 {{ ucfirst($txn->service_type) }}
                             </span>
                         </td>
-                        <td>${{ number_format($txn->total_amount, 2) }}</td>
+                        <td>@currency($txn->total_amount)</td>
                         <td>
                             <span class="text-danger">
-                                -${{ number_format($txn->seller_commission_amount, 2) }}
+                                -@currency($txn->seller_commission_amount)
                             </span>
                             <br>
                             <small class="text-muted">({{ $txn->seller_commission_rate }}%)</small>
                         </td>
                         <td>
-                            <strong class="text-success">${{ number_format($txn->seller_earnings, 2) }}</strong>
+                            <strong class="text-success">@currency($txn->seller_earnings)</strong>
                         </td>
                         <td>
                             @if(in_array($txn->payout_status, ['completed', 'paid']))
@@ -358,11 +358,11 @@
                         <div class="col-8">
                             <h5 class="mb-3"><i class="bx bx-money-withdraw"></i> Request Withdrawal</h5>
                             <p class="text-muted mb-2">
-                                Available balance: <strong class="text-primary">${{ number_format($stats['available'], 2) }}</strong>
+                                Available balance: <strong class="text-primary">@currency($stats['available'])</strong>
                             </p>
                             <p class="text-muted mb-3">
                                 <small>
-                                    Minimum withdrawal: ${{ number_format($settings->minimum_withdrawal ?? 25, 2) }}
+                                    Minimum withdrawal: @currency($settings->minimum_withdrawal ?? 25)
                                 </small>
                             </p>
                             <a href="{{ route('seller.withdrawal.create') }}"
@@ -393,7 +393,7 @@
                     @forelse($recentWithdrawals as $withdrawal)
                     <div class="d-flex justify-content-between align-items-center py-2 {{ !$loop->last ? 'border-bottom' : '' }}">
                         <div>
-                            <strong>${{ number_format($withdrawal->amount, 2) }}</strong>
+                            <strong>@currency($withdrawal->amount)</strong>
                             <small class="text-muted ms-2">{{ $withdrawal->method_display_name }}</small>
                         </div>
                         <div>

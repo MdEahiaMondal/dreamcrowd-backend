@@ -303,6 +303,7 @@
 
             </form>
             <div class="btn-area">
+                <x-currency-switcher />
 
                 @if (Auth::user())
                     @if (Auth::user()->role == 0)

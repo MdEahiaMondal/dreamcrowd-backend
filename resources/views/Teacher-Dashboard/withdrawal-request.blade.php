@@ -200,7 +200,7 @@
             <!-- Balance Card -->
             <div class="balance-card">
                 <p><i class="bx bx-wallet"></i> Available Balance</p>
-                <h2>${{ number_format($availableBalance, 2) }}</h2>
+                <h2>@currency($availableBalance)</h2>
                 <p>Ready to withdraw</p>
             </div>
 
@@ -214,7 +214,7 @@
             @if($availableBalance < $minimumWithdrawal)
             <div class="alert alert-info-custom">
                 <i class="bx bx-info-circle"></i>
-                <strong>Minimum Balance Required:</strong> You need at least ${{ number_format($minimumWithdrawal, 2) }} available to request a withdrawal.
+                <strong>Minimum Balance Required:</strong> You need at least @currency($minimumWithdrawal) available to request a withdrawal.
                 <br>
                 <small class="text-muted">Earnings are available after a {{ $settings->holding_period_days ?? 14 }}-day holding period.</small>
             </div>
@@ -229,7 +229,7 @@
 
                     <!-- Amount -->
                     <div class="mb-4">
-                        <label class="form-label">Withdrawal Amount ($)</label>
+                        <label class="form-label">Withdrawal Amount (USD)</label>
                         <div class="input-group">
                             <span class="input-group-text">$</span>
                             <input type="number"
@@ -244,8 +244,8 @@
                                    required>
                         </div>
                         <small class="text-muted">
-                            Minimum: ${{ number_format($minimumWithdrawal, 2) }} |
-                            Maximum: ${{ number_format($availableBalance, 2) }}
+                            Minimum: @currency($minimumWithdrawal) |
+                            Maximum: @currency($availableBalance)
                         </small>
                     </div>
 
@@ -405,7 +405,7 @@
                     @forelse($withdrawals as $withdrawal)
                     <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
                         <div>
-                            <strong>${{ number_format($withdrawal->amount, 2) }}</strong>
+                            <strong>@currency($withdrawal->amount)</strong>
                             <br>
                             <small class="text-muted">{{ $withdrawal->created_at->format('M d, Y') }}</small>
                         </div>

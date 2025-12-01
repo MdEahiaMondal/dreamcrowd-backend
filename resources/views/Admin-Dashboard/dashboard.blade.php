@@ -357,7 +357,7 @@
                         </div>
                         <div class="stat-content">
                             <p class="stat-label">Total Admin Commission</p>
-                            <h3 class="stat-value" id="stat-total-commission">$0.00</h3>
+                            <h3 class="stat-value" id="stat-total-commission">@currencySymbol0.00</h3>
                             <small class="stat-sublabel">Platform revenue</small>
                         </div>
                     </div>
@@ -369,7 +369,7 @@
                         </div>
                         <div class="stat-content">
                             <p class="stat-label">This Month Revenue</p>
-                            <h3 class="stat-value" id="stat-month-revenue">$0.00</h3>
+                            <h3 class="stat-value" id="stat-month-revenue">@currencySymbol0.00</h3>
                             <small class="stat-sublabel" id="current-month">{{ now()->format('F Y') }}</small>
                         </div>
                     </div>
@@ -381,7 +381,7 @@
                         </div>
                         <div class="stat-content">
                             <p class="stat-label">Total GMV</p>
-                            <h3 class="stat-value" id="stat-total-gmv">$0.00</h3>
+                            <h3 class="stat-value" id="stat-total-gmv">@currencySymbol0.00</h3>
                             <small class="stat-sublabel">Gross merchandise value</small>
                         </div>
                     </div>
@@ -393,32 +393,32 @@
                         </div>
                         <div class="stat-content">
                             <p class="stat-label">Pending Payouts</p>
-                            <h3 class="stat-value" id="stat-pending-payouts">$0.00</h3>
+                            <h3 class="stat-value" id="stat-pending-payouts">@currencySymbol0.00</h3>
                             <small class="stat-sublabel">To sellers</small>
                         </div>
                     </div>
                 </div>
                 <div class="col-lg-3 col-md-6 mb-3">
                     <div class="stat-card-small">
-                        <h3 class="stat-value" id="stat-avg-transaction">$0.00</h3>
+                        <h3 class="stat-value" id="stat-avg-transaction">@currencySymbol0.00</h3>
                         <p class="stat-label">Avg Transaction</p>
                     </div>
                 </div>
                 <div class="col-lg-3 col-md-6 mb-3">
                     <div class="stat-card-small">
-                        <h3 class="stat-value" id="stat-total-refunded">$0.00</h3>
+                        <h3 class="stat-value" id="stat-total-refunded">@currencySymbol0.00</h3>
                         <p class="stat-label">Total Refunded</p>
                     </div>
                 </div>
                 <div class="col-lg-3 col-md-6 mb-3">
                     <div class="stat-card-small">
-                        <h3 class="stat-value" id="stat-coupon-discount">$0.00</h3>
+                        <h3 class="stat-value" id="stat-coupon-discount">@currencySymbol0.00</h3>
                         <p class="stat-label">Coupon Discounts</p>
                     </div>
                 </div>
                 <div class="col-lg-3 col-md-6 mb-3">
                     <div class="stat-card-small">
-                        <h3 class="stat-value" id="stat-net-revenue">$0.00</h3>
+                        <h3 class="stat-value" id="stat-net-revenue">@currencySymbol0.00</h3>
                         <p class="stat-label">Net Revenue</p>
                     </div>
                 </div>
@@ -576,6 +576,21 @@
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
 <script>
+    // Currency configuration from server
+    const currencyConfig = {
+        currency: '{{ session("display_currency", "USD") }}',
+        symbol: '{{ session("display_currency", "USD") === "GBP" ? "£" : "$" }}',
+        rate: {{ session("display_currency", "USD") === "GBP" ? (\App\Services\CurrencyService::getRate("USD", "GBP") ?? 0.79) : 1 }}
+    };
+
+    /**
+     * Format amount in user's preferred currency
+     */
+    function formatCurrency(amount) {
+        const convertedAmount = parseFloat(amount) * currencyConfig.rate;
+        return currencyConfig.symbol + convertedAmount.toFixed(2);
+    }
+
     // Global variables
     let revenueChart = null;
     let orderStatusChart = null;
@@ -641,20 +656,20 @@
      * Update all statistics
      */
     function updateStatistics(data) {
-        // Financial
-        $('#stat-total-commission').text('$' + parseFloat(data.financial.total_admin_commission).toFixed(2));
-        $('#stat-month-revenue').text('$' + parseFloat(data.financial.month_revenue).toFixed(2));
-        $('#stat-total-gmv').text('$' + parseFloat(data.financial.total_gmv).toFixed(2));
-        $('#stat-pending-payouts').text('$' + parseFloat(data.financial.pending_payouts).toFixed(2));
-        $('#stat-avg-transaction').text('$' + parseFloat(data.financial.avg_transaction_value).toFixed(2));
-        $('#stat-total-refunded').text('$' + parseFloat(data.financial.total_refunded).toFixed(2));
-        $('#stat-coupon-discount').text('$' + parseFloat(data.financial.total_coupon_discount).toFixed(2));
-        $('#stat-net-revenue').text('$' + parseFloat(data.financial.net_platform_revenue).toFixed(2));
+        // Financial - use formatCurrency for proper currency display
+        $('#stat-total-commission').text(formatCurrency(data.financial.total_admin_commission));
+        $('#stat-month-revenue').text(formatCurrency(data.financial.month_revenue));
+        $('#stat-total-gmv').text(formatCurrency(data.financial.total_gmv));
+        $('#stat-pending-payouts').text(formatCurrency(data.financial.pending_payouts));
+        $('#stat-avg-transaction').text(formatCurrency(data.financial.avg_transaction_value));
+        $('#stat-total-refunded').text(formatCurrency(data.financial.total_refunded));
+        $('#stat-coupon-discount').text(formatCurrency(data.financial.total_coupon_discount));
+        $('#stat-net-revenue').text(formatCurrency(data.financial.net_platform_revenue));
 
         // Alerts
         $('#alert-applications').text(data.applications.pending_applications);
         $('#alert-disputes').text(data.disputes.active_disputes);
-        $('#alert-payout-amount').text('$' + parseFloat(data.financial.pending_payouts).toFixed(0));
+        $('#alert-payout-amount').text(currencyConfig.symbol + Math.round(parseFloat(data.financial.pending_payouts) * currencyConfig.rate));
         $('#alert-refunds').text(data.disputes.pending_refunds);
 
         // Users
@@ -723,8 +738,8 @@
             data: {
                 labels: data.labels,
                 datasets: [{
-                    label: 'Revenue ($)',
-                    data: data.revenue,
+                    label: 'Revenue (' + currencyConfig.symbol + ')',
+                    data: data.revenue.map(v => v * currencyConfig.rate),
                     borderColor: '#007bff',
                     backgroundColor: 'rgba(0, 123, 255, 0.1)',
                     borderWidth: 2,
@@ -745,7 +760,7 @@
                         beginAtZero: true,
                         ticks: {
                             callback: function (value) {
-                                return '$' + value.toLocaleString();
+                                return currencyConfig.symbol + value.toLocaleString();
                             }
                         }
                     }

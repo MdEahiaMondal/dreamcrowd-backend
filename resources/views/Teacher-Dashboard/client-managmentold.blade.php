@@ -194,7 +194,7 @@
                                         </td>
                                         <td>
                                             <span class="badge bg-danger" style="font-size: 1.1em;">
-                                                ${{ number_format($refund->finel_price, 2) }}
+                                                @currency($refund->finel_price)
                                             </span>
                                         </td>
                                         <td>
@@ -485,7 +485,7 @@
                                                         </td>
                                                         <td>
                                                             <div class="service-date">
-                                                                <p>${{ $order->finel_price }}</p>
+                                                                <p>@currency($order->finel_price)</p>
                                                             </div>
                                                         </td>
                                                         <td>
@@ -790,7 +790,7 @@
                                                         </td>
                                                         <td>
                                                             <div class="service-date">
-                                                                <p>${{ $order->finel_price }}</p>
+                                                                <p>@currency($order->finel_price)</p>
                                                             </div>
                                                         </td>
                                                         <td>
@@ -1097,7 +1097,7 @@
                                                         </td>
                                                         <td>
                                                             <div class="service-date">
-                                                                <p>${{ $order->finel_price }}</p>
+                                                                <p>@currency($order->finel_price)</p>
                                                             </div>
                                                         </td>
                                                         <td>
@@ -1394,7 +1394,7 @@
                                                         </td>
                                                         <td>
                                                             <div class="service-date">
-                                                                <p>${{ $order->finel_price }}</p>
+                                                                <p>@currency($order->finel_price)</p>
                                                             </div>
                                                         </td>
                                                         <td>
@@ -1685,7 +1685,7 @@
                                                         </td>
                                                         <td>
                                                             <div class="service-date">
-                                                                <p>${{ $order->finel_price }}</p>
+                                                                <p>@currency($order->finel_price)</p>
                                                             </div>
                                                         </td>
                                                         <td>
@@ -1976,7 +1976,7 @@
                                                         </td>
                                                         <td>
                                                             <div class="service-date">
-                                                                <p>${{ $order->finel_price }}</p>
+                                                                <p>@currency($order->finel_price)</p>
                                                             </div>
                                                         </td>
                                                         <td>

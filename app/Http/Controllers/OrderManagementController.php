@@ -1437,7 +1437,7 @@ class OrderManagementController extends Controller
                 userId: $order->user_id,
                 type: 'cancellation',
                 title: 'Order Request Rejected',
-                message: "Your order request for {$serviceName} has been declined by {$sellerMaskedName}. " . ($refundSuccess ? "Full refund of $" . number_format($order->finel_price, 2) . " has been processed." : "Please contact support regarding refund."),
+                message: "Your order request for {$serviceName} has been declined by {$sellerMaskedName}. " . ($refundSuccess ? "Full refund of " . \App\Services\CurrencyService::formatRaw($order->finel_price, 'USD') . " has been processed." : "Please contact support regarding refund."),
                 data: ['order_id' => $order->id, 'refund_amount' => $refundSuccess ? $order->finel_price : 0],
                 sendEmail: true,
                 actorUserId: Auth::id(),
@@ -1453,7 +1453,7 @@ class OrderManagementController extends Controller
                 userIds: $this->getAdminUserIds(),
                 type: 'order',
                 title: 'Order Rejected by Seller',
-                message: "Seller \"{$sellerFullName}\" rejected order #{$order->id} for \"{$serviceName}\" from buyer \"{$buyerFullName}\". Refund processed: £" . number_format($refundAmount, 2),
+                message: "Seller \"{$sellerFullName}\" rejected order #{$order->id} for \"{$serviceName}\" from buyer \"{$buyerFullName}\". Refund processed: " . \App\Services\CurrencyService::formatRaw($refundAmount, 'USD'),
                 data: [
                     'order_id' => $order->id,
                     'seller_name' => $sellerFullName,

@@ -204,7 +204,7 @@
                                         <div class="d-flex justify-content-between align-items-center">
                                             <div>
                                                 <h6 class="text-muted mb-1">Total Revenue</h6>
-                                                <h3 class="mb-0">${{ number_format((float)$stats['total_revenue'], 2) }}</h3>
+                                                <h3 class="mb-0">@currency($stats['total_revenue'] ?? 0)</h3>
                                             </div>
                                             <div class="bg-info bg-opacity-10 p-3 rounded">
                                                 <i class="bx bx-dollar-circle fs-3 text-info"></i>
@@ -424,7 +424,7 @@
                                                     </td>
                                                     <td>
                                                         @if($service->rate)
-                                                            <strong>${{ number_format((float)$service->rate, 2) }}</strong>
+                                                            <strong>@currency($service->rate)</strong>
                                                         @else
                                                             <span class="text-muted">N/A</span>
                                                         @endif

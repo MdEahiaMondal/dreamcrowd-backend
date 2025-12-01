@@ -68,7 +68,7 @@
             <p>Great news! {{ $buyerName }} has accepted your custom offer for <strong>{{ $offer->gig->title }}</strong>.</p>
 
             <center>
-                <span class="success-badge">Payment Received: ${{ number_format($offer->total_amount, 2) }}</span>
+                <span class="success-badge">Payment Received: @currencyRaw($offer->total_amount)</span>
             </center>
 
             <h3>Next Steps:</h3>

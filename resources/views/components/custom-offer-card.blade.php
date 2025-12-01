@@ -47,7 +47,7 @@
 
         <div class="d-flex justify-content-between align-items-center mt-3">
             <h5 class="mb-0 text-primary">
-                ${{ number_format($offer->total_amount, 2) }}
+                @currency($offer->total_amount)
             </h5>
 
             @if($offer->status === 'pending' && !$offer->isExpired())

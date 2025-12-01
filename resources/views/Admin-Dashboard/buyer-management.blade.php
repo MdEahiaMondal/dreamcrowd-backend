@@ -246,7 +246,7 @@
                                           <td>{{ $buyer->country ?? 'N/A' }}</td>
                                           <td>{{ $buyer->created_at->format('M d, Y') }}</td>
                                           <td>{{ $buyer->book_orders_count ?? 0 }}</td>
-                                          <td>${{ number_format($buyer->total_spent ?? 0, 2) }}</td>
+                                          <td>@currency($buyer->total_spent ?? 0)</td>
                                           <td>
                                               @php
                                                   $statusBadge = [

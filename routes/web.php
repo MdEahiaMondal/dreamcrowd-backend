@@ -27,6 +27,23 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\SellerEarningsController;
 use App\Http\Controllers\WithdrawalController;
 use App\Http\Controllers\AdminWithdrawalController;
+use App\Http\Controllers\CurrencyController;
+
+
+// =====================================================
+// CURRENCY ROUTES (Public - No Auth Required)
+// =====================================================
+Route::post('/set-currency', [CurrencyController::class, 'setCurrency'])->name('currency.set');
+Route::get('/get-currency', [CurrencyController::class, 'getCurrency'])->name('currency.get');
+Route::get('/get-rates', [CurrencyController::class, 'getRates'])->name('currency.rates');
+Route::get('/currency-config', [CurrencyController::class, 'getJsConfig'])->name('currency.config');
+Route::post('/convert-currency', [CurrencyController::class, 'convert'])->name('currency.convert');
+
+// Admin-only: Manual rate update
+Route::post('/admin/update-exchange-rates', [CurrencyController::class, 'updateRates'])
+    ->middleware('auth')
+    ->name('admin.currency.update');
+// =====================================================
 
 
 // Route::get('/', function () {

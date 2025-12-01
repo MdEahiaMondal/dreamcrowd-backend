@@ -63,7 +63,7 @@ class RefundsExport implements FromCollection, WithHeadings, WithMapping, WithSt
             $dispute->order && $dispute->order->gig && $dispute->order->gig->user ? $dispute->order->gig->user->name : 'N/A',
             $dispute->order && $dispute->order->gig && $dispute->order->gig->user ? $dispute->order->gig->user->email : 'N/A',
             $dispute->order && $dispute->order->gig ? $dispute->order->gig->title : 'N/A',
-            '$' . number_format($dispute->amount, 2),
+            \App\Services\CurrencyService::formatRaw($dispute->amount, 'USD'),
             $refundType,
             $status,
             $dispute->user_disputed ? 'Yes' : 'No',

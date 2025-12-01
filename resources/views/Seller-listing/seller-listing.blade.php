@@ -650,7 +650,7 @@
                                                               <i class="fa-solid fa-star"></i> &nbsp; ({{ $item->all_reviews_avg_rating ?? 0 }})
                                                             </span>
                                                             <div class="card-last">
-                                                                <span>Starting at ${{$payment->rate}}</span>
+                                                                <span>Starting at @currency($payment->rate)</span>
                                                                 <!-- word img -->
                                                                 @if ($item->service_type == 'Online')
                                                                     <img data-toggle="tooltip" title="In Person-Service"

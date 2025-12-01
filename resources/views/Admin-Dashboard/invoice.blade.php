@@ -110,7 +110,7 @@
                                   <div class="d-flex align-items-center">
                                       <div class="flex-grow-1">
                                           <h6 class="text-muted mb-1">Monthly Revenue</h6>
-                                          <h3 class="mb-0">${{ number_format($stats['monthly_revenue'], 2) }}</h3>
+                                          <h3 class="mb-0">@currency($stats['monthly_revenue'])</h3>
                                           <small class="text-success">{{ $stats['transactions_this_month'] }} transactions</small>
                                       </div>
                                       <div class="stat-icon bg-success">
@@ -126,7 +126,7 @@
                                   <div class="d-flex align-items-center">
                                       <div class="flex-grow-1">
                                           <h6 class="text-muted mb-1">Total Revenue</h6>
-                                          <h3 class="mb-0">${{ number_format($stats['total_revenue'], 2) }}</h3>
+                                          <h3 class="mb-0">@currency($stats['total_revenue'])</h3>
                                           <small class="text-muted">{{ $stats['total_transactions'] }} total transactions</small>
                                       </div>
                                       <div class="stat-icon bg-primary">
@@ -142,7 +142,7 @@
                                   <div class="d-flex align-items-center">
                                       <div class="flex-grow-1">
                                           <h6 class="text-muted mb-1">Pending Payouts</h6>
-                                          <h3 class="mb-0">${{ number_format($stats['pending_payouts'], 2) }}</h3>
+                                          <h3 class="mb-0">@currency($stats['pending_payouts'])</h3>
                                           <small class="text-warning">Awaiting payout</small>
                                       </div>
                                       <div class="stat-icon bg-warning">
@@ -316,13 +316,13 @@
 
                                                     <!-- Total Amount -->
                                                     <td class="text-nowrap">
-                                                        <strong>${{ number_format($transaction->total_amount, 2) }}</strong><br>
+                                                        <strong>@currency($transaction->total_amount)</strong><br>
                                                         <small class="text-muted">{{ $transaction->currency }}</small>
                                                     </td>
 
                                                     <!-- Admin Commission -->
                                                     <td class="text-nowrap">
-                                                        <strong class="text-success">${{ number_format($transaction->total_admin_commission, 2) }}</strong>
+                                                        <strong class="text-success">@currency($transaction->total_admin_commission)</strong>
                                                     </td>
 
                                                     <!-- Status -->

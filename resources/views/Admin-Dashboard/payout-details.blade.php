@@ -132,28 +132,28 @@
                       <div class="stats-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
                           <h4>Pending Payouts</h4>
                           <h2>{{ $stats['pending_count'] ?? 0 }}</h2>
-                          <small>${{ number_format($stats['pending_amount'] ?? 0, 2) }}</small>
+                          <small>@currency($stats['pending_amount'] ?? 0)</small>
                       </div>
                   </div>
                   <div class="col-md-3">
                       <div class="stats-card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
                           <h4>Approved Payouts</h4>
                           <h2>{{ $stats['approved_count'] ?? 0 }}</h2>
-                          <small>${{ number_format($stats['approved_amount'] ?? 0, 2) }}</small>
+                          <small>@currency($stats['approved_amount'] ?? 0)</small>
                       </div>
                   </div>
                   <div class="col-md-3">
                       <div class="stats-card" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
                           <h4>Completed Payouts</h4>
                           <h2>{{ $stats['completed_count'] ?? 0 }}</h2>
-                          <small>${{ number_format($stats['completed_amount'] ?? 0, 2) }}</small>
+                          <small>@currency($stats['completed_amount'] ?? 0)</small>
                       </div>
                   </div>
                   <div class="col-md-3">
                       <div class="stats-card" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
                           <h4>Failed Payouts</h4>
                           <h2>{{ $stats['failed_count'] ?? 0 }}</h2>
-                          <small>${{ number_format($stats['failed_amount'] ?? 0, 2) }}</small>
+                          <small>@currency($stats['failed_amount'] ?? 0)</small>
                       </div>
                   </div>
               </div>
@@ -277,13 +277,13 @@
                                         {{ ($payout->buyer->first_name ?? '') . ' ' . ($payout->buyer->last_name ?? '') ?: 'N/A' }}<br>
                                         <small class="text-muted">{{ $payout->buyer->email ?? '' }}</small>
                                       </td>
-                                      <td><strong>${{ number_format($payout->total_amount ?? 0, 2) }}</strong></td>
+                                      <td><strong>@currency($payout->total_amount ?? 0)</strong></td>
                                       <td>
-                                        Seller: ${{ number_format($payout->seller_commission_amount ?? 0, 2) }}<br>
-                                        <small>Buyer: ${{ number_format($payout->buyer_commission_amount ?? 0, 2) }}</small>
+                                        Seller: @currency($payout->seller_commission_amount ?? 0)<br>
+                                        <small>Buyer: @currency($payout->buyer_commission_amount ?? 0)</small>
                                       </td>
                                       <td>
-                                        <strong class="text-success">${{ number_format($payout->seller_earnings ?? 0, 2) }}</strong>
+                                        <strong class="text-success">@currency($payout->seller_earnings ?? 0)</strong>
                                       </td>
                                       <td>
                                         {{ $payout->created_at->format('M d, Y') }}<br>

@@ -126,15 +126,15 @@
 
 <div class="summary">
     <div class="summary-item">
-        <h3>${{ number_format($totalAmount, 2) }}</h3>
+        <h3>@currencyRaw($totalAmount)</h3>
         <p>Total Transaction Amount</p>
     </div>
     <div class="summary-item">
-        <h3>${{ number_format($totalCommission, 2) }}</h3>
+        <h3>@currencyRaw($totalCommission)</h3>
         <p>Total Admin Commission</p>
     </div>
     <div class="summary-item">
-        <h3>${{ number_format($totalSellerEarnings, 2) }}</h3>
+        <h3>@currencyRaw($totalSellerEarnings)</h3>
         <p>Total Seller Earnings</p>
     </div>
 </div>
@@ -159,9 +159,9 @@
             <td>{{ $transaction->created_at->format('d M Y') }}</td>
             <td>{{ ($transaction->buyer->first_name ?? '') . ' ' . ($transaction->buyer->last_name ?? '') ?: 'N/A' }}</td>
             <td>{{ ($transaction->seller->first_name ?? '') . ' ' . ($transaction->seller->last_name ?? '') ?: 'N/A' }}</td>
-            <td><strong>${{ number_format($transaction->total_amount, 2) }}</strong></td>
-            <td style="color: #28a745;">${{ number_format($transaction->total_admin_commission, 2) }}</td>
-            <td style="color: #007bff;">${{ number_format($transaction->seller_earnings, 2) }}</td>
+            <td><strong>@currencyRaw($transaction->total_amount)</strong></td>
+            <td style="color: #28a745;">@currencyRaw($transaction->total_admin_commission)</td>
+            <td style="color: #007bff;">@currencyRaw($transaction->seller_earnings)</td>
             <td>
                     <span class="status status-{{ $transaction->status }}">
                         {{ ucfirst($transaction->status) }}

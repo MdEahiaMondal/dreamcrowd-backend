@@ -430,7 +430,7 @@
                             </h3>
                             <p style="font-size: 16px; margin-bottom: 15px; color: #333;">
                                 The buyer has requested a <strong>{{ $order->disputeOrder->refund_type == 0 ? 'FULL' : 'PARTIAL' }} REFUND</strong>
-                                of <strong style="color: #dc3545;">${{ number_format($order->disputeOrder->amount ?? $order->finel_price, 2) }}</strong>.
+                                of <strong style="color: #dc3545;">@currency($order->disputeOrder->amount ?? $order->finel_price)</strong>.
                             </p>
 
                             <!-- Countdown Timer -->
@@ -507,7 +507,7 @@
             <div class="stats-grid">
                 <div class="stat-card">
                     <i class='bx bx-dollar-circle' style="color: #28a745;"></i>
-                    <div class="stat-value">${{ number_format($order->service_price, 2) }}</div>
+                    <div class="stat-value">@currency($order->service_price)</div>
                     <div class="stat-label">Service Price</div>
                 </div>
                 <div class="stat-card">
@@ -704,7 +704,7 @@
                             @if($order->disputeOrder->amount)
                                 <div class="info-row">
                                     <span class="info-label">Refund Amount</span>
-                                    <span class="info-value"><strong>${{ number_format($order->disputeOrder->amount, 2) }}</strong></span>
+                                    <span class="info-value"><strong>@currency($order->disputeOrder->amount)</strong></span>
                                 </div>
                             @endif
 
@@ -767,21 +767,21 @@
                         </div>
                         <div class="info-row">
                             <span class="info-label">Service Price</span>
-                            <span class="info-value">${{ number_format($order->service_price, 2) }}</span>
+                            <span class="info-value">@currency($order->service_price)</span>
                         </div>
                         @if($order->coupon_discount > 0)
                             <div class="info-row">
                                 <span class="info-label">Coupon Discount</span>
-                                <span class="info-value" style="color: #28a745;">-${{ number_format($order->coupon_discount, 2) }}</span>
+                                <span class="info-value" style="color: #28a745;">-@currency($order->coupon_discount)</span>
                             </div>
                         @endif
                         <div class="info-row">
                             <span class="info-label">Commission</span>
-                            <span class="info-value">${{ number_format($order->commission, 2) }}</span>
+                            <span class="info-value">@currency($order->commission)</span>
                         </div>
                         <div class="payment-total">
                             <h3>Your Earnings</h3>
-                            <div class="amount">${{ number_format($order->transaction->seller_payout ?? ($order->service_price - $order->commission), 2) }}</div>
+                            <div class="amount">@currency($order->transaction->seller_payout ?? ($order->service_price - $order->commission))</div>
                             @if($order->transaction && $order->transaction->payout_status == 1)
                                 <small style="opacity: 0.9;">Payout Completed</small>
                             @else
@@ -898,11 +898,11 @@
                             </div>
                             <div class="d-flex justify-content-between mb-1">
                                 <small class="text-muted">Requested Refund:</small>
-                                <small><strong style="color: #dc3545;">${{ number_format($order->disputeOrder->amount ?? $order->finel_price, 2) }}</strong></small>
+                                <small><strong style="color: #dc3545;">@currency($order->disputeOrder->amount ?? $order->finel_price)</strong></small>
                             </div>
                             <div class="d-flex justify-content-between">
                                 <small class="text-muted">Your Potential Loss:</small>
-                                <small><strong style="color: #dc3545;">${{ number_format(($order->disputeOrder->amount ?? $order->finel_price) - $order->commission, 2) }}</strong></small>
+                                <small><strong style="color: #dc3545;">@currency(($order->disputeOrder->amount ?? $order->finel_price) - $order->commission)</strong></small>
                             </div>
                         </div>
                     </div>
@@ -933,7 +933,7 @@
             const confirmed = confirm(
                 '⚠️ Are you sure you want to ACCEPT this refund request?\n\n' +
                 'By accepting, you agree to:\n' +
-                '• Refund ${{ number_format($order->disputeOrder->amount ?? $order->finel_price, 2) }} to the buyer\n' +
+                '• Refund @currencyRaw($order->disputeOrder->amount ?? $order->finel_price) to the buyer\n' +
                 '• Forfeit your earnings from this order\n\n' +
                 'This action CANNOT be undone!'
             );

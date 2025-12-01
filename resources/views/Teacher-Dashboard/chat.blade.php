@@ -3081,6 +3081,14 @@
     </script>
 
 
+    {{-- Currency configuration for JavaScript --}}
+    <script>
+        const currencyConfig = {
+            currency: '{{ session("display_currency", "USD") }}',
+            symbol: '{{ session("display_currency", "USD") === "GBP" ? "£" : "$" }}',
+            rate: {{ session("display_currency", "USD") === "GBP" ? (\App\Services\CurrencyService::getRate("USD", "GBP") ?? 0.79) : 1 }}
+        };
+    </script>
     {{-- Script for Custom Offer - Now using external JS file --}}
     <script src="{{ asset('assets/teacher/js/custom-offers.js') }}"></script>
     {{-- Script for Custom Offer END =========== --}}

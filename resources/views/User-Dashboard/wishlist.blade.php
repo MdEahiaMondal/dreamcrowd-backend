@@ -193,7 +193,7 @@
                             <i class="fa-solid fa-star"></i> &nbsp; (5.0)
                         </span>
                         <div class="card-last">
-                            <span>Starting at ${{$gig->rate}}</span>
+                            <span>Starting at @currency($gig->rate)</span>
                             <!-- word img -->
                             @if ($gig->service_type == 'Online')
                             <img data-toggle="tooltip" title="In Person-Service" src="assets/seller-listing/asset/img/globe.png" style="height: 25px; width: 25px;" alt="">

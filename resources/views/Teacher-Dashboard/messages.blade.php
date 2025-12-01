@@ -1389,6 +1389,14 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.imagesloaded/4.1.4/imagesloaded.pkgd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js"></script>
   <script src="assets/teacher/js/gallery.js"></script>
+  <!-- Currency configuration for JavaScript -->
+  <script>
+      const currencyConfig = {
+          currency: '{{ session("display_currency", "USD") }}',
+          symbol: '{{ session("display_currency", "USD") === "GBP" ? "£" : "$" }}',
+          rate: {{ session("display_currency", "USD") === "GBP" ? (\App\Services\CurrencyService::getRate("USD", "GBP") ?? 0.79) : 1 }}
+      };
+  </script>
   <script src="assets/teacher/js/custom-offers.js"></script>
   <script src="https://cdn.rawgit.com/dimsemenov/Magnific-Popup/master/dist/magnific-popup.css"></script>
 <!-- ================ side js start here=============== -->

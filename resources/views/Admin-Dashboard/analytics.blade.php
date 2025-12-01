@@ -94,25 +94,25 @@
           <div class="row mb-4">
             <div class="col-md-3">
               <div class="stat-card success">
-                <div class="stat-value">${{ number_format($revenueStats['total_revenue'], 2) }}</div>
+                <div class="stat-value">@currency($revenueStats['total_revenue'])</div>
                 <div class="stat-label"><i class="fa fa-dollar-sign"></i> Total Revenue</div>
               </div>
             </div>
             <div class="col-md-3">
               <div class="stat-card info">
-                <div class="stat-value">${{ number_format($revenueStats['total_admin_commission'], 2) }}</div>
+                <div class="stat-value">@currency($revenueStats['total_admin_commission'])</div>
                 <div class="stat-label"><i class="fa fa-percent"></i> Admin Commission</div>
               </div>
             </div>
             <div class="col-md-3">
               <div class="stat-card warning">
-                <div class="stat-value">${{ number_format($payoutStats['pending_payout_amount'], 2) }}</div>
+                <div class="stat-value">@currency($payoutStats['pending_payout_amount'])</div>
                 <div class="stat-label"><i class="fa fa-clock"></i> Pending Payouts</div>
               </div>
             </div>
             <div class="col-md-3">
               <div class="stat-card danger">
-                <div class="stat-value">${{ number_format($refundStats['total_refund_amount'], 2) }}</div>
+                <div class="stat-value">@currency($refundStats['total_refund_amount'])</div>
                 <div class="stat-label"><i class="fa fa-undo"></i> Total Refunds</div>
               </div>
             </div>
@@ -168,7 +168,7 @@
                   </div>
                   <div class="col-6">
                     <div class="text-center p-3 border rounded">
-                      <h3 class="text-info">${{ number_format($refundStats['average_refund_amount'], 2) }}</h3>
+                      <h3 class="text-info">@currency($refundStats['average_refund_amount'])</h3>
                       <small class="text-muted">Avg Refund Amount</small>
                     </div>
                   </div>
@@ -206,7 +206,7 @@
                   </div>
                   <div class="col-6">
                     <div class="text-center p-3 border rounded">
-                      <h3 class="text-info">${{ number_format($payoutStats['average_payout_amount'], 2) }}</h3>
+                      <h3 class="text-info">@currency($payoutStats['average_payout_amount'])</h3>
                       <small class="text-muted">Avg Payout Amount</small>
                     </div>
                   </div>
@@ -223,7 +223,7 @@
                           <br><small class="text-muted">{{ $seller->payout_count }} payouts</small>
                         </div>
                         <div>
-                          <strong class="text-success">${{ number_format($seller->total_earnings, 2) }}</strong>
+                          <strong class="text-success">@currency($seller->total_earnings)</strong>
                         </div>
                       </div>
                     @empty

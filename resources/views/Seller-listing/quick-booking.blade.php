@@ -573,7 +573,7 @@
                                                         style="font-size: 14px; color: #666;">(No payment required)</small>
                                                 </p>
                                             @else
-                                                <p>From ${{$rate}} </p>
+                                                <p>From @currency($rate) </p>
                                             @endif
                                         </div>
                                     </div>
@@ -1088,7 +1088,7 @@
                                     @elseif ($gigData->recurring_type == 'Trial' && $gig->trial_type == 'Paid')
                                         <button onclick="ServicePayemnt();" class="btn booking-btn"
                                             style="background-color: #17a2b8; border-color: #17a2b8;">
-                                            <i class="fas fa-star"></i> Book Paid Trial - ${{$rate}}
+                                            <i class="fas fa-star"></i> Book Paid Trial - @currency($rate)
                                         </button>
                                     @else
                                         <button onclick="ServicePayemnt();" class="btn booking-btn">Complete Booking
@@ -1103,7 +1103,7 @@
                                     @elseif ($gigData->recurring_type == 'Trial' && $gig->trial_type == 'Paid')
                                         <button data-bs-toggle="modal" data-bs-target="#exampleModal" class="btn booking-btn"
                                             style="background-color: #17a2b8; border-color: #17a2b8;">
-                                            <i class="fas fa-star"></i> Book Paid Trial - ${{$rate}}
+                                            <i class="fas fa-star"></i> Book Paid Trial - @currency($rate)
                                         </button>
                                     @else
                                         <button data-bs-toggle="modal" data-bs-target="#exampleModal" class="btn booking-btn">
@@ -1488,7 +1488,7 @@
                             style="color: #28a745; font-weight: bold; font-size: 20px;">FREE</span>
                     </p>
                 @else
-                    <p class="float-start">Total Amount <span id="total_price">${{$rate}}</span></p>
+                    <p class="float-start">Total Amount <span id="total_price">@currency($rate)</span></p>
                 @endif
                 <div class="float-end">
                     @if (Auth::user())

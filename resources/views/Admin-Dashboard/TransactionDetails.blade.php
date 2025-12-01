@@ -386,7 +386,7 @@
                             <!-- Amount Summary -->
                             <div class="amount-box">
                                 <p style="margin: 0; opacity: 0.9; font-size: 14px;">Total Amount</p>
-                                <h2>${{ number_format($transaction->total_amount, 2) }}</h2>
+                                <h2>@currency($transaction->total_amount)</h2>
                                 <small>{{ $transaction->currency }}</small>
                             </div>
 
@@ -406,7 +406,7 @@
                                         <div class="d-flex justify-content-between align-items-center">
                                             <span style="color: #666;">Amount:</span>
                                             <strong
-                                                style="color: #dc3545;">${{ number_format($transaction->seller_commission_amount, 2) }}</strong>
+                                                style="color: #dc3545;">@currency($transaction->seller_commission_amount)</strong>
                                         </div>
                                     </div>
 
@@ -422,7 +422,7 @@
                                             <div class="d-flex justify-content-between align-items-center">
                                                 <span style="color: #666;">Amount:</span>
                                                 <strong
-                                                    style="color: #fd7e14;">${{ number_format($transaction->buyer_commission_amount, 2) }}</strong>
+                                                    style="color: #fd7e14;">@currency($transaction->buyer_commission_amount)</strong>
                                             </div>
                                         </div>
                                     @endif
@@ -431,7 +431,7 @@
                                         <div class="d-flex justify-content-between align-items-center">
                                             <span style="font-weight: 600; color: #333;">Total Admin Commission:</span>
                                             <strong style="color: #28a745; font-size: 18px;">
-                                                ${{ number_format($transaction->total_admin_commission, 2) }}
+                                                @currency($transaction->total_admin_commission)
                                             </strong>
                                         </div>
                                     </div>
@@ -440,7 +440,7 @@
                                         <div class="d-flex justify-content-between align-items-center">
                                             <span style="font-weight: 600; color: #333;">Seller Earnings:</span>
                                             <strong style="color: #007bff; font-size: 18px;">
-                                                ${{ number_format($transaction->seller_earnings, 2) }}
+                                                @currency($transaction->seller_earnings)
                                             </strong>
                                         </div>
                                     </div>
@@ -454,7 +454,7 @@
                                                 <i class="fa-solid fa-tag"></i> Coupon Discount:
                                             </span>
                                             <strong style="color: #856404;">
-                                                ${{ number_format($transaction->coupon_discount, 2) }}
+                                                @currency($transaction->coupon_discount)
                                             </strong>
                                         </div>
                                         @if($transaction->admin_absorbed_discount)
@@ -570,7 +570,7 @@
                     </div>
 
                     <div class="alert alert-info" role="alert">
-                        <strong>Seller Earnings:</strong> ${{ number_format($transaction->seller_earnings, 2) }}
+                        <strong>Seller Earnings:</strong> @currency($transaction->seller_earnings)
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -601,7 +601,7 @@
 
                     <div class="alert alert-warning" role="alert">
                         <ul style="margin: 0; padding-left: 20px;">
-                            <li>Refund Amount: <strong>${{ number_format($transaction->total_amount, 2) }}</strong></li>
+                            <li>Refund Amount: <strong>@currency($transaction->total_amount)</strong></li>
                             <li>Admin commission will be reversed</li>
                             <li>Seller earnings will be deducted</li>
                         </ul>

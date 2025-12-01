@@ -615,7 +615,7 @@
                                                 </span>
                                                 <div class="card-last">
                                                     @php   $rate = explode('|*|',$item->rate)  @endphp
-                                                    <span>Starting at ${{ $rate[0] }}</span>
+                                                    <span>Starting at @currency($rate[0])</span>
                                                     <!-- word img -->
                                                     @if ($item->service_type == 'Online')
                                                         <img data-toggle="tooltip" title="Online-Service"
@@ -934,7 +934,7 @@
                                         </span>
                                         <div class="card-last">
                                             <span>Starting at
-                                                ${{ number_format((float) ($service->rate ?? 0), 0) }}</span>
+                                                @currency($service->rate ?? 0)</span>
 
                                             @if (in_array($service->service_type, ['online_class', 'online_freelance']))
                                                 <a href="#"><img data-toggle="tooltip" title="Online Service"
@@ -1079,7 +1079,7 @@
                                             </span>
                                             <div class="card-last">
                                                 <span>Starting at
-                                                    ${{ number_format((float) ($service->rate ?? 0), 0) }}</span>
+                                                    @currency($service->rate ?? 0)</span>
 
                                                 @if (in_array($service->service_type, ['online_class', 'online_freelance']))
                                                     <a href="#"><img data-toggle="tooltip"

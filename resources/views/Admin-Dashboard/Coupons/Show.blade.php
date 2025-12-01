@@ -144,7 +144,7 @@
                                             @if($coupon->discount_type == 'percentage')
                                                 <span style="color: #28a745; font-size: 20px; font-weight: bold;">({{ $coupon->discount_value }}%)</span>
                                             @else
-                                                <span style="color: #28a745; font-size: 20px; font-weight: bold;">(${{ number_format($coupon->discount_value, 2) }})</span>
+                                                <span style="color: #28a745; font-size: 20px; font-weight: bold;">(@currency($coupon->discount_value))</span>
                                             @endif
                                         </td>
                                     </tr>
@@ -233,11 +233,11 @@
                                                 </td>
                                                 <td>{{ $usage->buyer->name ?? 'N/A' }}</td>
                                                 <td>{{ $usage->seller->name ?? 'N/A' }}</td>
-                                                <td>${{ number_format($usage->original_amount, 2) }}</td>
+                                                <td>@currency($usage->original_amount)</td>
                                                 <td style="color: #dc3545; font-weight: bold;">
-                                                    -${{ number_format($usage->discount_amount, 2) }}</td>
+                                                    -@currency($usage->discount_amount)</td>
                                                 <td style="color: #28a745; font-weight: bold;">
-                                                    ${{ number_format($usage->final_amount, 2) }}</td>
+                                                    @currency($usage->final_amount)</td>
                                                 <td>
                                                     @if($usage->transaction_id)
                                                         <a href="/admin/transaction/details/{{ $usage->transaction_id }}"
@@ -290,7 +290,7 @@
                                 <div class="stat-box" style="border-left: 4px solid #dc3545;">
                                     <p>Total Discount Given</p>
                                     <h3 style="color: #dc3545;">
-                                        ${{ number_format($coupon->total_discount_given, 2) }}</h3>
+                                        @currency($coupon->total_discount_given)</h3>
                                     <small style="color: #999;">All time</small>
                                 </div>
 
@@ -298,9 +298,9 @@
                                     <p>Average Discount</p>
                                     <h3 style="color: #28a745;">
                                         @if($coupon->usage_count > 0)
-                                            ${{ number_format($coupon->total_discount_given / $coupon->usage_count, 2) }}
+                                            @currency($coupon->total_discount_given / $coupon->usage_count)
                                         @else
-                                            $0.00
+                                            @currency(0)
                                         @endif
                                     </h3>
                                     <small style="color: #999;">Per use</small>

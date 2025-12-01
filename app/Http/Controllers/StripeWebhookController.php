@@ -79,14 +79,15 @@ class StripeWebhookController extends Controller
             ]);
 
             // Send notifications
-            $amount = number_format($paymentIntent->amount / 100, 2);
+            $amount = $paymentIntent->amount / 100;
+            $formattedAmount = \App\Services\CurrencyService::formatRaw($amount, 'USD');
 
             // Notify Buyer
             $this->notificationService->send(
                 userId: $transaction->buyer_id,
                 type: 'payment',
                 title: 'Payment Confirmed',
-                message: 'Your payment of $' . $amount . ' has been successfully processed.',
+                message: 'Your payment of ' . $formattedAmount . ' has been successfully processed.',
                 data: ['transaction_id' => $transaction->id, 'amount' => $amount],
                 sendEmail: true,
                 actorUserId: $transaction->buyer_id,
@@ -98,7 +99,7 @@ class StripeWebhookController extends Controller
                 userId: $transaction->seller_id,
                 type: 'payment',
                 title: 'Payment Received',
-                message: 'Payment of $' . $amount . ' has been received for your service.',
+                message: 'Payment of ' . $formattedAmount . ' has been received for your service.',
                 data: ['transaction_id' => $transaction->id, 'amount' => $amount],
                 sendEmail: false,
                 actorUserId: $transaction->buyer_id,
@@ -130,14 +131,15 @@ class StripeWebhookController extends Controller
             ]);
 
             // Send notifications
-            $amount = number_format($paymentIntent->amount / 100, 2);
+            $amount = $paymentIntent->amount / 100;
+            $formattedAmount = \App\Services\CurrencyService::formatRaw($amount, 'USD');
 
             // Notify Buyer
             $this->notificationService->send(
                 userId: $transaction->buyer_id,
                 type: 'payment',
                 title: 'Payment Failed',
-                message: 'Your payment of $' . $amount . ' could not be processed. Please update your payment method and try again.',
+                message: 'Your payment of ' . $formattedAmount . ' could not be processed. Please update your payment method and try again.',
                 data: ['transaction_id' => $transaction->id, 'amount' => $amount, 'error' => $errorMessage],
                 sendEmail: true,
                 actorUserId: $transaction->buyer_id,
@@ -200,12 +202,13 @@ class StripeWebhookController extends Controller
             ]);
 
             // Notify Seller
-            $amount = number_format($transaction->seller_earnings, 2);
+            $amount = $transaction->seller_earnings;
+            $formattedAmount = \App\Services\CurrencyService::formatRaw($amount, 'USD');
             $this->notificationService->send(
                 userId: $transaction->seller_id,
                 type: 'payout',
                 title: 'Payout Completed',
-                message: 'Your payout of $' . $amount . ' has been successfully processed and is on its way to your account.',
+                message: 'Your payout of ' . $formattedAmount . ' has been successfully processed and is on its way to your account.',
                 data: ['transaction_id' => $transaction->id, 'payout_id' => $payout->id, 'amount' => $amount],
                 sendEmail: true,
                 actorUserId: $transaction->seller_id,
@@ -230,14 +233,15 @@ class StripeWebhookController extends Controller
             ]);
 
             // Send notifications
-            $amount = number_format($transaction->seller_earnings, 2);
+            $amount = $transaction->seller_earnings;
+            $formattedAmount = \App\Services\CurrencyService::formatRaw($amount, 'USD');
 
             // Notify Seller
             $this->notificationService->send(
                 userId: $transaction->seller_id,
                 type: 'payout',
                 title: 'Payout Failed',
-                message: 'Your payout of $' . $amount . ' could not be processed. Please update your bank account information. Reason: ' . $errorMessage,
+                message: 'Your payout of ' . $formattedAmount . ' could not be processed. Please update your bank account information. Reason: ' . $errorMessage,
                 data: ['transaction_id' => $transaction->id, 'payout_id' => $payout->id, 'amount' => $amount, 'error' => $errorMessage],
                 sendEmail: true,
                 actorUserId: $transaction->seller_id,

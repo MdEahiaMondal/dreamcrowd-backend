@@ -157,7 +157,7 @@
                 <div class="col-lg-3 col-md-6">
                     <div class="stats-card" style="border-left: 4px solid #007bff;">
                         <p>Total Spent</p>
-                        <h3 style="color: #007bff;">${{ number_format($stats['total_spent'], 2) }}</h3>
+                        <h3 style="color: #007bff;">@currency($stats['total_spent'])</h3>
                         <small>All time</small>
                     </div>
                 </div>
@@ -166,7 +166,7 @@
                 <div class="col-lg-3 col-md-6">
                     <div class="stats-card" style="border-left: 4px solid #17a2b8;">
                         <p>This Month</p>
-                        <h3 style="color: #17a2b8;">${{ number_format($stats['month_spent'], 2) }}</h3>
+                        <h3 style="color: #17a2b8;">@currency($stats['month_spent'])</h3>
                         <small>{{ now()->format('F Y') }}</small>
                     </div>
                 </div>
@@ -175,7 +175,7 @@
                 <div class="col-lg-3 col-md-6">
                     <div class="stats-card" style="border-left: 4px solid #28a745;">
                         <p>Total Saved (Coupons)</p>
-                        <h3 style="color: #28a745;">${{ number_format($stats['total_coupon_savings'], 2) }}</h3>
+                        <h3 style="color: #28a745;">@currency($stats['total_coupon_savings'])</h3>
                         <small>{{ $stats['coupons_used_count'] }} coupons used</small>
                     </div>
                 </div>
@@ -184,7 +184,7 @@
                 <div class="col-lg-3 col-md-6">
                     <div class="stats-card" style="border-left: 4px solid #6c757d;">
                         <p>Service Fees Paid</p>
-                        <h3 style="color: #6c757d;">${{ number_format($stats['total_service_fees'], 2) }}</h3>
+                        <h3 style="color: #6c757d;">@currency($stats['total_service_fees'])</h3>
                         <small>Platform fees</small>
                     </div>
                 </div>
@@ -195,7 +195,7 @@
                 <div class="col-lg-3 col-md-6">
                     <div class="stats-card" style="border-left: 4px solid #20c997;">
                         <p>Today's Spending</p>
-                        <h3 style="color: #20c997;">${{ number_format($stats['today_spent'], 2) }}</h3>
+                        <h3 style="color: #20c997;">@currency($stats['today_spent'])</h3>
                     </div>
                 </div>
 
@@ -210,14 +210,14 @@
                 <div class="col-lg-3 col-md-6">
                     <div class="stats-card" style="border-left: 4px solid #fd7e14;">
                         <p>Average Order Value</p>
-                        <h3 style="color: #fd7e14;">${{ number_format($stats['avg_order_value'], 2) }}</h3>
+                        <h3 style="color: #fd7e14;">@currency($stats['avg_order_value'])</h3>
                     </div>
                 </div>
 
                 <div class="col-lg-3 col-md-6">
                     <div class="stats-card" style="border-left: 4px solid #dc3545;">
                         <p>Total Refunded</p>
-                        <h3 style="color: #dc3545;">${{ number_format($stats['total_refunded'], 2) }}</h3>
+                        <h3 style="color: #dc3545;">@currency($stats['total_refunded'])</h3>
                         <small>{{ $stats['refunded_transactions'] }} orders</small>
                     </div>
                 </div>
@@ -246,7 +246,7 @@
                                             </strong>
                                             <br>
                                             <small style="color: #856404;">
-                                                Saved: <strong>${{ number_format($usage->discount_amount, 2) }}</strong>
+                                                Saved: <strong>@currency($usage->discount_amount)</strong>
                                             </small>
                                         </div>
                                         <small style="color: #999;">
@@ -340,7 +340,7 @@
                                             <br>
                                             <small style="color: #28a745;">
                                                 <i class="fa-solid fa-ticket"></i> Saved:
-                                                ${{ number_format($transaction->coupon_discount, 2) }}
+                                                @currency($transaction->coupon_discount)
                                             </small>
                                         @endif
                                     </div>
@@ -349,11 +349,11 @@
                                     <div class="col-md-3">
                                         <p style="margin: 0; color: #666; font-size: 13px;">Total Paid</p>
                                         <h5 style="margin: 5px 0; color: #007bff; font-weight: bold;">
-                                            ${{ number_format($transaction->total_amount + $transaction->buyer_commission_amount, 2) }}
+                                            @currency($transaction->total_amount + $transaction->buyer_commission_amount)
                                         </h5>
                                         <small style="color: #999;">
-                                            Service: ${{ number_format($transaction->total_amount, 2) }} +
-                                            Fee: ${{ number_format($transaction->buyer_commission_amount, 2) }}
+                                            Service: @currency($transaction->total_amount) +
+                                            Fee: @currency($transaction->buyer_commission_amount)
                                         </small>
                                     </div>
 

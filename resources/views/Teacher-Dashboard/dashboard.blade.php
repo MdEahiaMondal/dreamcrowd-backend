@@ -261,7 +261,7 @@
                         </div>
                         <div class="stat-content">
                             <p class="stat-label">Total Earnings</p>
-                            <h3 class="stat-value" id="stat-total-earnings">$0.00</h3>
+                            <h3 class="stat-value" id="stat-total-earnings">@currencySymbol0.00</h3>
                             <small class="stat-sublabel">All-time revenue</small>
                         </div>
                     </div>
@@ -273,7 +273,7 @@
                         </div>
                         <div class="stat-content">
                             <p class="stat-label">This Month</p>
-                            <h3 class="stat-value" id="stat-month-earnings">$0.00</h3>
+                            <h3 class="stat-value" id="stat-month-earnings">@currencySymbol0.00</h3>
                             <small class="stat-sublabel" id="current-month">{{ now()->format('F Y') }}</small>
                         </div>
                     </div>
@@ -285,7 +285,7 @@
                         </div>
                         <div class="stat-content">
                             <p class="stat-label">Avg Order Value</p>
-                            <h3 class="stat-value" id="stat-avg-order">$0.00</h3>
+                            <h3 class="stat-value" id="stat-avg-order">@currencySymbol0.00</h3>
                             <small class="stat-sublabel">Per booking</small>
                         </div>
                     </div>
@@ -297,7 +297,7 @@
                         </div>
                         <div class="stat-content">
                             <p class="stat-label">Pending Earnings</p>
-                            <h3 class="stat-value" id="stat-pending-earnings">$0.00</h3>
+                            <h3 class="stat-value" id="stat-pending-earnings">@currencySymbol0.00</h3>
                             <small class="stat-sublabel">In 48hr window</small>
                         </div>
                     </div>
@@ -309,7 +309,7 @@
                         </div>
                         <div class="stat-content">
                             <p class="stat-label">Completed Payouts</p>
-                            <h3 class="stat-value" id="stat-completed-payouts">$0.00</h3>
+                            <h3 class="stat-value" id="stat-completed-payouts">@currencySymbol0.00</h3>
                             <small class="stat-sublabel">Already paid out</small>
                         </div>
                     </div>
@@ -321,7 +321,7 @@
                         </div>
                         <div class="stat-content">
                             <p class="stat-label">Commission Paid</p>
-                            <h3 class="stat-value" id="stat-commission-paid">$0.00</h3>
+                            <h3 class="stat-value" id="stat-commission-paid">@currencySymbol0.00</h3>
                             <small class="stat-sublabel">Platform fees</small>
                         </div>
                     </div>
@@ -333,7 +333,7 @@
                         </div>
                         <div class="stat-content">
                             <p class="stat-label">Pending Payouts</p>
-                            <h3 class="stat-value" id="stat-pending-payouts">$0.00</h3>
+                            <h3 class="stat-value" id="stat-pending-payouts">@currencySymbol0.00</h3>
                             <small class="stat-sublabel">Ready for payout</small>
                         </div>
                     </div>
@@ -345,7 +345,7 @@
                         </div>
                         <div class="stat-content">
                             <p class="stat-label">Net Earnings</p>
-                            <h3 class="stat-value" id="stat-net-earnings">$0.00</h3>
+                            <h3 class="stat-value" id="stat-net-earnings">@currencySymbol0.00</h3>
                             <small class="stat-sublabel">After refunds</small>
                         </div>
                     </div>
@@ -404,28 +404,28 @@
                     <div class="stat-card-small">
                         <h3 class="stat-value" id="stat-class-bookings">0</h3>
                         <p class="stat-label">Class Bookings</p>
-                        <small class="text-success fw-bold" id="stat-class-earnings">$0.00</small>
+                        <small class="text-success fw-bold" id="stat-class-earnings">@currencySymbol0.00</small>
                     </div>
                 </div>
                 <div class="col-lg-3 col-md-6 mb-3">
                     <div class="stat-card-small">
                         <h3 class="stat-value" id="stat-freelance-bookings">0</h3>
                         <p class="stat-label">Freelance Bookings</p>
-                        <small class="text-success fw-bold" id="stat-freelance-earnings">$0.00</small>
+                        <small class="text-success fw-bold" id="stat-freelance-earnings">@currencySymbol0.00</small>
                     </div>
                 </div>
                 <div class="col-lg-3 col-md-6 mb-3">
                     <div class="stat-card-small">
                         <h3 class="stat-value" id="stat-online-bookings">0</h3>
                         <p class="stat-label">Online Bookings</p>
-                        <small class="text-success fw-bold" id="stat-online-earnings">$0.00</small>
+                        <small class="text-success fw-bold" id="stat-online-earnings">@currencySymbol0.00</small>
                     </div>
                 </div>
                 <div class="col-lg-3 col-md-6 mb-3">
                     <div class="stat-card-small">
                         <h3 class="stat-value" id="stat-inperson-bookings">0</h3>
                         <p class="stat-label">In-Person Bookings</p>
-                        <small class="text-success fw-bold" id="stat-inperson-earnings">$0.00</small>
+                        <small class="text-success fw-bold" id="stat-inperson-earnings">@currencySymbol0.00</small>
                     </div>
                 </div>
             </div>
@@ -570,7 +570,7 @@
                                             </td>
                                             <td>{{ $booking->created_at->format('M d, Y') }}</td>
                                             <td>
-                                                <span class="fw-bold text-success">${{ number_format($booking->seller_earnings ?? 0, 2) }}</span>
+                                                <span class="fw-bold text-success">@currency($booking->seller_earnings ?? 0)</span>
                                             </td>
                                             <td>
                                                 @php
@@ -618,6 +618,21 @@
 <script src="/assets/teacher/asset/js/dashboard.js"></script>
 
 <script>
+    // Currency configuration from server
+    const currencyConfig = {
+        currency: '{{ session("display_currency", "USD") }}',
+        symbol: '{{ session("display_currency", "USD") === "GBP" ? "£" : "$" }}',
+        rate: {{ session("display_currency", "USD") === "GBP" ? (\App\Services\CurrencyService::getRate("USD", "GBP") ?? 0.79) : 1 }}
+    };
+
+    /**
+     * Format amount in user's preferred currency
+     */
+    function formatCurrency(amount) {
+        const convertedAmount = parseFloat(amount) * currencyConfig.rate;
+        return currencyConfig.symbol + convertedAmount.toFixed(2);
+    }
+
     // Global variables
     let earningsTrendChart = null;
     let statusBreakdownChart = null;
@@ -686,15 +701,15 @@
      * Update all statistic cards with data
      */
     function updateStatistics(data) {
-        // Financial statistics
-        $('#stat-total-earnings').text('$' + parseFloat(data.financial.total_earnings).toFixed(2));
-        $('#stat-month-earnings').text('$' + parseFloat(data.financial.month_earnings).toFixed(2));
-        $('#stat-avg-order').text('$' + parseFloat(data.financial.avg_order_value).toFixed(2));
-        $('#stat-pending-earnings').text('$' + parseFloat(data.financial.pending_earnings).toFixed(2));
-        $('#stat-completed-payouts').text('$' + parseFloat(data.financial.completed_payouts).toFixed(2));
-        $('#stat-commission-paid').text('$' + parseFloat(data.financial.total_commission_paid).toFixed(2));
-        $('#stat-pending-payouts').text('$' + parseFloat(data.financial.pending_payouts).toFixed(2));
-        $('#stat-net-earnings').text('$' + parseFloat(data.financial.net_earnings).toFixed(2));
+        // Financial statistics - use formatCurrency for proper currency display
+        $('#stat-total-earnings').text(formatCurrency(data.financial.total_earnings));
+        $('#stat-month-earnings').text(formatCurrency(data.financial.month_earnings));
+        $('#stat-avg-order').text(formatCurrency(data.financial.avg_order_value));
+        $('#stat-pending-earnings').text(formatCurrency(data.financial.pending_earnings));
+        $('#stat-completed-payouts').text(formatCurrency(data.financial.completed_payouts));
+        $('#stat-commission-paid').text(formatCurrency(data.financial.total_commission_paid));
+        $('#stat-pending-payouts').text(formatCurrency(data.financial.pending_payouts));
+        $('#stat-net-earnings').text(formatCurrency(data.financial.net_earnings));
 
         // Order statistics
         $('#stat-total-orders').text(data.orders.total_orders);
@@ -704,15 +719,15 @@
         $('#stat-completed-orders').text(data.orders.completed_orders);
         $('#stat-cancelled-orders').text(data.orders.cancelled_orders);
 
-        // Service type breakdown
+        // Service type breakdown - use formatCurrency
         $('#stat-class-bookings').text(data.orders.class_bookings);
-        $('#stat-class-earnings').text('$' + parseFloat(data.financial.class_earnings).toFixed(2));
+        $('#stat-class-earnings').text(formatCurrency(data.financial.class_earnings));
         $('#stat-freelance-bookings').text(data.orders.freelance_bookings);
-        $('#stat-freelance-earnings').text('$' + parseFloat(data.financial.freelance_earnings).toFixed(2));
+        $('#stat-freelance-earnings').text(formatCurrency(data.financial.freelance_earnings));
         $('#stat-online-bookings').text(data.orders.online_bookings);
-        $('#stat-online-earnings').text('$' + parseFloat(data.financial.online_earnings).toFixed(2));
+        $('#stat-online-earnings').text(formatCurrency(data.financial.online_earnings));
         $('#stat-inperson-bookings').text(data.orders.inperson_bookings);
-        $('#stat-inperson-earnings').text('$' + parseFloat(data.financial.inperson_earnings).toFixed(2));
+        $('#stat-inperson-earnings').text(formatCurrency(data.financial.inperson_earnings));
 
         // Service performance
         $('#stat-active-gigs').text(data.service_performance.active_gigs);
@@ -773,8 +788,8 @@
             data: {
                 labels: data.labels,
                 datasets: [{
-                    label: 'Earnings ($)',
-                    data: data.earnings,
+                    label: 'Earnings (' + currencyConfig.symbol + ')',
+                    data: data.earnings.map(v => v * currencyConfig.rate),
                     borderColor: '#28a745',
                     backgroundColor: 'rgba(40, 167, 69, 0.1)',
                     borderWidth: 2,
@@ -795,7 +810,7 @@
                         beginAtZero: true,
                         ticks: {
                             callback: function (value) {
-                                return '$' + value.toLocaleString();
+                                return currencyConfig.symbol + (value * currencyConfig.rate).toLocaleString();
                             }
                         }
                     }

@@ -136,13 +136,13 @@
                   <div class="col-md-3">
                       <div class="stats-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
                           <h4>Total Revenue</h4>
-                          <h2>${{ number_format($stats['total_revenue'] ?? 0, 2) }}</h2>
+                          <h2>@currency($stats['total_revenue'] ?? 0)</h2>
                       </div>
                   </div>
                   <div class="col-md-3">
                       <div class="stats-card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
                           <h4>Total Commission</h4>
-                          <h2>${{ number_format($stats['total_commission'] ?? 0, 2) }}</h2>
+                          <h2>@currency($stats['total_commission'] ?? 0)</h2>
                       </div>
                   </div>
                   <div class="col-md-3">
@@ -299,8 +299,8 @@
                                         @endif
                                       </td>
                                       <td>{{ Str::limit($order->gig->title ?? 'N/A', 40) }}</td>
-                                      <td><strong>${{ number_format($order->finel_price ?? 0, 2) }}</strong></td>
-                                      <td>${{ number_format($order->buyer_commission_amount ?? 0, 2) }}</td>
+                                      <td><strong>@currency($order->finel_price ?? 0)</strong></td>
+                                      <td>@currency($order->buyer_commission_amount ?? 0)</td>
                                       <td>{{ $order->created_at->format('M d, Y') }}<br><small>{{ $order->created_at->format('h:i A') }}</small></td>
                                       <td>
                                         @if($order->status == 0)

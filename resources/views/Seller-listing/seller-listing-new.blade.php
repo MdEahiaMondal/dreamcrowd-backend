@@ -810,7 +810,7 @@
                                       $rate = explode('|*|', $rate)[0]; // Extracts the first part
                                   }
                                                                 @endphp
-                                                                <span>Starting at ${{$rate}}</span>
+                                                                <span>Starting at @currency($rate)</span>
                                                                 <!-- word img -->
                                                                 @if ($item->service_type == 'Online')
                                                                     <img data-toggle="tooltip" title="In Person-Service"

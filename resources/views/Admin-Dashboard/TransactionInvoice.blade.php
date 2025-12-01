@@ -417,7 +417,7 @@
             <td>{{ ucfirst($transaction->service_type) }} Service/Class</td>
             <td style="text-align: center;">{{ ucfirst($transaction->service_type) }}</td>
             <td style="text-align: center;">#{{ $transaction->service_id }}</td>
-            <td style="text-align: right;">${{ number_format($transaction->total_amount, 2) }}</td>
+            <td style="text-align: right;">@currencyRaw($transaction->total_amount)</td>
         </tr>
         </tbody>
     </table>
@@ -427,26 +427,26 @@
         <table class="totals-table">
             <tr class="subtotal-row">
                 <td>Subtotal:</td>
-                <td>${{ number_format($transaction->total_amount, 2) }}</td>
+                <td>@currencyRaw($transaction->total_amount)</td>
             </tr>
 
             @if($transaction->coupon_discount > 0)
                 <tr>
                     <td>Discount (Coupon):</td>
-                    <td>-${{ number_format($transaction->coupon_discount, 2) }}</td>
+                    <td>-@currencyRaw($transaction->coupon_discount)</td>
                 </tr>
             @endif
 
             @if($transaction->buyer_commission_amount > 0)
                 <tr>
                     <td>Buyer Commission ({{ $transaction->buyer_commission_rate }}%):</td>
-                    <td>${{ number_format($transaction->buyer_commission_amount, 2) }}</td>
+                    <td>@currencyRaw($transaction->buyer_commission_amount)</td>
                 </tr>
             @endif
 
             <tr class="total-row">
                 <td><strong>TOTAL PAID:</strong></td>
-                <td><strong>${{ number_format($transaction->total_amount + $transaction->buyer_commission_amount, 2) }}</strong></td>
+                <td><strong>@currencyRaw($transaction->total_amount + $transaction->buyer_commission_amount)</strong></td>
             </tr>
         </table>
     </div>
@@ -457,25 +457,25 @@
         <table>
             <tr>
                 <td>Transaction Amount:</td>
-                <td>${{ number_format($transaction->total_amount, 2) }}</td>
+                <td>@currencyRaw($transaction->total_amount)</td>
             </tr>
             <tr>
                 <td>Seller Commission ({{ $transaction->seller_commission_rate }}%):</td>
-                <td>${{ number_format($transaction->seller_commission_amount, 2) }}</td>
+                <td>@currencyRaw($transaction->seller_commission_amount)</td>
             </tr>
             @if($transaction->buyer_commission_amount > 0)
                 <tr>
                     <td>Buyer Commission ({{ $transaction->buyer_commission_rate }}%):</td>
-                    <td>${{ number_format($transaction->buyer_commission_amount, 2) }}</td>
+                    <td>@currencyRaw($transaction->buyer_commission_amount)</td>
                 </tr>
             @endif
             <tr style="border-top: 2px solid #856404;">
                 <td><strong>Total Platform Commission:</strong></td>
-                <td><strong>${{ number_format($transaction->total_admin_commission, 2) }}</strong></td>
+                <td><strong>@currencyRaw($transaction->total_admin_commission)</strong></td>
             </tr>
             <tr>
                 <td><strong>Seller Receives:</strong></td>
-                <td><strong>${{ number_format($transaction->seller_earnings, 2) }}</strong></td>
+                <td><strong>@currencyRaw($transaction->seller_earnings)</strong></td>
             </tr>
         </table>
     </div>

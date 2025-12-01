@@ -26,7 +26,7 @@
             </tr>
             <tr>
                 <td style="padding: 5px 0;"><strong>Refund Amount:</strong></td>
-                <td style="padding: 5px 0; color: #4CAF50; font-size: 18px; font-weight: bold;">${{ number_format($refund_amount, 2) }}</td>
+                <td style="padding: 5px 0; color: #4CAF50; font-size: 18px; font-weight: bold;">@currencyRaw($refund_amount)</td>
             </tr>
             <tr>
                 <td style="padding: 5px 0;"><strong>Refund Type:</strong></td>
