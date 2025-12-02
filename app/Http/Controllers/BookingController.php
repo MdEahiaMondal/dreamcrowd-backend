@@ -1127,7 +1127,7 @@ class BookingController extends Controller
     public function handleCustomOfferPayment(Request $request)
     {
         if (!$request->session_id) {
-            return redirect('/messages')->with('error', 'Invalid payment session.');
+            return redirect('/user-messages')->with('error', 'Invalid payment session.');
         }
 
         $stripe = new \Stripe\StripeClient(config('services.stripe.secret'));
@@ -1136,11 +1136,11 @@ class BookingController extends Controller
             $session = $stripe->checkout->sessions->retrieve($request->session_id);
 
             if ($session->payment_status !== 'paid') {
-                return redirect('/messages')->with('error', 'Payment not completed.');
+                return redirect('/user-messages')->with('error', 'Payment not completed.');
             }
 
             $offerId = $session->metadata->custom_offer_id;
-            $offer = \App\Models\CustomOffer::with('milestones')->findOrFail($offerId);
+            $offer = \App\Models\CustomOffer::with(['milestones', 'gig'])->findOrFail($offerId);
 
             // Check if order already created
             $existingOrder = \App\Models\BookOrder::where('custom_offer_id', $offerId)->first();
@@ -1149,24 +1149,45 @@ class BookingController extends Controller
             }
 
             // Calculate commission
-            $commission = \App\Models\TopSellerTag::calculateCommission($offer->gig_id, $offer->seller_id);
+            $commissionSettings = \App\Models\TopSellerTag::getCommissionSettings();
+
+            // Calculate buyer commission
+            $buyerCommission = 0;
+            $buyerCommissionRate = 0;
+            if ($commissionSettings->buyer_commission && $commissionSettings->buyer_commission_rate > 0) {
+                $buyerCommissionRate = $commissionSettings->buyer_commission_rate;
+                $buyerCommission = ($offer->total_amount * $buyerCommissionRate) / 100;
+            }
+
+            // Calculate seller commission
+            $sellerCommissionRate = $commissionSettings->commission ?? 15;
+            $sellerCommission = ($offer->total_amount * $sellerCommissionRate) / 100;
+
+            // Admin commission = seller commission + buyer commission
+            $adminCommission = $sellerCommission + $buyerCommission;
+
+            // Seller earnings
+            $sellerEarnings = $offer->total_amount - $sellerCommission;
 
             // Create BookOrder
             $order = \App\Models\BookOrder::create([
                 'user_id' => $offer->buyer_id,
                 'teacher_id' => $offer->seller_id,
                 'gig_id' => $offer->gig_id,
-                'order_type' => $offer->offer_type,
-                'payment_type' => $offer->payment_type,
-                'service_mode' => $offer->service_mode,
-                'total_price' => $offer->total_amount,
-                'buyer_commission' => $commission['buyer_commission'],
-                'seller_commission' => $commission['seller_commission'],
-                'total_admin_commission' => $commission['admin_commission'],
+                'custom_offer_id' => $offer->id,
+                'title' => 'Custom Offer: ' . ($offer->gig->title ?? 'Service'),
+                'price' => $offer->total_amount,
+                'buyer_commission' => $buyerCommissionRate,
+                'buyer_commission_rate' => $buyerCommissionRate,
+                'buyer_commission_amount' => $buyerCommission,
+                'seller_commission_rate' => $sellerCommissionRate,
+                'seller_commission_amount' => $sellerCommission,
+                'total_admin_commission' => $adminCommission,
+                'seller_earnings' => $sellerEarnings,
+                'finel_price' => $offer->total_amount + $buyerCommission,
                 'status' => 0, // Pending (needs seller approval)
                 'payment_status' => 'completed',
-                'stripe_transaction_id' => $session->payment_intent,
-                'custom_offer_id' => $offer->id,
+                'payment_id' => $session->payment_intent,
             ]);
 
             // Create ClassDates for each milestone
@@ -1187,9 +1208,9 @@ class BookingController extends Controller
                 'buyer_id' => $offer->buyer_id,
                 'seller_id' => $offer->seller_id,
                 'total_amount' => $offer->total_amount,
-                'buyer_commission_amount' => $commission['buyer_commission'] ?? 0,
-                'seller_commission_amount' => $commission['seller_commission'] ?? 0,
-                'total_admin_commission' => $commission['admin_commission'] ?? 0,
+                'buyer_commission_amount' => $buyerCommission,
+                'seller_commission_amount' => $sellerCommission,
+                'total_admin_commission' => $adminCommission,
                 'stripe_transaction_id' => $session->payment_intent,
                 'status' => 'completed',
             ]);
@@ -1214,7 +1235,7 @@ class BookingController extends Controller
 
         } catch (\Exception $e) {
             \Log::error('Custom offer payment handling failed: ' . $e->getMessage());
-            return redirect('/messages')->with('error', 'Order creation failed.');
+            return redirect('/user-messages')->with('error', 'Order creation failed.');
         }
     }
 

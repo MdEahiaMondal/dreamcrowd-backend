@@ -210,7 +210,17 @@
                         @foreach($completeChat as $message)
                             <li class="{{ $message['sender_id'] == Auth::user()->id ? 'repaly' : 'sender' }}">
                                 <p>{{$message['sms']}}</p>
-                                
+
+                                {{-- Custom Offer Button --}}
+                                @if(isset($message['is_custom_offer']) && $message['is_custom_offer'] != 0)
+                                    <div class="custom-offer-wrap" style="margin-top:8px;">
+                                        <button class="btn btn-sm btn-primary custom-offer-btn"
+                                                data-offer-id="{{ $message['is_custom_offer'] }}">
+                                            View Custom Offer
+                                        </button>
+                                    </div>
+                                @endif
+
                                 @if(!empty($message['files'])) 
                                 @php $files = explode(',',$message['files']);   @endphp
                                     <!-- Loop through and display files if there are any -->
@@ -227,24 +237,7 @@
                             </li>
                         @endforeach
 
-                        {{-- Display Custom Offers --}}
-                        @php
-                            $customOffers = \App\Models\CustomOffer::where('buyer_id', auth()->id())
-                                ->where(function($query) use ($otheruserId) {
-                                    $query->where('seller_id', $otheruserId);
-                                })
-                                ->with(['gig', 'seller', 'milestones'])
-                                ->orderBy('created_at', 'desc')
-                                ->get();
-                        @endphp
-
-                        @if($customOffers->count() > 0)
-                            @foreach($customOffers as $offer)
-                                <li class="custom-offer-item" style="list-style: none; margin: 15px 0;">
-                                    <x-custom-offer-card :offer="$offer" />
-                                </li>
-                            @endforeach
-                        @endif
+                        {{-- Custom Offers are now displayed inline via is_custom_offer field in each message --}}
 
                     @endif
 
@@ -2423,6 +2416,13 @@ document.getElementById('imgInput').addEventListener('change', function() {
         rate: {{ session("display_currency", "USD") === "GBP" ? (\App\Services\CurrencyService::getRate("USD", "GBP") ?? 0.79) : 1 }}
     };
 </script>
+
+<!-- Stripe.js for payment processing -->
+<script src="https://js.stripe.com/v3/"></script>
+<script>
+    const stripePublicKey = '{{ config("services.stripe.key") }}';
+</script>
+
 <!-- Custom Offers Buyer JavaScript -->
 <script src="{{ asset('assets/user/js/custom-offers-buyer.js') }}"></script>
 

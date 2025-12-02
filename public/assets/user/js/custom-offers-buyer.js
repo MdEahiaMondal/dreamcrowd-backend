@@ -1,16 +1,63 @@
 /**
  * Custom Offer Management - Buyer Side
  * Handles viewing, accepting, and rejecting custom offers
+ * With inline Stripe payment processing using Stripe Elements
  */
 
 (function($) {
     'use strict';
 
     let currentOffer = null;
+    let currentPaymentData = null;
+    let stripe = null;
+    let cardElement = null;
+    let elements = null;
 
     $(document).ready(function() {
+        initStripe();
         initBuyerCustomOffers();
     });
+
+    /**
+     * Initialize Stripe and Card Element
+     */
+    function initStripe() {
+        if (typeof Stripe !== 'undefined' && typeof stripePublicKey !== 'undefined' && stripePublicKey) {
+            stripe = Stripe(stripePublicKey);
+            elements = stripe.elements();
+
+            // Create card element with styling
+            const style = {
+                base: {
+                    color: '#32325d',
+                    fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
+                    fontSmoothing: 'antialiased',
+                    fontSize: '16px',
+                    '::placeholder': {
+                        color: '#aab7c4'
+                    }
+                },
+                invalid: {
+                    color: '#fa755a',
+                    iconColor: '#fa755a'
+                }
+            };
+
+            cardElement = elements.create('card', { style: style });
+
+            // Handle real-time validation errors
+            cardElement.on('change', function(event) {
+                const displayError = document.getElementById('stripe-card-errors');
+                if (event.error) {
+                    displayError.textContent = event.error.message;
+                } else {
+                    displayError.textContent = '';
+                }
+            });
+        } else {
+            console.error('Stripe.js not loaded or stripePublicKey not defined');
+        }
+    }
 
     function initBuyerCustomOffers() {
         // Handle custom offer card clicks
@@ -19,10 +66,18 @@
             viewOfferDetails(offerId);
         });
 
-        // Handle accept button
+        // Handle custom offer button clicks (from message items)
+        $(document).on('click', '.custom-offer-btn', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            const offerId = $(this).data('offer-id');
+            viewOfferDetails(offerId);
+        });
+
+        // Handle accept button - now opens payment modal
         $(document).on('click', '#accept-offer-btn', function() {
             if (currentOffer) {
-                acceptOffer(currentOffer.id);
+                initiatePayment(currentOffer.id);
             }
         });
 
@@ -39,6 +94,40 @@
             if (currentOffer) {
                 rejectOffer(currentOffer.id, reason);
             }
+        });
+
+        // Handle payment confirmation
+        $(document).on('click', '#confirm-payment-btn', function() {
+            processPayment();
+        });
+
+        // Handle view order button after success
+        $(document).on('click', '#view-order-btn', function() {
+            if (currentPaymentData && currentPaymentData.redirect_url) {
+                window.location.href = currentPaymentData.redirect_url;
+            } else {
+                window.location.href = '/order-management';
+            }
+        });
+
+        // Handle payment modal close
+        $(document).on('click', '#cancel-payment-btn', function() {
+            resetPaymentForm();
+        });
+
+        // Mount card element when payment modal is shown
+        $('#customOfferPaymentModal').on('shown.bs.modal', function() {
+            if (cardElement) {
+                cardElement.mount('#stripe-card-element');
+            }
+        });
+
+        // Unmount card element when payment modal is hidden
+        $('#customOfferPaymentModal').on('hidden.bs.modal', function() {
+            if (cardElement) {
+                cardElement.unmount();
+            }
+            resetPaymentForm();
         });
     }
 
@@ -105,8 +194,10 @@
         }
 
         // Show/hide action buttons based on status
+        $modal.find('.offer-status-message').html('');
         if (offer.status === 'pending' && !offer.is_expired) {
             $modal.find('.offer-actions').show();
+            $modal.find('#accept-offer-btn, #reject-offer-btn').show();
         } else {
             $modal.find('.offer-actions').hide();
 
@@ -175,12 +266,17 @@
     }
 
     /**
-     * Accept offer and redirect to Stripe checkout
+     * Initiate payment - get payment intent and show payment modal
      */
-    function acceptOffer(offerId) {
+    function initiatePayment(offerId) {
+        if (!stripe || !cardElement) {
+            alert('Payment system not initialized. Please refresh the page and try again.');
+            return;
+        }
+
         const $btn = $('#accept-offer-btn');
-        const originalText = $btn.text();
-        $btn.prop('disabled', true).text('Processing...');
+        const originalText = $btn.html();
+        $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-1"></span>Processing...');
 
         $.ajax({
             url: `/custom-offers/${offerId}/accept`,
@@ -189,25 +285,205 @@
                 _token: $('meta[name="csrf-token"]').attr('content')
             },
             success: function(response) {
-                if (response.success && response.checkout_url) {
-                    // Redirect to Stripe checkout
-                    window.location.href = response.checkout_url;
+                $btn.prop('disabled', false).html(originalText);
+
+                if (response.success) {
+                    currentPaymentData = response;
+
+                    // Populate payment modal
+                    populatePaymentModal(response.offer);
+
+                    // Store payment intent data
+                    $('#payment-offer-id').val(response.offer.id);
+                    $('#payment-intent-id').val(response.payment_intent_id);
+                    $('#payment-client-secret').val(response.client_secret);
+
+                    // Hide offer detail modal and show payment modal
+                    $('#offerDetailModal').modal('hide');
+                    setTimeout(function() {
+                        $('#customOfferPaymentModal').modal('show');
+                    }, 300);
                 } else {
-                    alert('Failed to process acceptance');
-                    $btn.prop('disabled', false).text(originalText);
+                    alert('Failed to initiate payment');
                 }
             },
             error: function(xhr) {
-                let errorMsg = 'Failed to accept offer';
+                $btn.prop('disabled', false).html(originalText);
+                let errorMsg = 'Failed to initiate payment';
 
                 if (xhr.responseJSON && xhr.responseJSON.error) {
                     errorMsg = xhr.responseJSON.error;
                 }
 
                 alert(errorMsg);
-                $btn.prop('disabled', false).text(originalText);
             }
         });
+    }
+
+    /**
+     * Populate payment modal with offer details
+     */
+    function populatePaymentModal(offer) {
+        const symbol = (typeof currencyConfig !== 'undefined') ? currencyConfig.symbol : '$';
+        const rate = (typeof currencyConfig !== 'undefined') ? currencyConfig.rate : 1;
+
+        $('.payment-service-name').text(offer.service_name);
+        $('.payment-subtotal').text(symbol + (parseFloat(offer.subtotal) * rate).toFixed(2));
+
+        if (offer.service_fee > 0) {
+            $('.payment-fee').text(symbol + (parseFloat(offer.service_fee) * rate).toFixed(2));
+            $('.payment-fee-row').show();
+        } else {
+            $('.payment-fee-row').hide();
+        }
+
+        $('.payment-total').text(symbol + (parseFloat(offer.total_amount) * rate).toFixed(2));
+        $('#confirm-payment-btn .btn-text').text('Pay ' + symbol + (parseFloat(offer.total_amount) * rate).toFixed(2));
+    }
+
+    /**
+     * Process the payment using Stripe Elements
+     */
+    async function processPayment() {
+        // Validate cardholder name
+        const holderName = $('#payment-holder-name').val().trim();
+
+        if (!holderName) {
+            showPaymentError('Please enter the cardholder name.');
+            return;
+        }
+
+        const clientSecret = $('#payment-client-secret').val();
+
+        if (!clientSecret) {
+            showPaymentError('Payment session expired. Please try again.');
+            return;
+        }
+
+        // Show loading state
+        const $btn = $('#confirm-payment-btn');
+        $btn.prop('disabled', true);
+        $('#payment-spinner').removeClass('d-none');
+        $('#payment-lock-icon').addClass('d-none');
+        $btn.find('.btn-text').text('Processing...');
+        hidePaymentError();
+
+        try {
+            // Confirm the card payment with Stripe
+            const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
+                payment_method: {
+                    card: cardElement,
+                    billing_details: {
+                        name: holderName
+                    }
+                }
+            });
+
+            if (error) {
+                // Show error to customer
+                showPaymentError(error.message);
+                resetPaymentButton();
+                return;
+            }
+
+            // Payment succeeded or requires capture (manual capture mode)
+            if (paymentIntent.status === 'succeeded' || paymentIntent.status === 'requires_capture') {
+                // Now create the order on the server
+                await createOrder(paymentIntent.id, holderName);
+            } else {
+                showPaymentError('Payment was not completed. Status: ' + paymentIntent.status);
+                resetPaymentButton();
+            }
+        } catch (err) {
+            console.error('Payment error:', err);
+            showPaymentError('An unexpected error occurred. Please try again.');
+            resetPaymentButton();
+        }
+    }
+
+    /**
+     * Create order after successful payment confirmation
+     */
+    async function createOrder(paymentIntentId, holderName) {
+        try {
+            const response = await $.ajax({
+                url: '/custom-offers/process-payment',
+                type: 'POST',
+                data: {
+                    _token: $('meta[name="csrf-token"]').attr('content'),
+                    offer_id: $('#payment-offer-id').val(),
+                    payment_intent_id: paymentIntentId,
+                    holder_name: holderName
+                }
+            });
+
+            if (response.success) {
+                currentPaymentData = response;
+
+                // Hide payment modal and show success modal
+                $('#customOfferPaymentModal').modal('hide');
+                setTimeout(function() {
+                    $('#paymentSuccessModal').modal('show');
+                }, 300);
+            } else {
+                showPaymentError(response.error || 'Failed to create order. Please contact support.');
+                resetPaymentButton();
+            }
+        } catch (xhr) {
+            let errorMsg = 'Failed to create order. Please contact support.';
+
+            if (xhr.responseJSON && xhr.responseJSON.error) {
+                errorMsg = xhr.responseJSON.error;
+            }
+
+            showPaymentError(errorMsg);
+            resetPaymentButton();
+        }
+    }
+
+    /**
+     * Show payment error
+     */
+    function showPaymentError(message) {
+        $('#payment-error-message').removeClass('d-none').find('.error-text').text(message);
+    }
+
+    /**
+     * Hide payment error
+     */
+    function hidePaymentError() {
+        $('#payment-error-message').addClass('d-none');
+    }
+
+    /**
+     * Reset payment button to default state
+     */
+    function resetPaymentButton() {
+        const $btn = $('#confirm-payment-btn');
+        $btn.prop('disabled', false);
+        $('#payment-spinner').addClass('d-none');
+        $('#payment-lock-icon').removeClass('d-none');
+
+        if (currentPaymentData && currentPaymentData.offer) {
+            const symbol = (typeof currencyConfig !== 'undefined') ? currencyConfig.symbol : '$';
+            const rate = (typeof currencyConfig !== 'undefined') ? currencyConfig.rate : 1;
+            $btn.find('.btn-text').text('Pay ' + symbol + (parseFloat(currentPaymentData.offer.total_amount) * rate).toFixed(2));
+        } else {
+            $btn.find('.btn-text').text('Pay Now');
+        }
+    }
+
+    /**
+     * Reset payment form
+     */
+    function resetPaymentForm() {
+        $('#payment-holder-name').val('');
+        if (cardElement) {
+            cardElement.clear();
+        }
+        hidePaymentError();
+        resetPaymentButton();
+        $('#stripe-card-errors').text('');
     }
 
     /**

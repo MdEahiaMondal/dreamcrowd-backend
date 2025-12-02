@@ -81,6 +81,8 @@ class OrderManagementController extends Controller
                 'expert_profiles.profession',
                 'expert_profiles.profile_image',
                 'book_orders.title',
+                'book_orders.custom_offer_id',
+                'teacher_gigs.title as gig_title',
                 'teacher_gig_data.description',
                 'teacher_gig_data.freelance_service',
                 'teacher_gig_data.lesson_type',
@@ -121,6 +123,8 @@ class OrderManagementController extends Controller
                 'expert_profiles.profession',
                 'expert_profiles.profile_image',
                 'book_orders.title',
+                'book_orders.custom_offer_id',
+                'teacher_gigs.title',
                 'teacher_gig_data.description',
                 'teacher_gig_data.freelance_service',
                 'teacher_gig_data.lesson_type',
@@ -136,8 +140,15 @@ class OrderManagementController extends Controller
             )->orderBy($this->sorting, 'desc')
             ->paginate($perPage);
 
-        // Attach all_classes and new_all_classes
+        // Attach all_classes, new_all_classes, and display_title
         foreach ($pendingOrders as $order) {
+            // Calculate display title for custom offer orders
+            if (empty($order->title) && !empty($order->custom_offer_id)) {
+                $order->title = 'Custom Offer: ' . ($order->gig_title ?? 'Service');
+            } elseif (empty($order->title)) {
+                $order->title = $order->gig_title ?? 'Untitled Service';
+            }
+
             // Get all class_dates for this order
             $order->all_classes = DB::table('class_dates')
                 ->where('order_id', $order->order_id)
@@ -173,6 +184,8 @@ class OrderManagementController extends Controller
                 'expert_profiles.profession',
                 'expert_profiles.profile_image',
                 'book_orders.title',
+                'book_orders.custom_offer_id',
+                'teacher_gigs.title as gig_title',
                 'teacher_gig_data.description',
                 'teacher_gig_data.freelance_service',
                 'teacher_gig_data.lesson_type',
@@ -213,6 +226,8 @@ class OrderManagementController extends Controller
                 'expert_profiles.profession',
                 'expert_profiles.profile_image',
                 'book_orders.title',
+                'book_orders.custom_offer_id',
+                'teacher_gigs.title',
                 'teacher_gig_data.description',
                 'teacher_gig_data.freelance_service',
                 'teacher_gig_data.lesson_type',
@@ -230,6 +245,13 @@ class OrderManagementController extends Controller
 
         // Attach all_classes and new_all_classes
         foreach ($activeOrders as $order) {
+            // Calculate display title for custom offer orders
+            if (empty($order->title) && !empty($order->custom_offer_id)) {
+                $order->title = 'Custom Offer: ' . ($order->gig_title ?? 'Service');
+            } elseif (empty($order->title)) {
+                $order->title = $order->gig_title ?? 'Untitled Service';
+            }
+
             // Get all class_dates for this order
             $order->all_classes = DB::table('class_dates')
                 ->where('order_id', $order->order_id)
@@ -278,6 +300,8 @@ class OrderManagementController extends Controller
                 'expert_profiles.profession',
                 'expert_profiles.profile_image',
                 'book_orders.title',
+                'book_orders.custom_offer_id',
+                'teacher_gigs.title as gig_title',
                 'teacher_gig_data.description',
                 'teacher_gig_data.freelance_service',
                 'teacher_gig_data.lesson_type',
@@ -303,6 +327,8 @@ class OrderManagementController extends Controller
                 'expert_profiles.profession',
                 'expert_profiles.profile_image',
                 'book_orders.title',
+                'book_orders.custom_offer_id',
+                'teacher_gigs.title',
                 'teacher_gig_data.description',
                 'teacher_gig_data.freelance_service',
                 'teacher_gig_data.lesson_type',
@@ -321,6 +347,13 @@ class OrderManagementController extends Controller
 
         // Attach all_classes and new_all_classes
         foreach ($deliveredOrders as $order) {
+            // Calculate display title for custom offer orders
+            if (empty($order->title) && !empty($order->custom_offer_id)) {
+                $order->title = 'Custom Offer: ' . ($order->gig_title ?? 'Service');
+            } elseif (empty($order->title)) {
+                $order->title = $order->gig_title ?? 'Untitled Service';
+            }
+
             // Get all class_dates for this order
             $order->all_classes = DB::table('class_dates')
                 ->where('order_id', $order->order_id)
@@ -351,6 +384,8 @@ class OrderManagementController extends Controller
                 'expert_profiles.profession',
                 'expert_profiles.profile_image',
                 'book_orders.title',
+                'book_orders.custom_offer_id',
+                'teacher_gigs.title as gig_title',
                 'teacher_gig_data.description',
                 'teacher_gig_data.freelance_service',
                 'teacher_gig_data.lesson_type',
@@ -376,6 +411,8 @@ class OrderManagementController extends Controller
                 'expert_profiles.profession',
                 'expert_profiles.profile_image',
                 'book_orders.title',
+                'book_orders.custom_offer_id',
+                'teacher_gigs.title',
                 'teacher_gig_data.description',
                 'teacher_gig_data.freelance_service',
                 'teacher_gig_data.lesson_type',
@@ -394,6 +431,12 @@ class OrderManagementController extends Controller
 
         // Attach all_classes and new_all_classes
         foreach ($completedOrders as $order) {
+            // Calculate display title for custom offer orders
+            if (empty($order->title) && !empty($order->custom_offer_id)) {
+                $order->title = 'Custom Offer: ' . ($order->gig_title ?? 'Service');
+            } elseif (empty($order->title)) {
+                $order->title = $order->gig_title ?? 'Untitled Service';
+            }
 
             $order->review = DB::table('service_reviews')
                 ->whereNull('parent_id')
@@ -433,6 +476,8 @@ class OrderManagementController extends Controller
                 'expert_profiles.profession',
                 'expert_profiles.profile_image',
                 'book_orders.title',
+                'book_orders.custom_offer_id',
+                'teacher_gigs.title as gig_title',
                 'teacher_gig_data.description',
                 'teacher_gig_data.freelance_service',
                 'teacher_gig_data.lesson_type',
@@ -466,6 +511,8 @@ class OrderManagementController extends Controller
                 'expert_profiles.profession',
                 'expert_profiles.profile_image',
                 'book_orders.title',
+                'book_orders.custom_offer_id',
+                'teacher_gigs.title',
                 'teacher_gig_data.description',
                 'teacher_gig_data.freelance_service',
                 'teacher_gig_data.lesson_type',
@@ -492,6 +539,12 @@ class OrderManagementController extends Controller
 
         // Attach all_classes and new_all_classes
         foreach ($cancelledOrders as $order) {
+            // Calculate display title for custom offer orders
+            if (empty($order->title) && !empty($order->custom_offer_id)) {
+                $order->title = 'Custom Offer: ' . ($order->gig_title ?? 'Service');
+            } elseif (empty($order->title)) {
+                $order->title = $order->gig_title ?? 'Untitled Service';
+            }
 
             $order->review = DB::table('service_reviews')
                 ->whereNull('parent_id')
@@ -607,6 +660,8 @@ class OrderManagementController extends Controller
                 'users.country',
                 'users.profile',
                 'book_orders.title',
+                'book_orders.custom_offer_id',
+                'teacher_gigs.title as gig_title',
                 'teacher_gigs.service_type',
                 'teacher_gig_data.description',
                 'teacher_gig_data.freelance_service',
@@ -648,6 +703,8 @@ class OrderManagementController extends Controller
                 'users.last_name',
                 'users.profile',
                 'book_orders.title',
+                'book_orders.custom_offer_id',
+                'teacher_gigs.title',
                 'teacher_gig_data.description',
                 'teacher_gig_data.freelance_service',
                 'teacher_gig_data.lesson_type',
@@ -663,8 +720,15 @@ class OrderManagementController extends Controller
             ->paginate($perPage);
 
 
-        // Attach all_classes and new_all_classes
+        // Attach all_classes, new_all_classes, and display_title
         foreach ($pendingOrders as $order) {
+            // Calculate display title for custom offer orders
+            if (empty($order->title) && !empty($order->custom_offer_id)) {
+                $order->title = 'Custom Offer: ' . ($order->gig_title ?? 'Service');
+            } elseif (empty($order->title)) {
+                $order->title = $order->gig_title ?? 'Untitled Service';
+            }
+
             // Get all class_dates for this order
             $order->all_classes = DB::table('class_dates')
                 ->where('order_id', $order->order_id)
@@ -811,6 +875,8 @@ class OrderManagementController extends Controller
                 'users.country',
                 'users.profile',
                 'book_orders.title',
+                'book_orders.custom_offer_id',
+                'teacher_gigs.title as gig_title',
                 'teacher_gig_data.description',
                 'teacher_gig_data.freelance_service',
                 'teacher_gig_data.lesson_type',
@@ -853,6 +919,8 @@ class OrderManagementController extends Controller
                 'users.country',
                 'users.profile',
                 'book_orders.title',
+                'book_orders.custom_offer_id',
+                'teacher_gigs.title',
                 'teacher_gig_data.description',
                 'teacher_gig_data.freelance_service',
                 'teacher_gig_data.lesson_type',
@@ -870,6 +938,13 @@ class OrderManagementController extends Controller
 
         // Attach all_classes and new_all_classes
         foreach ($activeOrders as $order) {
+            // Calculate display title for custom offer orders
+            if (empty($order->title) && !empty($order->custom_offer_id)) {
+                $order->title = 'Custom Offer: ' . ($order->gig_title ?? 'Service');
+            } elseif (empty($order->title)) {
+                $order->title = $order->gig_title ?? 'Untitled Service';
+            }
+
             // Get all class_dates for this order
             $order->all_classes = DB::table('class_dates')
                 ->where('order_id', $order->order_id)
@@ -917,6 +992,8 @@ class OrderManagementController extends Controller
                 'users.country',
                 'users.profile',
                 'book_orders.title',
+                'book_orders.custom_offer_id',
+                'teacher_gigs.title as gig_title',
                 'teacher_gig_data.description',
                 'teacher_gig_data.freelance_service',
                 'teacher_gig_data.lesson_type',
@@ -942,6 +1019,8 @@ class OrderManagementController extends Controller
                 'users.country',
                 'users.profile',
                 'book_orders.title',
+                'book_orders.custom_offer_id',
+                'teacher_gigs.title',
                 'teacher_gig_data.description',
                 'teacher_gig_data.freelance_service',
                 'teacher_gig_data.lesson_type',
@@ -959,6 +1038,13 @@ class OrderManagementController extends Controller
 
         // Attach all_classes and new_all_classes
         foreach ($deliveredOrders as $order) {
+            // Calculate display title for custom offer orders
+            if (empty($order->title) && !empty($order->custom_offer_id)) {
+                $order->title = 'Custom Offer: ' . ($order->gig_title ?? 'Service');
+            } elseif (empty($order->title)) {
+                $order->title = $order->gig_title ?? 'Untitled Service';
+            }
+
             // Get all class_dates for this order
             $order->all_classes = DB::table('class_dates')
                 ->where('order_id', $order->order_id)
@@ -989,6 +1075,8 @@ class OrderManagementController extends Controller
                 'users.country',
                 'users.profile',
                 'book_orders.title',
+                'book_orders.custom_offer_id',
+                'teacher_gigs.title as gig_title',
                 'teacher_gig_data.description',
                 'teacher_gig_data.freelance_service',
                 'teacher_gig_data.lesson_type',
@@ -1014,6 +1102,8 @@ class OrderManagementController extends Controller
                 'users.country',
                 'users.profile',
                 'book_orders.title',
+                'book_orders.custom_offer_id',
+                'teacher_gigs.title',
                 'teacher_gig_data.description',
                 'teacher_gig_data.freelance_service',
                 'teacher_gig_data.lesson_type',
@@ -1031,6 +1121,12 @@ class OrderManagementController extends Controller
 
         // Attach all_classes and new_all_classes
         foreach ($completedOrders as $order) {
+            // Calculate display title for custom offer orders
+            if (empty($order->title) && !empty($order->custom_offer_id)) {
+                $order->title = 'Custom Offer: ' . ($order->gig_title ?? 'Service');
+            } elseif (empty($order->title)) {
+                $order->title = $order->gig_title ?? 'Untitled Service';
+            }
 
             $order->review = DB::table('service_reviews')
                 ->whereNull('parent_id')
@@ -1070,6 +1166,8 @@ class OrderManagementController extends Controller
                 'users.country',
                 'users.profile',
                 'book_orders.title',
+                'book_orders.custom_offer_id',
+                'teacher_gigs.title as gig_title',
                 'teacher_gig_data.description',
                 'teacher_gig_data.freelance_service',
                 'teacher_gig_data.lesson_type',
@@ -1099,7 +1197,8 @@ class OrderManagementController extends Controller
                 'users.country',
                 'users.profile',
                 'book_orders.title',
-
+                'book_orders.custom_offer_id',
+                'teacher_gigs.title',
                 'teacher_gig_data.description',
                 'teacher_gig_data.freelance_service',
                 'teacher_gig_data.lesson_type',
@@ -1121,6 +1220,12 @@ class OrderManagementController extends Controller
 
         // Attach all_classes and new_all_classes
         foreach ($cancelledOrders as $order) {
+            // Calculate display title for custom offer orders
+            if (empty($order->title) && !empty($order->custom_offer_id)) {
+                $order->title = 'Custom Offer: ' . ($order->gig_title ?? 'Service');
+            } elseif (empty($order->title)) {
+                $order->title = $order->gig_title ?? 'Untitled Service';
+            }
 
             $order->review = DB::table('service_reviews')
                 ->whereNull('parent_id')

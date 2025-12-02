@@ -114,6 +114,113 @@
     </div>
 </div>
 
+<!-- Payment Modal for Custom Offer -->
+<div class="modal fade" id="customOfferPaymentModal" tabindex="-1" aria-labelledby="customOfferPaymentModalLabel" aria-hidden="true" data-bs-backdrop="static">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="customOfferPaymentModalLabel">
+                    <i class="fa-solid fa-credit-card me-2"></i>Complete Payment
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Order Summary -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h6 class="mb-0"><i class="fa-solid fa-receipt me-2"></i>Order Summary</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Service:</span>
+                            <span class="payment-service-name fw-bold"></span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Subtotal:</span>
+                            <span class="payment-subtotal"></span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2 payment-fee-row">
+                            <span>Service Fee:</span>
+                            <span class="payment-fee"></span>
+                        </div>
+                        <hr>
+                        <div class="d-flex justify-content-between">
+                            <strong>Total:</strong>
+                            <strong class="payment-total text-primary fs-5"></strong>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Payment Form -->
+                <form id="custom-offer-payment-form">
+                    <input type="hidden" id="payment-offer-id" name="offer_id">
+                    <input type="hidden" id="payment-intent-id" name="payment_intent_id">
+                    <input type="hidden" id="payment-client-secret" name="client_secret">
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h6 class="mb-0"><i class="fa-solid fa-lock me-2"></i>Card Details</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label for="payment-holder-name" class="form-label">Cardholder Name *</label>
+                                <input type="text" class="form-control" id="payment-holder-name" name="holder_name"
+                                       placeholder="Name on card" required>
+                            </div>
+
+                            <!-- Stripe Card Element Container -->
+                            <div class="mb-3">
+                                <label class="form-label">Card Details *</label>
+                                <div id="stripe-card-element" class="form-control" style="padding: 12px; height: auto;"></div>
+                                <div id="stripe-card-errors" class="text-danger small mt-1"></div>
+                            </div>
+
+                            <div class="alert alert-info small mb-0">
+                                <i class="fa-solid fa-shield-halved me-1"></i>
+                                Your payment is secured with Stripe. We never store your card details.
+                            </div>
+                        </div>
+                    </div>
+                </form>
+
+                <!-- Error Display -->
+                <div class="alert alert-danger mt-3 d-none" id="payment-error-message">
+                    <i class="fa-solid fa-exclamation-circle me-1"></i>
+                    <span class="error-text"></span>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="cancel-payment-btn">
+                    <i class="fa-solid fa-times me-1"></i>Cancel
+                </button>
+                <button type="button" class="btn btn-success" id="confirm-payment-btn">
+                    <span class="spinner-border spinner-border-sm d-none me-1" id="payment-spinner"></span>
+                    <i class="fa-solid fa-lock me-1" id="payment-lock-icon"></i>
+                    <span class="btn-text">Pay Now</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Payment Success Modal -->
+<div class="modal fade" id="paymentSuccessModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body text-center py-5">
+                <div class="mb-4">
+                    <i class="fa-solid fa-check-circle text-success" style="font-size: 4rem;"></i>
+                </div>
+                <h4 class="mb-3">Payment Successful!</h4>
+                <p class="text-muted mb-4">Your order has been placed successfully. The seller has been notified.</p>
+                <button type="button" class="btn btn-primary" id="view-order-btn">
+                    <i class="fa-solid fa-eye me-1"></i>View Order
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <style>
     .custom-offer-card:hover {
         box-shadow: 0 4px 8px rgba(0,0,0,0.2) !important;
@@ -136,5 +243,23 @@
 
     .offer-status-message {
         margin-bottom: 1rem;
+    }
+
+    #custom-offer-payment-form .form-control {
+        font-size: 1rem;
+        padding: 0.75rem 1rem;
+    }
+
+    #custom-offer-payment-form .form-label {
+        font-weight: 500;
+    }
+
+    #customOfferPaymentModal .card {
+        border: 1px solid #e0e0e0;
+    }
+
+    #customOfferPaymentModal .card-header {
+        background-color: #f8f9fa;
+        border-bottom: 1px solid #e0e0e0;
     }
 </style>

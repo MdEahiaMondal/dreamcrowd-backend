@@ -22,6 +22,7 @@ class BookOrder extends Model
         'user_id',
         'gig_id',
         'teacher_id',
+        'custom_offer_id',
         'zoom_link',
         'title',
         'frequency',
@@ -146,6 +147,14 @@ class BookOrder extends Model
     public function disputeOrder()
     {
         return $this->hasOne(DisputeOrder::class, 'order_id');
+    }
+
+    /**
+     * Get the custom offer associated with this order
+     */
+    public function customOffer()
+    {
+        return $this->belongsTo(CustomOffer::class, 'custom_offer_id');
     }
 
     /**

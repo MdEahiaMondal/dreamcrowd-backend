@@ -82,4 +82,12 @@ class CustomOffer extends Model
     {
         $this->update(['status' => 'expired']);
     }
+
+    /**
+     * Get the book order associated with this offer
+     */
+    public function bookOrder()
+    {
+        return $this->hasOne(BookOrder::class, 'custom_offer_id');
+    }
 }

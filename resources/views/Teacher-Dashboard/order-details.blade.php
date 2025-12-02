@@ -616,6 +616,148 @@
                         </div>
                     </div>
 
+                    <!-- Custom Offer Milestones Management -->
+                    @if($order->custom_offer_id && $order->customOffer)
+                        @php
+                            $milestones = $order->customOffer->milestones;
+                            $completedMilestones = $milestones->whereIn('status', ['completed', 'released'])->count();
+                            $totalMilestones = $milestones->count();
+                            $milestoneProgress = $totalMilestones > 0 ? round(($completedMilestones / $totalMilestones) * 100) : 0;
+                            $actionNeeded = $milestones->whereIn('status', ['pending', 'in_progress'])->count();
+                        @endphp
+                        <div class="info-card" style="border: 2px solid #667eea;">
+                            <div class="info-card-header">
+                                <i class='bx bx-list-check' style="color: #667eea;"></i>
+                                <h3>Manage Milestones</h3>
+                                @if($actionNeeded > 0)
+                                    <span class="badge bg-warning text-dark ms-2">{{ $actionNeeded }} needs action</span>
+                                @endif
+                            </div>
+
+                            {{-- Progress Bar --}}
+                            <div style="margin-bottom: 20px;">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                    <span style="font-weight: 600; color: #333;">Overall Progress</span>
+                                    <span style="color: #667eea; font-weight: 600;">{{ $completedMilestones }}/{{ $totalMilestones }} Completed</span>
+                                </div>
+                                <div class="progress" style="height: 12px; border-radius: 6px;">
+                                    <div class="progress-bar bg-success" role="progressbar"
+                                         style="width: {{ $milestoneProgress }}%; border-radius: 6px;"
+                                         aria-valuenow="{{ $milestoneProgress }}" aria-valuemin="0" aria-valuemax="100">
+                                    </div>
+                                </div>
+                            </div>
+
+                            {{-- Milestones List --}}
+                            @foreach($milestones as $index => $milestone)
+                                <div class="milestone-card-seller milestone-{{ $milestone->status }}"
+                                     style="border: 1px solid #e0e0e0; border-radius: 10px; padding: 20px; margin-bottom: 15px;
+                                            @if($milestone->status == 'pending') border-left: 5px solid #6c757d; background: #fafafa;
+                                            @elseif($milestone->status == 'in_progress') border-left: 5px solid #007bff; background: #f0f7ff;
+                                            @elseif($milestone->status == 'delivered') border-left: 5px solid #17a2b8; background: #e8f7fa;
+                                            @elseif($milestone->status == 'completed' || $milestone->status == 'released') border-left: 5px solid #28a745; background: #e8f5e9;
+                                            @endif">
+
+                                    <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 10px;">
+                                        <div>
+                                            <span style="background: #667eea; color: white; padding: 3px 10px; border-radius: 4px; font-size: 12px; font-weight: 600; margin-right: 10px;">
+                                                Milestone #{{ $index + 1 }}
+                                            </span>
+                                            <strong style="font-size: 18px;">{{ $milestone->title }}</strong>
+                                        </div>
+                                        <span class="badge
+                                            @if($milestone->status == 'pending') bg-secondary
+                                            @elseif($milestone->status == 'in_progress') bg-primary
+                                            @elseif($milestone->status == 'delivered') bg-info
+                                            @elseif($milestone->status == 'completed' || $milestone->status == 'released') bg-success
+                                            @endif"
+                                            style="padding: 6px 12px; font-size: 13px;">
+                                            {{ ucfirst(str_replace('_', ' ', $milestone->status)) }}
+                                        </span>
+                                    </div>
+
+                                    @if($milestone->description)
+                                        <p style="margin: 15px 0 0 0; color: #555;">{{ $milestone->description }}</p>
+                                    @endif
+
+                                    <div style="display: flex; flex-wrap: wrap; gap: 20px; margin-top: 15px; color: #666; font-size: 14px;">
+                                        @if($milestone->date)
+                                            <span><i class='bx bx-calendar'></i> {{ $milestone->date->format('M d, Y') }}</span>
+                                        @endif
+                                        @if($milestone->start_time && $milestone->end_time)
+                                            <span><i class='bx bx-time'></i> {{ $milestone->start_time }} - {{ $milestone->end_time }}</span>
+                                        @endif
+                                        @if($milestone->revisions > 0)
+                                            <span><i class='bx bx-revision'></i> {{ $milestone->revisions_used }}/{{ $milestone->revisions }} Revisions Used</span>
+                                        @endif
+                                        @if($milestone->delivery_days)
+                                            <span><i class='bx bx-package'></i> {{ $milestone->delivery_days }} days delivery</span>
+                                        @endif
+                                    </div>
+
+                                    <div style="margin-top: 15px; font-weight: 700; color: #28a745; font-size: 18px;">
+                                        Milestone Value: @currency($milestone->price)
+                                    </div>
+
+                                    {{-- Revision Request Alert --}}
+                                    @if($milestone->revision_note && $milestone->status == 'in_progress')
+                                        <div style="margin-top: 15px; padding: 15px; background: #fff3cd; border-radius: 8px; border-left: 4px solid #ffc107;">
+                                            <strong style="color: #856404;"><i class='bx bx-info-circle'></i> Buyer Requested Revision:</strong>
+                                            <p style="margin: 8px 0 0 0; color: #856404;">{{ $milestone->revision_note }}</p>
+                                        </div>
+                                    @endif
+
+                                    {{-- Seller Actions Based on Status --}}
+                                    <div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #e0e0e0;">
+                                        @if($milestone->status === 'pending')
+                                            <button class="btn btn-primary start-milestone-btn"
+                                                    data-milestone-id="{{ $milestone->id }}"
+                                                    style="padding: 10px 24px;">
+                                                <i class='bx bx-play'></i> Start Working on This Milestone
+                                            </button>
+
+                                        @elseif($milestone->status === 'in_progress')
+                                            <button class="btn btn-success deliver-milestone-btn"
+                                                    data-milestone-id="{{ $milestone->id }}"
+                                                    data-milestone-title="{{ $milestone->title }}"
+                                                    style="padding: 10px 24px;">
+                                                <i class='bx bx-check-double'></i> Mark as Delivered
+                                            </button>
+                                            <small class="d-block text-muted mt-2">
+                                                <i class='bx bx-info-circle'></i> Click to deliver this milestone to the buyer for approval
+                                            </small>
+
+                                        @elseif($milestone->status === 'delivered')
+                                            <div class="d-flex align-items-center" style="background: #e8f7fa; padding: 12px 16px; border-radius: 6px;">
+                                                <i class='bx bx-time-five' style="font-size: 24px; color: #17a2b8; margin-right: 12px;"></i>
+                                                <div>
+                                                    <strong style="color: #0c5460;">Awaiting Buyer Approval</strong>
+                                                    <p style="margin: 0; color: #666; font-size: 13px;">The buyer will review and approve, or request revisions</p>
+                                                </div>
+                                            </div>
+                                            @if($milestone->delivery_note)
+                                                <div style="margin-top: 10px; padding: 10px; background: #f8f9fa; border-radius: 6px;">
+                                                    <small class="text-muted"><strong>Your delivery note:</strong> {{ $milestone->delivery_note }}</small>
+                                                </div>
+                                            @endif
+
+                                        @elseif($milestone->status === 'completed' || $milestone->status === 'released')
+                                            <div class="d-flex align-items-center" style="background: #d4edda; padding: 12px 16px; border-radius: 6px;">
+                                                <i class='bx bx-check-circle' style="font-size: 24px; color: #28a745; margin-right: 12px;"></i>
+                                                <div>
+                                                    <strong style="color: #155724;">Milestone Completed!</strong>
+                                                    <p style="margin: 0; color: #666; font-size: 13px;">
+                                                        Completed on {{ $milestone->completed_at ? $milestone->completed_at->format('M d, Y H:i') : 'N/A' }}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        @endif
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    @endif
+
                     <!-- Class Schedule -->
                     @if($order->classDates->count() > 0)
                         <div class="info-card">
@@ -921,6 +1063,58 @@
     </div>
     @endif
 
+    <!-- Delivery Modal for Milestones -->
+    @if($order->custom_offer_id && $order->customOffer)
+    <div class="modal fade" id="deliveryModal" tabindex="-1" aria-labelledby="deliveryModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header" style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%); color: white;">
+                    <h5 class="modal-title" id="deliveryModalLabel">
+                        <i class='bx bx-check-double'></i> Deliver Milestone
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="deliveryMilestoneId" value="">
+
+                    <div class="alert alert-info d-flex align-items-start gap-2" style="font-size: 14px;">
+                        <i class='bx bx-info-circle' style="font-size: 20px; flex-shrink: 0;"></i>
+                        <div>
+                            <strong>Delivering: </strong><span id="deliveryMilestoneTitle"></span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="deliveryNote" class="form-label fw-bold">Delivery Note (Optional)</label>
+                        <textarea class="form-control"
+                                  id="deliveryNote"
+                                  rows="4"
+                                  placeholder="Add any notes about your delivery, instructions for the buyer, or what was completed..."></textarea>
+                        <small class="text-muted">This note will be visible to the buyer.</small>
+                    </div>
+
+                    <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; border-left: 4px solid #28a745;">
+                        <strong><i class='bx bx-info-circle'></i> What happens next?</strong>
+                        <ul style="margin: 10px 0 0 0; padding-left: 20px; color: #666;">
+                            <li>The buyer will be notified about your delivery</li>
+                            <li>They can approve the milestone or request revisions</li>
+                            <li>Once approved, the milestone will be marked as complete</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class='bx bx-x'></i> Cancel
+                    </button>
+                    <button type="button" class="btn btn-success" id="confirmDeliveryBtn">
+                        <i class='bx bx-check-double'></i> Confirm Delivery
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    @endif
+
     <!-- jQuery -->
     <script src="/assets/admin/libs/jquery/js/jquery.min.js"></script>
     <!-- Bootstrap js -->
@@ -928,6 +1122,89 @@
     <script src="/assets/admin/asset/js/sidebar.js"></script>
 
     <script>
+        // ===== Milestone Management =====
+
+        // Start milestone
+        $(document).on('click', '.start-milestone-btn', function() {
+            const milestoneId = $(this).data('milestone-id');
+            const $btn = $(this);
+            const originalText = $btn.html();
+
+            if(confirm('Start working on this milestone? The status will change to "In Progress".')) {
+                $btn.prop('disabled', true).html('<i class="bx bx-loader-alt bx-spin"></i> Starting...');
+
+                $.ajax({
+                    url: `/milestones/${milestoneId}/start`,
+                    type: 'POST',
+                    data: { _token: $('meta[name="csrf-token"]').attr('content') },
+                    success: function(response) {
+                        if (response.success) {
+                            alert('Milestone started! You can now work on this milestone.');
+                            location.reload();
+                        } else {
+                            alert(response.error || 'Failed to start milestone');
+                            $btn.prop('disabled', false).html(originalText);
+                        }
+                    },
+                    error: function(xhr) {
+                        let errorMsg = 'Failed to start milestone';
+                        if (xhr.responseJSON && xhr.responseJSON.error) {
+                            errorMsg = xhr.responseJSON.error;
+                        }
+                        alert(errorMsg);
+                        $btn.prop('disabled', false).html(originalText);
+                    }
+                });
+            }
+        });
+
+        // Show delivery modal
+        $(document).on('click', '.deliver-milestone-btn', function() {
+            const milestoneId = $(this).data('milestone-id');
+            const milestoneTitle = $(this).data('milestone-title');
+            $('#deliveryMilestoneId').val(milestoneId);
+            $('#deliveryMilestoneTitle').text(milestoneTitle);
+            $('#deliveryNote').val('');
+            $('#deliveryModal').modal('show');
+        });
+
+        // Confirm delivery
+        $('#confirmDeliveryBtn').on('click', function() {
+            const milestoneId = $('#deliveryMilestoneId').val();
+            const deliveryNote = $('#deliveryNote').val().trim();
+            const $btn = $(this);
+            const originalText = $btn.html();
+
+            $btn.prop('disabled', true).html('<i class="bx bx-loader-alt bx-spin"></i> Delivering...');
+
+            $.ajax({
+                url: `/milestones/${milestoneId}/deliver`,
+                type: 'POST',
+                data: {
+                    delivery_note: deliveryNote,
+                    _token: $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function(response) {
+                    if (response.success) {
+                        alert('Milestone delivered successfully! The buyer has been notified.');
+                        $('#deliveryModal').modal('hide');
+                        location.reload();
+                    } else {
+                        alert(response.error || 'Failed to deliver milestone');
+                        $btn.prop('disabled', false).html(originalText);
+                    }
+                },
+                error: function(xhr) {
+                    let errorMsg = 'Failed to deliver milestone';
+                    if (xhr.responseJSON && xhr.responseJSON.error) {
+                        errorMsg = xhr.responseJSON.error;
+                    }
+                    alert(errorMsg);
+                    $btn.prop('disabled', false).html(originalText);
+                }
+            });
+        });
+
         // Accept refund function
         function acceptRefund() {
             const confirmed = confirm(

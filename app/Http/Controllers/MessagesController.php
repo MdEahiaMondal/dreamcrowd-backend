@@ -2404,7 +2404,7 @@ class MessagesController extends Controller
             'milestones.*.delivery_days' => 'nullable|integer|min:1',
             'milestones.*.date' => 'nullable|date|after:today',
             'milestones.*.start_time' => 'nullable|date_format:H:i',
-            'milestones.*.end_time' => 'nullable|date_format:H:i|after:milestones.*.start_time',
+            'milestones.*.end_time' => 'nullable|date_format:H:i',
         ]);
 
         // Conditional validation for in-person
@@ -2575,7 +2575,7 @@ class MessagesController extends Controller
 
     public function acceptCustomOffer($id)
     {
-        $offer = \App\Models\CustomOffer::with('milestones')->findOrFail($id);
+        $offer = \App\Models\CustomOffer::with(['milestones', 'gig'])->findOrFail($id);
 
         // Authorization check
         if ($offer->buyer_id !== auth()->id()) {
@@ -2589,35 +2589,220 @@ class MessagesController extends Controller
         }
 
         // Calculate commission
-        $commission = \App\Models\TopSellerTag::calculateCommission($offer->gig_id, $offer->seller_id);
-        $totalAmount = $offer->total_amount + $commission['buyer_commission'];
+        $commissionSettings = \App\Models\TopSellerTag::getCommissionSettings();
 
-        // Create Stripe checkout session
-        $stripe = new \Stripe\StripeClient(config('services.stripe.secret'));
+        // Calculate buyer commission
+        $buyerCommissionRate = 0;
+        $buyerCommission = 0;
+        if ($commissionSettings->buyer_commission && $commissionSettings->buyer_commission_rate > 0) {
+            $buyerCommissionRate = $commissionSettings->buyer_commission_rate;
+            $buyerCommission = ($offer->total_amount * $buyerCommissionRate) / 100;
+        }
+
+        // Calculate seller commission
+        $sellerCommissionRate = $commissionSettings->commission ?? 15;
+        $sellerCommission = ($offer->total_amount * $sellerCommissionRate) / 100;
+
+        $totalAmount = round($offer->total_amount + $buyerCommission, 2);
+
+        // Create Stripe Payment Intent for inline payment
+        \Stripe\Stripe::setApiKey(config('services.stripe.secret'));
 
         try {
-            $session = $stripe->checkout->sessions->create([
-                'payment_method_types' => ['card'],
-                'line_items' => [[
-                    'price_data' => [
-                        'currency' => 'usd',
-                        'product_data' => [
-                            'name' => 'Custom Offer: ' . $offer->gig->title,
-                            'description' => $offer->description ?? 'Custom service offer',
-                        ],
-                        'unit_amount' => $totalAmount * 100, // cents
-                    ],
-                    'quantity' => 1,
-                ]],
-                'mode' => 'payment',
-                'success_url' => url('/custom-offer-success?session_id={CHECKOUT_SESSION_ID}'),
-                'cancel_url' => url('/messages'),
+            $paymentIntent = \Stripe\PaymentIntent::create([
+                'amount' => round($totalAmount * 100), // Convert to cents
+                'currency' => 'usd',
+                'capture_method' => 'manual', // Manual capture like ServicePayment
+                'automatic_payment_methods' => [
+                    'enabled' => true,
+                    'allow_redirects' => 'never',
+                ],
                 'metadata' => [
                     'custom_offer_id' => $offer->id,
                     'buyer_id' => auth()->id(),
                     'seller_id' => $offer->seller_id,
                     'gig_id' => $offer->gig_id,
+                    'payment_type' => $offer->payment_type,
+                    'total_milestones' => $offer->milestones->count(),
                 ],
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'payment_intent_id' => $paymentIntent->id,
+                'client_secret' => $paymentIntent->client_secret,
+                'offer' => [
+                    'id' => $offer->id,
+                    'service_name' => $offer->gig->title ?? 'Custom Offer',
+                    'subtotal' => $offer->total_amount,
+                    'service_fee' => $buyerCommission,
+                    'total_amount' => $totalAmount,
+                    'buyer_commission_rate' => $buyerCommissionRate,
+                    'seller_commission_rate' => $sellerCommissionRate,
+                ],
+            ]);
+        } catch (\Stripe\Exception\CardException $e) {
+            \Log::error('Stripe card error: ' . $e->getMessage());
+            return response()->json([
+                'error' => 'Card declined: ' . $e->getError()->message
+            ], 422);
+        } catch (\Stripe\Exception\ApiErrorException $e) {
+            \Log::error('Stripe API error: ' . $e->getMessage());
+            return response()->json([
+                'error' => 'Payment processing failed. Please try again.'
+            ], 500);
+        }
+    }
+
+    /**
+     * Process the custom offer payment after card confirmation
+     */
+    public function processCustomOfferPayment(Request $request)
+    {
+        $request->validate([
+            'offer_id' => 'required|exists:custom_offers,id',
+            'payment_intent_id' => 'required|string',
+            'holder_name' => 'required|string|max:255',
+            'card_last_four' => 'nullable|string|max:4',
+        ]);
+
+        $offer = \App\Models\CustomOffer::with(['milestones', 'gig', 'seller', 'buyer'])->findOrFail($request->offer_id);
+
+        // Authorization check
+        if ($offer->buyer_id !== auth()->id()) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        // Check if offer is still pending
+        if ($offer->status !== 'pending') {
+            return response()->json(['error' => 'This offer has already been processed.'], 400);
+        }
+
+        // Verify the payment intent
+        \Stripe\Stripe::setApiKey(config('services.stripe.secret'));
+
+        try {
+            $paymentIntent = \Stripe\PaymentIntent::retrieve($request->payment_intent_id);
+
+            // Verify the payment intent matches the offer
+            if ($paymentIntent->metadata->custom_offer_id != $offer->id) {
+                return response()->json(['error' => 'Payment verification failed.'], 400);
+            }
+
+            // Check payment intent status
+            if (!in_array($paymentIntent->status, ['requires_capture', 'succeeded'])) {
+                return response()->json(['error' => 'Payment was not successful. Status: ' . $paymentIntent->status], 400);
+            }
+
+            // Capture the payment if it's authorized but not yet captured
+            if ($paymentIntent->status === 'requires_capture') {
+                try {
+                    $paymentIntent = $paymentIntent->capture();
+
+                    if ($paymentIntent->status !== 'succeeded') {
+                        \Log::error('Payment capture failed', [
+                            'payment_intent_id' => $paymentIntent->id,
+                            'status' => $paymentIntent->status
+                        ]);
+                        return response()->json(['error' => 'Payment capture failed. Please try again.'], 400);
+                    }
+
+                    \Log::info('Payment captured successfully', [
+                        'payment_intent_id' => $paymentIntent->id,
+                        'amount' => $paymentIntent->amount / 100
+                    ]);
+                } catch (\Stripe\Exception\ApiErrorException $e) {
+                    \Log::error('Stripe capture error: ' . $e->getMessage());
+                    return response()->json(['error' => 'Payment capture failed: ' . $e->getMessage()], 400);
+                }
+            }
+
+            // Calculate commissions
+            $commissionSettings = \App\Models\TopSellerTag::getCommissionSettings();
+
+            $buyerCommissionRate = 0;
+            $buyerCommission = 0;
+            if ($commissionSettings->buyer_commission && $commissionSettings->buyer_commission_rate > 0) {
+                $buyerCommissionRate = $commissionSettings->buyer_commission_rate;
+                $buyerCommission = ($offer->total_amount * $buyerCommissionRate) / 100;
+            }
+
+            $sellerCommissionRate = $commissionSettings->commission ?? 15;
+            $sellerCommission = ($offer->total_amount * $sellerCommissionRate) / 100;
+
+            $totalAmount = round($offer->total_amount + $buyerCommission, 2);
+            $sellerEarnings = $offer->total_amount - $sellerCommission;
+            $totalAdminCommission = $sellerCommission + $buyerCommission;
+
+            // Create BookOrder
+            $order = \App\Models\BookOrder::create([
+                'user_id' => $offer->buyer_id,
+                'teacher_id' => $offer->seller_id,
+                'gig_id' => $offer->gig_id,
+                'custom_offer_id' => $offer->id,
+                'title' => 'Custom Offer: ' . ($offer->gig->title ?? 'Service'),
+                'price' => $offer->total_amount,
+                'finel_price' => $totalAmount,
+                'buyer_commission_rate' => $buyerCommissionRate,
+                'buyer_commission_amount' => $buyerCommission,
+                'seller_commission_rate' => $sellerCommissionRate,
+                'seller_commission_amount' => $sellerCommission,
+                'total_admin_commission' => $totalAdminCommission,
+                'seller_earnings' => $sellerEarnings,
+                'payment_id' => $paymentIntent->id,
+                'payment_status' => 'completed',
+                'holder_name' => $request->holder_name,
+                'card_number' => $request->card_last_four,
+                'status' => 1, // Active
+                'action_date' => now(),
+            ]);
+
+            // Create class dates if milestones have dates
+            foreach ($offer->milestones as $milestone) {
+                if ($milestone->date) {
+                    \App\Models\ClassDate::create([
+                        'order_id' => $order->id,
+                        'teacher_date' => $milestone->date,
+                        'user_date' => $milestone->date,
+                        'teacher_time_zone' => 'UTC',
+                        'user_time_zone' => 'UTC',
+                        'duration' => '01:00',
+                    ]);
+                }
+            }
+
+            // If no class dates created, create a placeholder
+            if ($order->classDates()->count() === 0) {
+                \App\Models\ClassDate::create([
+                    'order_id' => $order->id,
+                    'teacher_date' => now()->addDays(7),
+                    'user_date' => now()->addDays(7),
+                    'teacher_time_zone' => 'UTC',
+                    'user_time_zone' => 'UTC',
+                    'duration' => '01:00',
+                ]);
+            }
+
+            // Create Transaction record
+            $transaction = \App\Models\Transaction::create([
+                'seller_id' => $offer->seller_id,
+                'buyer_id' => auth()->id(),
+                'service_id' => $offer->gig_id,
+                'service_type' => 'custom_offer',
+                'total_amount' => $offer->total_amount,
+                'currency' => $commissionSettings->currency ?? 'USD',
+                'seller_commission_rate' => $sellerCommissionRate,
+                'seller_commission_amount' => $sellerCommission,
+                'buyer_commission_rate' => $buyerCommissionRate,
+                'buyer_commission_amount' => $buyerCommission,
+                'total_admin_commission' => $totalAdminCommission,
+                'seller_earnings' => $sellerEarnings,
+                'stripe_amount' => $totalAmount,
+                'stripe_currency' => 'USD',
+                'stripe_transaction_id' => $paymentIntent->id,
+                'status' => 'completed',
+                'payout_status' => 'pending',
+                'notes' => 'Custom Offer Order #' . $order->id . ' - ' . ($offer->gig->title ?? 'Service'),
             ]);
 
             // Update offer status
@@ -2626,15 +2811,18 @@ class MessagesController extends Controller
                 'accepted_at' => now(),
             ]);
 
+            // Update milestone statuses to pending
+            $offer->milestones()->update(['status' => 'pending']);
+
             // Send notification to seller
             if (class_exists('\App\Services\NotificationService')) {
                 try {
                     app(\App\Services\NotificationService::class)->send(
                         userId: $offer->seller_id,
                         type: 'custom_offer',
-                        title: 'Offer Accepted!',
-                        message: $offer->buyer->first_name . ' accepted your custom offer for ' . $offer->gig->title,
-                        data: ['offer_id' => $offer->id],
+                        title: 'New Order from Custom Offer!',
+                        message: $offer->buyer->first_name . ' accepted and paid for your custom offer for ' . ($offer->gig->title ?? 'Service'),
+                        data: ['offer_id' => $offer->id, 'order_id' => $order->id],
                         sendEmail: true
                     );
                 } catch (\Exception $e) {
@@ -2653,11 +2841,14 @@ class MessagesController extends Controller
 
             return response()->json([
                 'success' => true,
-                'checkout_url' => $session->url
+                'message' => 'Payment successful! Order created.',
+                'order_id' => $order->id,
+                'redirect_url' => '/user/order-details/' . $order->id,
             ]);
+
         } catch (\Exception $e) {
-            \Log::error('Stripe checkout creation failed: ' . $e->getMessage());
-            return response()->json(['error' => 'Payment processing failed. Please try again.'], 500);
+            \Log::error('Custom offer payment processing failed: ' . $e->getMessage());
+            return response()->json(['error' => 'Order creation failed. Please contact support.'], 500);
         }
     }
 

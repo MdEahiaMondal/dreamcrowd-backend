@@ -312,6 +312,12 @@ CACHE_STORE=database          # Cache stored in database
 - `config/database.php`: Database connections
 - `.env`: Environment-specific configuration
 
+## Requirements
+
+- **Laravel**: 11.x
+- **PHP**: >= 8.2
+- **Node.js**: >= 18.x
+
 ## Key Packages
 
 - `stripe/stripe-php`: Payment processing

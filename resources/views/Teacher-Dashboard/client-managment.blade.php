@@ -1109,7 +1109,38 @@
                                                                             Active
                                                                         @endif
                                                 </span></h3>
-
+                                                                {{-- Milestone Progress Indicator for Seller --}}
+                                                                @php
+                                                                    $orderModel = \App\Models\BookOrder::with(['customOffer.milestones'])->find($order->order_id);
+                                                                @endphp
+                                                                @if($orderModel && $orderModel->custom_offer_id && $orderModel->customOffer)
+                                                                    @php
+                                                                        $milestones = $orderModel->customOffer->milestones;
+                                                                        $pendingCount = $milestones->where('status', 'pending')->count();
+                                                                        $inProgressCount = $milestones->where('status', 'in_progress')->count();
+                                                                        $deliveredCount = $milestones->where('status', 'delivered')->count();
+                                                                        $completedCount = $milestones->whereIn('status', ['completed', 'released'])->count();
+                                                                        $totalCount = $milestones->count();
+                                                                        $progressPercent = $totalCount > 0 ? round(($completedCount / $totalCount) * 100) : 0;
+                                                                        $needsAction = $pendingCount > 0 || ($inProgressCount > 0 && !$deliveredCount);
+                                                                    @endphp
+                                                                    <div style="margin-top: 8px; padding: 6px 8px; background: {{ $needsAction ? '#fff3cd' : '#f0f7ff' }}; border-radius: 6px; font-size: 11px;">
+                                                                        <div style="display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 4px;">
+                                                                            @if($pendingCount > 0)<span class="badge bg-secondary" style="font-size: 10px;">{{ $pendingCount }} Pending</span>@endif
+                                                                            @if($inProgressCount > 0)<span class="badge bg-primary" style="font-size: 10px;">{{ $inProgressCount }} In Progress</span>@endif
+                                                                            @if($deliveredCount > 0)<span class="badge bg-info" style="font-size: 10px;">{{ $deliveredCount }} Delivered</span>@endif
+                                                                            @if($completedCount > 0)<span class="badge bg-success" style="font-size: 10px;">{{ $completedCount }} Done</span>@endif
+                                                                        </div>
+                                                                        <div class="progress" style="height: 5px; border-radius: 3px;">
+                                                                            <div class="progress-bar bg-success" style="width: {{ $progressPercent }}%; border-radius: 3px;"></div>
+                                                                        </div>
+                                                                        @if($pendingCount > 0)
+                                                                            <div style="margin-top: 4px; color: #856404; font-weight: 600;">
+                                                                                <i class='bx bx-bell'></i> Start pending milestones
+                                                                            </div>
+                                                                        @endif
+                                                                    </div>
+                                                                @endif
                                                             </div>
                                                         </td>
                                                         <td>

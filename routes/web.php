@@ -689,9 +689,31 @@ Route::controller(MessagesController::class)->group(function () {
     Route::post('/custom-offers', 'sendCustomOffer')->name('custom-offers.send');
     Route::get('/custom-offers/{id}', 'viewCustomOffer')->name('custom-offers.view');
     Route::post('/custom-offers/{id}/accept', 'acceptCustomOffer')->name('custom-offers.accept');
+    Route::post('/custom-offers/process-payment', 'processCustomOfferPayment')->name('custom-offers.process-payment');
     Route::post('/custom-offers/{id}/reject', 'rejectCustomOffer')->name('custom-offers.reject');
 
     Route::get('/messages/unread-count/{userId}', 'getUnreadMessageCount');
+});
+
+// ============ CUSTOM OFFER MILESTONE ROUTES ============
+use App\Http\Controllers\CustomOfferMilestoneController;
+
+Route::middleware(['auth'])->group(function () {
+    // Get milestones for an order
+    Route::get('/orders/{orderId}/milestones', [CustomOfferMilestoneController::class, 'getMilestones'])
+        ->name('milestones.get');
+
+    // Seller actions
+    Route::post('/milestones/{id}/start', [CustomOfferMilestoneController::class, 'startMilestone'])
+        ->name('milestones.start');
+    Route::post('/milestones/{id}/deliver', [CustomOfferMilestoneController::class, 'deliverMilestone'])
+        ->name('milestones.deliver');
+
+    // Buyer actions
+    Route::post('/milestones/{id}/approve', [CustomOfferMilestoneController::class, 'approveMilestone'])
+        ->name('milestones.approve');
+    Route::post('/milestones/{id}/revision', [CustomOfferMilestoneController::class, 'requestRevision'])
+        ->name('milestones.revision');
 
 });
 

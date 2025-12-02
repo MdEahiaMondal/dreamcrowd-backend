@@ -612,6 +612,33 @@
                                                                             Active
                                                                         @endif
                                                 </span></h3>
+                                                                {{-- Milestone Progress Indicator --}}
+                                                                @php
+                                                                    $orderModel = \App\Models\BookOrder::with(['customOffer.milestones'])->find($order->order_id);
+                                                                @endphp
+                                                                @if($orderModel && $orderModel->custom_offer_id && $orderModel->customOffer)
+                                                                    @php
+                                                                        $milestones = $orderModel->customOffer->milestones;
+                                                                        $completedCount = $milestones->whereIn('status', ['completed', 'released'])->count();
+                                                                        $deliveredCount = $milestones->where('status', 'delivered')->count();
+                                                                        $totalCount = $milestones->count();
+                                                                        $progressPercent = $totalCount > 0 ? round(($completedCount / $totalCount) * 100) : 0;
+                                                                    @endphp
+                                                                    <div style="margin-top: 8px; padding: 6px 8px; background: #f0f7ff; border-radius: 6px; font-size: 12px;">
+                                                                        <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                                                                            <span style="color: #667eea; font-weight: 600;">Milestones</span>
+                                                                            <span>{{ $completedCount }}/{{ $totalCount }}</span>
+                                                                        </div>
+                                                                        <div class="progress" style="height: 6px; border-radius: 3px;">
+                                                                            <div class="progress-bar bg-success" style="width: {{ $progressPercent }}%; border-radius: 3px;"></div>
+                                                                        </div>
+                                                                        @if($deliveredCount > 0)
+                                                                            <div style="margin-top: 4px; color: #17a2b8;">
+                                                                                <i class='bx bx-bell'></i> {{ $deliveredCount }} awaiting approval
+                                                                            </div>
+                                                                        @endif
+                                                                    </div>
+                                                                @endif
                                                             </div>
                                                         </td>
                                                         <td>
@@ -891,6 +918,33 @@
                                                             <div class="service-badges">
                                                                 <h3 class="mb-0"><span class="badge service-badge">Delivered</span>
                                                                 </h3>
+                                                                {{-- Milestone Progress Indicator for Delivered --}}
+                                                                @php
+                                                                    $orderModel = \App\Models\BookOrder::with(['customOffer.milestones'])->find($order->order_id);
+                                                                @endphp
+                                                                @if($orderModel && $orderModel->custom_offer_id && $orderModel->customOffer)
+                                                                    @php
+                                                                        $milestones = $orderModel->customOffer->milestones;
+                                                                        $completedCount = $milestones->whereIn('status', ['completed', 'released'])->count();
+                                                                        $deliveredCount = $milestones->where('status', 'delivered')->count();
+                                                                        $totalCount = $milestones->count();
+                                                                        $progressPercent = $totalCount > 0 ? round(($completedCount / $totalCount) * 100) : 0;
+                                                                    @endphp
+                                                                    <div style="margin-top: 8px; padding: 6px 8px; background: #e8f7fa; border-radius: 6px; font-size: 12px;">
+                                                                        <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                                                                            <span style="color: #17a2b8; font-weight: 600;">Milestones</span>
+                                                                            <span>{{ $completedCount }}/{{ $totalCount }}</span>
+                                                                        </div>
+                                                                        <div class="progress" style="height: 6px; border-radius: 3px;">
+                                                                            <div class="progress-bar bg-success" style="width: {{ $progressPercent }}%; border-radius: 3px;"></div>
+                                                                        </div>
+                                                                        @if($deliveredCount > 0)
+                                                                            <div style="margin-top: 4px; color: #17a2b8;">
+                                                                                <i class='bx bx-bell'></i> {{ $deliveredCount }} awaiting approval
+                                                                            </div>
+                                                                        @endif
+                                                                    </div>
+                                                                @endif
                                                             </div>
                                                         </td>
                                                         <td>
@@ -1171,6 +1225,26 @@
                                                             <div class="service-badges">
                                                                 <h3 class="mb-0"><span class="badge service-badge">Completed</span>
                                                                 </h3>
+                                                                {{-- Milestone Progress Indicator for Completed --}}
+                                                                @php
+                                                                    $orderModel = \App\Models\BookOrder::with(['customOffer.milestones'])->find($order->order_id);
+                                                                @endphp
+                                                                @if($orderModel && $orderModel->custom_offer_id && $orderModel->customOffer)
+                                                                    @php
+                                                                        $milestones = $orderModel->customOffer->milestones;
+                                                                        $completedCount = $milestones->whereIn('status', ['completed', 'released'])->count();
+                                                                        $totalCount = $milestones->count();
+                                                                    @endphp
+                                                                    <div style="margin-top: 8px; padding: 6px 8px; background: #e8f5e9; border-radius: 6px; font-size: 12px;">
+                                                                        <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                                                                            <span style="color: #28a745; font-weight: 600;">Milestones</span>
+                                                                            <span>{{ $completedCount }}/{{ $totalCount }}</span>
+                                                                        </div>
+                                                                        <div class="progress" style="height: 6px; border-radius: 3px;">
+                                                                            <div class="progress-bar bg-success" style="width: 100%; border-radius: 3px;"></div>
+                                                                        </div>
+                                                                    </div>
+                                                                @endif
                                                             </div>
                                                         </td>
                                                         <td>

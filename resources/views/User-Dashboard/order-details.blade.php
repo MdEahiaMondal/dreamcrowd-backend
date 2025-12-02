@@ -567,6 +567,125 @@
                         </div>
                     </div>
 
+                    <!-- Custom Offer Milestones -->
+                    @if($order->custom_offer_id && $order->customOffer)
+                        @php
+                            $milestones = $order->customOffer->milestones;
+                            $completedMilestones = $milestones->whereIn('status', ['completed', 'released'])->count();
+                            $totalMilestones = $milestones->count();
+                            $milestoneProgress = $totalMilestones > 0 ? round(($completedMilestones / $totalMilestones) * 100) : 0;
+                        @endphp
+                        <div class="info-card">
+                            <div class="info-card-header">
+                                <i class='bx bx-list-check'></i>
+                                <h3>Order Milestones</h3>
+                            </div>
+
+                            {{-- Progress Bar --}}
+                            <div style="margin-bottom: 20px;">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                    <span style="font-weight: 600; color: #333;">Progress</span>
+                                    <span style="color: #667eea; font-weight: 600;">{{ $completedMilestones }}/{{ $totalMilestones }} Completed</span>
+                                </div>
+                                <div class="progress" style="height: 10px; border-radius: 5px;">
+                                    <div class="progress-bar bg-success" role="progressbar"
+                                         style="width: {{ $milestoneProgress }}%; border-radius: 5px;"
+                                         aria-valuenow="{{ $milestoneProgress }}" aria-valuemin="0" aria-valuemax="100">
+                                    </div>
+                                </div>
+                            </div>
+
+                            {{-- Milestones List --}}
+                            @foreach($milestones as $index => $milestone)
+                                <div class="milestone-card-buyer milestone-{{ $milestone->status }}"
+                                     style="border: 1px solid #e0e0e0; border-radius: 8px; padding: 15px; margin-bottom: 15px;
+                                            @if($milestone->status == 'pending') border-left: 4px solid #6c757d;
+                                            @elseif($milestone->status == 'in_progress') border-left: 4px solid #007bff; background: #f8f9ff;
+                                            @elseif($milestone->status == 'delivered') border-left: 4px solid #17a2b8; background: #e8f7fa;
+                                            @elseif($milestone->status == 'completed' || $milestone->status == 'released') border-left: 4px solid #28a745; background: #e8f5e9;
+                                            @endif">
+
+                                    <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 10px;">
+                                        <div>
+                                            <span style="background: #667eea; color: white; padding: 2px 8px; border-radius: 4px; font-size: 12px; margin-right: 8px;">
+                                                #{{ $index + 1 }}
+                                            </span>
+                                            <strong style="font-size: 16px;">{{ $milestone->title }}</strong>
+                                        </div>
+                                        <span class="badge
+                                            @if($milestone->status == 'pending') bg-secondary
+                                            @elseif($milestone->status == 'in_progress') bg-primary
+                                            @elseif($milestone->status == 'delivered') bg-info
+                                            @elseif($milestone->status == 'completed' || $milestone->status == 'released') bg-success
+                                            @endif">
+                                            {{ ucfirst(str_replace('_', ' ', $milestone->status)) }}
+                                        </span>
+                                    </div>
+
+                                    @if($milestone->description)
+                                        <p style="margin: 12px 0 0 0; color: #666;">{{ $milestone->description }}</p>
+                                    @endif
+
+                                    <div style="display: flex; flex-wrap: wrap; gap: 15px; margin-top: 12px; color: #666; font-size: 14px;">
+                                        @if($milestone->date)
+                                            <span><i class='bx bx-calendar'></i> {{ $milestone->date->format('M d, Y') }}</span>
+                                        @endif
+                                        @if($milestone->start_time && $milestone->end_time)
+                                            <span><i class='bx bx-time'></i> {{ $milestone->start_time }} - {{ $milestone->end_time }}</span>
+                                        @endif
+                                        @if($milestone->revisions > 0)
+                                            <span><i class='bx bx-revision'></i> {{ $milestone->revisions - $milestone->revisions_used }}/{{ $milestone->revisions }} Revisions</span>
+                                        @endif
+                                        @if($milestone->delivery_days)
+                                            <span><i class='bx bx-package'></i> {{ $milestone->delivery_days }} days delivery</span>
+                                        @endif
+                                    </div>
+
+                                    <div style="margin-top: 12px; font-weight: 600; color: #28a745; font-size: 16px;">
+                                        @currency($milestone->price)
+                                    </div>
+
+                                    {{-- Delivery Note (shown when delivered) --}}
+                                    @if($milestone->delivery_note && $milestone->status == 'delivered')
+                                        <div style="margin-top: 15px; padding: 12px; background: #fff3cd; border-radius: 6px; border-left: 3px solid #ffc107;">
+                                            <strong style="color: #856404;"><i class='bx bx-message-detail'></i> Seller's Delivery Note:</strong>
+                                            <p style="margin: 8px 0 0 0; color: #856404;">{{ $milestone->delivery_note }}</p>
+                                        </div>
+                                    @endif
+
+                                    {{-- Buyer Actions --}}
+                                    @if($milestone->status === 'delivered')
+                                        <div style="margin-top: 15px; display: flex; gap: 10px; flex-wrap: wrap;">
+                                            <button class="btn btn-success approve-milestone-btn"
+                                                    data-milestone-id="{{ $milestone->id }}"
+                                                    style="padding: 8px 16px;">
+                                                <i class='bx bx-check'></i> Approve & Complete
+                                            </button>
+
+                                            @if($milestone->canRequestRevision())
+                                                <button class="btn btn-warning request-revision-btn"
+                                                        data-milestone-id="{{ $milestone->id }}"
+                                                        data-revisions-left="{{ $milestone->revisions - $milestone->revisions_used }}"
+                                                        style="padding: 8px 16px;">
+                                                    <i class='bx bx-revision'></i> Request Revision
+                                                    ({{ $milestone->revisions - $milestone->revisions_used }} left)
+                                                </button>
+                                            @endif
+                                        </div>
+                                    @endif
+
+                                    {{-- Revision Note (shown when revision was requested) --}}
+                                    @if($milestone->revision_note && $milestone->status == 'in_progress')
+                                        <div style="margin-top: 15px; padding: 12px; background: #e7f3ff; border-radius: 6px; border-left: 3px solid #007bff;">
+                                            <strong style="color: #004085;"><i class='bx bx-info-circle'></i> Your Revision Request:</strong>
+                                            <p style="margin: 8px 0 0 0; color: #004085;">{{ $milestone->revision_note }}</p>
+                                        </div>
+                                    @endif
+                                </div>
+                            @endforeach
+                        </div>
+                    @endif
+
                     <!-- Class Schedule -->
                     @if($order->classDates->count() > 0)
                         <div class="info-card">
@@ -922,6 +1041,51 @@
     </div>
     @endif
 
+    <!-- Revision Request Modal -->
+    @if($order->custom_offer_id && $order->customOffer)
+    <div class="modal fade" id="revisionModal" tabindex="-1" aria-labelledby="revisionModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header" style="background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%); color: #333;">
+                    <h5 class="modal-title" id="revisionModalLabel">
+                        <i class='bx bx-revision'></i> Request Revision
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="revisionMilestoneId" value="">
+
+                    <div class="alert alert-info d-flex align-items-start gap-2" style="font-size: 14px;">
+                        <i class='bx bx-info-circle' style="font-size: 20px; flex-shrink: 0;"></i>
+                        <div>
+                            <strong>Note:</strong> Requesting a revision will send this milestone back to the seller for modifications.
+                            Please be specific about what changes you need.
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="revisionNote" class="form-label fw-bold">What changes do you need? <span class="text-danger">*</span></label>
+                        <textarea class="form-control"
+                                  id="revisionNote"
+                                  rows="5"
+                                  required
+                                  placeholder="Please describe in detail what changes or improvements you need for this milestone..."></textarea>
+                        <small class="text-muted">Be specific to help the seller understand your requirements.</small>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class='bx bx-x'></i> Cancel
+                    </button>
+                    <button type="button" class="btn btn-warning" id="confirmRevisionBtn">
+                        <i class='bx bx-revision'></i> Request Revision
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    @endif
+
     <!-- jQuery -->
     <script src="/assets/admin/libs/jquery/js/jquery.min.js"></script>
     <!-- Bootstrap js -->
@@ -929,6 +1093,93 @@
     <script src="/assets/admin/asset/js/sidebar.js"></script>
 
     <script>
+        // ===== Milestone Actions =====
+
+        // Approve milestone
+        $(document).on('click', '.approve-milestone-btn', function() {
+            const milestoneId = $(this).data('milestone-id');
+            const $btn = $(this);
+            const originalText = $btn.html();
+
+            if(confirm('Are you sure you want to approve this milestone? This action marks the milestone as complete.')) {
+                $btn.prop('disabled', true).html('<i class="bx bx-loader-alt bx-spin"></i> Processing...');
+
+                $.ajax({
+                    url: `/milestones/${milestoneId}/approve`,
+                    type: 'POST',
+                    data: { _token: $('meta[name="csrf-token"]').attr('content') },
+                    success: function(response) {
+                        if (response.success) {
+                            alert('Milestone approved successfully!');
+                            location.reload();
+                        } else {
+                            alert(response.error || 'Failed to approve milestone');
+                            $btn.prop('disabled', false).html(originalText);
+                        }
+                    },
+                    error: function(xhr) {
+                        let errorMsg = 'Failed to approve milestone';
+                        if (xhr.responseJSON && xhr.responseJSON.error) {
+                            errorMsg = xhr.responseJSON.error;
+                        }
+                        alert(errorMsg);
+                        $btn.prop('disabled', false).html(originalText);
+                    }
+                });
+            }
+        });
+
+        // Show revision modal
+        $(document).on('click', '.request-revision-btn', function() {
+            const milestoneId = $(this).data('milestone-id');
+            const revisionsLeft = $(this).data('revisions-left');
+            $('#revisionMilestoneId').val(milestoneId);
+            $('#revisionNote').val('');
+            $('#revisionModal').modal('show');
+        });
+
+        // Confirm revision request
+        $('#confirmRevisionBtn').on('click', function() {
+            const milestoneId = $('#revisionMilestoneId').val();
+            const revisionNote = $('#revisionNote').val().trim();
+            const $btn = $(this);
+            const originalText = $btn.html();
+
+            if (!revisionNote) {
+                alert('Please describe what changes you need.');
+                $('#revisionNote').focus();
+                return;
+            }
+
+            $btn.prop('disabled', true).html('<i class="bx bx-loader-alt bx-spin"></i> Submitting...');
+
+            $.ajax({
+                url: `/milestones/${milestoneId}/revision`,
+                type: 'POST',
+                data: {
+                    revision_note: revisionNote,
+                    _token: $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function(response) {
+                    if (response.success) {
+                        alert('Revision requested successfully! The seller will be notified.');
+                        $('#revisionModal').modal('hide');
+                        location.reload();
+                    } else {
+                        alert(response.error || 'Failed to request revision');
+                        $btn.prop('disabled', false).html(originalText);
+                    }
+                },
+                error: function(xhr) {
+                    let errorMsg = 'Failed to request revision';
+                    if (xhr.responseJSON && xhr.responseJSON.error) {
+                        errorMsg = xhr.responseJSON.error;
+                    }
+                    alert(errorMsg);
+                    $btn.prop('disabled', false).html(originalText);
+                }
+            });
+        });
         // Toggle amount field visibility based on refund type selection
         function toggleAmountField() {
             const partialRefund = document.getElementById('partialRefund');
