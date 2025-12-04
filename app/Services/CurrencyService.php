@@ -15,6 +15,7 @@ class CurrencyService
     private static array $defaultConfigs = [
         'USD' => ['symbol' => '$', 'symbol_position' => 'before', 'decimal_places' => 2, 'name' => 'US Dollar'],
         'GBP' => ['symbol' => '£', 'symbol_position' => 'before', 'decimal_places' => 2, 'name' => 'British Pound'],
+        'EUR' => ['symbol' => '€', 'symbol_position' => 'before', 'decimal_places' => 2, 'name' => 'Euro'],
     ];
 
     /**
@@ -31,7 +32,7 @@ class CurrencyService
     public static function setDisplayCurrency(string $code): void
     {
         $code = strtoupper($code);
-        if (in_array($code, ['USD', 'GBP'])) {
+        if (in_array($code, ['USD', 'GBP', 'EUR'])) {
             Session::put('display_currency', $code);
         }
     }
@@ -126,11 +127,14 @@ class CurrencyService
                 return ExchangeRate::getRate($from, $to);
             } catch (\Exception $e) {
                 // Fallback rates if database not available
-                if ($from === 'USD' && $to === 'GBP') {
-                    return 0.79;
-                }
-                if ($from === 'GBP' && $to === 'USD') {
-                    return 1.27;
+                $fallbackRates = [
+                    'USD' => ['GBP' => 0.79, 'EUR' => 0.92],
+                    'GBP' => ['USD' => 1.27, 'EUR' => 1.17],
+                    'EUR' => ['USD' => 1.09, 'GBP' => 0.86],
+                ];
+
+                if (isset($fallbackRates[$from][$to])) {
+                    return $fallbackRates[$from][$to];
                 }
                 return 1.0;
             }
@@ -184,6 +188,7 @@ class CurrencyService
                 return [
                     ['code' => 'USD', 'name' => 'US Dollar', 'symbol' => '$'],
                     ['code' => 'GBP', 'name' => 'British Pound', 'symbol' => '£'],
+                    ['code' => 'EUR', 'name' => 'Euro', 'symbol' => '€'],
                 ];
             }
         });
@@ -196,6 +201,10 @@ class CurrencyService
     {
         Cache::forget('exchange_rate_USD_GBP');
         Cache::forget('exchange_rate_GBP_USD');
+        Cache::forget('exchange_rate_USD_EUR');
+        Cache::forget('exchange_rate_EUR_USD');
+        Cache::forget('exchange_rate_GBP_EUR');
+        Cache::forget('exchange_rate_EUR_GBP');
         Cache::forget('active_currencies');
     }
 
@@ -207,6 +216,10 @@ class CurrencyService
         return [
             'USD_TO_GBP' => self::getRate('USD', 'GBP'),
             'GBP_TO_USD' => self::getRate('GBP', 'USD'),
+            'USD_TO_EUR' => self::getRate('USD', 'EUR'),
+            'EUR_TO_USD' => self::getRate('EUR', 'USD'),
+            'GBP_TO_EUR' => self::getRate('GBP', 'EUR'),
+            'EUR_TO_GBP' => self::getRate('EUR', 'GBP'),
             'last_updated' => Cache::get('exchange_rates_last_updated'),
         ];
     }

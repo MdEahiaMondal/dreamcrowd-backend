@@ -3,6 +3,7 @@
     $currencies = [
         'USD' => ['symbol' => '$', 'name' => 'US Dollar'],
         'GBP' => ['symbol' => '£', 'name' => 'British Pound'],
+        'EUR' => ['symbol' => '€', 'name' => 'Euro'],
     ];
 @endphp
 

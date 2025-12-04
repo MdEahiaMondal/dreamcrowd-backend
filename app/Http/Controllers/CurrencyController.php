@@ -16,7 +16,7 @@ class CurrencyController extends Controller
     public function setCurrency(Request $request): JsonResponse|RedirectResponse
     {
         $validated = $request->validate([
-            'currency' => 'required|string|in:USD,GBP',
+            'currency' => 'required|string|in:USD,GBP,EUR',
         ]);
 
         CurrencyService::setDisplayCurrency($validated['currency']);
@@ -104,8 +104,8 @@ class CurrencyController extends Controller
     {
         $validated = $request->validate([
             'amount' => 'required|numeric|min:0',
-            'from' => 'required|string|in:USD,GBP',
-            'to' => 'required|string|in:USD,GBP',
+            'from' => 'required|string|in:USD,GBP,EUR',
+            'to' => 'required|string|in:USD,GBP,EUR',
         ]);
 
         $converted = CurrencyService::convert(

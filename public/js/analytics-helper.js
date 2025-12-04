@@ -12,6 +12,13 @@ const DreamCrowdAnalytics = {
     },
 
     /**
+     * Get payment currency (always USD as payments are processed in USD)
+     */
+    getPaymentCurrency() {
+        return 'USD';
+    },
+
+    /**
      * Track service impression (when service card is visible)
      */
     trackServiceImpression(serviceData) {
@@ -51,7 +58,7 @@ const DreamCrowdAnalytics = {
         if (!this.isAvailable()) return;
 
         gtag('event', 'view_item', {
-            currency: 'USD',
+            currency: this.getPaymentCurrency(),
             value: parseFloat(serviceData.price),
             items: [{
                 item_id: serviceData.id,
@@ -89,7 +96,7 @@ const DreamCrowdAnalytics = {
         if (!this.isAvailable()) return;
 
         gtag('event', 'begin_checkout', {
-            currency: 'USD',
+            currency: this.getPaymentCurrency(),
             value: parseFloat(serviceData.price),
             items: [{
                 item_id: serviceData.id,
@@ -110,7 +117,7 @@ const DreamCrowdAnalytics = {
         gtag('event', 'purchase', {
             transaction_id: transactionData.stripe_id,
             value: parseFloat(transactionData.total_amount),
-            currency: 'USD',
+            currency: this.getPaymentCurrency(),
             tax: 0,
             shipping: 0,
             coupon: transactionData.coupon_code || '',

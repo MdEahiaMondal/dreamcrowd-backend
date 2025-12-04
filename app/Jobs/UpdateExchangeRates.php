@@ -55,7 +55,7 @@ class UpdateExchangeRates implements ShouldQueue
             // Fetch rates from API with USD as base currency
             $response = Http::timeout(30)->get($apiUrl, [
                 'apikey' => $apiKey,
-                'currencies' => 'GBP',
+                'currencies' => 'GBP,EUR',
                 'base_currency' => 'USD',
             ]);
 
@@ -69,7 +69,7 @@ class UpdateExchangeRates implements ShouldQueue
 
             $data = $response->json();
 
-            if (!isset($data['data']['GBP']['value'])) {
+            if (!isset($data['data']['GBP']['value']) || !isset($data['data']['EUR']['value'])) {
                 Log::error('Invalid response from Currency API', ['response' => $data]);
                 return;
             }
@@ -77,15 +77,24 @@ class UpdateExchangeRates implements ShouldQueue
             // Get currency records
             $usd = Currency::where('code', 'USD')->first();
             $gbp = Currency::where('code', 'GBP')->first();
+            $eur = Currency::where('code', 'EUR')->first();
 
-            if (!$usd || !$gbp) {
-                Log::error('USD or GBP currency not found in database. Run migrations first.');
+            if (!$usd || !$gbp || !$eur) {
+                Log::error('USD, GBP, or EUR currency not found in database. Run migrations first.');
                 return;
             }
 
-            // Extract rate
+            // Extract rates from API (USD as base)
             $usdToGbpRate = (float) $data['data']['GBP']['value'];
+            $usdToEurRate = (float) $data['data']['EUR']['value'];
+
+            // Calculate inverse rates
             $gbpToUsdRate = 1 / $usdToGbpRate;
+            $eurToUsdRate = 1 / $usdToEurRate;
+
+            // Calculate cross rates (GBP <-> EUR)
+            $gbpToEurRate = $usdToEurRate / $usdToGbpRate;
+            $eurToGbpRate = $usdToGbpRate / $usdToEurRate;
 
             // Update USD to GBP rate
             ExchangeRate::updateOrCreate(
@@ -111,6 +120,54 @@ class UpdateExchangeRates implements ShouldQueue
                 ]
             );
 
+            // Update USD to EUR rate
+            ExchangeRate::updateOrCreate(
+                [
+                    'from_currency_id' => $usd->id,
+                    'to_currency_id' => $eur->id,
+                ],
+                [
+                    'rate' => $usdToEurRate,
+                    'is_active' => true,
+                ]
+            );
+
+            // Update EUR to USD rate
+            ExchangeRate::updateOrCreate(
+                [
+                    'from_currency_id' => $eur->id,
+                    'to_currency_id' => $usd->id,
+                ],
+                [
+                    'rate' => $eurToUsdRate,
+                    'is_active' => true,
+                ]
+            );
+
+            // Update GBP to EUR rate
+            ExchangeRate::updateOrCreate(
+                [
+                    'from_currency_id' => $gbp->id,
+                    'to_currency_id' => $eur->id,
+                ],
+                [
+                    'rate' => $gbpToEurRate,
+                    'is_active' => true,
+                ]
+            );
+
+            // Update EUR to GBP rate
+            ExchangeRate::updateOrCreate(
+                [
+                    'from_currency_id' => $eur->id,
+                    'to_currency_id' => $gbp->id,
+                ],
+                [
+                    'rate' => $eurToGbpRate,
+                    'is_active' => true,
+                ]
+            );
+
             // Clear cached rates so they're refreshed
             CurrencyService::clearRateCache();
 
@@ -120,6 +177,10 @@ class UpdateExchangeRates implements ShouldQueue
             Log::info('Exchange rates updated successfully', [
                 'USD_TO_GBP' => round($usdToGbpRate, 6),
                 'GBP_TO_USD' => round($gbpToUsdRate, 6),
+                'USD_TO_EUR' => round($usdToEurRate, 6),
+                'EUR_TO_USD' => round($eurToUsdRate, 6),
+                'GBP_TO_EUR' => round($gbpToEurRate, 6),
+                'EUR_TO_GBP' => round($eurToGbpRate, 6),
                 'source' => 'currencyapi.com',
                 'updated_at' => now()->toISOString(),
             ]);
