@@ -489,7 +489,7 @@
                                                   <div class="d-flex radio-toolbar">
                                                         <div class="row">
                                                           <div class="col-md-6">
-                                                              <input type="radio" id="offerTypeClass" name="offer_type" value="Class" checked data-bs-toggle="modal" data-bs-target="#secondModal" data-bs-dismiss="modal">
+                                                              <input type="radio" id="offerTypeClass" name="offer_type" value="Class" checked>
                                                       <label for="offerTypeClass">
                                                           <p class="label mb-0">Class Booking</p>
                                                           <p class="name-label mb-0">Effortless class booking for a seamless learning experience.</p>
@@ -497,7 +497,7 @@
 
                                                           </div>
                                                           <div class="col-md-6">
-                                                              <input type="radio" id="offerTypeFreelance" name="offer_type" value="Freelance" data-bs-toggle="modal" data-bs-target="#thirdModal" data-bs-dismiss="modal">
+                                                              <input type="radio" id="offerTypeFreelance" name="offer_type" value="Freelance">
                                                               <label for="offerTypeFreelance">
                                                                   <p class="label mb-0">Freelance Booking</p>
                                                                   <p class="name-label mb-0">Simplify your freelancing journey with quick and hassle-free bookings.</p>
@@ -511,7 +511,7 @@
                                               </div>
                                               <div class="model-footer">
                                                   <button class="back-btn"  data-bs-dismiss="modal" aria-label="Close">Back</button>
-                                                  <button class="next-btn">Next</button>
+                                                  <button class="next-btn" id="offer-type-next-btn" data-bs-toggle="modal" data-bs-target="#servicemode-modal" data-bs-dismiss="modal">Next</button>
                                               </div>
                                              </div>
                                           </div>
@@ -523,7 +523,7 @@
                                       <div class="modal-dialog">
                                           <div class="modal-content">
                                             <div class="modal-header">
-                                              <i class="fa-solid fa-arrow-left" data-bs-target="#myModal" data-bs-toggle="modal" data-bs-dismiss="modal" style="cursor: pointer;"></i>
+                                              <i class="fa-solid fa-arrow-left" data-bs-target="#servicemode-modal" data-bs-toggle="modal" data-bs-dismiss="modal" style="cursor: pointer;"></i>
                                                 <h5 class="modal-title">Select Any Class Service</h5>
                                             </div>
                                               <div class="modal-body bg-white service-list">
@@ -540,7 +540,7 @@
                                           <div class="modal-dialog">
                                               <div class="modal-content">
                                                   <div class="modal-header">
-                                                    <i class="fa-solid fa-arrow-left" data-bs-target="#myModal" data-bs-toggle="modal" data-bs-dismiss="modal" style="cursor: pointer;"></i>
+                                                    <i class="fa-solid fa-arrow-left" data-bs-target="#servicemode-modal" data-bs-toggle="modal" data-bs-dismiss="modal" style="cursor: pointer;"></i>
                                                       <h5 class="modal-title">Select Any Freelance Service</h5>
                                                   </div>
                                                   <div class="modal-body bg-white service-list">
@@ -557,7 +557,7 @@
                                                 <div class="modal-content date-modal">
                                                     <div class="modal-body p-0">
                                                         <div class="modal-header">
-                                                            <h5 class="modal-title">Select Service Mode</h5>
+                                                            <h5 class="modal-title">Select Delivery Mode</h5>
                                                         </div>
                                                         <div class="model-heading">
                                                             <p class="about">Choose how the service will be delivered.</p>
@@ -565,14 +565,14 @@
                                                                 <div class="d-flex radio-toolbar">
                                                                     <div class="row">
                                                                         <div class="col-md-6">
-                                                                            <input type="radio" id="serviceModeOnline" name="service_mode" value="Online" checked data-bs-toggle="modal" data-bs-target="#fourmodal" data-bs-dismiss="modal">
+                                                                            <input type="radio" id="serviceModeOnline" name="service_mode" value="Online" checked>
                                                                             <label for="serviceModeOnline">
                                                                                 <p class="label mb-0">Online</p>
                                                                                 <p class="name-label mb-0">Service will be delivered remotely via video call or online platform.</p>
                                                                             </label>
                                                                         </div>
                                                                         <div class="col-md-6">
-                                                                            <input type="radio" id="serviceModeInPerson" name="service_mode" value="In-person" data-bs-toggle="modal" data-bs-target="#fourmodal" data-bs-dismiss="modal">
+                                                                            <input type="radio" id="serviceModeInPerson" name="service_mode" value="In-person">
                                                                             <label for="serviceModeInPerson">
                                                                                 <p class="label mb-0">In-person</p>
                                                                                 <p class="name-label mb-0">Service will be delivered in person at a physical location.</p>
@@ -582,8 +582,8 @@
                                                                 </div>
                                                             </div>
                                                             <div class="model-footer">
-                                                                <button class="back-btn" data-bs-target="#secondModal" data-bs-toggle="modal" data-bs-dismiss="modal">Back</button>
-                                                                <button class="next-btn">Next</button>
+                                                                <button class="back-btn" data-bs-target="#myModal" data-bs-toggle="modal" data-bs-dismiss="modal">Back</button>
+                                                                <button class="next-btn" id="service-mode-next-btn">Next</button>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -630,15 +630,14 @@
                                                       </div>
                                                   </div>
                                                   <div class="model-footer">
-                                                      <button class="back-btn" data-bs-target="#servicemode-modal" data-bs-toggle="modal"
-                                                      data-bs-dismiss="modal">Back</button>
+                                                      <button class="back-btn" id="payment-type-back-btn">Back</button>
                                                       <button class="next-btn">Next</button>
                                                   </div>
                                                  </div>
                                               </div>
                                             </div>
                                           </div>
-                                         
+
                                         </div>
                                         <div class="modal" id="fiveModal">
                                           <div class="modal-dialog">

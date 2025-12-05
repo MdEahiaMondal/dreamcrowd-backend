@@ -78,6 +78,9 @@
                 <button type="button" class="btn btn-danger" id="reject-offer-btn">
                     <i class="fa-solid fa-times"></i> Reject
                 </button>
+                <button type="button" class="btn btn-warning" id="counter-offer-btn">
+                    <i class="fa-solid fa-exchange-alt"></i> Counter Offer
+                </button>
                 <button type="button" class="btn btn-success" id="accept-offer-btn">
                     <i class="fa-solid fa-check"></i> Accept & Pay
                 </button>
@@ -108,6 +111,109 @@
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                 <button type="button" class="btn btn-danger" id="confirm-reject-btn">
                     <i class="fa-solid fa-times"></i> Confirm Rejection
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Counter Offer Modal -->
+<div class="modal fade" id="counterOfferModal" tabindex="-1" aria-labelledby="counterOfferModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-warning text-dark">
+                <h5 class="modal-title" id="counterOfferModalLabel">
+                    <i class="fa-solid fa-exchange-alt me-2"></i>Send Counter Offer
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Original Offer Summary -->
+                <div class="card mb-4 border-secondary">
+                    <div class="card-header bg-secondary text-white">
+                        <h6 class="mb-0"><i class="fa-solid fa-file-invoice me-2"></i>Original Offer</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-2">
+                                <strong>Service:</strong> <span class="counter-original-service"></span>
+                            </div>
+                            <div class="col-md-6 mb-2">
+                                <strong>Type:</strong> <span class="counter-original-type"></span>
+                            </div>
+                            <div class="col-md-6 mb-2">
+                                <strong>Payment Type:</strong> <span class="counter-original-payment-type"></span>
+                            </div>
+                            <div class="col-md-6 mb-2">
+                                <strong>Original Amount:</strong> <span class="counter-original-amount text-primary fw-bold"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Counter Offer Form -->
+                <form id="counter-offer-form">
+                    <input type="hidden" id="counter-original-offer-id">
+
+                    <!-- Message -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h6 class="mb-0"><i class="fa-solid fa-comment me-2"></i>Your Message</h6>
+                        </div>
+                        <div class="card-body">
+                            <textarea class="form-control" id="counter-message" rows="3"
+                                      placeholder="Explain your counter offer to the seller (e.g., 'I'd like to propose a lower price...')"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Price Adjustment -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h6 class="mb-0"><i class="fa-solid fa-dollar-sign me-2"></i>Your Proposed Price</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row align-items-center">
+                                <div class="col-md-6">
+                                    <label for="counter-total-amount" class="form-label">Total Amount *</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text counter-currency-symbol">$</span>
+                                        <input type="number" class="form-control form-control-lg" id="counter-total-amount"
+                                               min="1" step="0.01" required placeholder="Enter your proposed price">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="counter-price-comparison mt-3 mt-md-4">
+                                        <span class="text-muted">Original: </span>
+                                        <span class="counter-original-price-display fw-bold"></span>
+                                        <span class="counter-price-diff ms-2"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Milestones Section (shown for Milestone payment type) -->
+                    <div class="card mb-4" id="counter-milestones-section" style="display: none;">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h6 class="mb-0"><i class="fa-solid fa-list-check me-2"></i>Adjust Milestones</h6>
+                            <small class="text-muted">Modify individual milestone prices</small>
+                        </div>
+                        <div class="card-body">
+                            <div id="counter-milestones-list">
+                                <!-- Milestones will be populated dynamically -->
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fa-solid fa-times me-1"></i>Cancel
+                </button>
+                <button type="button" class="btn btn-warning" id="submit-counter-btn">
+                    <span class="spinner-border spinner-border-sm d-none me-1" id="counter-spinner"></span>
+                    <i class="fa-solid fa-paper-plane me-1" id="counter-send-icon"></i>
+                    <span class="btn-text">Send Counter Offer</span>
                 </button>
             </div>
         </div>
@@ -261,5 +367,48 @@
     #customOfferPaymentModal .card-header {
         background-color: #f8f9fa;
         border-bottom: 1px solid #e0e0e0;
+    }
+
+    /* Counter Offer Modal Styles */
+    #counterOfferModal .card {
+        border: 1px solid #e0e0e0;
+    }
+
+    #counterOfferModal .card-header {
+        background-color: #f8f9fa;
+        border-bottom: 1px solid #e0e0e0;
+    }
+
+    .counter-price-diff {
+        font-size: 0.9rem;
+        padding: 2px 8px;
+        border-radius: 4px;
+    }
+
+    .counter-price-diff.savings {
+        background-color: #d4edda;
+        color: #155724;
+    }
+
+    .counter-price-diff.increase {
+        background-color: #f8d7da;
+        color: #721c24;
+    }
+
+    .counter-milestone-item {
+        padding: 15px;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        margin-bottom: 10px;
+        background-color: #fafafa;
+    }
+
+    .counter-milestone-item .milestone-title {
+        font-weight: 600;
+        margin-bottom: 8px;
+    }
+
+    .counter-milestone-item .milestone-price-input {
+        max-width: 150px;
     }
 </style>

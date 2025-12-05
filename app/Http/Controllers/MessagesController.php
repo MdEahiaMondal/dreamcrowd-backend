@@ -992,6 +992,7 @@ class MessagesController extends Controller
                     'chat_id' => $chat->id,
                     'sender_id' => $chat->sender_id,
                     'receiver_id' => $chat->receiver_id,
+                    'is_custom_offer' => $chat->is_custom_offer,
                     'sms' => $chat->sms,
                     'files' => $chat->files,
                     'created_at' => $chat->created_at->toDateTimeString(),
@@ -1197,6 +1198,7 @@ class MessagesController extends Controller
                 'chat_id' => $chat->id,
                 'sender_id' => $chat->sender_id,
                 'receiver_id' => $chat->receiver_id,
+                'is_custom_offer' => $chat->is_custom_offer,
                 'sms' => $chat->sms,
                 'files' => $chat->files,
                 'created_at' => $chat->created_at->toDateTimeString(),
@@ -2366,14 +2368,26 @@ class MessagesController extends Controller
             return response()->json(['error' => 'Please LoginIn to Your Account!']);
         }
 
-
-        $services = DB::table('teacher_gigs')
+        $query = DB::table('teacher_gigs')
             ->join('teacher_gig_data', 'teacher_gigs.id', '=', 'teacher_gig_data.gig_id')
             ->join('teacher_gig_payments', 'teacher_gigs.id', '=', 'teacher_gig_payments.gig_id')
             ->where('teacher_gigs.user_id', Auth::id())
             ->where('teacher_gigs.service_role', $request->offer_type)
-            ->where('teacher_gigs.status', 1)
-            ->select('teacher_gigs.*', 'teacher_gig_data.*', 'teacher_gig_payments.*')
+            ->where('teacher_gigs.status', 1);
+
+        // Filter by service_mode if provided (Online or In-person)
+        if ($request->has('service_mode') && $request->service_mode) {
+            // Map 'In-person' to 'Inperson' for database compatibility
+            $serviceMode = $request->service_mode === 'In-person' ? 'Inperson' : $request->service_mode;
+
+            // Include services that match the mode OR are available for 'Both' modes
+            $query->where(function($q) use ($serviceMode) {
+                $q->where('teacher_gigs.service_type', $serviceMode)
+                  ->orWhere('teacher_gigs.service_type', 'Both');
+            });
+        }
+
+        $services = $query->select('teacher_gigs.*', 'teacher_gig_data.*', 'teacher_gig_payments.*')
             ->get();
 
         return response()->json(['services' => $services]);
@@ -2565,6 +2579,12 @@ class MessagesController extends Controller
         // Authorization check
         if ($offer->buyer_id !== auth()->id() && $offer->seller_id !== auth()->id()) {
             abort(403, 'Unauthorized access to this offer.');
+        }
+
+        // If this is a counter offer, load the parent offer with its milestones
+        if ($offer->is_counter_offer && $offer->parent_offer_id) {
+            $offer->load(['parentOffer.milestones', 'parentOffer.gig']);
+            $offer->parent_offer = $offer->parentOffer;
         }
 
         return response()->json([
@@ -2910,6 +2930,308 @@ class MessagesController extends Controller
             'message' => 'Offer rejected successfully.'
         ]);
     }
+
+    // ============ COUNTER OFFER FUNCTIONS ============
+
+    /**
+     * Buyer sends a counter offer
+     */
+    public function sendCounterOffer(Request $request, $id)
+    {
+        $request->validate([
+            'counter_message' => 'nullable|string|max:1000',
+            'total_amount' => 'required|numeric|min:1',
+            'milestones' => 'nullable|array',
+            'milestones.*.title' => 'required_with:milestones|string|max:255',
+            'milestones.*.description' => 'nullable|string|max:1000',
+            'milestones.*.price' => 'required_with:milestones|numeric|min:0',
+            'milestones.*.date' => 'nullable|date',
+            'milestones.*.start_time' => 'nullable|string',
+            'milestones.*.end_time' => 'nullable|string',
+            'milestones.*.delivery_days' => 'nullable|integer|min:1',
+            'milestones.*.revisions' => 'nullable|integer|min:0',
+        ]);
+
+        $originalOffer = \App\Models\CustomOffer::findOrFail($id);
+
+        // Authorization check - only buyer can counter
+        if ($originalOffer->buyer_id !== auth()->id()) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        // Check if offer can receive counter
+        if (!$originalOffer->canReceiveCounterOffer()) {
+            return response()->json(['error' => 'This offer cannot receive a counter offer.'], 400);
+        }
+
+        try {
+            \DB::beginTransaction();
+
+            // Create counter offer as a new offer linked to original
+            $counterOffer = \App\Models\CustomOffer::create([
+                'chat_id' => $originalOffer->chat_id,
+                'seller_id' => $originalOffer->seller_id,
+                'buyer_id' => $originalOffer->buyer_id,
+                'gig_id' => $originalOffer->gig_id,
+                'offer_type' => $originalOffer->offer_type,
+                'payment_type' => $originalOffer->payment_type,
+                'service_mode' => $originalOffer->service_mode,
+                'description' => $originalOffer->description,
+                'total_amount' => $request->total_amount,
+                'expire_days' => $originalOffer->expire_days,
+                'request_requirements' => $originalOffer->request_requirements,
+                'status' => 'pending',
+                'expires_at' => $originalOffer->expire_days ? now()->addDays($originalOffer->expire_days) : null,
+                'parent_offer_id' => $originalOffer->id,
+                'is_counter_offer' => true,
+                'counter_message' => $request->counter_message,
+                'counter_sent_at' => now(),
+            ]);
+
+            // Create milestones for counter offer
+            if ($request->has('milestones') && is_array($request->milestones)) {
+                foreach ($request->milestones as $index => $milestoneData) {
+                    \App\Models\CustomOfferMilestone::create([
+                        'custom_offer_id' => $counterOffer->id,
+                        'order' => $index + 1,
+                        'title' => $milestoneData['title'],
+                        'description' => $milestoneData['description'] ?? null,
+                        'price' => $milestoneData['price'],
+                        'date' => $milestoneData['date'] ?? null,
+                        'start_time' => $milestoneData['start_time'] ?? null,
+                        'end_time' => $milestoneData['end_time'] ?? null,
+                        'delivery_days' => $milestoneData['delivery_days'] ?? null,
+                        'revisions' => $milestoneData['revisions'] ?? null,
+                    ]);
+                }
+            } else {
+                // Copy milestones from original with updated prices proportionally
+                $originalTotal = floatval($originalOffer->total_amount);
+                $newTotal = floatval($request->total_amount);
+                $ratio = $originalTotal > 0 ? $newTotal / $originalTotal : 1;
+
+                foreach ($originalOffer->milestones as $milestone) {
+                    \App\Models\CustomOfferMilestone::create([
+                        'custom_offer_id' => $counterOffer->id,
+                        'order' => $milestone->order,
+                        'title' => $milestone->title,
+                        'description' => $milestone->description,
+                        'price' => round($milestone->price * $ratio, 2),
+                        'date' => $milestone->date,
+                        'start_time' => $milestone->start_time,
+                        'end_time' => $milestone->end_time,
+                        'delivery_days' => $milestone->delivery_days,
+                        'revisions' => $milestone->revisions,
+                    ]);
+                }
+            }
+
+            // Create chat message for the counter offer
+            \App\Models\Chat::create([
+                'sender_id' => auth()->id(),
+                'receiver_id' => $originalOffer->seller_id,
+                'sender_role' => 0, // Buyer
+                'receiver_role' => 1, // Seller
+                'type' => 0,
+                'sms' => $request->counter_message ?: 'Counter offer sent',
+                'is_custom_offer' => $counterOffer->id,
+            ]);
+
+            \DB::commit();
+
+            // Send notification to seller
+            if (class_exists('\App\Services\NotificationService')) {
+                try {
+                    app(\App\Services\NotificationService::class)->send(
+                        userId: $originalOffer->seller_id,
+                        type: 'custom_offer',
+                        title: 'Counter Offer Received',
+                        message: auth()->user()->first_name . ' sent a counter offer for ' . $originalOffer->gig->title,
+                        data: [
+                            'offer_id' => $counterOffer->id,
+                            'original_offer_id' => $originalOffer->id,
+                        ],
+                        sendEmail: true
+                    );
+                } catch (\Exception $e) {
+                    \Log::error('Counter offer notification failed: ' . $e->getMessage());
+                }
+            }
+
+            // Send email to seller
+            try {
+                if ($originalOffer->seller && $originalOffer->seller->email) {
+                    Mail::to($originalOffer->seller->email)->send(new \App\Mail\CustomOfferCounterReceived($counterOffer));
+                }
+            } catch (\Exception $e) {
+                \Log::error('Counter offer email failed: ' . $e->getMessage());
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Counter offer sent successfully.',
+                'counter_offer_id' => $counterOffer->id,
+            ]);
+
+        } catch (\Exception $e) {
+            \DB::rollBack();
+            \Log::error('Counter offer creation failed: ' . $e->getMessage());
+            return response()->json(['error' => 'Failed to send counter offer.'], 500);
+        }
+    }
+
+    /**
+     * Seller accepts a counter offer
+     */
+    public function acceptCounterOffer(Request $request, $id)
+    {
+        $counterOffer = \App\Models\CustomOffer::findOrFail($id);
+
+        // Authorization check - only seller can accept counter
+        if ($counterOffer->seller_id !== auth()->id()) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        // Check if it's actually a counter offer and pending
+        if (!$counterOffer->is_counter_offer || $counterOffer->status !== 'pending') {
+            return response()->json(['error' => 'This counter offer cannot be accepted.'], 400);
+        }
+
+        // Check if already accepted by seller
+        if ($counterOffer->seller_accepted_at) {
+            return response()->json(['error' => 'You have already accepted this counter offer.'], 400);
+        }
+
+        try {
+            \DB::beginTransaction();
+
+            // Accept the counter offer (this makes it the active offer)
+            $counterOffer->update([
+                'status' => 'pending', // Keep pending so buyer can pay
+                'seller_accepted_at' => now(), // Track that seller accepted
+            ]);
+
+            // Mark original offer as superseded
+            if ($counterOffer->parentOffer) {
+                $counterOffer->parentOffer->update([
+                    'status' => 'rejected',
+                    'rejection_reason' => 'Superseded by accepted counter offer #' . $counterOffer->id,
+                ]);
+            }
+
+            // Create chat message
+            \App\Models\Chat::create([
+                'sender_id' => auth()->id(),
+                'receiver_id' => $counterOffer->buyer_id,
+                'sender_role' => 1, // Seller
+                'receiver_role' => 0, // Buyer
+                'type' => 0,
+                'sms' => 'Counter offer accepted! You can now proceed to payment.',
+                'is_custom_offer' => $counterOffer->id,
+            ]);
+
+            \DB::commit();
+
+            // Send notification to buyer
+            if (class_exists('\App\Services\NotificationService')) {
+                try {
+                    app(\App\Services\NotificationService::class)->send(
+                        userId: $counterOffer->buyer_id,
+                        type: 'custom_offer',
+                        title: 'Counter Offer Accepted!',
+                        message: auth()->user()->first_name . ' accepted your counter offer. Proceed to payment.',
+                        data: [
+                            'offer_id' => $counterOffer->id,
+                        ],
+                        sendEmail: true
+                    );
+                } catch (\Exception $e) {
+                    \Log::error('Counter offer accept notification failed: ' . $e->getMessage());
+                }
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Counter offer accepted. Buyer can now proceed to payment.',
+            ]);
+
+        } catch (\Exception $e) {
+            \DB::rollBack();
+            \Log::error('Counter offer acceptance failed: ' . $e->getMessage());
+            return response()->json(['error' => 'Failed to accept counter offer.'], 500);
+        }
+    }
+
+    /**
+     * Seller rejects a counter offer
+     */
+    public function rejectCounterOffer(Request $request, $id)
+    {
+        $request->validate([
+            'reason' => 'nullable|string|max:500',
+        ]);
+
+        $counterOffer = \App\Models\CustomOffer::findOrFail($id);
+
+        // Authorization check - only seller can reject counter
+        if ($counterOffer->seller_id !== auth()->id()) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        // Check if it's actually a counter offer and pending
+        if (!$counterOffer->is_counter_offer || $counterOffer->status !== 'pending') {
+            return response()->json(['error' => 'This counter offer cannot be rejected.'], 400);
+        }
+
+        try {
+            // Reject the counter offer
+            $counterOffer->update([
+                'status' => 'rejected',
+                'rejected_at' => now(),
+                'rejection_reason' => $request->reason,
+            ]);
+
+            // Create chat message
+            \App\Models\Chat::create([
+                'sender_id' => auth()->id(),
+                'receiver_id' => $counterOffer->buyer_id,
+                'sender_role' => 1, // Seller
+                'receiver_role' => 0, // Buyer
+                'type' => 0,
+                'sms' => 'Counter offer declined.' . ($request->reason ? ' Reason: ' . $request->reason : ''),
+                'is_custom_offer' => 0,
+            ]);
+
+            // Send notification to buyer
+            if (class_exists('\App\Services\NotificationService')) {
+                try {
+                    app(\App\Services\NotificationService::class)->send(
+                        userId: $counterOffer->buyer_id,
+                        type: 'custom_offer',
+                        title: 'Counter Offer Declined',
+                        message: auth()->user()->first_name . ' declined your counter offer.',
+                        data: [
+                            'offer_id' => $counterOffer->id,
+                            'reason' => $request->reason,
+                        ],
+                        sendEmail: true
+                    );
+                } catch (\Exception $e) {
+                    \Log::error('Counter offer reject notification failed: ' . $e->getMessage());
+                }
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Counter offer rejected.',
+            ]);
+
+        } catch (\Exception $e) {
+            \Log::error('Counter offer rejection failed: ' . $e->getMessage());
+            return response()->json(['error' => 'Failed to reject counter offer.'], 500);
+        }
+    }
+
     // Custom Offer in Messsage Functions END =======================
 
 

@@ -692,6 +692,11 @@ Route::controller(MessagesController::class)->group(function () {
     Route::post('/custom-offers/process-payment', 'processCustomOfferPayment')->name('custom-offers.process-payment');
     Route::post('/custom-offers/{id}/reject', 'rejectCustomOffer')->name('custom-offers.reject');
 
+    // Counter Offer Routes
+    Route::post('/custom-offers/{id}/counter', 'sendCounterOffer')->name('custom-offers.counter');
+    Route::post('/custom-offers/{id}/counter/accept', 'acceptCounterOffer')->name('custom-offers.counter.accept');
+    Route::post('/custom-offers/{id}/counter/reject', 'rejectCounterOffer')->name('custom-offers.counter.reject');
+
     Route::get('/messages/unread-count/{userId}', 'getUnreadMessageCount');
 });
 

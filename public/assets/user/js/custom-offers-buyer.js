@@ -96,6 +96,28 @@
             }
         });
 
+        // Handle counter offer button
+        $(document).on('click', '#counter-offer-btn', function() {
+            if (currentOffer) {
+                showCounterOfferModal();
+            }
+        });
+
+        // Handle counter offer submission
+        $(document).on('click', '#submit-counter-btn', function() {
+            submitCounterOffer();
+        });
+
+        // Update price difference when counter amount changes
+        $(document).on('input', '#counter-total-amount', function() {
+            updatePriceDifference();
+        });
+
+        // Update total from milestone prices
+        $(document).on('input', '.counter-milestone-price', function() {
+            recalculateTotalFromMilestones();
+        });
+
         // Handle payment confirmation
         $(document).on('click', '#confirm-payment-btn', function() {
             processPayment();
@@ -193,24 +215,60 @@
             $modal.find('.milestones-list').html('<p class="text-muted">No milestones</p>');
         }
 
-        // Show/hide action buttons based on status
+        // Show/hide action buttons based on status and offer type
         $modal.find('.offer-status-message').html('');
-        if (offer.status === 'pending' && !offer.is_expired) {
-            $modal.find('.offer-actions').show();
-            $modal.find('#accept-offer-btn, #reject-offer-btn').show();
-        } else {
-            $modal.find('.offer-actions').hide();
+        $modal.find('.offer-actions').hide();
+        $modal.find('#accept-offer-btn, #reject-offer-btn, #counter-offer-btn').hide();
 
-            // Show status message
-            let statusMessage = '';
-            if (offer.status === 'accepted') {
-                statusMessage = '<div class="alert alert-success">This offer has been accepted</div>';
+        if (offer.is_counter_offer) {
+            // This is a counter offer sent BY the buyer
+            if (offer.status === 'pending' && !offer.is_expired) {
+                // Check if seller has accepted the counter offer
+                if (offer.seller_accepted_at) {
+                    // Seller accepted the counter offer - buyer can now pay
+                    $modal.find('.offer-status-message').html(
+                        '<div class="alert alert-success"><i class="fa-solid fa-check-circle me-2"></i><strong>Counter Offer Accepted!</strong> The seller has accepted your counter offer. You can now proceed to payment.</div>'
+                    );
+                    $modal.find('.offer-actions').show();
+                    $modal.find('#accept-offer-btn').show().html('<i class="fa-solid fa-credit-card"></i> Pay Now');
+                } else {
+                    // Still waiting for seller response
+                    $modal.find('.offer-status-message').html(
+                        '<div class="alert alert-info"><i class="fa-solid fa-clock me-2"></i><strong>Counter Offer Sent</strong> - Waiting for seller to respond.</div>'
+                    );
+                }
             } else if (offer.status === 'rejected') {
-                statusMessage = '<div class="alert alert-danger">This offer was rejected</div>';
-            } else if (offer.status === 'expired' || offer.is_expired) {
-                statusMessage = '<div class="alert alert-warning">This offer has expired</div>';
+                $modal.find('.offer-status-message').html(
+                    '<div class="alert alert-danger"><i class="fa-solid fa-times-circle me-2"></i><strong>Counter Offer Declined</strong>' +
+                    (offer.rejection_reason ? '<br><small>Reason: ' + escapeHtml(offer.rejection_reason) + '</small>' : '') + '</div>'
+                );
+            } else if (offer.status === 'accepted') {
+                $modal.find('.offer-status-message').html(
+                    '<div class="alert alert-success"><i class="fa-solid fa-check-circle me-2"></i>This offer has been completed.</div>'
+                );
+            } else if (offer.is_expired) {
+                $modal.find('.offer-status-message').html(
+                    '<div class="alert alert-warning"><i class="fa-solid fa-clock me-2"></i>This counter offer has expired.</div>'
+                );
             }
-            $modal.find('.offer-status-message').html(statusMessage);
+        } else {
+            // This is an original offer from the seller
+            if (offer.status === 'pending' && !offer.is_expired) {
+                $modal.find('.offer-actions').show();
+                $modal.find('#accept-offer-btn, #reject-offer-btn, #counter-offer-btn').show();
+                $modal.find('#accept-offer-btn').html('<i class="fa-solid fa-check"></i> Accept & Pay');
+            } else {
+                // Show status message for non-pending offers
+                let statusMessage = '';
+                if (offer.status === 'accepted') {
+                    statusMessage = '<div class="alert alert-success"><i class="fa-solid fa-check-circle me-2"></i>This offer has been accepted</div>';
+                } else if (offer.status === 'rejected') {
+                    statusMessage = '<div class="alert alert-danger"><i class="fa-solid fa-times-circle me-2"></i>This offer was rejected</div>';
+                } else if (offer.status === 'expired' || offer.is_expired) {
+                    statusMessage = '<div class="alert alert-warning"><i class="fa-solid fa-clock me-2"></i>This offer has expired</div>';
+                }
+                $modal.find('.offer-status-message').html(statusMessage);
+            }
         }
     }
 
@@ -492,6 +550,215 @@
     function showRejectModal() {
         $('#offerDetailModal').modal('hide');
         $('#rejectOfferModal').modal('show');
+    }
+
+    /**
+     * Show counter offer modal with original offer data
+     */
+    function showCounterOfferModal() {
+        if (!currentOffer) return;
+
+        const symbol = (typeof currencyConfig !== 'undefined') ? currencyConfig.symbol : '$';
+        const rate = (typeof currencyConfig !== 'undefined') ? currencyConfig.rate : 1;
+        const totalAmount = parseFloat(currentOffer.total_amount);
+
+        // Populate original offer details
+        $('.counter-original-service').text(currentOffer.gig ? currentOffer.gig.title : 'Service');
+        $('.counter-original-type').text(currentOffer.offer_type);
+        $('.counter-original-payment-type').text(currentOffer.payment_type);
+        $('.counter-original-amount').text(symbol + (totalAmount * rate).toFixed(2));
+        $('.counter-original-price-display').text(symbol + (totalAmount * rate).toFixed(2));
+        $('.counter-currency-symbol').text(symbol);
+
+        // Set original offer ID
+        $('#counter-original-offer-id').val(currentOffer.id);
+
+        // Pre-fill with original amount
+        $('#counter-total-amount').val((totalAmount * rate).toFixed(2));
+
+        // Reset message
+        $('#counter-message').val('');
+
+        // Handle milestones
+        if (currentOffer.payment_type === 'Milestone' && currentOffer.milestones && currentOffer.milestones.length > 0) {
+            $('#counter-milestones-section').show();
+            populateCounterMilestones(currentOffer.milestones, rate, symbol);
+        } else {
+            $('#counter-milestones-section').hide();
+            $('#counter-milestones-list').empty();
+        }
+
+        // Reset price difference
+        updatePriceDifference();
+
+        // Hide offer detail modal and show counter offer modal
+        $('#offerDetailModal').modal('hide');
+        setTimeout(function() {
+            $('#counterOfferModal').modal('show');
+        }, 300);
+    }
+
+    /**
+     * Populate milestone inputs for counter offer
+     */
+    function populateCounterMilestones(milestones, rate, symbol) {
+        let html = '';
+        milestones.forEach(function(milestone, index) {
+            const price = parseFloat(milestone.price) * rate;
+            html += `
+                <div class="counter-milestone-item" data-original-price="${milestone.price}">
+                    <div class="row align-items-center">
+                        <div class="col-md-6">
+                            <div class="milestone-title">${escapeHtml(milestone.title)}</div>
+                            <small class="text-muted">${escapeHtml(milestone.description || 'No description')}</small>
+                        </div>
+                        <div class="col-md-3">
+                            <small class="text-muted">Original: ${symbol}${price.toFixed(2)}</small>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="input-group milestone-price-input">
+                                <span class="input-group-text">${symbol}</span>
+                                <input type="number" class="form-control counter-milestone-price"
+                                       data-index="${index}" value="${price.toFixed(2)}"
+                                       min="0" step="0.01">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+        $('#counter-milestones-list').html(html);
+    }
+
+    /**
+     * Update the price difference display
+     */
+    function updatePriceDifference() {
+        const symbol = (typeof currencyConfig !== 'undefined') ? currencyConfig.symbol : '$';
+        const rate = (typeof currencyConfig !== 'undefined') ? currencyConfig.rate : 1;
+        const originalAmount = parseFloat(currentOffer.total_amount) * rate;
+        const counterAmount = parseFloat($('#counter-total-amount').val()) || 0;
+
+        const diff = counterAmount - originalAmount;
+        const $diffEl = $('.counter-price-diff');
+
+        if (diff < 0) {
+            $diffEl.removeClass('increase').addClass('savings');
+            $diffEl.text('Saving ' + symbol + Math.abs(diff).toFixed(2));
+        } else if (diff > 0) {
+            $diffEl.removeClass('savings').addClass('increase');
+            $diffEl.text('+' + symbol + diff.toFixed(2));
+        } else {
+            $diffEl.removeClass('savings increase');
+            $diffEl.text('Same price');
+        }
+    }
+
+    /**
+     * Recalculate total from milestone prices
+     */
+    function recalculateTotalFromMilestones() {
+        let total = 0;
+        $('.counter-milestone-price').each(function() {
+            total += parseFloat($(this).val()) || 0;
+        });
+        $('#counter-total-amount').val(total.toFixed(2));
+        updatePriceDifference();
+    }
+
+    /**
+     * Collect milestone data for counter offer
+     */
+    function collectCounterMilestones() {
+        const milestones = [];
+        const rate = (typeof currencyConfig !== 'undefined') ? currencyConfig.rate : 1;
+
+        if (currentOffer.milestones && currentOffer.milestones.length > 0) {
+            currentOffer.milestones.forEach(function(milestone, index) {
+                const $input = $(`.counter-milestone-price[data-index="${index}"]`);
+                const newPrice = parseFloat($input.val()) / rate; // Convert back to base currency
+
+                milestones.push({
+                    title: milestone.title,
+                    description: milestone.description,
+                    price: newPrice.toFixed(2),
+                    date: milestone.date,
+                    start_time: milestone.start_time,
+                    end_time: milestone.end_time,
+                    delivery_days: milestone.delivery_days,
+                    revisions: milestone.revisions
+                });
+            });
+        }
+
+        return milestones;
+    }
+
+    /**
+     * Submit counter offer
+     */
+    function submitCounterOffer() {
+        const offerId = $('#counter-original-offer-id').val();
+        const message = $('#counter-message').val().trim();
+        const rate = (typeof currencyConfig !== 'undefined') ? currencyConfig.rate : 1;
+        const totalAmount = parseFloat($('#counter-total-amount').val()) / rate; // Convert back to base currency
+
+        if (!totalAmount || totalAmount < 1) {
+            alert('Please enter a valid amount');
+            return;
+        }
+
+        const $btn = $('#submit-counter-btn');
+        $btn.prop('disabled', true);
+        $('#counter-spinner').removeClass('d-none');
+        $('#counter-send-icon').addClass('d-none');
+        $btn.find('.btn-text').text('Sending...');
+
+        const data = {
+            counter_message: message,
+            total_amount: totalAmount.toFixed(2),
+            _token: $('meta[name="csrf-token"]').attr('content')
+        };
+
+        // Include milestones if it's a milestone payment
+        if (currentOffer.payment_type === 'Milestone') {
+            data.milestones = collectCounterMilestones();
+        }
+
+        $.ajax({
+            url: `/custom-offers/${offerId}/counter`,
+            type: 'POST',
+            data: data,
+            success: function(response) {
+                if (response.success) {
+                    alert('Counter offer sent successfully! The seller will be notified.');
+                    $('#counterOfferModal').modal('hide');
+                    location.reload();
+                } else {
+                    alert(response.error || 'Failed to send counter offer');
+                    resetCounterButton();
+                }
+            },
+            error: function(xhr) {
+                let errorMsg = 'Failed to send counter offer';
+                if (xhr.responseJSON && xhr.responseJSON.error) {
+                    errorMsg = xhr.responseJSON.error;
+                }
+                alert(errorMsg);
+                resetCounterButton();
+            }
+        });
+    }
+
+    /**
+     * Reset counter offer button
+     */
+    function resetCounterButton() {
+        const $btn = $('#submit-counter-btn');
+        $btn.prop('disabled', false);
+        $('#counter-spinner').addClass('d-none');
+        $('#counter-send-icon').removeClass('d-none');
+        $btn.find('.btn-text').text('Send Counter Offer');
     }
 
     /**

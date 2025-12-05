@@ -1,111 +1,109 @@
-# Product Requirements Document (PRD)
-**Feature: Custom Offer System**  
-**Platform:** Dreamcrowd (Web App)  
-**Date:** November 19, 2025  
-**Prepared for:** Development Team
+### ক্লায়েন্ট (Dreamcrowd) পুরো মিটিংয়ে **Custom Offer** নিয়ে যা যা বলেছে – একদম ফুল ডিটেইলস (ট্রান্সক্রিপ্ট থেকে সরাসরি এক্সট্রাক্ট)
 
-## 1. Objective
-সেলার যেন মেসেজ চ্যাটের ভিতর থেকেই বায়ারের চাহিদা অনুযায়ী একদম কাস্টমাইজড অফার পাঠাতে পারে (যেমন Fiverr/Upwork-এ আছে)। এটা দুই ধরনের সার্ভিসের জন্য কাজ করবে:
-- Live Class Booking (online / in-person)
-- Freelance Service (online / in-person)
+#### ১. কাস্টম অফার কোথা থেকে শুরু হয়?
+- বায়ার যখন কোনো সেলারকে মেসেজ করে (ইনবক্সে), তখন সেলারের কাছে **“Send Custom Offer”** বাটন থাকবে।
+- এটাই কাস্টম অফারের এন্ট্রি পয়েন্ট।
 
-## 2. User Stories (Acceptance Criteria)
+#### ২. কাস্টম অফারে দুই ধরনের সার্ভিস থাকবে
+ক্লায়েন্ট দুইবার খুব ক্লিয়ার করে বলেছে (01:17:22 – 01:37:57):
 
-| # | As a …       | I want to …                                                                 | So that …                              | Priority |
-|---|--------------|-----------------------------------------------------------------------------|----------------------------------------|----------|
-| 1 | Seller       | মেসেজ চ্যাটের ভিতর “Send Custom Offer” বাটন দেখতে ও ক্লিক করতে পারি          | বায়ারকে কাস্টম অফার পাঠাতে পারি          | Must     |
-| 2 | Seller       | Class Booking বা Freelance Booking – দুটোর একটা বেছে নিতে পারি                 | সঠিক সার্ভিস টাইপের অফার তৈরি করতে পারি     | Must     |
-| 3 | Seller       | Single Payment বা Milestone Payment বেছে নিতে পারি                              | একসাথে পেমেন্ট বা ধাপে ধাপে পেমেন্ট করাতে পারি | Must     |
-| 4 | Seller       | Online বা In-person বেছে নিতে পারি                                            | লোকেশন/জুম লিঙ্ক অনুযায়ী অফার তৈরি করি      | Must     |
-| 5 | Seller       | যত খুশি মিলেস্টোন যোগ/রিমুভ করতে পারি (Milestone Payment-এর ক্ষেত্রে)             | বড় প্রজেক্ট/মাল্টিপল ক্লাস অফার করতে পারি    | Must     |
-| 6 | Seller       | প্রতিটি ক্লাস/মিলেস্টোনের জন্য Title, Description, Date, Start Time, End Time, Price সেট করতে পারি | বায়ার যেন পরিষ্কার বুঝতে পারে কী পাচ্ছে     | Must     |
-| 7 | Seller       | In-person সার্ভিস হলে প্রতি মিলেস্টোনের জন্য Date + Start Time + End Time বাধ্যতামূলক | সঠিক শিডিউল দেওয়া যায়                     | Must     |
-| 8 | Seller       | Back / Next বাটন দিয়ে স্টেপ-বাই-স্টেপ ফর্ম পূরণ করতে পারি                          | ভুল হলে আগের স্টেপে ফিরে ঠিক করতে পারি      | Must     |
-| 9 | Seller       | সবকিছু পূরণ করার পর একটা Preview দেখতে পারি এবং Send করতে পারি                  | বায়ারকে পাঠানোর আগে চেক করতে পারি          | Must     |
-| 10| Buyer        | মেসেজে Custom Offer নোটিফিকেশন পাই + Offer ডিটেইলস দেখতে পারি                  | কী অফার করা হয়েছে বুঝতে পারি              | Must     |
-| 11| Buyer        | Offer টা Accept / Reject করতে পারি                                               | পছন্দ না হলে রিজেক্ট করতে পারি              | Must     |
-| 12| Buyer        | Accept করলে সরাসরি Stripe পেমেন্ট পেজে যাই                                       | পে করে অর্ডার কনফার্ম করতে পারি             | Must     |
-| 13| System       | পেমেন্ট সাকসেসফুল হলে অটোমেটিক অর্ডার তৈরি হবে (Pending → Seller accept করলে Active) | ম্যানুয়াল কাজ কমে                          | Must     |
+| টাইপ | কী থাকবে |
+|------|----------|
+| **ক্লাস বুকিং** | সেলার তার এক্সিস্টিং ক্লাস সিলেক্ট করবে → সিঙ্গেল পেমেন্ট বা মাইলস্টোন পেমেন্ট → ডেট + টাইম সেট করবে |
+| **ফ্রিল্যান্স সার্ভিস** | সার্ভিস ডেসক্রিপশন, রিভিশন সংখ্যা, ডেলিভারি টাইম, প্রাইস → সিঙ্গেল বা মাইলস্টোন |
 
-## 3. Detailed Flow (Step-by-Step Wizard)
+#### ৩. পেমেন্ট অপশন (খুব গুরুত্বপূর্ণ – ক্লায়েন্ট বারবার বলেছে)
+- **সিঙ্গেল পেমেন্ট** → একবারে পুরো টাকা দিয়ে দেবে
+- **মাইলস্টোন পেমেন্ট** → মাল্টিপল মাইলস্টোন → প্রতিটা মাইলস্টোনে আলাদা ডেসক্রিপশন, ডেট, প্রাইস
 
-### Step 0: Entry Point
-- Message thread-এর ভিতরে “Send Custom Offer” বাটন (চ্যাট হেডারে বা মেসেজ ইনপুটের পাশে)
+ক্লায়েন্ট বলেছে:  
+> “For single payment one class, milestone payment multiple classes.”
 
-### Step 1: Offer Type
-- Radio buttons:  
-  – Class Booking  
-  – Freelance Booking
+#### ৪. অনলাইন vs ইন-পার্সন কাস্টম অফার (01:35:18 – 01:37:57)
+- **অনলাইন সার্ভিস** → সব ফিচার আছে (যা উপরে বলা)
+- **ইন-পার্সন সার্ভিস** → এখনো ডিজাইন হয়নি। প্রতিটা মাইলস্টোন বা সিঙ্গেল পেমেন্টে **Start Date, Start Time, End Time** ফিল্ড যোগ করতে হবে (ক্লাসের মতো)।
 
-### Step 2: Payment Method
-- Radio buttons:  
-  – Single Payment  
-  – Milestone Payment
+#### ৫. কাস্টম অফার পাঠানোর পর কী হবে?
+1. সেলার অফার সেন্ড করবে  
+2. বায়ারের ইনবক্সে মেসেজ আকারে আসবে  
+3. বায়ারের ৩টা অপশন:
+   - **Accept** → পেমেন্ট পেজে যাবে → পে করলে অর্ডার ক্রিয়েট
+   - **Reject** → অফার রিজেক্ট
+   - **Counter offer / Message** → দামাদামি চলতে পারে
 
-### Step 3: Service Mode
-- Radio buttons:  
-  – Online (Zoom/Google Meet)  
-  – In-person
+#### ৬. সাবস্ক্রিপশন কাস্টম অফারে থাকবে না (খুব গুরুত্বপূর্ণ!)
+ক্লায়েন্ট স্পষ্ট বলেছে (01:17:22 এর কাছাকাছি):
+> “Subscription custom offer is too complex – we are removing it.”  
+→ অর্থাৎ কাস্টম অফারে কোনো মাসিক/রিকারিং সাবস্ক্রিপশন অপশন থাকবে না। শুধু সিঙ্গেল + মাইলস্টোন।
 
-### Step 4: Add Milestones / Classes
-- Single Payment → শুধু ১টা কার্ড
-- Milestone Payment → “+ Add Milestone” বাটন (যত খুশি যোগ করা যাবে, রিমুভ বাটন থাকবে)
+#### ৭. Back / Next ন্যাভিগেশন
+ক্লায়েন্ট বলেছে কাস্টম অফার ফ্লোতে **Back** এবং **Next** বাটন থাকতে হবে (মাল্টি-স্টেপ ফর্মের মতো)।
 
-প্রতিটি মিলেস্টোন/ক্লাসের ফিল্ডস:
+#### ৮. সারাংশে ক্লায়েন্ট চায় কী (তার সরাসরি কথায়)
+- “Custom offer for classes and freelance both”  
+- “Single payment or milestone payment”  
+- “For class booking → select active class → set date/time”  
+- “For freelance → revisions, delivery time, price”  
+- “In-person → need start date, start time, end time for each milestone”  
+- “No subscription in custom offer”  
+- “Buyer gets message → approve/reject”  
+- “Payment held until job completion (for freelance)”
 
-| Field               | Required?                  | Notes                                      |
-|---------------------|----------------------------|--------------------------------------------|
-| Title               | Yes                        |                                            |
-| Description         | Yes                        | Rich text (optional)                       |
-| Date                | Yes (In-person) / Optional (Online single class) | Date picker                          |
-| Start Time          | Yes (In-person & Live class) | Time picker                              |
-| End Time            | Yes (In-person & Live class) | Time picker                              |
-| Price               | Yes                        | Currency auto-detect                       |
-| Number of Revisions | Only Freelance             | Default 0                                  |
-| Delivery Days       | Only Freelance Single     |                                            |
+#### ফাইনাল ফ্লো (ক্লায়েন্টের কথা অনুযায়ী
+```
+Seller → Message thread → Click “Custom Offer”
+→ Choose Class or Freelance
+→ Single or Milestone
+→ Fill details (date/time/revision/price etc.)
+→ Send Offer
+→ Buyer gets message → Accept / Reject / Counter
+→ Accept → Payment → Order Created
+```
 
-### Step 5: Summary / Preview
-- সব মিলেস্টোন/ক্লাস লিস্ট আকারে দেখাবে
-- Total Amount হাইলাইট করে দেখাবে
-- Edit বাটন প্রতিটি মিলেস্টোনের পাশে
-- Send Offer বাটন
 
-### Step 6: Buyer Side
-- মেসেজে কার্ড আকারে অফার আসবে
-- View Details → মডালে পুরো অফার দেখাবে
-- Accept → Stripe checkout
-- Reject → অপশনাল মেসেজ দিয়ে রিজেক্ট
+### কাস্টম অফার তৈরির সময় সেলারের জন্য **এক্স্যাক্ট ফ্লো** (ক্লায়েন্টের কথা অনুযায়ী)
 
-## 4. UI/UX Requirements
-- Multi-step wizard (Back / Next buttons)
-- Mobile responsive
-- Real-time total price calculation
-- Loading states
-- Validation (required fields, date/time logic)
-- Preview page must look beautiful (like Fiverr custom offer preview)
+```
+Step 1 → Service Type সিলেক্ট করো  
+   ├── Class Booking  
+   └── Freelance Service  
 
-## 5. Technical Requirements
-- Backend API endpoints:  
-  – POST /custom-offers (create draft)  
-  – POST /custom-offers/{id}/send  
-  – GET /custom-offers/{id} (for buyer view)  
-  – POST /custom-offers/{id}/accept  
-  – POST /custom-offers/{id}/reject
-- Store in DB table: custom_offers + custom_offer_milestones
-- Real-time notification (WebSocket / Pusher) when offer sent
-- Integrate with existing Order system (on accept → create Order with milestones)
+Step 2 → Delivery Mode সিলেক্ট করো  
+   ├── Online  
+   └── In-Person  
 
-## 6. Edge Cases
-- Seller edits offer after sending → not allowed (must cancel & create new)
-- Buyer already has active order with same seller → still allow
-- Timezone handling for dates/times
-- Currency conversion if needed
+Step 3 → তোমার সেই টাইপ + মোডের সব সার্ভিস/ক্লাস লোড হয়ে আসবে  
+     (যেমন: যদি “Class Booking + Online” সিলেক্ট করে → সব অনলাইন ক্লাস লিস্ট আসবে)  
 
-## 7. Dependencies
-- Stripe Checkout already working
-- Message system real-time
-- Zoom integration (for online classes) – later phase
+Step 4 → সিলেক্ট করা সার্ভিস থেকে কাস্টম অফার বানাবে  
+     (সিঙ্গেল বা মাইলস্টোন পেমেন্ট)
+```
 
-## 8. Success Metrics
-- 90% of custom offers accepted within 48 hours
-- Zero bugs in milestone creation
+### ক্লায়েন্টের সরাসরি কথা (ট্রান্সক্রিপ্ট থেকে)
+
+> “when creating a custom offer, the seller can select either ‘class booking’ or ‘freelance booking’ … then it will ask online or in-person … then it will show the active classes or services accordingly.”  
+> (01:21:18 এর কাছাকাছি)
+
+আবার পরে আরেকবার বলেছে (01:35:18):
+> “all described functionalities primarily apply to online services … for in-person services, particularly for freelance, will require additional fields for start date, start time, and end time … similar to how it's implemented for classes.”
+
+### তাই ফাইনাল স্টেপ-বাই-স্টেপ UI/UX ফ্লো হবে এরকম:
+
+| স্টেপ | স্ক্রিনে কী দেখাবে | কী করবে |
+|------|-------------------|--------|
+| 1    | Service Type      | [ ] Class Booking [ ] Freelance Service |
+| 2    | Delivery Mode     | [ ] Online [ ] In-Person |
+| 3    | Service List      | শুধু সিলেক্ট করা টাইপ + মোডের সার্ভিসগুলো লোড হবে (অ্যাকটিভ অবস্থায়) |
+| 4    | Payment Type      | [ ] Single Payment [ ] Milestone Payment |
+| 5    | Fill Details      | অনলাইন হলে → রিভিশন, ডেলিভারি টাইম <br>ইন-পার্সন হলে → Start Date, Start Time, End Time (প্রতি মাইলস্টোনে) |
+| 6    | Send Offer        | বায়ারের ইনবক্সে যাবে |
+
+### ইমপ্লিমেন্টেশন নোট
+- Step 1 ও Step 2 চেঞ্জ হলে Step 3-এর লিস্টটা ডাইনামিক্যালি লোড হতে হবে (AJAX/Vue reactivity)  
+- ইন-পার্সন ফ্রিল্যান্স সার্ভিসে প্রতি মাইলস্টোনে ডেট-টাইম ফিল্ড বাধ্যতামূলক  
+- কোনো সাবস্ক্রিপশন অপশন থাকবে না (ক্লায়েন্ট স্পষ্টভাবে রিমুভ করেছে)
+
+
+ei page a same kaj kora ace 
+/home/eahiya/nexa-lance/dreamcrowd-backend/resources/views/Public-site/services.blade.php 
+ei section tai "All Services (Online & Inperson)"

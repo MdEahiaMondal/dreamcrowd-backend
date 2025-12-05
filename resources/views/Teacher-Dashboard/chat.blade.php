@@ -9,44 +9,44 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <!-- Animate css -->
-    <link rel="stylesheet" href="assets/teacher/libs/animate/css/animate.css"/>
+    <link rel="stylesheet" href="assets/teacher/libs/animate/css/animate.css" />
     <!-- AOS Animation css-->
-    <link rel="stylesheet" href="assets/teacher/libs/aos/css/aos.css"/>
+    <link rel="stylesheet" href="assets/teacher/libs/aos/css/aos.css" />
     <!-- Datatable css  -->
-    <link rel="stylesheet" href="assets/teacher/libs/datatable/css/datatable.css"/>
+    <link rel="stylesheet" href="assets/teacher/libs/datatable/css/datatable.css" />
     {{-- Fav Icon --}}
-    @php  $home = \App\Models\HomeDynamic::first(); @endphp
+    @php $home = \App\Models\HomeDynamic::first(); @endphp
     @if ($home)
         <link rel="shortcut icon" href="assets/public-site/asset/img/{{ $home->fav_icon }}" type="image/x-icon">
     @endif
     <!-- Select2 css -->
-    <link href="assets/teacher/libs/select2/css/select2.min.css" rel="stylesheet"/>
+    <link href="assets/teacher/libs/select2/css/select2.min.css" rel="stylesheet" />
     <!-- Owl carousel css -->
-    <link href="assets/teacher/libs/owl-carousel/css/owl.carousel.css" rel="stylesheet"/>
-    <link href="assets/teacher/libs/owl-carousel/css/owl.theme.green.css" rel="stylesheet"/>
+    <link href="assets/teacher/libs/owl-carousel/css/owl.carousel.css" rel="stylesheet" />
+    <link href="assets/teacher/libs/owl-carousel/css/owl.theme.green.css" rel="stylesheet" />
     <!-- Bootstrap css -->
-    <link rel="stylesheet" type="text/css" href="assets/teacher/asset/css/bootstrap.min.css"/>
+    <link rel="stylesheet" type="text/css" href="assets/teacher/asset/css/bootstrap.min.css" />
     <link href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css' rel='stylesheet'>
     <link rel="stylesheet" href="https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css">
 
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"
-            integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+        integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
 
 
     {{-- =======Toastr CDN ======== --}}
     <link rel="stylesheet" type="text/css"
-          href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+        href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
     {{-- =======Toastr CDN ======== --}}
     <!-- Fontawesome CDN -->
     <script src="https://kit.fontawesome.com/be69b59144.js" crossorigin="anonymous"></script>
     <!-- Defualt css -->
-    <link rel="stylesheet" type="text/css" href="assets/teacher/asset/css/sidebar.css"/>
+    <link rel="stylesheet" type="text/css" href="assets/teacher/asset/css/sidebar.css" />
     <link rel="stylesheet" href="assets/teacher/asset/css/style.css">
     <link rel="stylesheet" href="assets/teacher/asset/css/Dashboard.css">
-    <link rel="stylesheet" href="assets/emoji/css/emoji.css"/>
+    <link rel="stylesheet" href="assets/emoji/css/emoji.css" />
     <title>User Dashboard | </title>
 </head>
 
@@ -101,217 +101,235 @@
         display: flex;
         justify-content: center;
     }
+
+    .card-footer .modal-content {
+        background: white;
+    }
+
+    .custom-offer i {
+        margin: 0;
+        color: white;
+    }
+
+    .nextbtn {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
 </style>
 
 <body>
 
-{{-- ===========Teacher Sidebar Start==================== --}}
-<x-teacher-sidebar/>
-{{-- ===========Teacher Sidebar End==================== --}}
-<section class="home-section">
-    {{-- ===========User NavBar Start==================== --}}
-    <x-user-nav/>
-    {{-- ===========User NavBar End==================== --}}
-    <!-- =============================== MAIN CONTENT START HERE =========================== -->
-    <div class="container-fluid">
-        <div class="row dash-notification">
-            <div class="col-md-12">
-                <div class="dash">
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="dash-top">
-                                <h1 class="dash-title">Dashboard</h1>
-                                <i class="fa-solid fa-chevron-right"></i>
-                                <span class="min-title">Messages</span>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Blue MASSEGES section -->
-                    <div class="user-notification">
+    {{-- ===========Teacher Sidebar Start==================== --}}
+    <x-teacher-sidebar />
+    {{-- ===========Teacher Sidebar End==================== --}}
+    <section class="home-section">
+        {{-- ===========User NavBar Start==================== --}}
+        <x-user-nav />
+        {{-- ===========User NavBar End==================== --}}
+        <!-- =============================== MAIN CONTENT START HERE =========================== -->
+        <div class="container-fluid">
+            <div class="row dash-notification">
+                <div class="col-md-12">
+                    <div class="dash">
                         <div class="row">
                             <div class="col-md-12">
-                                <div class="notify">
-                                    <i class="bx bx-message-square-dots icon" title="Messages"></i>
-
-                                    <!-- <i class="bx bx-message-square-dots icon" title="Messages"></i> -->
-                                    <h2>Messages</h2>
+                                <div class="dash-top">
+                                    <h1 class="dash-title">Dashboard</h1>
+                                    <i class="fa-solid fa-chevron-right"></i>
+                                    <span class="min-title">Messages</span>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                        <!-- Blue MASSEGES section -->
+                        <div class="user-notification">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="notify">
+                                        <i class="bx bx-message-square-dots icon" title="Messages"></i>
 
-
-                    @if ($chatList->count() > 0)
-
-
-                        <div class="row">
-                            <div class="col-xl-3 col-lg-5 col-md-12 mb-2">
-                                <!-- Sidebar -->
-                                <div class="card chat-side-bar">
-                                    <div class="card-body">
-                                        <div class="box-notif box-input">
-                                            <input type="text" id="search_name_input" placeholder="Search"
-                                                   class="form-control"/>
-                                            <i class="fa-solid fa-magnifying-glass icon"
-                                               onclick="SearchName();"></i>
-                                        </div>
-                                        <ul class="list-group" id="userList">
-                                            @php $i = 1; @endphp
-                                            @foreach ($chatList as $chat)
-                                                <li class="list-group-item  @if ($i == 1) active @endif"
-                                                    data-teacher-id="{{ $chat['teacher_id'] }}"
-                                                    onclick="OpenChat(this.id)"
-                                                    id="teacher_list_{{ $chat['teacher_id'] }}"
-                                                    style="cursor: pointer;">
-                                                    <a class="box-notif">
-                                                        <img src="{{ $chat['profile_image'] }}" alt="Avatar"/>
-                                                        @if ($chat['unseen_count'] != 0)
-                                                            <span class="blue-rate"
-                                                                  id="teacher_list_{{ $chat['teacher_id'] }}_unseen">{{ $chat['unseen_count'] }}</span>
-                                                        @endif
-                                                        <span class="onlion-icon"></span>
-
-                                                        <div>
-                                                            <p class="name">{{ $chat['teacher_name'] }}</p>
-                                                            <p>{{ $chat['latest_sms'] }}</p>
-                                                        </div>
-                                                        <div class="time">
-                                                            <span>{{ $chat['time'] }}</span>
-                                                        </div>
-                                                    </a>
-                                                </li>
-                                                @php $i++; @endphp
-                                            @endforeach
-
-                                            <!-- MSG-NOTIF -->
-                                            {{-- <li class="list-group-item active" data-user="User 1" data-avatar="https://placekitten.com/40/40">
-                                          <a href="#" class="box-notif">
-                                            <img src="assets/user/asset/img/Ellipse 348.svg" />
-                                            <span class="blue-rate">99+</span>
-                                            <span class="onlion-icon"></span>
-                                            <div>
-                                              <p class="name">Wade Warren</p>
-                                              <p>Acme Co.</p>
-                                            </div>
-                                            <div class="time">
-                                              <span>just now</span>
-                                            </div>
-                                          </a>
-                                        </li> --}}
-
-
-                                            <!-- END MSG-NOTIF -->
-                                        </ul>
+                                        <!-- <i class="bx bx-message-square-dots icon" title="Messages"></i> -->
+                                        <h2>Messages</h2>
                                     </div>
                                 </div>
                             </div>
-                            <!-- CHAT-BOX-SEC -->
-                            <div class="col-xl-6 col-lg-7 col-md-12 mb-2">
-                                <!-- Chat Box -->
+                        </div>
 
-                                <div class="card chat-box-right">
-                                    @if ($chatList)
-                                        <div style="justify-content: left;padding-right: 10px;" class="card-header"
-                                             id="chat-header">
-                                            <img id="main_profile" src="{{ $profileImageMain }}" alt=""
-                                                 width="50" height="50" style="border-radius: 100%;"/>
-                                            <!-- <img src="" alt="User Avatar" id="user-avatar"> -->
-                                            <div class="name">
-                                                <p id="main_name">{{ $fullName }} </p>
-                                                <p>Active Now</p>
+
+                        @if ($chatList->count() > 0)
+
+
+                            <div class="row">
+                                <div class="col-xl-3 col-lg-5 col-md-12 mb-2">
+                                    <!-- Sidebar -->
+                                    <div class="card chat-side-bar">
+                                        <div class="card-body">
+                                            <div class="box-notif box-input">
+                                                <input type="text" id="search_name_input" placeholder="Search"
+                                                    class="form-control" />
+                                                <i class="fa-solid fa-magnifying-glass icon" onclick="SearchName();"></i>
                                             </div>
-                                            <span id="selectedUserName"></span>
-                                            <div id="search_div" style="margin-left: auto; display: none;">
-                                                <div class="input-group ">
-                                                    <input type="text" id="search_input" class="form-control"
-                                                           placeholder="Search Message"
-                                                           aria-label="Recipient's username"
-                                                           aria-describedby="search_btn">
-                                                    <span class="input-group-text" onclick="SearchMessage()"
-                                                          id="search_btn"
-                                                          style="background: #0072b1; color: white; cursor: pointer;">search</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    @endif
-
-                                    <div id="chat-container"
-                                         class="modal-body flex-shrink-1 rounded py-2 px-3 mr-3  "
-                                         style="height: 370px;overflow-y: auto; display: flex; flex-direction: column-reverse;">
-                                        <div class="msg-body">
-                                            <ul id="full_chat">
-                                                @if ($completeChat)
-
-                                                    @if ($hasMore)
-                                                        <button class="btn btn-primary"
-                                                                style="margin:0 auto; background: #0072b1;display: flex; justify-content: center;align-items: center;"
-                                                                type="button" onclick="ReadMore();"
-                                                                id="ReadMore">Read
-                                                            More
-                                                        </button>
-                                                    @endif
-
-                                                    @foreach ($completeChat as $message)
-                                                        <li
-                                                            class="{{ $message['sender_id'] == Auth::user()->id ? 'repaly' : 'sender' }}">
-                                                            <p>{{ $message['sms'] }}</p>
-
-                                                            @if (!empty($message['files']))
-                                                                @php $files = explode(',',$message['files']);   @endphp
-                                                                    <!-- Loop through and display files if there are any -->
-                                                                <div class="files">
-                                                                    @foreach ($files as $file)
-                                                                        <a href="{{ asset('chat_media/' . Auth::user()->id . '_chat_files_' . $otheruserId . '/' . $file) }}"
-                                                                           class="file-link" download download
-                                                                           style="display:block; text-decoration:none; color:black; font-weight:500; margin-bottom:2px;font-size:13px; ">
-                                                                            <span>{{ pathinfo($file, PATHINFO_BASENAME) }}</span>
-                                                                        </a>
-                                                                    @endforeach
-                                                                </div>
+                                            <ul class="list-group" id="userList">
+                                                @php $i = 1; @endphp
+                                                @foreach ($chatList as $chat)
+                                                    <li class="list-group-item  @if ($i == 1) active @endif"
+                                                        data-teacher-id="{{ $chat['teacher_id'] }}" onclick="OpenChat(this.id)"
+                                                        id="teacher_list_{{ $chat['teacher_id'] }}" style="cursor: pointer;">
+                                                        <a class="box-notif">
+                                                            <img src="{{ $chat['profile_image'] }}" alt="Avatar" />
+                                                            @if ($chat['unseen_count'] != 0)
+                                                                <span class="blue-rate"
+                                                                    id="teacher_list_{{ $chat['teacher_id'] }}_unseen">{{ $chat['unseen_count'] }}</span>
                                                             @endif
+                                                            <span class="onlion-icon"></span>
 
-                                                            <span class="time">{{ $message['time_ago'] }}</span>
-                                                        </li>
-                                                    @endforeach
-                                                @endif
+                                                            <div>
+                                                                <p class="name">{{ $chat['teacher_name'] }}</p>
+                                                                <p>{{ $chat['latest_sms'] }}</p>
+                                                            </div>
+                                                            <div class="time">
+                                                                <span>{{ $chat['time'] }}</span>
+                                                            </div>
+                                                        </a>
+                                                    </li>
+                                                    @php $i++; @endphp
+                                                @endforeach
+
+                                                <!-- MSG-NOTIF -->
+                                                {{-- <li class="list-group-item active" data-user="User 1"
+                                                    data-avatar="https://placekitten.com/40/40">
+                                                    <a href="#" class="box-notif">
+                                                        <img src="assets/user/asset/img/Ellipse 348.svg" />
+                                                        <span class="blue-rate">99+</span>
+                                                        <span class="onlion-icon"></span>
+                                                        <div>
+                                                            <p class="name">Wade Warren</p>
+                                                            <p>Acme Co.</p>
+                                                        </div>
+                                                        <div class="time">
+                                                            <span>just now</span>
+                                                        </div>
+                                                    </a>
+                                                </li> --}}
 
 
-                                                {{-- <li class="repaly">
-                                              <p> posuere eget augue sodales, aliquet posuere eros.</p>
-                                              <span class="time">5 minutes ago</span>
-                                            </li>
-                                            <li class="sender">
-                                              <p> Sit amet risus nullam eget felis eget. Dolor sed viverra ipsum </p>
-                                              <span class="time">2 minutes ago</span>
-                                            </li> --}}
-
-
+                                                <!-- END MSG-NOTIF -->
                                             </ul>
-
                                         </div>
                                     </div>
+                                </div>
+                                <!-- CHAT-BOX-SEC -->
+                                <div class="col-xl-6 col-lg-7 col-md-12 mb-2">
+                                    <!-- Chat Box -->
+
+                                    <div class="card chat-box-right">
+                                        @if ($chatList)
+                                            <div style="justify-content: left;padding-right: 10px;" class="card-header"
+                                                id="chat-header">
+                                                <img id="main_profile" src="{{ $profileImageMain }}" alt="" width="50"
+                                                    height="50" style="border-radius: 100%;" />
+                                                <!-- <img src="" alt="User Avatar" id="user-avatar"> -->
+                                                <div class="name">
+                                                    <p id="main_name">{{ $fullName }} </p>
+                                                    <p>Active Now</p>
+                                                </div>
+                                                <span id="selectedUserName"></span>
+                                                <div id="search_div" style="margin-left: auto; display: none;">
+                                                    <div class="input-group ">
+                                                        <input type="text" id="search_input" class="form-control"
+                                                            placeholder="Search Message" aria-label="Recipient's username"
+                                                            aria-describedby="search_btn">
+                                                        <span class="input-group-text" onclick="SearchMessage()" id="search_btn"
+                                                            style="background: #0072b1; color: white; cursor: pointer;">search</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @endif
+
+                                        <div id="chat-container" class="modal-body flex-shrink-1 rounded py-2 px-3 mr-3  "
+                                            style="height: 370px;overflow-y: auto; display: flex; flex-direction: column-reverse;">
+                                            <div class="msg-body">
+                                                <ul id="full_chat">
+                                                    @if ($completeChat)
+
+                                                        @if ($hasMore)
+                                                            <button class="btn btn-primary"
+                                                                style="margin:0 auto; background: #0072b1;display: flex; justify-content: center;align-items: center;"
+                                                                type="button" onclick="ReadMore();" id="ReadMore">Read
+                                                                More
+                                                            </button>
+                                                        @endif
+
+                                                        @foreach ($completeChat as $message)
+                                                            <li
+                                                                class="{{ $message['sender_id'] == Auth::user()->id ? 'repaly' : 'sender' }}">
+                                                                <p>{{ $message['sms'] }}</p>
+
+                                                                @if (!empty($message['is_custom_offer']) && $message['is_custom_offer'] > 0)
+                                                                    <button class="btn btn-sm btn-primary custom-offer-btn mt-2"
+                                                                        data-offer-id="{{ $message['is_custom_offer'] }}"
+                                                                        style="display:block;">
+                                                                        <i class="fa-solid fa-eye me-1"></i> View Custom Offer
+                                                                    </button>
+                                                                @endif
+
+                                                                @if (!empty($message['files']))
+                                                                    @php $files = explode(',', $message['files']);   @endphp
+                                                                    <!-- Loop through and display files if there are any -->
+                                                                    <div class="files">
+                                                                        @foreach ($files as $file)
+                                                                            <a href="{{ asset('chat_media/' . Auth::user()->id . '_chat_files_' . $otheruserId . '/' . $file) }}"
+                                                                                class="file-link" download download
+                                                                                style="display:block; text-decoration:none; color:black; font-weight:500; margin-bottom:2px;font-size:13px; ">
+                                                                                <span>{{ pathinfo($file, PATHINFO_BASENAME) }}</span>
+                                                                            </a>
+                                                                        @endforeach
+                                                                    </div>
+                                                                @endif
+
+                                                                <span class="time">{{ $message['time_ago'] }}</span>
+                                                            </li>
+                                                        @endforeach
+                                                    @endif
 
 
-                                    <div class="card-footer" id="sms_div"
-                                         @if ($block != 0) style="display: none;" @endif>
-                                        <div class="input-group emoji-picker-container">
-                                            <input type="hidden" id="teacher_reciver_id"
-                                                   value="{{ $otheruserId }}">
-                                            <input type="hidden" id="search_name" value="">
-                                            <input type="hidden" id="sms_limit" value="50">
+                                                    {{-- <li class="repaly">
+                                                        <p> posuere eget augue sodales, aliquet posuere eros.</p>
+                                                        <span class="time">5 minutes ago</span>
+                                                    </li>
+                                                    <li class="sender">
+                                                        <p> Sit amet risus nullam eget felis eget. Dolor sed viverra ipsum
+                                                        </p>
+                                                        <span class="time">2 minutes ago</span>
+                                                    </li> --}}
 
-                                            <textarea type="text" class="form-control" id="message-textarea"
-                                                      data-emojiable="true"
-                                                      placeholder="Type your message..."></textarea>
 
+                                                </ul>
+
+                                            </div>
                                         </div>
-                                        <div id="preview-area" class="mt-1 mb-1 row"
-                                             style="border: 1px solid #ccc; position: relative; bottom: 10px;  padding: 10px; height: 80px; overflow-y: scroll; display: none;">
-                                        </div>
 
-                                        <div class="send-btns">
-                                            <div class="attach">
-                                                <div class="button-wrapper">
+
+                                        <div class="card-footer" id="sms_div" @if ($block != 0) style="display: none;"
+                                        @endif>
+                                            <div class="input-group emoji-picker-container">
+                                                <input type="hidden" id="teacher_reciver_id" value="{{ $otheruserId }}">
+                                                <input type="hidden" id="search_name" value="">
+                                                <input type="hidden" id="sms_limit" value="50">
+
+                                                <textarea type="text" class="form-control" id="message-textarea"
+                                                    data-emojiable="true" placeholder="Type your message..."></textarea>
+
+                                            </div>
+                                            <div id="preview-area" class="mt-1 mb-1 row"
+                                                style="border: 1px solid #ccc; position: relative; bottom: 10px;  padding: 10px; height: 80px; overflow-y: scroll; display: none;">
+                                            </div>
+
+                                            <div class="send-btns">
+                                                <div class="attach">
+                                                    <div class="button-wrapper">
                                                         <span class="label">
 
 
@@ -320,1326 +338,1526 @@
                                                                     <i class="fa-regular fa-face-smile"></i>
                                                                 </a>
                                                                 <a>
-                                                                    <input type="file" id="fileInputAll"
-                                                                           accept="*/*" style="display: none;">
+                                                                    <input type="file" id="fileInputAll" accept="*/*"
+                                                                        style="display: none;">
                                                                     <i class="fa-solid fa-paperclip"
-                                                                       onclick="document.getElementById('fileInputAll').click();"></i>
+                                                                        onclick="document.getElementById('fileInputAll').click();"></i>
 
                                                                 </a>
 
-                                                                <a><input type="file" id="fileInputImages"
-                                                                          accept="image/*" style="display: none;"><i
+                                                                <a><input type="file" id="fileInputImages" accept="image/*"
+                                                                        style="display: none;"><i
                                                                         class="fa-regular fa-images"
                                                                         onclick="document.getElementById('fileInputImages').click();"></i></a>
-                                                                <a><input type="file" id="fileInputVideos"
-                                                                          accept="video/*" style="display: none;"><i
-                                                                        class="fa-solid fa-video"
+                                                                <a><input type="file" id="fileInputVideos" accept="video/*"
+                                                                        style="display: none;"><i class="fa-solid fa-video"
                                                                         onclick="document.getElementById('fileInputVideos').click();"></i></a>
                                                                 <button type="button" class="custom-btn"
-                                                                        data-bs-target="#myModal"
-                                                                        data-bs-toggle="modal">custom offer</button>
-                                                                {{-- <h5 class="Safety-term" data-bs-toggle="modal" data-bs-target="#exampleModal1">Safety rules<br> for messages</h5> --}}
+                                                                    data-bs-target="#customOfferModal"
+                                                                    data-bs-toggle="modal">Custom
+                                                                    Offer</button>
+                                                                {{-- <h5 class="Safety-term" data-bs-toggle="modal"
+                                                                    data-bs-target="#exampleModal1">Safety rules<br> for
+                                                                    messages</h5> --}}
                                                                 <!-- <h5 class="Safety-term" data-bs-toggle="modal"
-                                                                   data-bs-target="#exampleModal">Safety terms<br> for messages</h5> -->
+                                                                               data-bs-target="#exampleModal">Safety terms<br> for messages</h5> -->
 
 
-                                                                {{-- Custom Offers Creation Models Start ============ --}}
-
-                                                                <!-- Modal -->
-                                                                <div class="modal" id="myModal">
-                                                                    <div class="modal-dialog">
-                                                                        <div class="modal-content date-modal">
-
-                                                                            <div class="modal-body p-0">
-                                                                                <div class="head w-100">
-                                                                                    <h1 class="text-center">What
-                                                                                        service are you interested in?
-                                                                                    </h1>
+                                                                {{-- Custom Offers Creation - Single Professional Modal
+                                                                ============ --}}
+                                                                <div class="modal fade custom-offer" id="customOfferModal"
+                                                                    tabindex="-1" aria-labelledby="customOfferModalLabel"
+                                                                    aria-hidden="true">
+                                                                    <div
+                                                                        class="modal-dialog modal-lg modal-dialog-centered">
+                                                                        <div class="modal-content"
+                                                                            style="border-radius: 16px; border: none; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);">
+                                                                            <!-- Modal Header with Progress -->
+                                                                            <div class="modal-header border-0 pb-0"
+                                                                                style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 16px 16px 0 0; padding: 24px 32px;">
+                                                                                <div class="w-100">
+                                                                                    <div
+                                                                                        class="d-flex justify-content-between align-items-center mb-3">
+                                                                                        <h5 class="modal-title text-white fw-bold mb-0"
+                                                                                            id="customOfferModalLabel">
+                                                                                            Create Custom Offer</h5>
+                                                                                        <button type="button"
+                                                                                            class="btn-close btn-close-white"
+                                                                                            data-bs-dismiss="modal"
+                                                                                            aria-label="Close"></button>
+                                                                                    </div>
+                                                                                    <!-- Step Progress Indicator -->
+                                                                                    <div
+                                                                                        class="step-progress d-flex justify-content-between align-items-center">
+                                                                                        <div class="step-item active"
+                                                                                            data-step="1">
+                                                                                            <div class="step-circle">1</div>
+                                                                                            <span class="step-label">Service
+                                                                                                Type</span>
+                                                                                        </div>
+                                                                                        <div class="step-line"></div>
+                                                                                        <div class="step-item"
+                                                                                            data-step="2">
+                                                                                            <div class="step-circle">2</div>
+                                                                                            <span
+                                                                                                class="step-label">Delivery
+                                                                                                Mode</span>
+                                                                                        </div>
+                                                                                        <div class="step-line"></div>
+                                                                                        <div class="step-item"
+                                                                                            data-step="3">
+                                                                                            <div class="step-circle">3</div>
+                                                                                            <span class="step-label">Select
+                                                                                                Service</span>
+                                                                                        </div>
+                                                                                        <div class="step-line"></div>
+                                                                                        <div class="step-item"
+                                                                                            data-step="4">
+                                                                                            <div class="step-circle">4</div>
+                                                                                            <span class="step-label">Offer
+                                                                                                Details</span>
+                                                                                        </div>
+                                                                                    </div>
                                                                                 </div>
-                                                                                <div class="model-heading">
-                                                                                    <p class="about">Curious about our
-                                                                                        offerings? Let us know your
-                                                                                        interests, and we'll tailor our
-                                                                                        services to meet your specific
-                                                                                        needs.</p>
-                                                                                    <div class="d-flex option-btn">
-                                                                                        <div
-                                                                                            class="d-flex radio-toolbar">
-                                                                                            <div class="row">
-                                                                                                <div class="col-md-6">
-                                                                                                    <input
-                                                                                                        type="radio"
-                                                                                                        id="offerTypeClass"
-                                                                                                        name="offer_type"
-                                                                                                        value="Class"
-                                                                                                        checked
-                                                                                                        data-bs-toggle="modal"
-                                                                                                        data-bs-target="#secondModal"
-                                                                                                        data-bs-dismiss="modal">
-                                                                                                    <label
-                                                                                                        for="offerTypeClass">
-                                                                                                        <p
-                                                                                                            class="label mb-0">
-                                                                                                            Class
-                                                                                                            Booking</p>
-                                                                                                        <p
-                                                                                                            class="name-label mb-0">
-                                                                                                            Effortless
-                                                                                                            class
-                                                                                                            booking for
-                                                                                                            a seamless
-                                                                                                            learning
-                                                                                                            experience.
-                                                                                                        </p>
-                                                                                                    </label>
+                                                                            </div>
 
-                                                                                                </div>
-                                                                                                <div class="col-md-6">
-                                                                                                    <input
-                                                                                                        type="radio"
-                                                                                                        id="offerTypeFreelance"
-                                                                                                        name="offer_type"
-                                                                                                        value="Freelance"
-                                                                                                        data-bs-toggle="modal"
-                                                                                                        data-bs-target="#thirdModal"
-                                                                                                        data-bs-dismiss="modal">
-                                                                                                    <label
-                                                                                                        for="offerTypeFreelance">
+                                                                            <!-- Modal Body -->
+                                                                            <div class="modal-body p-4"
+                                                                                style="max-height: 60vh; overflow-y: auto;">
+                                                                                <!-- Step 1: Service Type Selection -->
+                                                                                <div class="offer-step" id="step-1">
+                                                                                    <h4 class="mb-3 fw-semibold text-dark">
+                                                                                        What type of service would you like
+                                                                                        to offer?</h4>
+                                                                                    <p class="text-muted mb-4">Choose the
+                                                                                        category that best describes your
+                                                                                        offering.</p>
+                                                                                    <div class="row g-3">
+                                                                                        <div class="col-md-6">
+                                                                                            <div class="offer-option-card"
+                                                                                                data-value="Class">
+                                                                                                <input type="radio"
+                                                                                                    id="offerTypeClass"
+                                                                                                    name="offer_type"
+                                                                                                    value="Class" checked
+                                                                                                    class="d-none">
+                                                                                                <label for="offerTypeClass"
+                                                                                                    class="offer-option-label">
+                                                                                                    <div
+                                                                                                        class="option-icon">
+                                                                                                        <i
+                                                                                                            class="fa-solid fa-chalkboard-user"></i>
+                                                                                                    </div>
+                                                                                                    <div
+                                                                                                        class="option-content">
+                                                                                                        <h5 class="mb-1">
+                                                                                                            Class Booking
+                                                                                                        </h5>
                                                                                                         <p
-                                                                                                            class="label mb-0">
+                                                                                                            class="mb-0 text-muted small">
+                                                                                                            Educational
+                                                                                                            sessions,
+                                                                                                            tutorials,
+                                                                                                            workshops, and
+                                                                                                            training classes
+                                                                                                        </p>
+                                                                                                    </div>
+                                                                                                    <div
+                                                                                                        class="option-check">
+                                                                                                        <i
+                                                                                                            class="fa-solid fa-circle-check"></i>
+                                                                                                    </div>
+                                                                                                </label>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                        <div class="col-md-6">
+                                                                                            <div class="offer-option-card"
+                                                                                                data-value="Freelance">
+                                                                                                <input type="radio"
+                                                                                                    id="offerTypeFreelance"
+                                                                                                    name="offer_type"
+                                                                                                    value="Freelance"
+                                                                                                    class="d-none">
+                                                                                                <label
+                                                                                                    for="offerTypeFreelance"
+                                                                                                    class="offer-option-label">
+                                                                                                    <div
+                                                                                                        class="option-icon">
+                                                                                                        <i
+                                                                                                            class="fa-solid fa-briefcase"></i>
+                                                                                                    </div>
+                                                                                                    <div
+                                                                                                        class="option-content">
+                                                                                                        <h5 class="mb-1">
                                                                                                             Freelance
-                                                                                                            Booking</p>
+                                                                                                            Service</h5>
                                                                                                         <p
-                                                                                                            class="name-label mb-0">
-                                                                                                            Simplify
-                                                                                                            your
-                                                                                                            freelancing
-                                                                                                            journey with
-                                                                                                            quick and
-                                                                                                            hassle-free
-                                                                                                            bookings.
-                                                                                                        </p>
-
-                                                                                                    </label>
-                                                                                                </div>
+                                                                                                            class="mb-0 text-muted small">
+                                                                                                            Professional
+                                                                                                            services,
+                                                                                                            consulting,
+                                                                                                            creative work,
+                                                                                                            and projects</p>
+                                                                                                    </div>
+                                                                                                    <div
+                                                                                                        class="option-check">
+                                                                                                        <i
+                                                                                                            class="fa-solid fa-circle-check"></i>
+                                                                                                    </div>
+                                                                                                </label>
                                                                                             </div>
-
-
                                                                                         </div>
                                                                                     </div>
-                                                                                    <div class="model-footer">
-                                                                                        <button class="back-btn"
-                                                                                                data-bs-dismiss="modal"
-                                                                                                aria-label="Close">Back</button>
-                                                                                        <button
-                                                                                            class="next-btn">Next</button>
-                                                                                    </div>
                                                                                 </div>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                                <!-- Modal -->
-                                                                <div class="modal custom-modal" id="secondModal">
-                                                                    <div class="modal-dialog">
-                                                                        <div class="modal-content">
-                                                                            <div class="modal-header">
-                                                                                <i class="fa-solid fa-arrow-left"
-                                                                                   data-bs-target="#myModal"
-                                                                                   data-bs-toggle="modal"
-                                                                                   data-bs-dismiss="modal"
-                                                                                   style="cursor: pointer;"></i>
-                                                                                <h5 class="modal-title">Select Any
-                                                                                    Class Service</h5>
-                                                                            </div>
-                                                                            <div
-                                                                                class="modal-body bg-white service-list">
-                                                                                <!-- Services will be loaded dynamically via AJAX -->
-                                                                                <div class="text-center p-4">
-                                                                                    <p class="text-muted">Loading
-                                                                                        services...</p>
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                                <!-- Modal -->
-                                                                <div class="modal custom-modal" id="thirdModal">
-                                                                    <div class="modal-dialog">
-                                                                        <div class="modal-content">
-                                                                            <div class="modal-header">
-                                                                                <i class="fa-solid fa-arrow-left"
-                                                                                   data-bs-target="#myModal"
-                                                                                   data-bs-toggle="modal"
-                                                                                   data-bs-dismiss="modal"
-                                                                                   style="cursor: pointer;"></i>
-                                                                                <h5 class="modal-title">Select Any
-                                                                                    Freelance Service</h5>
-                                                                            </div>
-                                                                            <div
-                                                                                class="modal-body bg-white service-list">
-                                                                                <!-- Services will be loaded dynamically via AJAX -->
-                                                                                <div class="text-center p-4">
-                                                                                    <p class="text-muted">Loading
-                                                                                        services...</p>
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                                <!-- Service Mode Selection Modal -->
-                                                                <div class="modal custom-modal"
-                                                                     id="servicemode-modal">
-                                                                    <div class="modal-dialog">
-                                                                        <div class="modal-content date-modal">
-                                                                            <div class="modal-body p-0">
-                                                                                <div class="modal-header">
-                                                                                    <h5 class="modal-title">Select
-                                                                                        Service Mode</h5>
-                                                                                </div>
-                                                                                <div class="model-heading">
-                                                                                    <p class="about">Choose how
-                                                                                        the service will be
-                                                                                        delivered.</p>
-                                                                                    <div class="d-flex option-btn">
-                                                                                        <div
-                                                                                            class="d-flex radio-toolbar">
-                                                                                            <div class="row">
-                                                                                                <div class="col-md-6">
-                                                                                                    <input
-                                                                                                        type="radio"
-                                                                                                        id="serviceModeOnline"
-                                                                                                        name="service_mode"
-                                                                                                        value="Online"
-                                                                                                        checked
-                                                                                                        data-bs-toggle="modal"
-                                                                                                        data-bs-target="#fourmodal"
-                                                                                                        data-bs-dismiss="modal">
-                                                                                                    <label
-                                                                                                        for="serviceModeOnline">
+
+                                                                                <!-- Step 2: Delivery Mode Selection -->
+                                                                                <div class="offer-step d-none" id="step-2">
+                                                                                    <h4 class="mb-3 fw-semibold text-dark">
+                                                                                        How will you deliver this service?
+                                                                                    </h4>
+                                                                                    <p class="text-muted mb-4">Select the
+                                                                                        delivery method for your service.
+                                                                                    </p>
+                                                                                    <div class="row g-3">
+                                                                                        <div class="col-md-6">
+                                                                                            <div class="offer-option-card"
+                                                                                                data-value="Online">
+                                                                                                <input type="radio"
+                                                                                                    id="serviceModeOnline"
+                                                                                                    name="service_mode"
+                                                                                                    value="Online" checked
+                                                                                                    class="d-none">
+                                                                                                <label
+                                                                                                    for="serviceModeOnline"
+                                                                                                    class="offer-option-label">
+                                                                                                    <div
+                                                                                                        class="option-icon">
+                                                                                                        <i
+                                                                                                            class="fa-solid fa-video"></i>
+                                                                                                    </div>
+                                                                                                    <div
+                                                                                                        class="option-content">
+                                                                                                        <h5 class="mb-1">
+                                                                                                            Online</h5>
                                                                                                         <p
-                                                                                                            class="label mb-0">
-                                                                                                            Online
+                                                                                                            class="mb-0 text-muted small">
+                                                                                                            Delivered
+                                                                                                            remotely via
+                                                                                                            video call or
+                                                                                                            online platform
                                                                                                         </p>
+                                                                                                    </div>
+                                                                                                    <div
+                                                                                                        class="option-check">
+                                                                                                        <i
+                                                                                                            class="fa-solid fa-circle-check"></i>
+                                                                                                    </div>
+                                                                                                </label>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                        <div class="col-md-6">
+                                                                                            <div class="offer-option-card"
+                                                                                                data-value="In-person">
+                                                                                                <input type="radio"
+                                                                                                    id="serviceModeInPerson"
+                                                                                                    name="service_mode"
+                                                                                                    value="In-person"
+                                                                                                    class="d-none">
+                                                                                                <label
+                                                                                                    for="serviceModeInPerson"
+                                                                                                    class="offer-option-label">
+                                                                                                    <div
+                                                                                                        class="option-icon">
+                                                                                                        <i
+                                                                                                            class="fa-solid fa-location-dot"></i>
+                                                                                                    </div>
+                                                                                                    <div
+                                                                                                        class="option-content">
+                                                                                                        <h5 class="mb-1">
+                                                                                                            In-Person</h5>
                                                                                                         <p
-                                                                                                            class="name-label mb-0">
-                                                                                                            Service
-                                                                                                            will be
-                                                                                                            delivered
-                                                                                                            remotely
-                                                                                                            via
-                                                                                                            video
-                                                                                                            call or
-                                                                                                            online
-                                                                                                            platform.
-                                                                                                        </p>
-                                                                                                    </label>
-                                                                                                </div>
-                                                                                                <div class="col-md-6">
-                                                                                                    <input
-                                                                                                        type="radio"
-                                                                                                        id="serviceModeInPerson"
-                                                                                                        name="service_mode"
-                                                                                                        value="In-person"
-                                                                                                        data-bs-toggle="modal"
-                                                                                                        data-bs-target="#fourmodal"
-                                                                                                        data-bs-dismiss="modal">
-                                                                                                    <label
-                                                                                                        for="serviceModeInPerson">
-                                                                                                        <p
-                                                                                                            class="label mb-0">
-                                                                                                            In-person
-                                                                                                        </p>
-                                                                                                        <p
-                                                                                                            class="name-label mb-0">
-                                                                                                            Service
-                                                                                                            will be
-                                                                                                            delivered
-                                                                                                            in
-                                                                                                            person
-                                                                                                            at a
+                                                                                                            class="mb-0 text-muted small">
+                                                                                                            Face-to-face
+                                                                                                            delivery at a
                                                                                                             physical
-                                                                                                            location.
-                                                                                                        </p>
-                                                                                                    </label>
-                                                                                                </div>
+                                                                                                            location</p>
+                                                                                                    </div>
+                                                                                                    <div
+                                                                                                        class="option-check">
+                                                                                                        <i
+                                                                                                            class="fa-solid fa-circle-check"></i>
+                                                                                                    </div>
+                                                                                                </label>
                                                                                             </div>
                                                                                         </div>
                                                                                     </div>
-                                                                                    <div class="model-footer">
-                                                                                        <button class="back-btn"
-                                                                                                data-bs-target="#secondModal"
-                                                                                                data-bs-toggle="modal"
-                                                                                                data-bs-dismiss="modal">Back</button>
-                                                                                        <button
-                                                                                            class="next-btn">Next</button>
+                                                                                </div>
+
+                                                                                <!-- Step 3: Service Selection -->
+                                                                                <div class="offer-step d-none" id="step-3">
+                                                                                    <h4 class="mb-3 fw-semibold text-dark">
+                                                                                        Select a Service</h4>
+                                                                                    <p class="text-muted mb-4">
+                                                                                        Choose from your vailable
+                                                                                        <span
+                                                                                            id="service-type-label">services</span>.
+                                                                                    </p>
+                                                                                    <div class="service-list-container"
+                                                                                        id="unified-service-list">
+                                                                                        <div class="text-center p-4">
+                                                                                            <div class="spinner-border text-primary"
+                                                                                                role="status">
+                                                                                                <span
+                                                                                                    class="visually-hidden">Loading...</span>
+                                                                                            </div>
+                                                                                            <p class="text-muted mt-2">
+                                                                                                Loading services...</p>
+                                                                                        </div>
                                                                                     </div>
                                                                                 </div>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                                <!-- Payment Type Selection Modal -->
-                                                                <div class="modal custom-modal" id="fourmodal">
-                                                                    <div class="modal-dialog">
-                                                                        <div class="modal-content date-modal">
 
-                                                                            <div class="modal-body p-0">
-                                                                                <div class="modal-header">
-
-                                                                                    <h5 class="modal-title">Choose
-                                                                                        how you want to get paid
-                                                                                    </h5>
-                                                                                </div>
-
-                                                                                <div class="model-heading">
-                                                                                    <p class="about">Get paid in
-                                                                                        full once the project is
-                                                                                        completed, or break it into
-                                                                                        smaller
-                                                                                        chunks, called milestones,
-                                                                                        to get paid as you go.</p>
-                                                                                    <div class="d-flex option-btn">
-                                                                                        <div
-                                                                                            class="d-flex radio-toolbar">
-                                                                                            <div class="row">
-                                                                                                <div class="col-md-6">
-                                                                                                    <input
-                                                                                                        type="radio"
+                                                                                <!-- Step 4: Offer Details (Payment Type + Details) -->
+                                                                                <div class="offer-step d-none" id="step-4">
+                                                                                    <!-- Sub-step 4a: Payment Type -->
+                                                                                    <div id="step-4a">
+                                                                                        <h4
+                                                                                            class="mb-3 fw-semibold text-dark">
+                                                                                            How would you like to be paid?
+                                                                                        </h4>
+                                                                                        <p class="text-muted mb-4">Choose
+                                                                                            your preferred payment
+                                                                                            structure.</p>
+                                                                                        <div class="row g-3 mb-4">
+                                                                                            <div class="col-md-6">
+                                                                                                <div class="offer-option-card"
+                                                                                                    data-value="Single">
+                                                                                                    <input type="radio"
                                                                                                         id="paymentTypeSingle"
                                                                                                         name="payment_type"
                                                                                                         value="Single"
-                                                                                                        checked>
+                                                                                                        checked
+                                                                                                        class="d-none">
                                                                                                     <label
                                                                                                         for="paymentTypeSingle"
-                                                                                                        data-bs-target="#sixModal"
-                                                                                                        data-bs-toggle="modal"
-                                                                                                        data-bs-dismiss="modal">
-                                                                                                        <p
-                                                                                                            class="label mb-0">
-                                                                                                            Single
-                                                                                                            Payment
-                                                                                                        </p>
-                                                                                                        <p
-                                                                                                            class="name-label mb-0">
-                                                                                                            Get full
-                                                                                                            payment
-                                                                                                            after
-                                                                                                            completed
-                                                                                                            each
-                                                                                                            order at
-                                                                                                            once.
-                                                                                                        </p>
-
+                                                                                                        class="offer-option-label">
+                                                                                                        <div
+                                                                                                            class="option-icon">
+                                                                                                            <i
+                                                                                                                class="fa-solid fa-money-bill-wave"></i>
+                                                                                                        </div>
+                                                                                                        <div
+                                                                                                            class="option-content">
+                                                                                                            <h5
+                                                                                                                class="mb-1">
+                                                                                                                Single
+                                                                                                                Payment</h5>
+                                                                                                            <p
+                                                                                                                class="mb-0 text-muted small">
+                                                                                                                Get paid in
+                                                                                                                full upon
+                                                                                                                completion
+                                                                                                            </p>
+                                                                                                        </div>
+                                                                                                        <div
+                                                                                                            class="option-check">
+                                                                                                            <i
+                                                                                                                class="fa-solid fa-circle-check"></i>
+                                                                                                        </div>
                                                                                                     </label>
                                                                                                 </div>
-                                                                                                <div class="col-md-6">
-                                                                                                    <input
-                                                                                                        type="radio"
+                                                                                            </div>
+                                                                                            <div class="col-md-6">
+                                                                                                <div class="offer-option-card"
+                                                                                                    data-value="Milestone">
+                                                                                                    <input type="radio"
                                                                                                         id="paymentTypeMilestone"
                                                                                                         name="payment_type"
-                                                                                                        value="Milestone">
+                                                                                                        value="Milestone"
+                                                                                                        class="d-none">
                                                                                                     <label
                                                                                                         for="paymentTypeMilestone"
-                                                                                                        data-bs-target="#fiveModal"
-                                                                                                        data-bs-toggle="modal"
-                                                                                                        data-bs-dismiss="modal">
-                                                                                                        <p
-                                                                                                            class="label mb-0">
-                                                                                                            Milestones
-                                                                                                        </p>
-                                                                                                        <p
-                                                                                                            class="name-label mb-0">
-                                                                                                            Work in
-                                                                                                            gradual
-                                                                                                            steps
-                                                                                                            and get
-                                                                                                            each
-                                                                                                            completed
-                                                                                                            milestone.
-                                                                                                        </p>
-
+                                                                                                        class="offer-option-label">
+                                                                                                        <div
+                                                                                                            class="option-icon">
+                                                                                                            <i
+                                                                                                                class="fa-solid fa-list-check"></i>
+                                                                                                        </div>
+                                                                                                        <div
+                                                                                                            class="option-content">
+                                                                                                            <h5
+                                                                                                                class="mb-1">
+                                                                                                                Milestones
+                                                                                                            </h5>
+                                                                                                            <p
+                                                                                                                class="mb-0 text-muted small">
+                                                                                                                Break work
+                                                                                                                into phases,
+                                                                                                                get paid
+                                                                                                                progressively
+                                                                                                            </p>
+                                                                                                        </div>
+                                                                                                        <div
+                                                                                                            class="option-check">
+                                                                                                            <i
+                                                                                                                class="fa-solid fa-circle-check"></i>
+                                                                                                        </div>
                                                                                                     </label>
                                                                                                 </div>
                                                                                             </div>
-
-
-                                                                                        </div>
-                                                                                    </div>
-                                                                                    <div class="model-footer">
-                                                                                        <button class="back-btn"
-                                                                                                data-bs-target="#servicemode-modal"
-                                                                                                data-bs-toggle="modal"
-                                                                                                data-bs-dismiss="modal">Back</button>
-                                                                                        <button
-                                                                                            class="next-btn">Next</button>
-                                                                                    </div>
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-
-                                                                </div>
-                                                                <div class="modal" id="fiveModal">
-                                                                    <div class="modal-dialog">
-                                                                        <div class="modal-content date-modal">
-                                                                            <div class="modal-body p-0">
-                                                                                <div class="modal-header custom-modal">
-
-                                                                                    <h5 class="modal-title">Create
-                                                                                        a milestone offer</h5>
-                                                                                </div>
-
-                                                                                <div
-                                                                                    class="model-heading bg-white p-3 freelancing">
-
-                                                                                    <p class="offer-title"><span
-                                                                                            class="selected-service-title">Loading...</span>
-                                                                                    </p>
-                                                                                    <textarea
-                                                                                        class="form-control offer-area"
-                                                                                        id="offer-description"
-                                                                                        name="offer"
-                                                                                        placeholder="Describe your offer...."></textarea>
-                                                                                    <p class="offer-title mt-3">Set
-                                                                                        up your milestones or <a
-                                                                                            href="#"
-                                                                                            data-bs-target="#sixModal"
-                                                                                            data-bs-toggle="modal"
-                                                                                            data-bs-dismiss="modal">switch
-                                                                                            to single payment</a>
-                                                                                    </p>
-                                                                                    <p class="offer-title">Divide
-                                                                                        your work into pre-defined
-                                                                                        steps with goals (minimum
-                                                                                        $10 for each milestone).</p>
-
-                                                                                    <!-- Milestones Container - will be populated by JavaScript -->
-                                                                                    <div id="milestones-container">
-                                                                                        <!-- Milestones will be rendered dynamically by custom-offers.js -->
-                                                                                    </div>
-
-                                                                                    <button type="button"
-                                                                                            id="add-milestone-btn"
-                                                                                            class="btn btn-primary mt-3">
-                                                                                        <i
-                                                                                            class="fa-solid fa-plus"></i>
-                                                                                        Add Milestone
-                                                                                    </button>
-
-                                                                                    <!-- Total Amount Display -->
-                                                                                    <div class="row mt-4">
-                                                                                        <div class="col-md-12">
-                                                                                            <h4>Total Amount: <span
-                                                                                                    class="total-amount-display text-primary">$0.00</span>
-                                                                                            </h4>
                                                                                         </div>
                                                                                     </div>
 
-                                                                                    <div class="rado mt-3">
-                                                                                        <div class="row">
-                                                                                            <div class="col-md-9">
-                                                                                                <div
-                                                                                                    class="form-check form-1">
-                                                                                                    <input
-                                                                                                        class="form-check-input"
-                                                                                                        type="checkbox"
-                                                                                                        id="offer-expire-checkbox">
-                                                                                                    <label
-                                                                                                        class="form-check-label"
-                                                                                                        for="offer-expire-checkbox">
-                                                                                                        Offer Expire
-                                                                                                    </label>
-                                                                                                </div>
-                                                                                                <div
-                                                                                                    class="form-check">
-                                                                                                    <input
-                                                                                                        class="form-check-input"
-                                                                                                        type="checkbox"
-                                                                                                        id="request-requirements-checkbox">
-                                                                                                    <label
-                                                                                                        class="form-check-label"
-                                                                                                        for="request-requirements-checkbox">
-                                                                                                        Request for
-                                                                                                        Requirements
-                                                                                                    </label>
-                                                                                                </div>
+                                                                                    <!-- Sub-step 4b: Offer Details Form -->
+                                                                                    <div id="step-4b"
+                                                                                        class="mt-4 pt-4 border-top">
+                                                                                        <div class="selected-service-info mb-4 p-3 rounded"
+                                                                                            style="background: #f8f9fa;">
+                                                                                            <div
+                                                                                                class="d-flex align-items-center">
+                                                                                                <i
+                                                                                                    class="fa-solid fa-bookmark text-primary me-2"></i>
+                                                                                                <span
+                                                                                                    class="fw-semibold selected-service-title">Selected
+                                                                                                    Service</span>
                                                                                             </div>
-                                                                                            <div class="col-md-3">
-                                                                                                <div
-                                                                                                    class="rectangle-desc desc-1">
+                                                                                        </div>
+
+                                                                                        <div class="mb-4">
+                                                                                            <label
+                                                                                                class="form-label fw-semibold">Description</label>
+                                                                                            <textarea class="form-control"
+                                                                                                id="offer-description"
+                                                                                                rows="3"
+                                                                                                placeholder="Describe what you'll deliver..."></textarea>
+                                                                                        </div>
+
+                                                                                        <!-- Single Payment Fields -->
+                                                                                        <div id="single-payment-fields">
+                                                                                            <div class="row g-3 mb-4">
+                                                                                                <div class="col-md-4">
+                                                                                                    <label
+                                                                                                        class="form-label fw-semibold">Revisions</label>
                                                                                                     <select
                                                                                                         class="form-select"
-                                                                                                        id="expire-days-select"
-                                                                                                        disabled>
-                                                                                                        <option
-                                                                                                            value="1">
-                                                                                                            1 day
+                                                                                                        id="single-payment-revisions">
+                                                                                                        <option value="0">No
+                                                                                                            revisions
                                                                                                         </option>
-                                                                                                        <option
-                                                                                                            value="2">
-                                                                                                            2 days
+                                                                                                        <option value="1"
+                                                                                                            selected>1
+                                                                                                            revision
                                                                                                         </option>
-                                                                                                        <option
-                                                                                                            value="3">
-                                                                                                            3 days
+                                                                                                        <option value="2">2
+                                                                                                            revisions
                                                                                                         </option>
-                                                                                                        <option
-                                                                                                            value="5"
-                                                                                                            selected>
-                                                                                                            5 days
+                                                                                                        <option value="3">3
+                                                                                                            revisions
                                                                                                         </option>
-                                                                                                        <option
-                                                                                                            value="7">
-                                                                                                            7 days
-                                                                                                        </option>
-                                                                                                        <option
-                                                                                                            value="14">
-                                                                                                            14 days
+                                                                                                        <option value="5">5
+                                                                                                            revisions
                                                                                                         </option>
                                                                                                     </select>
                                                                                                 </div>
-                                                                                            </div>
-                                                                                        </div>
-                                                                                    </div>
-                                                                                    <div class="model-footer mt-4">
-                                                                                        <button class="bacck-btn"
-                                                                                                data-bs-target="#fourmodal"
-                                                                                                data-bs-toggle="modal"
-                                                                                                data-bs-dismiss="modal">Back</button>
-                                                                                        <button class="neext-btn"
-                                                                                                id="submit-milestone-offer-btn">Send
-                                                                                            Offer</button>
-                                                                                    </div>
-
-                                                                                </div>
-
-
-
-
-                                                                                <div class="model-footer">
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-
-                                                                <!-- six modal -->
-                                                                <div class="modal" id="sixModal">
-                                                                    <div class="modal-dialog">
-                                                                        <div class="modal-content date-modal">
-                                                                            <div class="modal-body p-0">
-                                                                                <div class="modal-header custom-modal">
-
-                                                                                    <h5 class="modal-title">Create
-                                                                                        a single payment offer</h5>
-                                                                                </div>
-
-                                                                                <div
-                                                                                    class="model-heading bg-white p-3 freelancing">
-
-                                                                                    <p class="offer-title"><span
-                                                                                            class="selected-service-title">Loading...</span>
-                                                                                    </p>
-                                                                                    <textarea
-                                                                                        class="form-control offer-area"
-                                                                                        id="offer-description"
-                                                                                        placeholder="Describe your offer...."></textarea>
-                                                                                    <p class="offer-title mt-3">
-                                                                                        Single payment or <a
-                                                                                            href="#"
-                                                                                            data-bs-target="#fiveModal"
-                                                                                            data-bs-toggle="modal"
-                                                                                            data-bs-dismiss="modal">switch
-                                                                                            to milestones</a></p>
-                                                                                    <p class="offer-title">Set your
-                                                                                        pricing and delivery terms
-                                                                                        (minimum $10).</p>
-
-
-                                                                                    <div class="row mt-3">
-                                                                                        <div
-                                                                                            class="col-md-4 rectangle-desc">
-                                                                                            <div class="rectangle">
-                                                                                                <h3>Revisions</h3>
-                                                                                                <select
-                                                                                                    class="form-select"
-                                                                                                    id="single-payment-revisions">
-                                                                                                    <option
-                                                                                                        value="0">
-                                                                                                        No revisions
-                                                                                                    </option>
-                                                                                                    <option
-                                                                                                        value="1"
-                                                                                                        selected>1
-                                                                                                    </option>
-                                                                                                    <option
-                                                                                                        value="2">
-                                                                                                        2</option>
-                                                                                                    <option
-                                                                                                        value="3">
-                                                                                                        3</option>
-                                                                                                    <option
-                                                                                                        value="4">
-                                                                                                        4</option>
-                                                                                                    <option
-                                                                                                        value="5">
-                                                                                                        5</option>
-                                                                                                </select>
-                                                                                            </div>
-
-                                                                                        </div>
-                                                                                        <div
-                                                                                            class="col-md-4 rectangle-desc">
-                                                                                            <div class="rectangle">
-                                                                                                <h3>Delivery</h3>
-                                                                                                <select
-                                                                                                    class="form-select"
-                                                                                                    id="single-payment-delivery">
-                                                                                                    <option
-                                                                                                        value="1">
-                                                                                                        1 day
-                                                                                                    </option>
-                                                                                                    <option
-                                                                                                        value="2">
-                                                                                                        2 days
-                                                                                                    </option>
-                                                                                                    <option
-                                                                                                        value="3">
-                                                                                                        3 days
-                                                                                                    </option>
-                                                                                                    <option
-                                                                                                        value="5"
-                                                                                                        selected>5
-                                                                                                        days
-                                                                                                    </option>
-                                                                                                    <option
-                                                                                                        value="7">
-                                                                                                        1 week
-                                                                                                    </option>
-                                                                                                    <option
-                                                                                                        value="14">
-                                                                                                        2 weeks
-                                                                                                    </option>
-                                                                                                    <option
-                                                                                                        value="30">
-                                                                                                        1 month
-                                                                                                    </option>
-                                                                                                </select>
-
-                                                                                            </div>
-
-                                                                                        </div>
-                                                                                        <div
-                                                                                            class="col-md-4 rectangle-desc">
-                                                                                            <div class="rectangle">
-                                                                                                <h3>Price</h3>
-                                                                                                <input type="number"
-                                                                                                       class="form-control"
-                                                                                                       id="single-payment-price"
-                                                                                                       placeholder="Enter price"
-                                                                                                       min="10"
-                                                                                                       step="0.01"
-                                                                                                       required>
-                                                                                            </div>
-
-                                                                                        </div>
-                                                                                    </div>
-
-                                                                                    <!-- Total Amount Display -->
-                                                                                    <div class="row mt-4">
-                                                                                        <div class="col-md-12">
-                                                                                            <h4>Total Amount: <span
-                                                                                                    class="total-amount-display text-primary">$0.00</span>
-                                                                                            </h4>
-                                                                                        </div>
-                                                                                    </div>
-
-                                                                                    <div class="rado mt-3">
-                                                                                        <div class="row">
-                                                                                            <div class="col-md-9">
-                                                                                                <div
-                                                                                                    class="form-check form-1">
-                                                                                                    <input
-                                                                                                        class="form-check-input"
-                                                                                                        type="checkbox"
-                                                                                                        id="offer-expire-checkbox">
+                                                                                                <div class="col-md-4">
                                                                                                     <label
-                                                                                                        class="form-check-label"
-                                                                                                        for="offer-expire-checkbox">
-                                                                                                        Offer Expire
-                                                                                                    </label>
-                                                                                                </div>
-                                                                                                <div
-                                                                                                    class="form-check">
-                                                                                                    <input
-                                                                                                        class="form-check-input"
-                                                                                                        type="checkbox"
-                                                                                                        id="request-requirements-checkbox">
-                                                                                                    <label
-                                                                                                        class="form-check-label"
-                                                                                                        for="request-requirements-checkbox">
-                                                                                                        Request for
-                                                                                                        Requirements
-                                                                                                    </label>
-                                                                                                </div>
-                                                                                            </div>
-                                                                                            <div class="col-md-3">
-                                                                                                <div
-                                                                                                    class="rectangle-desc desc-1">
-
+                                                                                                        class="form-label fw-semibold">Delivery
+                                                                                                        Time</label>
                                                                                                     <select
                                                                                                         class="form-select"
-                                                                                                        id="expire-days-select"
-                                                                                                        disabled>
-                                                                                                        <option
-                                                                                                            value="1">
-                                                                                                            1 day
+                                                                                                        id="single-payment-delivery">
+                                                                                                        <option value="1">1
+                                                                                                            day</option>
+                                                                                                        <option value="3">3
+                                                                                                            days</option>
+                                                                                                        <option value="5"
+                                                                                                            selected>5 days
                                                                                                         </option>
-                                                                                                        <option
-                                                                                                            value="2">
-                                                                                                            2 days
-                                                                                                        </option>
-                                                                                                        <option
-                                                                                                            value="3">
-                                                                                                            3 days
-                                                                                                        </option>
-                                                                                                        <option
-                                                                                                            value="5"
-                                                                                                            selected>
-                                                                                                            5 days
-                                                                                                        </option>
-                                                                                                        <option
-                                                                                                            value="7">
-                                                                                                            7 days
-                                                                                                        </option>
-                                                                                                        <option
-                                                                                                            value="14">
-                                                                                                            14 days
-                                                                                                        </option>
+                                                                                                        <option value="7">1
+                                                                                                            week</option>
+                                                                                                        <option value="14">2
+                                                                                                            weeks</option>
+                                                                                                        <option value="30">1
+                                                                                                            month</option>
                                                                                                     </select>
-
+                                                                                                </div>
+                                                                                                <div class="col-md-4">
+                                                                                                    <label
+                                                                                                        class="form-label fw-semibold">Price
+                                                                                                        ($)</label>
+                                                                                                    <input type="number"
+                                                                                                        class="form-control"
+                                                                                                        id="single-payment-price"
+                                                                                                        placeholder="Min $10"
+                                                                                                        min="10"
+                                                                                                        step="0.01">
                                                                                                 </div>
                                                                                             </div>
                                                                                         </div>
 
+                                                                                        <!-- Milestone Fields -->
+                                                                                        <div id="milestone-payment-fields"
+                                                                                            class="d-none">
+                                                                                            <div
+                                                                                                class="d-flex justify-content-between align-items-center mb-3">
+                                                                                                <label
+                                                                                                    class="form-label fw-semibold mb-0">Milestones</label>
+                                                                                                <button type="button"
+                                                                                                    id="add-milestone-btn"
+                                                                                                    class="btn btn-sm btn-outline-primary">
+                                                                                                    <i
+                                                                                                        class="fa-solid fa-plus me-1"></i>
+                                                                                                    Add Milestone
+                                                                                                </button>
+                                                                                            </div>
+                                                                                            <div id="milestones-container">
+                                                                                                <!-- Milestones rendered by JS -->
+                                                                                            </div>
+                                                                                        </div>
 
+                                                                                        <!-- Total & Options -->
+                                                                                        <div class="total-section mt-4 p-3 rounded"
+                                                                                            style="background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);">
+                                                                                            <div
+                                                                                                class="d-flex justify-content-between align-items-center mb-3">
+                                                                                                <span
+                                                                                                    class="fw-bold fs-5">Total
+                                                                                                    Amount</span>
+                                                                                                <span
+                                                                                                    class="fw-bold fs-4 text-primary total-amount-display">$0.00</span>
+                                                                                            </div>
+                                                                                            <div class="row">
+                                                                                                <div class="col-md-6">
+                                                                                                    <div class="form-check">
+                                                                                                        <input
+                                                                                                            class="form-check-input"
+                                                                                                            type="checkbox"
+                                                                                                            id="offer-expire-checkbox">
+                                                                                                        <label
+                                                                                                            class="form-check-label"
+                                                                                                            for="offer-expire-checkbox">
+                                                                                                            Offer expires in
+                                                                                                        </label>
+                                                                                                        <select
+                                                                                                            class="form-select form-select-sm d-inline-block w-auto ms-2"
+                                                                                                            id="expire-days-select"
+                                                                                                            disabled>
+                                                                                                            <option
+                                                                                                                value="1">1
+                                                                                                                day</option>
+                                                                                                            <option
+                                                                                                                value="3">3
+                                                                                                                days
+                                                                                                            </option>
+                                                                                                            <option
+                                                                                                                value="5"
+                                                                                                                selected>5
+                                                                                                                days
+                                                                                                            </option>
+                                                                                                            <option
+                                                                                                                value="7">7
+                                                                                                                days
+                                                                                                            </option>
+                                                                                                            <option
+                                                                                                                value="14">
+                                                                                                                14 days
+                                                                                                            </option>
+                                                                                                        </select>
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                                <div class="col-md-6">
+                                                                                                    <div class="form-check">
+                                                                                                        <input
+                                                                                                            class="form-check-input"
+                                                                                                            type="checkbox"
+                                                                                                            id="request-requirements-checkbox">
+                                                                                                        <label
+                                                                                                            class="form-check-label"
+                                                                                                            for="request-requirements-checkbox">
+                                                                                                            Request
+                                                                                                            requirements
+                                                                                                            from buyer
+                                                                                                        </label>
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </div>
                                                                                     </div>
-                                                                                    <div class="model-footer mt-4">
-                                                                                        <button class="bacck-btn"
-                                                                                                data-bs-target="#fourmodal"
-                                                                                                data-bs-toggle="modal"
-                                                                                                data-bs-dismiss="modal">Back</button>
-                                                                                        <button class="neext-btn"
-                                                                                                id="submit-single-offer-btn">Send
-                                                                                            Offer</button>
-                                                                                    </div>
-
                                                                                 </div>
+                                                                            </div>
 
-
-
-
-                                                                                <div class="model-footer">
-                                                                                </div>
+                                                                            <!-- Modal Footer -->
+                                                                            <div
+                                                                                class="modal-footer border-0 pt-0 px-4 pb-4">
+                                                                                <button type="button"
+                                                                                    class="btn btn-outline-secondary px-4 nextbtn"
+                                                                                    id="offer-back-btn">
+                                                                                    <i
+                                                                                        class="fa-solid fa-arrow-left me-2"></i>Back
+                                                                                </button>
+                                                                                <button type="button"
+                                                                                    class="btn btn-primary px-4 nextbtn"
+                                                                                    id="offer-next-btn"
+                                                                                    style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none;">
+                                                                                    Next<i
+                                                                                        class="fa-solid fa-arrow-right ms-2"></i>
+                                                                                </button>
+                                                                                <button type="button"
+                                                                                    class="btn btn-success px-4 d-none"
+                                                                                    id="offer-submit-btn">
+                                                                                    <i
+                                                                                        class="fa-solid fa-paper-plane me-2"></i>Send
+                                                                                    Offer
+                                                                                </button>
                                                                             </div>
                                                                         </div>
                                                                     </div>
                                                                 </div>
 
-                                                                {{-- Custom Offers Creation Models END ============ --}}
+                                                                <style>
+                                                                    /* Custom Offer Modal Styles */
+                                                                    .step-progress {
+                                                                        padding: 0 10px;
+                                                                    }
+
+                                                                    .step-item {
+                                                                        display: flex;
+                                                                        flex-direction: column;
+                                                                        align-items: center;
+                                                                        flex: 0 0 auto;
+                                                                    }
+
+                                                                    .step-circle {
+                                                                        width: 32px;
+                                                                        height: 32px;
+                                                                        border-radius: 50%;
+                                                                        background: rgba(255, 255, 255, 0.3);
+                                                                        color: white;
+                                                                        display: flex;
+                                                                        align-items: center;
+                                                                        justify-content: center;
+                                                                        font-weight: 600;
+                                                                        font-size: 14px;
+                                                                        transition: all 0.3s ease;
+                                                                    }
+
+                                                                    .step-item.active .step-circle,
+                                                                    .step-item.completed .step-circle {
+                                                                        background: white;
+                                                                        color: #667eea;
+                                                                    }
+
+                                                                    .step-label {
+                                                                        color: rgba(255, 255, 255, 0.7);
+                                                                        font-size: 11px;
+                                                                        margin-top: 6px;
+                                                                        white-space: nowrap;
+                                                                    }
+
+                                                                    .step-item.active .step-label,
+                                                                    .step-item.completed .step-label {
+                                                                        color: white;
+                                                                    }
+
+                                                                    .step-line {
+                                                                        flex: 1;
+                                                                        height: 2px;
+                                                                        background: rgba(255, 255, 255, 0.3);
+                                                                        margin: 0 8px;
+                                                                        margin-bottom: 20px;
+                                                                    }
+
+                                                                    .step-item.completed+.step-line,
+                                                                    .step-line.completed {
+                                                                        background: white;
+                                                                    }
+
+                                                                    .offer-option-card {
+                                                                        cursor: pointer;
+                                                                    }
+
+                                                                    .offer-option-label {
+                                                                        display: flex;
+                                                                        align-items: flex-start;
+                                                                        padding: 20px;
+                                                                        border: 2px solid #e9ecef;
+                                                                        border-radius: 12px;
+                                                                        cursor: pointer;
+                                                                        transition: all 0.2s ease;
+                                                                        position: relative;
+                                                                        background: white;
+                                                                    }
+
+                                                                    .offer-option-label:hover {
+                                                                        border-color: #667eea;
+                                                                        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+                                                                    }
+
+                                                                    .offer-option-card input:checked+.offer-option-label {
+                                                                        border-color: #667eea;
+                                                                        background: linear-gradient(135deg, #667eea08 0%, #764ba208 100%);
+                                                                    }
+
+                                                                    .option-icon {
+                                                                        width: 48px;
+                                                                        height: 48px;
+                                                                        border-radius: 12px;
+                                                                        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                                                                        display: flex;
+                                                                        align-items: center;
+                                                                        justify-content: center;
+                                                                        color: white;
+                                                                        font-size: 20px;
+                                                                        flex-shrink: 0;
+                                                                        margin-right: 16px;
+                                                                    }
+
+                                                                    .option-content {
+                                                                        flex: 1;
+                                                                    }
+
+                                                                    .option-content h5 {
+                                                                        font-size: 16px;
+                                                                        font-weight: 600;
+                                                                        color: #333;
+                                                                    }
+
+                                                                    .option-check {
+                                                                        color: #667eea;
+                                                                        font-size: 24px;
+                                                                        opacity: 0;
+                                                                        transition: opacity 0.2s ease;
+                                                                    }
+
+                                                                    .offer-option-card input:checked+.offer-option-label .option-check {
+                                                                        opacity: 1;
+                                                                    }
+
+                                                                    .service-list-container {
+                                                                        max-height: 300px;
+                                                                        overflow-y: auto;
+                                                                    }
+
+                                                                    .service-card {
+                                                                        display: flex;
+                                                                        align-items: center;
+                                                                        padding: 16px;
+                                                                        border: 2px solid #e9ecef;
+                                                                        border-radius: 12px;
+                                                                        cursor: pointer;
+                                                                        transition: all 0.2s ease;
+                                                                        margin-bottom: 12px;
+                                                                    }
+
+                                                                    .service-card:hover {
+                                                                        border-color: #667eea;
+                                                                        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+                                                                    }
+
+                                                                    .service-card.selected {
+                                                                        border-color: #667eea;
+                                                                        background: linear-gradient(135deg, #667eea08 0%, #764ba208 100%);
+                                                                    }
+
+                                                                    .service-card .service-icon {
+                                                                        width: 50px;
+                                                                        height: 50px;
+                                                                        border-radius: 10px;
+                                                                        background: #f0f0f0;
+                                                                        display: flex;
+                                                                        align-items: center;
+                                                                        justify-content: center;
+                                                                        margin-right: 16px;
+                                                                        overflow: hidden;
+                                                                    }
+
+                                                                    .service-card .service-icon img {
+                                                                        width: 100%;
+                                                                        height: 100%;
+                                                                        object-fit: cover;
+                                                                    }
+
+                                                                    .service-card .service-info {
+                                                                        flex: 1;
+                                                                    }
+
+                                                                    .service-card .service-info h6 {
+                                                                        margin: 0 0 4px 0;
+                                                                        font-weight: 600;
+                                                                        color: #333;
+                                                                    }
+
+                                                                    .service-card .service-info .category {
+                                                                        font-size: 13px;
+                                                                        color: #666;
+                                                                    }
+
+                                                                    .service-card .service-price {
+                                                                        font-weight: 600;
+                                                                        color: #667eea;
+                                                                    }
+
+                                                                    /* Enhanced Service Card Styles */
+                                                                    .service-card.enhanced {
+                                                                        display: flex;
+                                                                        align-items: center;
+                                                                        padding: 14px;
+                                                                        gap: 14px;
+                                                                        background: #fff;
+                                                                        position: relative;
+                                                                    }
+
+                                                                    .service-card.enhanced:hover {
+                                                                        transform: translateY(-1px);
+                                                                        box-shadow: 0 6px 16px rgba(102, 126, 234, 0.2);
+                                                                    }
+
+                                                                    .service-card.enhanced.selected {
+                                                                        border-color: #667eea;
+                                                                        background: linear-gradient(135deg, rgba(102, 126, 234, 0.08) 0%, rgba(118, 75, 162, 0.08) 100%);
+                                                                    }
+
+                                                                    .service-card-left {
+                                                                        display: flex;
+                                                                        align-items: center;
+                                                                        flex-shrink: 0;
+                                                                    }
+
+                                                                    .service-icon-box {
+                                                                        width: 44px;
+                                                                        height: 44px;
+                                                                        border-radius: 10px;
+                                                                        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                                                                        display: flex;
+                                                                        align-items: center;
+                                                                        justify-content: center;
+                                                                        color: #fff;
+                                                                        font-size: 18px;
+                                                                    }
+
+                                                                    .service-card-center {
+                                                                        flex: 1;
+                                                                        min-width: 0;
+                                                                        overflow: hidden;
+                                                                    }
+
+                                                                    .service-card-center .service-header {
+                                                                        display: flex;
+                                                                        align-items: center;
+                                                                        gap: 8px;
+                                                                        margin-bottom: 2px;
+                                                                    }
+
+                                                                    .service-card-center .service-title {
+                                                                        font-size: 14px;
+                                                                        font-weight: 600;
+                                                                        color: #333;
+                                                                        margin: 0;
+                                                                        white-space: nowrap;
+                                                                        overflow: hidden;
+                                                                        text-overflow: ellipsis;
+                                                                        flex: 1;
+                                                                        min-width: 0;
+                                                                    }
+
+                                                                    .service-card-center .badge {
+                                                                        font-size: 9px;
+                                                                        padding: 2px 6px;
+                                                                        font-weight: 500;
+                                                                        flex-shrink: 0;
+                                                                    }
+
+                                                                    .service-card-center .service-category {
+                                                                        font-size: 11px;
+                                                                        color: #888;
+                                                                        margin-bottom: 2px;
+                                                                    }
+
+                                                                    .service-card-center .service-desc {
+                                                                        margin: 0 0 4px 0;
+                                                                        font-size: 12px;
+                                                                        color: #666;
+                                                                        white-space: nowrap;
+                                                                        overflow: hidden;
+                                                                        text-overflow: ellipsis;
+                                                                        line-height: 1.3;
+                                                                    }
+
+                                                                    .service-card-center .service-stats {
+                                                                        display: flex;
+                                                                        align-items: center;
+                                                                        gap: 12px;
+                                                                        font-size: 11px;
+                                                                    }
+
+                                                                    .service-card-center .rating-stars {
+                                                                        display: flex;
+                                                                        align-items: center;
+                                                                        gap: 2px;
+                                                                    }
+
+                                                                    .service-card-center .rating-stars i {
+                                                                        font-size: 10px;
+                                                                    }
+
+                                                                    .service-card-center .orders-count {
+                                                                        color: #888;
+                                                                    }
+
+                                                                    .service-card-right {
+                                                                        display: flex;
+                                                                        flex-direction: column;
+                                                                        align-items: flex-end;
+                                                                        justify-content: center;
+                                                                        flex-shrink: 0;
+                                                                        gap: 4px;
+                                                                    }
+
+                                                                    .service-price-box {
+                                                                        text-align: right;
+                                                                    }
+
+                                                                    .service-price-box .price-label {
+                                                                        display: block;
+                                                                        font-size: 9px;
+                                                                        color: #999;
+                                                                        line-height: 1;
+                                                                    }
+
+                                                                    .service-price-box .price-value {
+                                                                        font-size: 15px;
+                                                                        font-weight: 700;
+                                                                        color: #667eea;
+                                                                    }
+
+                                                                    .select-check {
+                                                                        width: 20px;
+                                                                        height: 20px;
+                                                                        display: flex;
+                                                                        align-items: center;
+                                                                        justify-content: center;
+                                                                        opacity: 0;
+                                                                        transition: opacity 0.2s ease;
+                                                                    }
+
+                                                                    .select-check i {
+                                                                        font-size: 18px;
+                                                                        color: #667eea;
+                                                                    }
+
+                                                                    .service-card.enhanced.selected .select-check {
+                                                                        opacity: 1;
+                                                                    }
+
+                                                                    .service-card.enhanced:hover .select-check {
+                                                                        opacity: 0.4;
+                                                                    }
+
+                                                                    .service-card.enhanced.selected:hover .select-check {
+                                                                        opacity: 1;
+                                                                    }
+
+                                                                    /* Make service list container taller for enhanced cards */
+                                                                    .service-list-container {
+                                                                        max-height: 320px;
+                                                                    }
+
+                                                                    .milestone-item {
+                                                                        background: #f8f9fa;
+                                                                        border-radius: 12px;
+                                                                        padding: 16px;
+                                                                        margin-bottom: 12px;
+                                                                    }
+
+                                                                    .milestone-item .milestone-header {
+                                                                        display: flex;
+                                                                        justify-content: space-between;
+                                                                        align-items: center;
+                                                                        margin-bottom: 12px;
+                                                                    }
+
+                                                                    .milestone-item .milestone-number {
+                                                                        font-weight: 600;
+                                                                        color: #667eea;
+                                                                    }
+
+                                                                    #offer-back-btn {
+                                                                        min-width: 120px;
+                                                                    }
+
+                                                                    #offer-next-btn,
+                                                                    #offer-submit-btn {
+                                                                        min-width: 140px;
+                                                                    }
+                                                                </style>
+
+                                                                {{-- Custom Offers Creation END ============ --}}
 
 
                                                             </div>
                                                         </span>
 
-                                                    <button class="btn btn send-btn-sms float-end"
-                                                            id="send_sms_button" onclick="SendSMS();">
-                                                        Send
-                                                    </button>
+                                                        <button class="btn btn send-btn-sms float-end" id="send_sms_button"
+                                                            onclick="SendSMS();">
+                                                            Send
+                                                        </button>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
+
+
+                                        <div class="card-footer" id="block_div" @if ($block != 0) style="display: block;"
+                                        @endif>
+                                            <h5 class="Safety-term text-center">You can no longer send a message to
+                                                this
+                                                user</h5>
+                                        </div>
+
+
                                     </div>
-
-
-                                    <div class="card-footer" id="block_div"
-                                         @if ($block != 0) style="display: block;" @endif>
-                                        <h5 class="Safety-term text-center">You can no longer send a message to
-                                            this
-                                            user</h5>
-                                    </div>
-
-
                                 </div>
-                            </div>
 
-                            <!-- PROFILE-BOX SEC -->
-                            <div class="col-xl-3 col-lg-12 col-md-12" id="context">
-                                <div class="content" id="profileId">
+                                <!-- PROFILE-BOX SEC -->
+                                <div class="col-xl-3 col-lg-12 col-md-12" id="context">
+                                    <div class="content" id="profileId">
 
-                                    @if (isset($fullName))
+                                        @if (isset($fullName))
 
-                                        <div class="Profile d-flex">
-                                            <div class="card profile-data">
+                                            <div class="Profile d-flex">
+                                                <div class="card profile-data">
 
-                                                <a href="#">
-                                                    <div
-                                                        class="image d-flex flex-column justify-content-center align-items-center prof-jhon">
-                                                        <img id="main_profile_2" src="{{ $profileImageMain }}"
-                                                             height="80" width="80"/>
-                                                    </div>
-                                                </a>
+                                                    <a href="#">
+                                                        <div
+                                                            class="image d-flex flex-column justify-content-center align-items-center prof-jhon">
+                                                            <img id="main_profile_2" src="{{ $profileImageMain }}" height="80"
+                                                                width="80" />
+                                                        </div>
+                                                    </a>
 
-                                                <span id="main_name_2" class="name">{{ $fullName }}</span>
-                                                <span class="text-muted">Active 2m ago</span>
+                                                    <span id="main_name_2" class="name">{{ $fullName }}</span>
+                                                    <span class="text-muted">Active 2m ago</span>
 
-                                                <div class="icons gap-3 d-flex justify-content-center mt-3">
+                                                    <div class="icons gap-3 d-flex justify-content-center mt-3">
 
-                                                    <div class="link">
-                                                        <a href="#" style="text-decoration: none">
-                                                            <div class="profile-icon">
-                                                                <img
-                                                                    src="{{ asset('assets/user/asset/img/profileicon (2).svg') }}"
-                                                                    alt=""/>
-                                                            </div>
-                                                            <p>Profile</p>
-                                                        </a>
-                                                    </div>
+                                                        <div class="link">
+                                                            <a href="#" style="text-decoration: none">
+                                                                <div class="profile-icon">
+                                                                    <img src="{{ asset('assets/user/asset/img/profileicon (2).svg') }}"
+                                                                        alt="" />
+                                                                </div>
+                                                                <p>Profile</p>
+                                                            </a>
+                                                        </div>
 
-                                                    <div class="link">
-                                                        <a onclick="ShowSearchBar();"
-                                                           style="text-decoration: none; cursor: pointer;">
-                                                            <div class="profile-icon">
-                                                                <img
-                                                                    src="{{ asset('assets/user/asset/img/Vector.svg') }}"
-                                                                    alt=""/>
-                                                            </div>
-                                                            <p>Search</p>
-                                                        </a>
-                                                    </div>
+                                                        <div class="link">
+                                                            <a onclick="ShowSearchBar();"
+                                                                style="text-decoration: none; cursor: pointer;">
+                                                                <div class="profile-icon">
+                                                                    <img src="{{ asset('assets/user/asset/img/Vector.svg') }}"
+                                                                        alt="" />
+                                                                </div>
+                                                                <p>Search</p>
+                                                            </a>
+                                                        </div>
 
-                                                    <div class="link">
-                                                        <a onclick="BlockUser();"
-                                                           style="text-decoration: none; cursor: pointer;">
-                                                            <div class="profile-icon">
-                                                                <img
-                                                                    src="{{ asset('assets/user/asset/img/profileicon (3).svg') }}"
-                                                                    alt=""/>
-                                                            </div>
-                                                            <p id="block_user">
-                                                                @if ($block != 0 && Auth::id() == $block_by)
-                                                                    Unblock
-                                                                @else
-                                                                    Block
-                                                                @endif
-                                                            </p>
-                                                        </a>
+                                                        <div class="link">
+                                                            <a onclick="BlockUser();"
+                                                                style="text-decoration: none; cursor: pointer;">
+                                                                <div class="profile-icon">
+                                                                    <img src="{{ asset('assets/user/asset/img/profileicon (3).svg') }}"
+                                                                        alt="" />
+                                                                </div>
+                                                                <p id="block_user">
+                                                                    @if ($block != 0 && Auth::id() == $block_by)
+                                                                        Unblock
+                                                                    @else
+                                                                        Block
+                                                                    @endif
+                                                                </p>
+                                                            </a>
+                                                        </div>
+
                                                     </div>
 
-                                                </div>
+                                                    <div class="prof-info mt-3">
+                                                        <div class="accordian-section" id="accordionExample">
 
-                                                <div class="prof-info mt-3">
-                                                    <div class="accordian-section" id="accordionExample">
+                                                            <!-- MEDIA & FILES -->
+                                                            <div class="accordion-item">
+                                                                <h2 class="accordion-header" id="headingOne">
+                                                                    <button class="accordion-button collapsed" type="button"
+                                                                        data-bs-toggle="collapse" data-bs-target="#collapseOne"
+                                                                        aria-expanded="false" aria-controls="collapseOne">
+                                                                        Media & Files
+                                                                    </button>
+                                                                </h2>
 
-                                                        <!-- MEDIA & FILES -->
-                                                        <div class="accordion-item">
-                                                            <h2 class="accordion-header" id="headingOne">
-                                                                <button class="accordion-button collapsed"
-                                                                        type="button" data-bs-toggle="collapse"
-                                                                        data-bs-target="#collapseOne"
-                                                                        aria-expanded="false"
-                                                                        aria-controls="collapseOne">
-                                                                    Media & Files
-                                                                </button>
-                                                            </h2>
+                                                                <div id="collapseOne" class="accordion-collapse collapse"
+                                                                    aria-labelledby="headingOne"
+                                                                    data-bs-parent="#accordionExample">
+                                                                    <div class="accordion-body">
+                                                                        <div class="media-section">
 
-                                                            <div id="collapseOne"
-                                                                 class="accordion-collapse collapse"
-                                                                 aria-labelledby="headingOne"
-                                                                 data-bs-parent="#accordionExample">
-                                                                <div class="accordion-body">
-                                                                    <div class="media-section">
-
-                                                                        <div class="d-grid gap-2">
-                                                                            <button class="btn btn-primary active"
+                                                                            <div class="d-grid gap-2">
+                                                                                <button class="btn btn-primary active"
                                                                                     id="mediaFileBtn" type="button">
-                                                                                <img
-                                                                                    src="{{ asset('assets/user/asset/img/carbon_media-library-filled.svg') }}">
-                                                                                Media
-                                                                            </button>
-                                                                        </div>
+                                                                                    <img
+                                                                                        src="{{ asset('assets/user/asset/img/carbon_media-library-filled.svg') }}">
+                                                                                    Media
+                                                                                </button>
+                                                                            </div>
 
-                                                                        <div class="d-grid gap-2 mt-2">
-                                                                            <button class="btn btn-primary select1"
+                                                                            <div class="d-grid gap-2 mt-2">
+                                                                                <button class="btn btn-primary select1"
                                                                                     id="FileMediaBtn" type="button">
-                                                                                <img
-                                                                                    src="{{ asset('assets/user/asset/img/ph_files-fill.svg') }}">
-                                                                                Files
-                                                                            </button>
-                                                                        </div>
+                                                                                    <img
+                                                                                        src="{{ asset('assets/user/asset/img/ph_files-fill.svg') }}">
+                                                                                    Files
+                                                                                </button>
+                                                                            </div>
 
+                                                                        </div>
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                        </div>
 
-                                                        <!-- PRIVACY & SUPPORT -->
-                                                        <div class="accordion-item">
-                                                            <h2 class="accordion-header" id="headingTwo">
-                                                                <button class="accordion-button collapsed"
-                                                                        type="button" data-bs-toggle="collapse"
-                                                                        data-bs-target="#collapseTwo"
-                                                                        aria-expanded="false"
-                                                                        aria-controls="collapseTwo">
-                                                                    Privacy & Support
-                                                                </button>
-                                                            </h2>
+                                                            <!-- PRIVACY & SUPPORT -->
+                                                            <div class="accordion-item">
+                                                                <h2 class="accordion-header" id="headingTwo">
+                                                                    <button class="accordion-button collapsed" type="button"
+                                                                        data-bs-toggle="collapse" data-bs-target="#collapseTwo"
+                                                                        aria-expanded="false" aria-controls="collapseTwo">
+                                                                        Privacy & Support
+                                                                    </button>
+                                                                </h2>
 
-                                                            <div id="collapseTwo"
-                                                                 class="accordion-collapse collapse"
-                                                                 aria-labelledby="headingTwo"
-                                                                 data-bs-parent="#accordionExample">
-                                                                <div class="accordion-body">
-                                                                    <button type="button" class="btn btn-primary"
+                                                                <div id="collapseTwo" class="accordion-collapse collapse"
+                                                                    aria-labelledby="headingTwo"
+                                                                    data-bs-parent="#accordionExample">
+                                                                    <div class="accordion-body">
+                                                                        <button type="button" class="btn btn-primary"
                                                                             data-bs-target="#exampleModalToggle"
-                                                                            data-bs-toggle="modal"
-                                                                            id="accordian-select">
-                                                                        <img
-                                                                            src="{{ asset('assets/user/asset/img/ic_round-report.svg') }}">
-                                                                        Report
+                                                                            data-bs-toggle="modal" id="accordian-select">
+                                                                            <img
+                                                                                src="{{ asset('assets/user/asset/img/ic_round-report.svg') }}">
+                                                                            Report
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+                                                            <!-- NOTES -->
+                                                            <div class="row mt-3">
+                                                                <div class="col-md-6 col-sm-3">
+                                                                    <button class="note-add" data-bs-toggle="modal"
+                                                                        data-bs-target="#exampleModal2">
+                                                                        Notes
+                                                                    </button>
+                                                                </div>
+
+                                                                <div class="col-md-6 col-sm-3 note-add-plus-button">
+                                                                    <button class="note-adds" data-bs-toggle="modal"
+                                                                        data-bs-target="#exampleModal2">
+                                                                        <i class="fa-solid fa-plus"></i>
                                                                     </button>
                                                                 </div>
                                                             </div>
-                                                        </div>
 
-                                                        <!-- NOTES -->
-                                                        <div class="row mt-3">
-                                                            <div class="col-md-6 col-sm-3">
-                                                                <button class="note-add" data-bs-toggle="modal"
-                                                                        data-bs-target="#exampleModal2">
-                                                                    Notes
-                                                                </button>
+                                                            <div id="notes" class="row container-fluid mt-2">
                                                             </div>
 
-                                                            <div class="col-md-6 col-sm-3 note-add-plus-button">
-                                                                <button class="note-adds" data-bs-toggle="modal"
-                                                                        data-bs-target="#exampleModal2">
-                                                                    <i class="fa-solid fa-plus"></i>
-                                                                </button>
-                                                            </div>
                                                         </div>
-
-                                                        <div id="notes" class="row container-fluid mt-2">
-                                                        </div>
-
                                                     </div>
-                                                </div>
 
-                                            </div> <!-- card end -->
-                                        </div> <!-- Profile end -->
-                                    @else
-                                        <h2 class="text-center">You have not received any message from anyone yet
-                                        </h2>
-                                    @endif
+                                                </div> <!-- card end -->
+                                            </div> <!-- Profile end -->
+                                        @else
+                                            <h2 class="text-center">You have not received any message from anyone yet
+                                            </h2>
+                                        @endif
 
+                                    </div>
                                 </div>
+
+
+                        @endif
+                        </div>
+                    </div>
+                    <!-- tabs content start here -->
+
+                    <div class="content" id="tabsMainDiv">
+                        <div class="media">
+                            <div class="tabs" id="tabs">
+                                <a href="#">
+                                    <div class="icon1">
+                                        <i class="fa-solid fa-arrow-left-long" id="backBtn"></i>
+                                </a>
+                                <h3>Media & Files</h3>
                             </div>
-
-
-                            @endif
-                        </div>
-                </div>
-                <!-- tabs content start here -->
-
-                <div class="content" id="tabsMainDiv">
-                    <div class="media">
-                        <div class="tabs" id="tabs">
-                            <a href="#">
-                                <div class="icon1">
-                                    <i class="fa-solid fa-arrow-left-long" id="backBtn"></i>
-                            </a>
-                            <h3>Media & Files</h3>
-                        </div>
-                        <div class="mainBtn">
-                            <button class="tablink active" id="htab1" onclick="openTab(this.id)"
+                            <div class="mainBtn">
+                                <button class="tablink active" id="htab1" onclick="openTab(this.id)"
                                     data-tab="tab1">Photos
-                            </button>
-                            <button class="tablink" id="htab2" onclick="openTab(this.id)" data-tab="tab2">
-                                Videos
-                            </button>
-                            <button class="tablink" id="htab3" onclick="openTab(this.id)" data-tab="tab3">
-                                Files
-                            </button>
+                                </button>
+                                <button class="tablink" id="htab2" onclick="openTab(this.id)" data-tab="tab2">
+                                    Videos
+                                </button>
+                                <button class="tablink" id="htab3" onclick="openTab(this.id)" data-tab="tab3">
+                                    Files
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <div id="tab1" class="tab-content" itemid="tab-content" style="margin-top: 20px;display:none;">
-                <div class="gallery">
-                    <div class="container-fluid p-0">
-                        <div class="grid">
-                            <div class="grid-item">
-                                <div class="grid-item-content card">
-                                    <a href="https://images.unsplash.com/photo-1505863005508-18f2f0914451?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=1200&fit=max&ixid=eyJhcHBfaWQiOjE0NTg5fQ"
-                                       data-fancybox="gallery" class="fancybox">
-                                        <img
-                                            src="https://images.unsplash.com/photo-1505863005508-18f2f0914451?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=400&fit=max&ixid=eyJhcHBfaWQiOjE0NTg5fQ"
-                                            class="card-img">
-                                        <div class="overlay"></div>
-                                    </a>
+                <div id="tab1" class="tab-content" itemid="tab-content" style="margin-top: 20px;display:none;">
+                    <div class="gallery">
+                        <div class="container-fluid p-0">
+                            <div class="grid">
+                                <div class="grid-item">
+                                    <div class="grid-item-content card">
+                                        <a href="https://images.unsplash.com/photo-1505863005508-18f2f0914451?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=1200&fit=max&ixid=eyJhcHBfaWQiOjE0NTg5fQ"
+                                            data-fancybox="gallery" class="fancybox">
+                                            <img src="https://images.unsplash.com/photo-1505863005508-18f2f0914451?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=400&fit=max&ixid=eyJhcHBfaWQiOjE0NTg5fQ"
+                                                class="card-img">
+                                            <div class="overlay"></div>
+                                        </a>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="grid-item">
-                                <div class="grid-item-content card">
-                                    <a href="https://images.unsplash.com/photo-1505863005508-18f2f0914451?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=1200&fit=max&ixid=eyJhcHBfaWQiOjE0NTg5fQ"
-                                       data-fancybox="gallery" class="fancybox">
-                                        <img
-                                            src="https://images.unsplash.com/photo-1505863005508-18f2f0914451?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=400&fit=max&ixid=eyJhcHBfaWQiOjE0NTg5fQ"
-                                            class="card-img">
-                                        <div class="overlay"></div>
-                                    </a>
+                                <div class="grid-item">
+                                    <div class="grid-item-content card">
+                                        <a href="https://images.unsplash.com/photo-1505863005508-18f2f0914451?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=1200&fit=max&ixid=eyJhcHBfaWQiOjE0NTg5fQ"
+                                            data-fancybox="gallery" class="fancybox">
+                                            <img src="https://images.unsplash.com/photo-1505863005508-18f2f0914451?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=400&fit=max&ixid=eyJhcHBfaWQiOjE0NTg5fQ"
+                                                class="card-img">
+                                            <div class="overlay"></div>
+                                        </a>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="grid-item">
-                                <div class="grid-item-content card">
-                                    <a href="https://images.unsplash.com/photo-1505863005508-18f2f0914451?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=1200&fit=max&ixid=eyJhcHBfaWQiOjE0NTg5fQ"
-                                       data-fancybox="gallery" class="fancybox">
-                                        <img
-                                            src="https://images.unsplash.com/photo-1505863005508-18f2f0914451?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=400&fit=max&ixid=eyJhcHBfaWQiOjE0NTg5fQ"
-                                            class="card-img">
-                                        <div class="overlay"></div>
-                                    </a>
+                                <div class="grid-item">
+                                    <div class="grid-item-content card">
+                                        <a href="https://images.unsplash.com/photo-1505863005508-18f2f0914451?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=1200&fit=max&ixid=eyJhcHBfaWQiOjE0NTg5fQ"
+                                            data-fancybox="gallery" class="fancybox">
+                                            <img src="https://images.unsplash.com/photo-1505863005508-18f2f0914451?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=400&fit=max&ixid=eyJhcHBfaWQiOjE0NTg5fQ"
+                                                class="card-img">
+                                            <div class="overlay"></div>
+                                        </a>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="grid-item">
-                                <div class="grid-item-content card">
-                                    <a href="https://images.unsplash.com/photo-1505863005508-18f2f0914451?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=1200&fit=max&ixid=eyJhcHBfaWQiOjE0NTg5fQ"
-                                       data-fancybox="gallery" class="fancybox">
-                                        <img
-                                            src="https://images.unsplash.com/photo-1505863005508-18f2f0914451?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=400&fit=max&ixid=eyJhcHBfaWQiOjE0NTg5fQ"
-                                            class="card-img">
-                                        <div class="overlay"></div>
-                                    </a>
+                                <div class="grid-item">
+                                    <div class="grid-item-content card">
+                                        <a href="https://images.unsplash.com/photo-1505863005508-18f2f0914451?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=1200&fit=max&ixid=eyJhcHBfaWQiOjE0NTg5fQ"
+                                            data-fancybox="gallery" class="fancybox">
+                                            <img src="https://images.unsplash.com/photo-1505863005508-18f2f0914451?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=400&fit=max&ixid=eyJhcHBfaWQiOjE0NTg5fQ"
+                                                class="card-img">
+                                            <div class="overlay"></div>
+                                        </a>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="grid-item">
-                                <div class="grid-item-content card">
-                                    <a href="https://images.unsplash.com/photo-1505863005508-18f2f0914451?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=1200&fit=max&ixid=eyJhcHBfaWQiOjE0NTg5fQ"
-                                       data-fancybox="gallery" class="fancybox">
-                                        <img
-                                            src="https://images.unsplash.com/photo-1505863005508-18f2f0914451?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=400&fit=max&ixid=eyJhcHBfaWQiOjE0NTg5fQ"
-                                            class="card-img">
-                                        <div class="overlay"></div>
-                                    </a>
+                                <div class="grid-item">
+                                    <div class="grid-item-content card">
+                                        <a href="https://images.unsplash.com/photo-1505863005508-18f2f0914451?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=1200&fit=max&ixid=eyJhcHBfaWQiOjE0NTg5fQ"
+                                            data-fancybox="gallery" class="fancybox">
+                                            <img src="https://images.unsplash.com/photo-1505863005508-18f2f0914451?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=400&fit=max&ixid=eyJhcHBfaWQiOjE0NTg5fQ"
+                                                class="card-img">
+                                            <div class="overlay"></div>
+                                        </a>
+                                    </div>
                                 </div>
-                            </div>
 
 
-                            <div class="grid-item">
-                                <div class="grid-item-content card">
-                                    <a href="https://images.unsplash.com/photo-1505863005508-18f2f0914451?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=1200&fit=max&ixid=eyJhcHBfaWQiOjE0NTg5fQ"
-                                       data-fancybox="gallery" class="fancybox">
-                                        <img
-                                            src="https://images.unsplash.com/photo-1505863005508-18f2f0914451?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=400&fit=max&ixid=eyJhcHBfaWQiOjE0NTg5fQ"
-                                            class="card-img">
-                                        <div class="overlay"></div>
-                                    </a>
+                                <div class="grid-item">
+                                    <div class="grid-item-content card">
+                                        <a href="https://images.unsplash.com/photo-1505863005508-18f2f0914451?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=1200&fit=max&ixid=eyJhcHBfaWQiOjE0NTg5fQ"
+                                            data-fancybox="gallery" class="fancybox">
+                                            <img src="https://images.unsplash.com/photo-1505863005508-18f2f0914451?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=400&fit=max&ixid=eyJhcHBfaWQiOjE0NTg5fQ"
+                                                class="card-img">
+                                            <div class="overlay"></div>
+                                        </a>
+                                    </div>
                                 </div>
-                            </div>
 
-                            <div class="grid-item">
-                                <div class="grid-item-content card">
-                                    <a href="https://images.unsplash.com/photo-1505863005508-18f2f0914451?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=1200&fit=max&ixid=eyJhcHBfaWQiOjE0NTg5fQ"
-                                       data-fancybox="gallery" class="fancybox">
-                                        <img
-                                            src="https://images.unsplash.com/photo-1505863005508-18f2f0914451?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=400&fit=max&ixid=eyJhcHBfaWQiOjE0NTg5fQ"
-                                            class="card-img">
-                                        <div class="overlay"></div>
-                                    </a>
+                                <div class="grid-item">
+                                    <div class="grid-item-content card">
+                                        <a href="https://images.unsplash.com/photo-1505863005508-18f2f0914451?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=1200&fit=max&ixid=eyJhcHBfaWQiOjE0NTg5fQ"
+                                            data-fancybox="gallery" class="fancybox">
+                                            <img src="https://images.unsplash.com/photo-1505863005508-18f2f0914451?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=400&fit=max&ixid=eyJhcHBfaWQiOjE0NTg5fQ"
+                                                class="card-img">
+                                            <div class="overlay"></div>
+                                        </a>
+                                    </div>
                                 </div>
-                            </div>
 
-                            <div class="grid-item">
-                                <div class="grid-item-content card">
-                                    <a href="https://images.unsplash.com/photo-1505863005508-18f2f0914451?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=1200&fit=max&ixid=eyJhcHBfaWQiOjE0NTg5fQ"
-                                       data-fancybox="gallery" class="fancybox">
-                                        <img
-                                            src="https://images.unsplash.com/photo-1505863005508-18f2f0914451?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=400&fit=max&ixid=eyJhcHBfaWQiOjE0NTg5fQ"
-                                            class="card-img">
-                                        <div class="overlay"></div>
-                                    </a>
+                                <div class="grid-item">
+                                    <div class="grid-item-content card">
+                                        <a href="https://images.unsplash.com/photo-1505863005508-18f2f0914451?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=1200&fit=max&ixid=eyJhcHBfaWQiOjE0NTg5fQ"
+                                            data-fancybox="gallery" class="fancybox">
+                                            <img src="https://images.unsplash.com/photo-1505863005508-18f2f0914451?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=400&fit=max&ixid=eyJhcHBfaWQiOjE0NTg5fQ"
+                                                class="card-img">
+                                            <div class="overlay"></div>
+                                        </a>
+                                    </div>
                                 </div>
-                            </div>
 
 
-                            <div class="grid-item">
-                                <div class="grid-item-content card">
-                                    <a href="https://images.unsplash.com/photo-1453473552141-5eb1510d09e2?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=800&fit=max&ixid=eyJhcHBfaWQiOjE0NTg5fQ"
-                                       data-fancybox="gallery" class="fancybox">
-                                        <img
-                                            src="https://images.unsplash.com/photo-1453473552141-5eb1510d09e2?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=400&fit=max&ixid=eyJhcHBfaWQiOjE0NTg5fQ"
-                                            class="card-img">
-                                        <div class="overlay"></div>
-                                    </a>
+                                <div class="grid-item">
+                                    <div class="grid-item-content card">
+                                        <a href="https://images.unsplash.com/photo-1453473552141-5eb1510d09e2?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=800&fit=max&ixid=eyJhcHBfaWQiOjE0NTg5fQ"
+                                            data-fancybox="gallery" class="fancybox">
+                                            <img src="https://images.unsplash.com/photo-1453473552141-5eb1510d09e2?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=400&fit=max&ixid=eyJhcHBfaWQiOjE0NTg5fQ"
+                                                class="card-img">
+                                            <div class="overlay"></div>
+                                        </a>
+                                    </div>
                                 </div>
-                            </div>
 
-                            <div class="grid-item">
-                                <div class="grid-item-content card">
-                                    <a href="https://images.unsplash.com/photo-1514328525431-eac296c01d82?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=800&fit=max&ixid=eyJhcHBfaWQiOjE0NTg5fQ"
-                                       data-fancybox="gallery" class="fancybox">
-                                        <img
-                                            src="https://images.unsplash.com/photo-1514328525431-eac296c01d82?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=400&fit=max&ixid=eyJhcHBfaWQiOjE0NTg5fQ"
-                                            class="card-img">
-                                        <div class="overlay"></div>
-                                    </a>
+                                <div class="grid-item">
+                                    <div class="grid-item-content card">
+                                        <a href="https://images.unsplash.com/photo-1514328525431-eac296c01d82?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=800&fit=max&ixid=eyJhcHBfaWQiOjE0NTg5fQ"
+                                            data-fancybox="gallery" class="fancybox">
+                                            <img src="https://images.unsplash.com/photo-1514328525431-eac296c01d82?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=400&fit=max&ixid=eyJhcHBfaWQiOjE0NTg5fQ"
+                                                class="card-img">
+                                            <div class="overlay"></div>
+                                        </a>
+                                    </div>
                                 </div>
-                            </div>
 
 
-                            <div class="grid-item">
-                                <div class="grid-item-content card">
-                                    <a href="https://images.unsplash.com/photo-1514328525431-eac296c01d82?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=800&fit=max&ixid=eyJhcHBfaWQiOjE0NTg5fQ"
-                                       data-fancybox="gallery" class="fancybox">
-                                        <img
-                                            src="https://images.unsplash.com/photo-1514328525431-eac296c01d82?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=400&fit=max&ixid=eyJhcHBfaWQiOjE0NTg5fQ"
-                                            class="card-img">
-                                        <div class="overlay"></div>
-                                    </a>
+                                <div class="grid-item">
+                                    <div class="grid-item-content card">
+                                        <a href="https://images.unsplash.com/photo-1514328525431-eac296c01d82?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=800&fit=max&ixid=eyJhcHBfaWQiOjE0NTg5fQ"
+                                            data-fancybox="gallery" class="fancybox">
+                                            <img src="https://images.unsplash.com/photo-1514328525431-eac296c01d82?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=400&fit=max&ixid=eyJhcHBfaWQiOjE0NTg5fQ"
+                                                class="card-img">
+                                            <div class="overlay"></div>
+                                        </a>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="grid-item">
-                                <div class="grid-item-content card">
-                                    <a href="https://images.unsplash.com/photo-1505863005508-18f2f0914451?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=1200&fit=max&ixid=eyJhcHBfaWQiOjE0NTg5fQ"
-                                       data-fancybox="gallery" class="fancybox">
-                                        <img
-                                            src="https://images.unsplash.com/photo-1505863005508-18f2f0914451?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=400&fit=max&ixid=eyJhcHBfaWQiOjE0NTg5fQ"
-                                            class="card-img">
-                                        <div class="overlay"></div>
-                                    </a>
+                                <div class="grid-item">
+                                    <div class="grid-item-content card">
+                                        <a href="https://images.unsplash.com/photo-1505863005508-18f2f0914451?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=1200&fit=max&ixid=eyJhcHBfaWQiOjE0NTg5fQ"
+                                            data-fancybox="gallery" class="fancybox">
+                                            <img src="https://images.unsplash.com/photo-1505863005508-18f2f0914451?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=400&fit=max&ixid=eyJhcHBfaWQiOjE0NTg5fQ"
+                                                class="card-img">
+                                            <div class="overlay"></div>
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div id="tab2" class="tab-content" style="margin-top: 20px;display:none;">
+                <div id="tab2" class="tab-content" style="margin-top: 20px;display:none;">
+
+
+                </div>
+                <div id="tab3" class="tab-content" style="margin-top: 20px; display:none;">
+
+
+                </div>
 
 
             </div>
-            <div id="tab3" class="tab-content" style="margin-top: 20px; display:none;">
-
-
-            </div>
-
-
         </div>
-    </div>
-    </div>
-    </div>
+        </div>
+        </div>
 
-    <div class="copyright">
-        <p>Copyright Dreamcrowd © 2021. All Rights Reserved.</p>
-    </div>
-    </div>
+        <div class="copyright">
+            <p>Copyright Dreamcrowd © 2021. All Rights Reserved.</p>
+        </div>
+        </div>
 
 
-    <!-- =========== ADD NEW FAQ's MODAL START HERE =============== -->
-    <!-- Modal -->
-    <div class="modal fade" id="exampleModal2" tabindex="-1" aria-labelledby="exampleModalLabel"
-         aria-hidden="true">
-        <div class="modal-dialog verification-modal">
-            <div class="modal-content content-modal">
-                <div class="modal-header modal-heading">
-                    <h5 class="modal-title" id="exampleModalLabel">Add Notes</h5>
-                </div>
+        <!-- =========== ADD NEW FAQ's MODAL START HERE =============== -->
+        <!-- Modal -->
+        <div class="modal fade" id="exampleModal2" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog verification-modal">
+                <div class="modal-content content-modal">
+                    <div class="modal-header modal-heading">
+                        <h5 class="modal-title" id="exampleModalLabel">Add Notes</h5>
+                    </div>
 
-                <div class="container my-3">
+                    <div class="container my-3">
 
-                    <div class="card">
+                        <div class="card">
 
-                        <div class="card-body">
-                            <div class="form-group">
-                                <h5 class="card-titl">Add Title</h5>
-                                <input type="text" class="form-control" id="addTitle"
-                                       aria-describedby="title" placeholder="Enter Title">
-                                <small id="emailHelp" class="form-text text-muted"></small>
-                            </div>
-                            <h5 class="card-titl">Add a Note</h5>
-                            <div class="form-group">
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <h5 class="card-titl">Add Title</h5>
+                                    <input type="text" class="form-control" id="addTitle" aria-describedby="title"
+                                        placeholder="Enter Title">
+                                    <small id="emailHelp" class="form-text text-muted"></small>
+                                </div>
+                                <h5 class="card-titl">Add a Note</h5>
+                                <div class="form-group">
 
-                                <textarea class="form-control" id="addTxt" rows="3"></textarea>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div class="buttons-sec">
-                                        <button type="button" class="btn canceled-btn" data-bs-dismiss="modal"
+                                    <textarea class="form-control" id="addTxt" rows="3"></textarea>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="buttons-sec">
+                                            <button type="button" class="btn canceled-btn" data-bs-dismiss="modal"
                                                 aria-label="Close">
-                                            Cancel
-                                        </button>
-                                        <button type="button" class="btn added-btn " class="btn btn-primary"
+                                                Cancel
+                                            </button>
+                                            <button type="button" class="btn added-btn " class="btn btn-primary"
                                                 id="addBtn" onclick="AddNotes();">
-                                            Add Notes
-                                        </button>
+                                                Add Notes
+                                            </button>
 
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
 
 
-                    <!-- ==================================================== -->
+                        <!-- ==================================================== -->
 
-                    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+                        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
                             integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
                             crossorigin="anonymous">
-                    </script>
-                    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+                            </script>
+                        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
                             integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
                             crossorigin="anonymous">
-                    </script>
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="add-button">
+                            </script>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="add-button">
 
+                                </div>
                             </div>
                         </div>
+                        </form>
                     </div>
-                    </form>
                 </div>
             </div>
         </div>
-    </div>
-    <!-- =========== ADD NEW FAQ's MODAL ENDED HERE =============== -->
-    <!-- =========== ADD NEW CATEGORY MODAL START HERE =============== -->
-    <!-- Modal -->
-    <div class="modal fade" id="exampleModal3" tabindex="-1" aria-labelledby="exampleModalLabel"
-         aria-hidden="true">
-        <div class="modal-dialog verification-modal">
-            <div class="modal-content content-modal">
-                <div class="modal-header modal-heading">
-                    <h5 class="modal-title" id="exampleModalLabel">Show Notes</h5>
-                </div>
+        <!-- =========== ADD NEW FAQ's MODAL ENDED HERE =============== -->
+        <!-- =========== ADD NEW CATEGORY MODAL START HERE =============== -->
+        <!-- Modal -->
+        <div class="modal fade" id="exampleModal3" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog verification-modal">
+                <div class="modal-content content-modal">
+                    <div class="modal-header modal-heading">
+                        <h5 class="modal-title" id="exampleModalLabel">Show Notes</h5>
+                    </div>
 
-                <div class="container my-3">
+                    <div class="container my-3">
 
-                    <div class="card">
+                        <div class="card">
 
-                        <div class="card-body">
-                            <div class="form-group">
-                                <h5 class="card-titl"> Title</h5>
-                                <input type="hidden" id="note_id">
-                                <input type="text" class="form-control" id="showtitle"
-                                       aria-describedby="title" placeholder="Enter Title">
-                                <small id="emailHelp" class="form-text text-muted"></small>
-                            </div>
-                            <h5 class="card-titl"> Note</h5>
-                            <div class="form-group">
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <h5 class="card-titl"> Title</h5>
+                                    <input type="hidden" id="note_id">
+                                    <input type="text" class="form-control" id="showtitle" aria-describedby="title"
+                                        placeholder="Enter Title">
+                                    <small id="emailHelp" class="form-text text-muted"></small>
+                                </div>
+                                <h5 class="card-titl"> Note</h5>
+                                <div class="form-group">
 
-                                <textarea class="form-control" id="showtext" rows="3"></textarea>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div class="buttons-sec">
-                                        <button type="button" class="btn canceled-btn " data-bs-dismiss="modal"
+                                    <textarea class="form-control" id="showtext" rows="3"></textarea>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="buttons-sec">
+                                            <button type="button" class="btn canceled-btn " data-bs-dismiss="modal"
                                                 aria-label="Close">
-                                            Cancel
-                                        </button>
-                                        <button type="button" class="btn added-btn" id="addBtnedit">
-                                            Update Note
-                                        </button>
+                                                Cancel
+                                            </button>
+                                            <button type="button" class="btn added-btn" id="addBtnedit">
+                                                Update Note
+                                            </button>
 
+                                        </div>
                                     </div>
                                 </div>
+
                             </div>
-
                         </div>
-                    </div>
 
 
-                    <!-- ==================================================== -->
+                        <!-- ==================================================== -->
 
 
-                    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+                        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
                             integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
                             crossorigin="anonymous">
-                    </script>
-                    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+                            </script>
+                        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
                             integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
                             crossorigin="anonymous">
-                    </script>
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="add-button">
+                            </script>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="add-button">
 
+                                </div>
                             </div>
                         </div>
+                        </form>
                     </div>
-                    </form>
+                </div>
+            </div>
+        </div>
+        <!-- =========== ADD NEW CATEGORY MODAL ENDED  HERE =============== -->
+        <!-- safety terms for messages popup -->
+        <!-- Button trigger modal -->
+
+
+        <!-- =============================== MAIN CONTENT END HERE =========================== -->
+    </section>
+    <div class="modal fade" id="exampleModalToggle" aria-hidden="true" aria-labelledby="exampleModalToggleLabel"
+        tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered mt-5">
+            <div class="modal-content mt-2">
+                <div class="card-header text-center">Report</div>
+                <div class="model_popup">
+                    <label for="car" class="form-label">Rating</label>
+                    <br>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="88" height="16" viewBox="0 0 88 16" fill="none">
+                        <path
+                            d="M7.723 1.96796C7.82548 1.72157 8.17452 1.72157 8.277 1.96796L9.46671 4.82838C9.65392 5.27849 10.0772 5.58603 10.5631 5.62499L13.6512 5.87256C13.9172 5.89388 14.0251 6.22584 13.8224 6.39944L11.4696 8.41485C11.0994 8.73198 10.9377 9.22959 11.0508 9.70378L11.7696 12.7172C11.8316 12.9768 11.5492 13.1819 11.3215 13.0428L8.67763 11.428C8.26161 11.1739 7.73839 11.1739 7.32237 11.428L4.67855 13.0428C4.45082 13.1819 4.16844 12.9768 4.23036 12.7172L4.94917 9.70378C5.06228 9.2296 4.9006 8.73198 4.53038 8.41485L2.17759 6.39944C1.97493 6.22583 2.08279 5.89388 2.34878 5.87256L5.43685 5.62499C5.92278 5.58603 6.34608 5.27849 6.53329 4.82839L7.723 1.96796Z"
+                            fill="#FFAF06" stroke="#FFAF06" />
+                        <path
+                            d="M25.723 1.96796C25.8255 1.72157 26.1745 1.72157 26.277 1.96796L27.4667 4.82838C27.6539 5.27849 28.0772 5.58603 28.5631 5.62499L31.6512 5.87256C31.9172 5.89388 32.0251 6.22584 31.8224 6.39944L29.4696 8.41485C29.0994 8.73198 28.9377 9.22959 29.0508 9.70378L29.7696 12.7172C29.8316 12.9768 29.5492 13.1819 29.3215 13.0428L26.6776 11.428C26.2616 11.1739 25.7384 11.1739 25.3224 11.428L22.6786 13.0428C22.4508 13.1819 22.1684 12.9768 22.2304 12.7172L22.9492 9.70378C23.0623 9.2296 22.9006 8.73198 22.5304 8.41485L20.1776 6.39944C19.9749 6.22583 20.0828 5.89388 20.3488 5.87256L23.4369 5.62499C23.9228 5.58603 24.3461 5.27849 24.5333 4.82839L25.723 1.96796Z"
+                            fill="#FFAF06" stroke="#FFAF06" />
+                        <path
+                            d="M43.723 1.96796C43.8255 1.72157 44.1745 1.72157 44.277 1.96796L45.4667 4.82838C45.6539 5.27849 46.0772 5.58603 46.5631 5.62499L49.6512 5.87256C49.9172 5.89388 50.0251 6.22584 49.8224 6.39944L47.4696 8.41485C47.0994 8.73198 46.9377 9.22959 47.0508 9.70378L47.7696 12.7172C47.8316 12.9768 47.5492 13.1819 47.3215 13.0428L44.6776 11.428C44.2616 11.1739 43.7384 11.1739 43.3224 11.428L40.6786 13.0428C40.4508 13.1819 40.1684 12.9768 40.2304 12.7172L40.9492 9.70378C41.0623 9.2296 40.9006 8.73198 40.5304 8.41485L38.1776 6.39944C37.9749 6.22583 38.0828 5.89388 38.3488 5.87256L41.4369 5.62499C41.9228 5.58603 42.3461 5.27849 42.5333 4.82839L43.723 1.96796Z"
+                            fill="#FFAF06" stroke="#FFAF06" />
+                        <path
+                            d="M61.723 1.96796C61.8255 1.72157 62.1745 1.72157 62.277 1.96796L63.4667 4.82838C63.6539 5.27849 64.0772 5.58603 64.5631 5.62499L67.6512 5.87256C67.9172 5.89388 68.0251 6.22584 67.8224 6.39944L65.4696 8.41485C65.0994 8.73198 64.9377 9.22959 65.0508 9.70378L65.7696 12.7172C65.8316 12.9768 65.5492 13.1819 65.3215 13.0428L62.6776 11.428C62.2616 11.1739 61.7384 11.1739 61.3224 11.428L58.6786 13.0428C58.4508 13.1819 58.1684 12.9768 58.2304 12.7172L58.9492 9.70378C59.0623 9.2296 58.9006 8.73198 58.5304 8.41485L56.1776 6.39944C55.9749 6.22583 56.0828 5.89388 56.3488 5.87256L59.4369 5.62499C59.9228 5.58603 60.3461 5.27849 60.5333 4.82839L61.723 1.96796Z"
+                            stroke="#FFAF06" />
+                        <path
+                            d="M79.723 1.96796C79.8255 1.72157 80.1745 1.72157 80.277 1.96796L81.4667 4.82838C81.6539 5.27849 82.0772 5.58603 82.5631 5.62499L85.6512 5.87256C85.9172 5.89388 86.0251 6.22584 85.8224 6.39944L83.4696 8.41485C83.0994 8.73198 82.9377 9.22959 83.0508 9.70378L83.7696 12.7172C83.8316 12.9768 83.5492 13.1819 83.3215 13.0428L80.6776 11.428C80.2616 11.1739 79.7384 11.1739 79.3224 11.428L76.6786 13.0428C76.4508 13.1819 76.1684 12.9768 76.2304 12.7172L76.9492 9.70378C77.0623 9.2296 76.9006 8.73198 76.5304 8.41485L74.1776 6.39944C73.9749 6.22583 74.0828 5.89388 74.3488 5.87256L77.4369 5.62499C77.9228 5.58603 78.3461 5.27849 78.5333 4.82839L79.723 1.96796Z"
+                            stroke="#FFAF06" />
+                    </svg>
+                    </br>
+                    <label for="car" class="form-label">Review</label>
+                    <textarea class="form-control" list="datalistOptions" id="car"
+                        placeholder="Lorem ipsum dolor sit amet, consectetur adipiscing elit.Vitae ut tellus quis a euismod ut nisl, quis.Tristiquebibendum morbi vel vitae ultrices donec accumsan"
+                        readonly></textarea>
+                    <label for="car" class="form-label">Report</label>
+                    <textarea class="form-control" list="datalistOptions" id="car"
+                        placeholder="write something here....."></textarea>
+                    <button type="button" class="btn1">Cancel</button>
+                    <button type="button" class="btn2">submit</button>
+
                 </div>
             </div>
         </div>
     </div>
-    <!-- =========== ADD NEW CATEGORY MODAL ENDED  HERE =============== -->
-    <!-- safety terms for messages popup -->
-    <!-- Button trigger modal -->
 
-
-    <!-- =============================== MAIN CONTENT END HERE =========================== -->
-</section>
-<div class="modal fade" id="exampleModalToggle" aria-hidden="true" aria-labelledby="exampleModalToggleLabel"
-     tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered mt-5">
-        <div class="modal-content mt-2">
-            <div class="card-header text-center">Report</div>
-            <div class="model_popup">
-                <label for="car" class="form-label">Rating</label>
-                <br>
-                <svg xmlns="http://www.w3.org/2000/svg" width="88" height="16" viewBox="0 0 88 16"
-                     fill="none">
-                    <path
-                        d="M7.723 1.96796C7.82548 1.72157 8.17452 1.72157 8.277 1.96796L9.46671 4.82838C9.65392 5.27849 10.0772 5.58603 10.5631 5.62499L13.6512 5.87256C13.9172 5.89388 14.0251 6.22584 13.8224 6.39944L11.4696 8.41485C11.0994 8.73198 10.9377 9.22959 11.0508 9.70378L11.7696 12.7172C11.8316 12.9768 11.5492 13.1819 11.3215 13.0428L8.67763 11.428C8.26161 11.1739 7.73839 11.1739 7.32237 11.428L4.67855 13.0428C4.45082 13.1819 4.16844 12.9768 4.23036 12.7172L4.94917 9.70378C5.06228 9.2296 4.9006 8.73198 4.53038 8.41485L2.17759 6.39944C1.97493 6.22583 2.08279 5.89388 2.34878 5.87256L5.43685 5.62499C5.92278 5.58603 6.34608 5.27849 6.53329 4.82839L7.723 1.96796Z"
-                        fill="#FFAF06" stroke="#FFAF06"/>
-                    <path
-                        d="M25.723 1.96796C25.8255 1.72157 26.1745 1.72157 26.277 1.96796L27.4667 4.82838C27.6539 5.27849 28.0772 5.58603 28.5631 5.62499L31.6512 5.87256C31.9172 5.89388 32.0251 6.22584 31.8224 6.39944L29.4696 8.41485C29.0994 8.73198 28.9377 9.22959 29.0508 9.70378L29.7696 12.7172C29.8316 12.9768 29.5492 13.1819 29.3215 13.0428L26.6776 11.428C26.2616 11.1739 25.7384 11.1739 25.3224 11.428L22.6786 13.0428C22.4508 13.1819 22.1684 12.9768 22.2304 12.7172L22.9492 9.70378C23.0623 9.2296 22.9006 8.73198 22.5304 8.41485L20.1776 6.39944C19.9749 6.22583 20.0828 5.89388 20.3488 5.87256L23.4369 5.62499C23.9228 5.58603 24.3461 5.27849 24.5333 4.82839L25.723 1.96796Z"
-                        fill="#FFAF06" stroke="#FFAF06"/>
-                    <path
-                        d="M43.723 1.96796C43.8255 1.72157 44.1745 1.72157 44.277 1.96796L45.4667 4.82838C45.6539 5.27849 46.0772 5.58603 46.5631 5.62499L49.6512 5.87256C49.9172 5.89388 50.0251 6.22584 49.8224 6.39944L47.4696 8.41485C47.0994 8.73198 46.9377 9.22959 47.0508 9.70378L47.7696 12.7172C47.8316 12.9768 47.5492 13.1819 47.3215 13.0428L44.6776 11.428C44.2616 11.1739 43.7384 11.1739 43.3224 11.428L40.6786 13.0428C40.4508 13.1819 40.1684 12.9768 40.2304 12.7172L40.9492 9.70378C41.0623 9.2296 40.9006 8.73198 40.5304 8.41485L38.1776 6.39944C37.9749 6.22583 38.0828 5.89388 38.3488 5.87256L41.4369 5.62499C41.9228 5.58603 42.3461 5.27849 42.5333 4.82839L43.723 1.96796Z"
-                        fill="#FFAF06" stroke="#FFAF06"/>
-                    <path
-                        d="M61.723 1.96796C61.8255 1.72157 62.1745 1.72157 62.277 1.96796L63.4667 4.82838C63.6539 5.27849 64.0772 5.58603 64.5631 5.62499L67.6512 5.87256C67.9172 5.89388 68.0251 6.22584 67.8224 6.39944L65.4696 8.41485C65.0994 8.73198 64.9377 9.22959 65.0508 9.70378L65.7696 12.7172C65.8316 12.9768 65.5492 13.1819 65.3215 13.0428L62.6776 11.428C62.2616 11.1739 61.7384 11.1739 61.3224 11.428L58.6786 13.0428C58.4508 13.1819 58.1684 12.9768 58.2304 12.7172L58.9492 9.70378C59.0623 9.2296 58.9006 8.73198 58.5304 8.41485L56.1776 6.39944C55.9749 6.22583 56.0828 5.89388 56.3488 5.87256L59.4369 5.62499C59.9228 5.58603 60.3461 5.27849 60.5333 4.82839L61.723 1.96796Z"
-                        stroke="#FFAF06"/>
-                    <path
-                        d="M79.723 1.96796C79.8255 1.72157 80.1745 1.72157 80.277 1.96796L81.4667 4.82838C81.6539 5.27849 82.0772 5.58603 82.5631 5.62499L85.6512 5.87256C85.9172 5.89388 86.0251 6.22584 85.8224 6.39944L83.4696 8.41485C83.0994 8.73198 82.9377 9.22959 83.0508 9.70378L83.7696 12.7172C83.8316 12.9768 83.5492 13.1819 83.3215 13.0428L80.6776 11.428C80.2616 11.1739 79.7384 11.1739 79.3224 11.428L76.6786 13.0428C76.4508 13.1819 76.1684 12.9768 76.2304 12.7172L76.9492 9.70378C77.0623 9.2296 76.9006 8.73198 76.5304 8.41485L74.1776 6.39944C73.9749 6.22583 74.0828 5.89388 74.3488 5.87256L77.4369 5.62499C77.9228 5.58603 78.3461 5.27849 78.5333 4.82839L79.723 1.96796Z"
-                        stroke="#FFAF06"/>
-                </svg>
-                </br>
-                <label for="car" class="form-label">Review</label>
-                <textarea class="form-control" list="datalistOptions" id="car"
-                          placeholder="Lorem ipsum dolor sit amet, consectetur adipiscing elit.Vitae ut tellus quis a euismod ut nisl, quis.Tristiquebibendum morbi vel vitae ultrices donec accumsan"
-                          readonly></textarea>
-                <label for="car" class="form-label">Report</label>
-                <textarea class="form-control" list="datalistOptions" id="car"
-                          placeholder="write something here....."></textarea>
-                <button type="button" class="btn1">Cancel</button>
-                <button type="button" class="btn2">submit</button>
-
-            </div>
-        </div>
-    </div>
-</div>
-
-<script src="assets/teacher/libs/jquery/jquery.js"></script>
-<script src="assets/teacher/libs/datatable/js/datatable.js"></script>
-<script src="assets/teacher/libs/datatable/js/datatablebootstrap.js"></script>
-<script src="assets/teacher/libs/select2/js/select2.min.js"></script>
-<script src="assets/teacher/libs/owl-carousel/js/owl.carousel.min.js"></script>
-<script src="assets/teacher/libs/aos/js/aos.js"></script>
-<script src="assets/teacher/asset/js/bootstrap.min.js"></script>
-<script src="assets/teacher/asset/js/script.js"></script>
+    <script src="assets/teacher/libs/jquery/jquery.js"></script>
+    <script src="assets/teacher/libs/datatable/js/datatable.js"></script>
+    <script src="assets/teacher/libs/datatable/js/datatablebootstrap.js"></script>
+    <script src="assets/teacher/libs/select2/js/select2.min.js"></script>
+    <script src="assets/teacher/libs/owl-carousel/js/owl.carousel.min.js"></script>
+    <script src="assets/teacher/libs/aos/js/aos.js"></script>
+    <script src="assets/teacher/asset/js/bootstrap.min.js"></script>
+    <script src="assets/teacher/asset/js/script.js"></script>
 
 </body>
 
@@ -1845,6 +2063,7 @@
                     const sms = response['completeChat'][i].sms;
                     const files = response['completeChat'][i].files;
                     const time_ago = response['completeChat'][i].time_ago;
+                    const is_custom_offer = response['completeChat'][i].is_custom_offer;
 
 
                     if (sender_id == user_id) {
@@ -1857,6 +2076,14 @@
 
                     chat_div += ' <li class="' + chat_type + '">' +
                         '<p>' + sms + '</p>';
+
+                    // Add View Custom Offer button if is_custom_offer has a value
+                    if (is_custom_offer && is_custom_offer > 0) {
+                        chat_div += `<button class="btn btn-sm btn-primary custom-offer-btn mt-2" data-offer-id="${is_custom_offer}" style="display:block;">
+                            <i class="fa-solid fa-eye me-1"></i> View Custom Offer
+                        </button>`;
+                    }
+
                     if (files != null) {
                         // Split the comma-separated files into an array
                         const fileArray = files.split(',');
@@ -2247,6 +2474,7 @@
                 const sms = response['completeChat'][i].sms;
                 const files = response['completeChat'][i].files;
                 const time_ago = response['completeChat'][i].time_ago;
+                const is_custom_offer = response['completeChat'][i].is_custom_offer;
 
                 if (sender_id == user_id) {
                     chat_type = 'repaly';
@@ -2258,6 +2486,14 @@
 
                 var chat_div = ' <li class="' + chat_type + '">' +
                     '<p>' + sms + '</p>';
+
+                // Add View Custom Offer button if is_custom_offer has a value
+                if (is_custom_offer && is_custom_offer > 0) {
+                    chat_div += `<button class="btn btn-sm btn-primary custom-offer-btn mt-2" data-offer-id="${is_custom_offer}" style="display:block;">
+                        <i class="fa-solid fa-eye me-1"></i> View Custom Offer
+                    </button>`;
+                }
+
                 if (files != null) {
                     // Split the comma-separated files into an array
                     const fileArray = files.split(',');
@@ -2900,6 +3136,7 @@
                         const sms = response['completeChat'][i].sms;
                         const files = response['completeChat'][i].files;
                         const time_ago = response['completeChat'][i].time_ago;
+                        const is_custom_offer = response['completeChat'][i].is_custom_offer;
 
                         if (sender_id == user_id) {
                             chat_type = 'repaly';
@@ -2911,6 +3148,14 @@
 
                         var chat_div = ' <li class="' + chat_type + '">' +
                             '<p>' + sms + '</p>';
+
+                        // Add View Custom Offer button if is_custom_offer has a value
+                        if (is_custom_offer && is_custom_offer > 0) {
+                            chat_div += `<button class="btn btn-sm btn-primary custom-offer-btn mt-2" data-offer-id="${is_custom_offer}" style="display:block;">
+                                <i class="fa-solid fa-eye me-1"></i> View Custom Offer
+                            </button>`;
+                        }
+
                         if (files != null) {
                             // Split the comma-separated files into an array
                             const fileArray = files.split(',');
@@ -3257,6 +3502,165 @@
     });
 </script>
 
+
+{{-- Counter Offer View Modal for Seller --}}
+<div class="modal fade" id="sellerCounterOfferModal" tabindex="-1" aria-labelledby="sellerCounterOfferModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-warning text-dark">
+                <h5 class="modal-title" id="sellerCounterOfferModalLabel">
+                    <i class="fa-solid fa-exchange-alt me-2"></i>Counter Offer Received
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Counter Offer Badge -->
+                <div class="alert alert-warning mb-4">
+                    <i class="fa-solid fa-info-circle me-2"></i>
+                    <strong>The buyer has sent a counter offer.</strong> Review the proposed changes below.
+                </div>
+
+                <!-- Comparison Section -->
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <div class="card border-secondary h-100">
+                            <div class="card-header bg-secondary text-white">
+                                <h6 class="mb-0"><i class="fa-solid fa-file-invoice me-2"></i>Your Original Offer</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-2">
+                                    <strong>Service:</strong> <span class="seller-original-service"></span>
+                                </div>
+                                <div class="mb-2">
+                                    <strong>Type:</strong> <span class="seller-original-type"></span>
+                                </div>
+                                <div class="mb-2">
+                                    <strong>Amount:</strong> <span
+                                        class="seller-original-amount text-primary fw-bold fs-5"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card border-warning h-100">
+                            <div class="card-header bg-warning text-dark">
+                                <h6 class="mb-0"><i class="fa-solid fa-exchange-alt me-2"></i>Buyer's Counter Offer</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-2">
+                                    <strong>Buyer:</strong> <span class="seller-counter-buyer"></span>
+                                </div>
+                                <div class="mb-2">
+                                    <strong>Proposed Amount:</strong> <span
+                                        class="seller-counter-amount text-warning fw-bold fs-5"></span>
+                                </div>
+                                <div class="mb-2 seller-price-diff-container">
+                                    <span class="seller-price-diff badge"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Buyer's Message -->
+                <div class="card mb-4" id="seller-counter-message-section">
+                    <div class="card-header">
+                        <h6 class="mb-0"><i class="fa-solid fa-comment me-2"></i>Buyer's Message</h6>
+                    </div>
+                    <div class="card-body">
+                        <p class="seller-counter-message mb-0"></p>
+                    </div>
+                </div>
+
+                <!-- Milestones Comparison (if applicable) -->
+                <div class="card mb-4" id="seller-counter-milestones-section" style="display: none;">
+                    <div class="card-header">
+                        <h6 class="mb-0"><i class="fa-solid fa-list-check me-2"></i>Milestone Changes</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Milestone</th>
+                                        <th>Original Price</th>
+                                        <th>Counter Price</th>
+                                        <th>Difference</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="seller-counter-milestones-body">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Status Message Area -->
+                <div class="seller-counter-status-message"></div>
+
+                <!-- Hidden field for counter offer ID -->
+                <input type="hidden" id="seller-counter-offer-id">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fa-solid fa-times me-1"></i>Close
+                </button>
+                <button type="button" class="btn btn-danger" id="seller-reject-counter-btn">
+                    <i class="fa-solid fa-times me-1"></i>Reject Counter
+                </button>
+                <button type="button" class="btn btn-success" id="seller-accept-counter-btn">
+                    <i class="fa-solid fa-check me-1"></i>Accept Counter Offer
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Seller Reject Counter Modal -->
+<div class="modal fade" id="sellerRejectCounterModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Reject Counter Offer</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to reject this counter offer?</p>
+                <div class="mb-3">
+                    <label for="seller-reject-reason" class="form-label">Reason (optional):</label>
+                    <textarea class="form-control" id="seller-reject-reason" rows="3"
+                        placeholder="Explain why you're rejecting this counter offer..."></textarea>
+                </div>
+                <p class="text-muted small">You can send a new offer after rejecting if you wish.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" id="seller-confirm-reject-counter-btn">
+                    <i class="fa-solid fa-times me-1"></i>Reject Counter Offer
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Seller Counter Offer Modal Styles */
+    #sellerCounterOfferModal .card {
+        border-radius: 8px;
+    }
+
+    .seller-price-diff.savings {
+        background-color: #f8d7da;
+        color: #721c24;
+    }
+
+    .seller-price-diff.increase {
+        background-color: #d4edda;
+        color: #155724;
+    }
+</style>
+{{-- Counter Offer View Modal END --}}
 
 {{-- Script for Custom Offer - Now using external JS file --}}
 <script src="{{ asset('assets/teacher/js/custom-offers.js') }}"></script>
